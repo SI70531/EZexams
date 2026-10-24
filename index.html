@@ -6,69 +6,132 @@
 <title>EZexams 考試衝刺</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@800&family=JetBrains+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@700;900&display=swap">
 <style>
-/* Layout: the same graph-paper desk as the subject pages; one shelf of subject cards, newest exam first. */
+/* Layout: case-book cover with a red seal, then one shelf of exam cards per subject. Same tokens as the subject pages. */
 :root{
-  --desk:#eef1f6; --grid:#dfe4ee; --paper:#ffffff; --ink:#141b2d; --muted:#5a6480; --line:#dde2ec; --line-strong:#c3cad9;
-  --accent:#2742d6; --accent-soft:#eaedfc; --marker:#fff3b8; --ok:#137a4a;
-  --shadow:0 1px 2px rgba(20,27,45,.06),0 8px 24px rgba(20,27,45,.06);
+  --bg:#f3ede0; --paper:#fffdf8; --paper2:#fbf8f1;
+  --ink:#16233b; --ink70:rgba(22,35,59,.74); --muted:rgba(22,35,59,.58); --line:#ddd3bf; --line-strong:#cbbfa5;
+  --indigo:#2c4a76; --indigo-soft:rgba(44,74,118,.08); --indigo-mid:rgba(44,74,118,.18);
+  --seal:#9c2b3a; --seal-soft:rgba(156,43,58,.06); --seal-line:rgba(156,43,58,.28);
+  --brass:#8f6d22; --brass-soft:rgba(169,131,47,.08); --brass-line:rgba(169,131,47,.3);
+  --ok:#2f7d5c; --ok-soft:rgba(47,125,92,.08); --ok-line:rgba(47,125,92,.3);
+  --accent:#2c4a76; --accent-ink:#ffffff; --accent-soft:rgba(44,74,118,.08);
+  --bad:#9c2b3a; --bad-soft:rgba(156,43,58,.06); --warn:#8f6d22; --warn-soft:rgba(169,131,47,.1);
+  --code:#f6f1e6; --fig:#fffdf8; --shadow:0 6px 18px rgba(22,35,59,.10);
   --f-display:"Noto Serif TC","Songti TC",serif;
   --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
-  --f-mono:"JetBrains Mono","Menlo","Consolas",monospace;
+  --f-en:"Source Serif 4","Georgia","Noto Serif TC",serif;
+  --f-mono:"JetBrains Mono","Menlo","Consolas","Noto Sans TC",monospace;
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--desk:#0e1220;--grid:#171d2e;--paper:#161c2c;--ink:#e6e9f3;--muted:#9ba4bf;--line:#283048;--line-strong:#3a4462;--accent:#8aa0ff;--accent-soft:#1f2848;--marker:#3a3115;--ok:#5fd09a;--shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);color-scheme:dark}}
-:root[data-theme="dark"]{--desk:#0e1220;--grid:#171d2e;--paper:#161c2c;--ink:#e6e9f3;--muted:#9ba4bf;--line:#283048;--line-strong:#3a4462;--accent:#8aa0ff;--accent-soft:#1f2848;--marker:#3a3115;--ok:#5fd09a;--shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);color-scheme:dark}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#14181f; --paper:#1c2129; --paper2:#181c23;
+  --ink:#e8e3d6; --ink70:rgba(232,227,214,.8); --muted:rgba(232,227,214,.55); --line:#333b47; --line-strong:#465061;
+  --indigo:#7ba3d9; --indigo-soft:rgba(123,163,217,.1); --indigo-mid:rgba(123,163,217,.22);
+  --seal:#e0616e; --seal-soft:rgba(224,97,110,.08); --seal-line:rgba(224,97,110,.32);
+  --brass:#d4ac5c; --brass-soft:rgba(212,172,92,.08); --brass-line:rgba(212,172,92,.3);
+  --ok:#5cbf94; --ok-soft:rgba(92,191,148,.09); --ok-line:rgba(92,191,148,.32);
+  --accent:#7ba3d9; --accent-ink:#14181f; --accent-soft:rgba(123,163,217,.1);
+  --bad:#e0616e; --bad-soft:rgba(224,97,110,.08); --warn:#d4ac5c; --warn-soft:rgba(212,172,92,.1);
+  --code:#0f1318; --fig:#f3ede0; --shadow:0 6px 18px rgba(0,0,0,.35); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#14181f; --paper:#1c2129; --paper2:#181c23;
+  --ink:#e8e3d6; --ink70:rgba(232,227,214,.8); --muted:rgba(232,227,214,.55); --line:#333b47; --line-strong:#465061;
+  --indigo:#7ba3d9; --indigo-soft:rgba(123,163,217,.1); --indigo-mid:rgba(123,163,217,.22);
+  --seal:#e0616e; --seal-soft:rgba(224,97,110,.08); --seal-line:rgba(224,97,110,.32);
+  --brass:#d4ac5c; --brass-soft:rgba(212,172,92,.08); --brass-line:rgba(212,172,92,.3);
+  --ok:#5cbf94; --ok-soft:rgba(92,191,148,.09); --ok-line:rgba(92,191,148,.32);
+  --accent:#7ba3d9; --accent-ink:#14181f; --accent-soft:rgba(123,163,217,.1);
+  --bad:#e0616e; --bad-soft:rgba(224,97,110,.08); --warn:#d4ac5c; --warn-soft:rgba(212,172,92,.1);
+  --code:#0f1318; --fig:#f3ede0; --shadow:0 6px 18px rgba(0,0,0,.35); color-scheme:dark}
+[hidden]{display:none!important}
 *{box-sizing:border-box}
-body{margin:0;background-color:var(--desk);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px;background-attachment:fixed;color:var(--ink);font-family:var(--f-body);line-height:1.7}
-main{max-width:860px;margin:0 auto;padding-block:max(56px,env(safe-area-inset-top,0px)) 72px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-.mark{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:11px;background:var(--ink);color:var(--paper);font-family:var(--f-mono);font-weight:600;font-size:16px}
-h1{font-family:var(--f-display);font-weight:800;font-size:clamp(34px,6vw,48px);line-height:1.15;margin:18px 0 8px;letter-spacing:.01em}
-h1 span{background-image:linear-gradient(transparent 60%,var(--marker) 60%,var(--marker) 92%,transparent 92%)}
-.sub{color:var(--muted);margin:0;max-width:52ch;font-size:16.5px}
-.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:600}
-section{margin-top:44px}
-.subj{display:flex;align-items:baseline;gap:10px;margin:0 0 12px}
-.subj h2{font-size:18px;margin:0}
-.subj .en{font-family:var(--f-mono);font-size:12.5px;color:var(--muted)}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
-.card{position:relative;display:flex;flex-direction:column;gap:6px;background:var(--paper);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:20px 22px 18px;color:inherit;text-decoration:none;transition:transform .15s,border-color .15s}
-.card:hover{transform:translateY(-2px);border-color:var(--accent)}
-.card:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
-.card .top{display:flex;justify-content:space-between;align-items:center}
-.card .tag{font-family:var(--f-mono);font-size:11.5px;font-weight:600;letter-spacing:.06em;color:var(--accent);background:var(--accent-soft);border-radius:5px;padding:2px 8px}
-.card .date{font-family:var(--f-mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
-.card h3{font-family:var(--f-display);font-weight:800;font-size:22px;margin:6px 0 0}
-.card p{margin:0;color:var(--muted);font-size:14.5px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);line-height:1.8;-webkit-font-smoothing:antialiased;transition:background .25s,color .25s}
+.wrap{max-width:1000px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.cover{position:relative;padding-block:max(56px,env(safe-area-inset-top,0px)) 36px;border-bottom:1px solid var(--line)}
+.cover .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.24em;color:var(--brass);font-weight:700;margin-bottom:16px}
+.cover .eyebrow::before{content:"";width:22px;height:1px;background:var(--brass)}
+.cover h1{font-family:var(--f-display);font-weight:900;font-size:clamp(30px,5vw,36px);line-height:1.35;margin:0 0 10px;letter-spacing:.01em;padding-right:100px}
+.cover .sub{color:var(--indigo);font-weight:500;margin:0;max-width:52ch;padding-right:100px}
+.seal{position:absolute;top:calc(max(56px,env(safe-area-inset-top,0px)) + 32px);right:0;width:76px;height:76px;border:2.5px solid var(--seal);border-radius:6px;color:var(--seal);display:flex;align-items:center;justify-content:center;font-family:var(--f-display);font-weight:900;font-size:18px;letter-spacing:.1em;writing-mode:vertical-rl;opacity:.85;transform:rotate(3deg);background:var(--seal-soft)}
+.corner{position:absolute;top:max(14px,env(safe-area-inset-top,0px));right:0}
+main{padding-block:28px 72px}
+.subj{display:flex;align-items:baseline;gap:10px;margin:8px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.subj h2{font-family:var(--f-display);font-size:19px;font-weight:700;margin:0}
+.subj .en{font-size:12px;letter-spacing:.18em;color:var(--brass);font-weight:700;text-transform:uppercase}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.card{display:flex;flex-direction:column;gap:6px;text-decoration:none;color:inherit;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:20px 22px;transition:box-shadow .15s,transform .15s,border-color .15s}
+.card:hover{box-shadow:var(--shadow);transform:translateY(-2px);border-color:var(--brass)}
+.card:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+.card .row{display:flex;justify-content:space-between;align-items:center}
+.card .tag{background:var(--bg);color:var(--brass);padding:1px 10px;border-radius:999px;font-size:12px;border:1px solid var(--line);font-weight:700}
+.card .date{color:var(--seal);font-size:13px;font-weight:500}
+.card h3{font-family:var(--f-display);font-weight:900;font-size:21px;margin:6px 0 0}
+.card p{margin:0;color:var(--ink70);font-size:14.5px}
 .card ul{list-style:none;padding:0;margin:8px 0 0;display:flex;flex-wrap:wrap;gap:6px}
-.card li{font-size:12.5px;border:1px solid var(--line-strong);border-radius:999px;padding:1px 10px;color:var(--muted)}
-.card .go{margin-top:10px;font-weight:700;font-size:14px;color:var(--accent)}
-.empty{display:grid;place-items:center;border:1.5px dashed var(--line-strong);border-radius:16px;padding:20px;color:var(--muted);font-size:14px;text-align:center;min-height:120px}
-footer{margin-top:56px;font-size:13px;color:var(--muted)}
-@media (prefers-reduced-motion:reduce){.card{transition:none}.card:hover{transform:none}}
+.card li{font-size:12.5px;background:var(--indigo-soft);color:var(--indigo);border-radius:999px;padding:1px 10px}
+.card .go{margin-top:10px;font-weight:700;font-size:14px;color:var(--indigo)}
+.card:hover .go{color:var(--seal)}
+.empty{display:grid;place-items:center;border:1.5px dashed var(--line);border-radius:8px;padding:20px;color:var(--muted);font-size:14px;text-align:center;min-height:140px;font-style:italic}
+footer{margin-top:48px;font-size:13px;color:var(--muted);border-left:3px solid var(--line);padding-left:12px}
+.theme{position:relative;flex:0 0 auto}
+.themebtn{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer;display:grid;place-items:center;transition:transform .2s,border-color .2s}
+.themebtn:hover{border-color:var(--seal);transform:rotate(15deg)}
+.themebtn svg{width:17px;height:17px;display:none}
+.themebtn[data-mode="system"] .i-system,.themebtn[data-mode="light"] .i-light,.themebtn[data-mode="dark"] .i-dark{display:block}
+.thmenu{position:absolute;right:0;top:44px;z-index:20;min-width:148px;background:var(--paper);border:1px solid var(--line);border-radius:8px;box-shadow:var(--shadow);padding:6px;display:grid;gap:2px}
+.thmenu button{font:inherit;font-size:14px;text-align:left;border:0;background:transparent;color:var(--ink);border-radius:6px;padding:7px 10px 7px 30px;cursor:pointer;position:relative}
+.thmenu button:hover{background:var(--indigo-soft)}
+.thmenu button[aria-checked="true"]{color:var(--seal);font-weight:700}
+.thmenu button[aria-checked="true"]::before{content:"✓";position:absolute;left:11px}
+@media (max-width:520px){.seal{width:58px;height:58px;font-size:14px}.cover h1,.cover .sub{padding-right:72px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
-<main>
-  <span class="mark" aria-hidden="true">EZ</span>
-  <h1><span>EZexams</span></h1>
-  <p class="sub">考前衝刺用的讀書網站。每科有白話講義、章末選擇題、考古題和模擬試題，作答後可以直接批改。</p>
-
+<header class="wrap cover">
+  <div class="corner"><div class="theme"><button class="themebtn" id="themeBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="themeMenu" title="外觀：跟隨裝置"><svg class="i-system" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><svg class="i-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2 12h2.2M19.8 12H22M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg><svg class="i-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button><div class="thmenu" id="themeMenu" role="menu" hidden><button type="button" role="menuitemradio" data-t="system">跟隨裝置</button><button type="button" role="menuitemradio" data-t="light">淺色</button><button type="button" role="menuitemradio" data-t="dark">深色</button></div></div></div>
+  <div class="eyebrow">EZEXAMS · 考前衝刺</div>
+  <h1>考試衝刺講義集</h1>
+  <p class="sub">白話講義、章末選擇題、考古題和模擬試題。作答後可以直接批改。</p>
+  <div class="seal" aria-hidden="true">總覽</div>
+</header>
+<main class="wrap">
   <section>
     <div class="subj"><h2>作業系統</h2><span class="en">Operating Systems</span></div>
-    <div class="grid">
+    <div class="cards">
       <a class="card" href="operating-systems/midterm/">
-        <div class="top"><span class="tag">MIDTERM</span><span class="date">2026 · 10</span></div>
+        <div class="row"><span class="tag">期中考</span><span class="date">2026．10</span></div>
         <h3>期中考衝刺</h3>
         <p>Silberschatz 9th，Ch1 到 Ch5</p>
         <ul><li>5 章講義</li><li>58 題選擇題</li><li>考古題</li><li>模擬試題 ×2</li></ul>
         <span class="go">開始讀 →</span>
       </a>
-      <div class="empty">下一份考試<br>放在這裡</div>
+      <div class="empty">下一份考試放在這裡</div>
     </div>
   </section>
-
   <footer>作答和分數只存在你這台裝置的瀏覽器裡。</footer>
 </main>
+<script>
+/* ---------- theme: system / light / dark ---------- */
+(function(){
+  const TK="ezexams-theme",root=document.documentElement,host=root.getAttribute("data-theme");
+  const btn=document.getElementById("themeBtn"),menu=document.getElementById("themeMenu");
+  const NAME={system:"跟隨裝置",light:"淺色",dark:"深色"};
+  function apply(m){
+    if(m==="light"||m==="dark")root.setAttribute("data-theme",m);
+    else if(host)root.setAttribute("data-theme",host);else root.removeAttribute("data-theme");
+    btn.dataset.mode=m;btn.title="外觀："+NAME[m];
+    menu.querySelectorAll("[data-t]").forEach(b=>b.setAttribute("aria-checked",String(b.dataset.t===m)));
+  }
+  let mode="system";try{const t=localStorage.getItem(TK);if(t==="light"||t==="dark")mode=t;}catch(e){}
+  apply(mode);
+  function close(){menu.hidden=true;btn.setAttribute("aria-expanded","false");}
+  btn.addEventListener("click",e=>{e.stopPropagation();menu.hidden=!menu.hidden;btn.setAttribute("aria-expanded",String(!menu.hidden));});
+  menu.addEventListener("click",e=>{const b=e.target.closest("[data-t]");if(!b)return;mode=b.dataset.t;apply(mode);try{mode==="system"?localStorage.removeItem(TK):localStorage.setItem(TK,mode);}catch(err){}close();btn.focus();});
+  document.addEventListener("click",e=>{if(!menu.hidden&&!e.target.closest(".theme"))close();});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!menu.hidden){close();btn.focus();}});
+})();
+</script>
 </body>
 </html>

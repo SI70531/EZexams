@@ -266,7 +266,7 @@ body.nograde .nogradenote{display:block}
   </div>
   <h3>進度</h3>
   <table class="prog" id="progTable"></table>
-  <p class="small">分數只存在這台裝置的瀏覽器裡。換裝置或清除瀏覽資料就會歸零。</p>
+  <p class="small" id="storeNote">分數只存在這台裝置的瀏覽器裡。換裝置或清除瀏覽資料就會歸零。</p>
   <h3>每一章怎麼讀</h3>
   <div class="box zh"><span class="lbl">三種框</span><b>綠框</b>是白話中文；<b>藍框</b>是考卷上可以直接抄的英文答案，最優先背；<b>黃框、紅框</b>是常被扣分的地方。標 <span class="star">★★★</span> 的是幾乎一定考的。</div>
   <div class="box tip"><span class="lbl">作答技巧</span><ul>
@@ -1649,6 +1649,7 @@ RMS：period 越短越優先 → P1 (50) 優先於 P2 (80)
 
 </main>
 
+<script src="../../assets/ezsync.js" data-key="os-midterm-v1"></script>
 <script>
 /* ---------- theme: system / light / dark ---------- */
 (function(){
@@ -1833,7 +1834,7 @@ function renderQuiz(ch){
     const a=S.quiz[ch]||{};const n=Object.keys(a).length;const r=Object.keys(a).filter(k=>a[k]===qs[k].a).length;
     sc.innerHTML="";
     const t=document.createElement("span");t.textContent=n<qs.length?("已作答 "+n+" / "+qs.length+"，目前答對 "+r+" 題"):("完成！答對 "+r+" / "+qs.length+(r>=qs.length*0.8?"，觀念很穩。":"，把錯的題目對應段落再讀一次。"));sc.appendChild(t);
-    const rb=document.createElement("button");rb.className="btn";rb.type="button";rb.textContent="重做這章";rb.addEventListener("click",()=>{delete S.quiz[ch];save();renderQuiz(ch);renderTabs(ch);});sc.appendChild(rb);
+    const rb=document.createElement("button");rb.className="btn";rb.type="button";rb.textContent="重做這章";rb.addEventListener("click",()=>{delete S.quiz[ch];S.quizReset=S.quizReset||{};S.quizReset[ch]=Date.now();save();renderQuiz(ch);renderTabs(ch);});sc.appendChild(rb);
     const idx=VIEWS.findIndex(v=>v[0]===ch);const nx=VIEWS[idx+1];
     if(n>=qs.length&&nx&&nx[0]!=="|"){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";nb.textContent="下一章："+nx[1];nb.dataset.go=nx[0];sc.appendChild(nb);}
     else if(n>=qs.length&&ch==="ch5"){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";nb.textContent="開始考古題";nb.dataset.go="past";sc.appendChild(nb);}
@@ -2030,7 +2031,7 @@ document.querySelectorAll(".exam").forEach(ex=>{
     const b=e.currentTarget;
     if(b.dataset.armed!=="1"){b.dataset.armed="1";b.textContent="確定清除作答與分數？";setTimeout(()=>{b.dataset.armed="";b.textContent="清除作答";},4000);return;}
     b.dataset.armed="";b.textContent="清除作答";
-    st.ans={};st.grade={};st.self={};save();
+    st.ans={};st.grade={};st.self={};st.resetAt=Date.now();save();
     qs.forEach(q=>{q.querySelector("textarea").value="";q.querySelector(".self input").checked=false;q.querySelector(".gstat").textContent="";render(q);});
     ex.querySelectorAll("details.qa").forEach(d=>d.open=false);upd();
   });
@@ -2068,6 +2069,7 @@ function renderHome(){
 
 const start=(location.hash||"").slice(1)||S.last||"home";
 show(start);
+
 </script>
 
 </body>

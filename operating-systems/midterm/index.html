@@ -9,9 +9,9 @@
 <body>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;800&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=LXGW+WenKai+TC:wght@400;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
 <style>
-/* Layout: a study case-book. Cool mist page, deep-teal text and tabs, a vermilion seal on each cover, violet labels; pill tabs on top. */
+/* Layout: the study guide as a running OS. Tabs are a Gantt chart of the course, each cover carries a PCB card whose state is your progress, headings are handwritten like the exam. */
 :root{
   --bg:#edf1f0; --paper:#fbfcfb; --paper2:#f3f6f5;
   --ink:#13272b; --ink70:rgba(19,39,43,.76); --muted:rgba(19,39,43,.58); --line:#d2dbd9; --line-strong:#b5c3c0;
@@ -21,33 +21,33 @@
   --ok:#2d7a3e; --ok-soft:rgba(45,122,62,.08); --ok-line:rgba(45,122,62,.3);
   --accent:#17616a; --accent-ink:#ffffff; --accent-soft:rgba(23,97,106,.08);
   --bad:#c4472a; --bad-soft:rgba(196,71,42,.06); --warn:#a26300; --warn-soft:rgba(196,128,20,.09); --warn-line:rgba(196,128,20,.32);
-  --code:#eef3f2; --fig:#fbfcfb; --shadow:0 6px 18px rgba(19,39,43,.10);
-  --f-display:"Noto Serif TC","Songti TC",serif;
+  --code:#eef3f2; --fig:#fbfcfb; --hard:#13272b; --shadow:0 6px 18px rgba(19,39,43,.10);
+  --f-display:"LXGW WenKai TC","Kaiti TC","STKaiti","Noto Sans TC",serif;
   --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
   --f-en:"Source Serif 4","Georgia","Noto Serif TC",serif;
   --f-mono:"JetBrains Mono","Menlo","Consolas","Noto Sans TC",monospace;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0e1819; --paper:#152224; --paper2:#122021;
-  --ink:#e2ece9; --ink70:rgba(226,236,233,.8); --muted:rgba(226,236,233,.55); --line:#253a3c; --line-strong:#36514f;
+  --bg:#1f2b2e; --paper:#283739; --paper2:#243234;
+  --ink:#e2ece9; --ink70:rgba(226,236,233,.8); --muted:rgba(226,236,233,.55); --line:#3c5154; --line-strong:#557073;
   --indigo:#5ec4c6; --indigo-soft:rgba(94,196,198,.09); --indigo-mid:rgba(94,196,198,.2);
   --seal:#ff7d5a; --seal-soft:rgba(255,125,90,.08); --seal-line:rgba(255,125,90,.34);
   --brass:#b9a3e6; --brass-soft:rgba(185,163,230,.08); --brass-line:rgba(185,163,230,.3);
   --ok:#73d48f; --ok-soft:rgba(115,212,143,.09); --ok-line:rgba(115,212,143,.32);
-  --accent:#5ec4c6; --accent-ink:#0e1819; --accent-soft:rgba(94,196,198,.09);
+  --accent:#5ec4c6; --accent-ink:#1a2527; --accent-soft:rgba(94,196,198,.09);
   --bad:#ff7d5a; --bad-soft:rgba(255,125,90,.08); --warn:#f2bd5a; --warn-soft:rgba(242,189,90,.09); --warn-line:rgba(242,189,90,.32);
-  --code:#0a1213; --fig:#eef3f2; --shadow:0 6px 18px rgba(0,0,0,.4);
+  --code:#1a2527; --fig:#eef3f2; --hard:#121c1e; --shadow:0 6px 18px rgba(0,0,0,.4);
   color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0e1819; --paper:#152224; --paper2:#122021;
-  --ink:#e2ece9; --ink70:rgba(226,236,233,.8); --muted:rgba(226,236,233,.55); --line:#253a3c; --line-strong:#36514f;
+  --bg:#1f2b2e; --paper:#283739; --paper2:#243234;
+  --ink:#e2ece9; --ink70:rgba(226,236,233,.8); --muted:rgba(226,236,233,.55); --line:#3c5154; --line-strong:#557073;
   --indigo:#5ec4c6; --indigo-soft:rgba(94,196,198,.09); --indigo-mid:rgba(94,196,198,.2);
   --seal:#ff7d5a; --seal-soft:rgba(255,125,90,.08); --seal-line:rgba(255,125,90,.34);
   --brass:#b9a3e6; --brass-soft:rgba(185,163,230,.08); --brass-line:rgba(185,163,230,.3);
   --ok:#73d48f; --ok-soft:rgba(115,212,143,.09); --ok-line:rgba(115,212,143,.32);
-  --accent:#5ec4c6; --accent-ink:#0e1819; --accent-soft:rgba(94,196,198,.09);
+  --accent:#5ec4c6; --accent-ink:#1a2527; --accent-soft:rgba(94,196,198,.09);
   --bad:#ff7d5a; --bad-soft:rgba(255,125,90,.08); --warn:#f2bd5a; --warn-soft:rgba(242,189,90,.09); --warn-line:rgba(242,189,90,.32);
-  --code:#0a1213; --fig:#eef3f2; --shadow:0 6px 18px rgba(0,0,0,.4);
+  --code:#1a2527; --fig:#eef3f2; --hard:#121c1e; --shadow:0 6px 18px rgba(0,0,0,.4);
   color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.8;-webkit-font-smoothing:antialiased;transition:background .25s,color .25s}
@@ -58,21 +58,30 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .top{position:sticky;top:env(safe-area-inset-top,0px);z-index:6;background:var(--bg);border-bottom:1px solid var(--line);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .top .bar{max-width:1000px;margin:0 auto;display:flex;align-items:center;gap:12px;height:58px}
 .brand{flex:0 0 auto;display:flex;align-items:center;gap:8px;color:var(--ink);text-decoration:none;white-space:nowrap}
-.brand .mk{display:grid;place-items:center;width:30px;height:30px;border:2px solid var(--seal);border-radius:5px;color:var(--seal);font-family:var(--f-display);font-weight:900;font-size:12px;transform:rotate(-3deg);background:var(--seal-soft)}
+.brand .mk{position:relative;display:grid;place-items:center;width:30px;height:30px;margin:0 3px;border-radius:5px;background:var(--ink);color:var(--bg);font-family:var(--f-mono);font-weight:600;font-size:11px;letter-spacing:-.02em}
+.brand .mk::before,.brand .mk::after{content:"";position:absolute;top:5px;bottom:5px;width:3px;background:repeating-linear-gradient(var(--ink) 0 2px,transparent 2px 5px)}
+.brand .mk::before{left:-4px}.brand .mk::after{right:-4px}
 .brand .nm{font-size:13px;color:var(--indigo);font-weight:500}
 a.brand:hover .nm{color:var(--seal)}
 nav.tabs{flex:1 1 auto;min-width:0}
-nav.tabs .row{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;align-items:center;height:58px}
+nav.tabs .row{display:flex;gap:0;overflow-x:auto;scrollbar-width:none;align-items:center;height:58px}
 nav.tabs .row::-webkit-scrollbar{display:none}
-nav.tabs button{flex:0 0 auto;font:inherit;font-size:13px;font-weight:500;border:0;border-radius:99px;padding:5px 11px;background:var(--indigo-soft);color:var(--indigo);cursor:pointer;white-space:nowrap;transition:background .2s,color .2s}
-nav.tabs button:hover{background:var(--indigo-mid)}
-nav.tabs button[aria-current="true"]{background:var(--indigo);color:var(--accent-ink);font-weight:700}
-nav.tabs button .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--ok);margin-left:6px;vertical-align:2px}
-nav.tabs button[aria-current="true"] .dot{background:var(--accent-ink)}
-nav.tabs .sep{flex:0 0 1px;align-self:stretch;background:var(--line);margin:16px 4px}
+nav.tabs button{position:relative;flex:0 0 auto;font:inherit;font-family:var(--f-mono);font-size:12.5px;font-weight:500;border:1.5px solid var(--ink);border-right-width:0;border-radius:0;padding:6px 12px 8px;background:var(--paper);color:var(--ink);cursor:pointer;white-space:nowrap;transition:background .15s,color .15s}
+nav.tabs button:first-child{border-radius:5px 0 0 5px}
+nav.tabs button:last-child{border-right-width:1.5px;border-radius:0 5px 5px 0}
+nav.tabs .sep+button{border-radius:5px 0 0 5px}
+nav.tabs button:has(+.sep){border-right-width:1.5px;border-radius:0 5px 5px 0}
+nav.tabs button::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:transparent}
+nav.tabs button[data-state="running"]::after{background:var(--warn)}
+nav.tabs button[data-state="terminated"]::after{background:var(--ok)}
+nav.tabs button:hover{background:var(--indigo-soft)}
+nav.tabs button[aria-current="true"]{background:var(--indigo);color:var(--accent-ink);font-weight:600}
+
+
+nav.tabs .sep{flex:0 0 10px;align-self:center;height:1.5px;background:var(--ink);margin:0 2px}
 .theme{position:relative;flex:0 0 auto}
-.themebtn{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer;display:grid;place-items:center;transition:transform .2s,border-color .2s}
-.themebtn:hover{border-color:var(--seal);transform:rotate(15deg)}
+.themebtn{width:36px;height:36px;border-radius:8px;border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);cursor:pointer;display:grid;place-items:center;transition:background .15s}
+.themebtn:hover{background:var(--indigo-soft)}
 .themebtn svg{width:17px;height:17px;display:none}
 .themebtn[data-mode="system"] .i-system,.themebtn[data-mode="light"] .i-light,.themebtn[data-mode="dark"] .i-dark{display:block}
 .thmenu{position:absolute;right:0;top:44px;z-index:20;min-width:148px;background:var(--paper);border:1px solid var(--line);border-radius:8px;box-shadow:var(--shadow);padding:6px;display:grid;gap:2px}
@@ -80,38 +89,56 @@ nav.tabs .sep{flex:0 0 1px;align-self:stretch;background:var(--line);margin:16px
 .thmenu button:hover{background:var(--indigo-soft)}
 .thmenu button[aria-checked="true"]{color:var(--seal);font-weight:700}
 .thmenu button[aria-checked="true"]::before{content:"✓";position:absolute;left:11px}
-.totop{position:fixed;right:calc(20px + env(safe-area-inset-right,0px));bottom:calc(22px + env(safe-area-inset-bottom,0px));width:42px;height:42px;border-radius:50%;border:0;background:var(--indigo);color:var(--accent-ink);box-shadow:0 4px 14px rgba(0,0,0,.22);cursor:pointer;font-size:18px;display:grid;place-items:center;opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s,transform .2s,background .2s;z-index:7}
+.totop{position:fixed;right:calc(20px + env(safe-area-inset-right,0px));bottom:calc(22px + env(safe-area-inset-bottom,0px));width:auto;height:38px;padding:0 12px;border-radius:8px;border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);box-shadow:3px 3px 0 var(--hard);cursor:pointer;font-family:var(--f-mono);font-size:12.5px;display:grid;place-items:center;opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s,transform .2s,background .2s;z-index:7}
 .totop.show{opacity:1;visibility:visible}
-.totop:hover{transform:translateY(-3px);background:var(--seal)}
+.totop:hover{transform:translate(1px,1px);box-shadow:2px 2px 0 var(--hard)}
 button:focus-visible,summary:focus-visible,input:focus-visible,.opt:focus-visible,a:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
 
 /* page */
 main{max-width:860px;margin:0 auto;padding-block:8px 96px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .view{display:block;scroll-margin-top:72px}
-.vhead{position:relative;padding:40px 110px 26px 0;margin:0 0 26px;border-bottom:1px solid var(--line)}
-.vhead .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.22em;color:var(--brass);font-weight:700;margin-bottom:12px;text-transform:uppercase}
-.vhead .eyebrow::before{content:"";width:22px;height:1px;background:var(--brass)}
-h1{font-family:var(--f-display);font-weight:900;font-size:32px;line-height:1.35;margin:0 0 8px;text-wrap:balance;letter-spacing:.01em}
-.vhead p{color:var(--indigo);font-weight:500;margin:0;max-width:62ch;font-size:15.5px}
-.seal{position:absolute;top:36px;right:4px;width:72px;min-height:72px;padding:8px 0;border:2.5px solid var(--seal);border-radius:6px;color:var(--seal);display:flex;align-items:center;justify-content:center;font-family:var(--f-display);font-weight:900;font-size:17px;letter-spacing:.12em;writing-mode:vertical-rl;opacity:.85;transform:rotate(3deg);background:var(--seal-soft)}
-h3{font-family:var(--f-display);font-size:21px;font-weight:700;margin:42px 0 12px;color:var(--ink);text-wrap:balance;line-height:1.45;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.vhead{position:relative;display:grid;grid-template-columns:1fr auto;gap:8px 28px;align-items:start;padding:40px 0 26px;margin:0 0 26px;border-bottom:1.5px solid var(--ink)}
+.vhead>:not(.pcb){grid-column:1}
+.vhead .pcb{grid-column:2;grid-row:1/span 3}
+.vhead .eyebrow{display:inline-flex;align-items:center;gap:2px;font-family:var(--f-mono);font-size:12.5px;color:var(--brass);font-weight:600;margin-bottom:6px}
+.vhead .eyebrow::before{content:"$ ";white-space:pre;color:var(--muted)}
+.vhead .eyebrow::after{content:"";display:inline-block;width:.6em;height:1.1em;margin-left:4px;background:var(--brass);animation:blink 1.1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+
+h1{font-family:var(--f-display);font-weight:700;font-size:36px;line-height:1.3;margin:0 0 8px;text-wrap:balance}
+.vhead p{color:var(--ink70);margin:0;max-width:60ch;font-size:15.5px}
+.pcb{width:184px;font-family:var(--f-mono);font-size:12px;line-height:1.5;border:1.5px solid var(--ink);border-radius:6px;background:var(--paper);box-shadow:4px 4px 0 var(--hard);overflow:hidden}
+.pcb .ph{display:flex;justify-content:space-between;background:var(--ink);color:var(--bg);padding:4px 10px;font-weight:600;letter-spacing:.04em}
+.pcb .pr{display:flex;justify-content:space-between;gap:10px;padding:5px 10px;border-top:1px dashed var(--line-strong)}
+.pcb .pr:first-of-type{border-top:0}
+.pcb .pr span{color:var(--muted)}
+.pcb .pr b{font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.pcb .st{display:inline-flex;align-items:center;gap:6px}
+.pcb .st::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.pcb .st.running{color:var(--warn)}.pcb .st.running::before{background:var(--warn);animation:blink 1.4s steps(1) infinite}
+.pcb .st.terminated{color:var(--ok)}.pcb .st.terminated::before{background:var(--ok)}
+.pcb .st.ready{color:var(--indigo)}.pcb .st.ready::before{background:var(--indigo)}
+.pcb .bar{height:5px;margin:2px 10px 9px;border:1px solid var(--ink);border-radius:2px;overflow:hidden}
+.pcb .bar i{display:block;height:100%;background:var(--indigo)}
+h3{display:flex;align-items:baseline;gap:12px;font-family:var(--f-display);font-size:24px;font-weight:700;margin:44px 0 12px;color:var(--ink);line-height:1.4}
+h3::after{content:"";flex:1 1 40px;min-width:40px;border-bottom:2px dotted var(--line-strong);transform:translateY(-6px)}
 h4{font-size:16.5px;margin:22px 0 6px;color:var(--ink)}
 p{margin:6px 0 12px}
 ul,ol{padding-left:22px;margin:6px 0 14px}
 li{margin:3px 0}
-li::marker{color:var(--brass)}
+li::marker{color:var(--indigo)}
 b{font-weight:700}
 .star{color:var(--warn);letter-spacing:-.05em}
 .k{color:var(--seal);font-weight:700}
 .small{font-size:13.5px;color:var(--muted)}
 .mono{font-family:var(--f-mono);font-size:.9em}
-.box{border-radius:8px;padding:14px 18px;margin:14px 0;background:var(--paper);border:1px solid var(--line)}
-.box .lbl{display:block;font-size:13.5px;font-weight:700;margin-bottom:4px;letter-spacing:.02em}
+.box{border-radius:8px;overflow:hidden;padding:14px 18px;margin:14px 0;background:var(--paper);border:1px solid var(--line)}
+.box .lbl{display:table;font-family:var(--f-mono);font-size:11.5px;font-weight:600;margin:-14px 0 8px -18px;padding:3px 10px;border-radius:0 0 6px 0;letter-spacing:.02em}
 .box.en{background:var(--indigo-soft);border-color:var(--indigo-mid);font-family:var(--f-en);font-size:17px;line-height:1.7}
-.box.en .lbl{font-family:var(--f-body);color:var(--indigo)}
-.box.zh{background:var(--brass-soft);border-color:var(--brass-line)}.box.zh .lbl{color:var(--brass)}
-.box.warn{background:var(--seal-soft);border-color:var(--seal-line)}.box.warn .lbl{color:var(--seal)}
-.box.tip{background:var(--warn-soft);border-color:var(--warn-line)}.box.tip .lbl{color:var(--warn)}
+.box.en .lbl{background:var(--indigo);color:var(--accent-ink)}
+.box.zh{background:var(--brass-soft);border-color:var(--brass-line)}.box.zh .lbl{background:var(--brass);color:var(--paper)}
+.box.warn{background:var(--seal-soft);border-color:var(--seal-line)}.box.warn .lbl{background:var(--seal);color:var(--paper)}
+.box.tip{background:var(--warn-soft);border-color:var(--warn-line)}.box.tip .lbl{background:var(--warn);color:var(--paper)}
 .calc{font-family:var(--f-mono);font-size:13.5px;line-height:1.75;background:var(--code);border:1px solid var(--line);border-radius:6px;padding:12px 16px;margin:12px 0;white-space:pre;overflow-x:auto}
 table{border-collapse:collapse;margin:14px 0;font-size:14.5px;display:block;overflow-x:auto;max-width:100%;font-variant-numeric:tabular-nums}
 th,td{border:1px solid var(--line);padding:7px 11px;text-align:center;vertical-align:top;background:var(--paper)}
@@ -130,7 +157,7 @@ td.l,th.l{text-align:left}
 .gt{position:relative;height:18px;font-size:12px;font-family:var(--f-mono)}
 .gt b{position:absolute;transform:translateX(-50%);font-weight:400}
 .q{font-weight:700;margin-top:26px;font-size:16.5px}
-.pts{display:inline-block;font-family:var(--f-display);font-size:12.5px;font-weight:700;color:var(--seal);border:1px solid var(--seal);border-radius:20px;padding:0 9px;margin-right:8px;vertical-align:2px}
+.pts{display:inline-block;font-family:var(--f-mono);font-size:12px;font-weight:600;color:var(--accent-ink);background:var(--seal);border-radius:4px;padding:1px 7px;margin-right:8px;vertical-align:2px}
 
 /* exam answers */
 .qa{border:1px solid var(--line);background:var(--paper);border-radius:8px;margin:8px 0 6px;overflow:hidden}
@@ -174,10 +201,10 @@ body.nograde .nogradenote{display:block}
 
 /* quiz */
 .quiz{margin-top:48px;padding-top:6px}
-.quiz h2{font-family:var(--f-display);font-size:22px;font-weight:900;margin:0 0 4px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.quiz h2{font-family:var(--f-display);font-size:26px;font-weight:700;margin:0 0 4px;padding-bottom:8px;border-bottom:1px solid var(--line)}
 .qitem{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin:14px 0;scroll-margin-top:80px}
 .qitem .stem{font-weight:700;margin-bottom:10px;line-height:1.65}
-.qitem .num{font-family:var(--f-display);font-weight:900;color:var(--seal);margin-right:6px}
+.qitem .num{font-family:var(--f-mono);font-weight:600;color:var(--seal);margin-right:6px}
 .opts{display:grid;gap:8px}
 .opt{text-align:left;font:inherit;font-size:15px;line-height:1.55;border:1px solid var(--line);background:var(--paper2);color:var(--ink);border-radius:8px;padding:9px 12px;cursor:pointer;display:flex;gap:10px;align-items:flex-start;transition:border-color .15s,background .15s}
 .opt .ab{flex:0 0 auto;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;border:1px solid var(--line-strong);font-family:var(--f-display);font-weight:700;font-size:12px;color:var(--indigo);margin-top:-1px}
@@ -193,21 +220,22 @@ body.nograde .nogradenote{display:block}
 /* home */
 .plan{display:grid;gap:10px;margin:16px 0}
 .day{position:relative;display:grid;grid-template-columns:60px 1fr;gap:14px;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:14px 18px}
-.day .d{font-family:var(--f-display);font-weight:900;font-size:15px;color:var(--seal);padding-top:1px}
+.day .d{font-family:var(--f-mono);font-weight:600;font-size:13px;color:var(--indigo);padding-top:2px}
 .day .t{min-width:0;color:var(--ink70)}
 .day .t button{margin:6px 6px 0 0;font-size:12.5px;padding:2px 12px;border-radius:99px;background:var(--indigo-soft);border-color:transparent}
 .prog{width:100%;display:table}
 .prog td.l{width:55%}
-.next{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--paper);border:1px solid var(--brass-line);border-left:4px solid var(--brass);border-radius:8px;padding:14px 18px;margin:0 0 6px}
-.next b{font-family:var(--f-display);font-size:16px}
+.next{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--paper);border:1.5px solid var(--ink);box-shadow:4px 4px 0 var(--hard);border-radius:8px;padding:14px 18px;margin:0 0 6px}
+.next b{font-family:var(--f-display);font-size:18px}
+.next::before{content:"next >";font-family:var(--f-mono);font-size:12px;color:var(--muted)}
 .next .btn.primary{margin-left:auto!important}
 .cheat .two>div{border:1px solid var(--line);border-radius:8px;padding:6px 14px;background:var(--paper)}
 
 @media (max-width:640px){
-  .vhead{padding:28px 78px 20px 0}
-  .seal{width:56px;min-height:56px;font-size:14px;top:26px;right:0}
-  h1{font-size:25px}
-  h3{font-size:19px}
+  .vhead{grid-template-columns:1fr;padding:26px 0 20px}
+  .vhead .pcb{order:9;grid-column:1;grid-row:auto;width:100%;max-width:260px;margin-top:8px}
+  h1{font-size:29px}
+  h3{font-size:21px}
   .day{grid-template-columns:1fr;gap:2px}
   .box.en{font-size:16px}
   .brand .nm{display:none}
@@ -217,15 +245,15 @@ body.nograde .nogradenote{display:block}
   .examtools{position:static}
   .qitem{padding:14px 14px}
 }
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 
-<header class="top"><div class="bar"><a class="brand" href="../../" title="回到所有科目"><span class="mk">作業</span><span class="nm">← 所有科目</span></a><nav class="tabs" aria-label="章節"><div class="row" id="tabs"></div></nav><div class="theme"><button class="themebtn" id="themeBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="themeMenu" title="外觀：跟隨裝置"><svg class="i-system" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><svg class="i-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2 12h2.2M19.8 12H22M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg><svg class="i-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button><div class="thmenu" id="themeMenu" role="menu" hidden><button type="button" role="menuitemradio" data-t="system">跟隨裝置</button><button type="button" role="menuitemradio" data-t="light">淺色</button><button type="button" role="menuitemradio" data-t="dark">深色</button></div></div></div></header>
+<header class="top"><div class="bar"><a class="brand" href="../../" title="回到所有科目"><span class="mk">OS</span><span class="nm">← 所有科目</span></a><nav class="tabs" aria-label="章節"><div class="row" id="tabs"></div></nav><div class="theme"><button class="themebtn" id="themeBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="themeMenu" title="外觀：跟隨裝置"><svg class="i-system" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><svg class="i-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2 12h2.2M19.8 12H22M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg><svg class="i-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button><div class="thmenu" id="themeMenu" role="menu" hidden><button type="button" role="menuitemradio" data-t="system">跟隨裝置</button><button type="button" role="menuitemradio" data-t="light">淺色</button><button type="button" role="menuitemradio" data-t="dark">深色</button></div></div></div></header>
 <button class="totop" id="toTop" type="button" aria-label="回到頂端">↑</button>
 <main>
 
 <section class="view" id="home">
-  <div class="vhead"><div class="seal" aria-hidden="true">期中衝刺</div><div class="eyebrow">Operating Systems · Midterm</div><h1>作業系統期中衝刺</h1>
+  <div class="vhead"><div class="pcb" data-pcb="home" role="img"></div><div class="eyebrow">Operating Systems · Midterm</div><h1>作業系統期中衝刺</h1>
   <p>考試是手寫英文作答，沒有選擇題。這裡的選擇題只是用來快速檢查觀念，真正要練的是後面的考古題和模擬試題。</p></div>
   <div class="next" id="nextStep"></div>
   <h3>5 天讀書計畫</h3>
@@ -247,7 +275,7 @@ body.nograde .nogradenote{display:block}
   <li>畫圖題每條箭頭都要標英文名稱。不會的題目也寫關鍵字，空白一定 0 分。</li></ul></div>
 </section>
 
-<section class="view" id="ch1" hidden><div class="vhead"><div class="seal" aria-hidden="true">第一章</div><div class="eyebrow">Chapter 1</div><h1>Ch1 Introduction</h1><p>operating system（作業系統）是什麼、interrupt（中斷）、DMA、儲存階層、dual mode。讀完後做最下面的選擇題。</p></div>
+<section class="view" id="ch1" hidden><div class="vhead"><div class="pcb" data-pcb="ch1" role="img"></div><div class="eyebrow">Chapter 1</div><h1>Ch1 Introduction</h1><p>operating system（作業系統）是什麼、interrupt（中斷）、DMA、儲存階層、dual mode。讀完後做最下面的選擇題。</p></div>
 
 
 <h3>1.1 OS 是什麼</h3>
@@ -338,7 +366,7 @@ A timer is used to prevent an infinite loop / a process hogging resources: it ge
 <li>Kernel data structures：linked list（單向、雙向、環狀）、binary search tree（一般 O(n)，平衡樹 O(lg n)）、hash map、bitmap。</li>
 </ul>
 <div class="quiz" data-quiz="ch1"></div></section>
-<section class="view" id="ch2" hidden><div class="vhead"><div class="seal" aria-hidden="true">第二章</div><div class="eyebrow">Chapter 2</div><h1>Ch2 Process（行程） Concept</h1><p>Process state diagram（狀態圖）、PCB、三種 scheduler（排程器）、IPC。讀完後做最下面的選擇題。</p></div>
+<section class="view" id="ch2" hidden><div class="vhead"><div class="pcb" data-pcb="ch2" role="img"></div><div class="eyebrow">Chapter 2</div><h1>Ch2 Process（行程） Concept</h1><p>Process state diagram（狀態圖）、PCB、三種 scheduler（排程器）、IPC。讀完後做最下面的選擇題。</p></div>
 
 
 <h3>2.1 Process 是什麼、memory（記憶體）長怎樣</h3>
@@ -526,7 +554,7 @@ Consumer:  while (in == out) ;                       // 空了就等
 <tr><td>Buffering</td><td class="l">Zero capacity（sender 一定要等 receiver）；Bounded capacity（n 個，滿了才等）；Unbounded capacity（sender 永遠不用等）。</td></tr>
 </table>
 <div class="quiz" data-quiz="ch2"></div></section>
-<section class="view" id="ch3" hidden><div class="vhead"><div class="seal" aria-hidden="true">第三章</div><div class="eyebrow">Chapter 3</div><h1>Ch3 Process（行程） Scheduling（排班）</h1><p>scheduling 標準、五種 algorithm（演算法）、Gantt chart 計算、MLQ／MLFQ、real-time。讀完後做最下面的選擇題。</p></div>
+<section class="view" id="ch3" hidden><div class="vhead"><div class="pcb" data-pcb="ch3" role="img"></div><div class="eyebrow">Chapter 3</div><h1>Ch3 Process（行程） Scheduling（排班）</h1><p>scheduling 標準、五種 algorithm（演算法）、Gantt chart 計算、MLQ／MLFQ、real-time。讀完後做最下面的選擇題。</p></div>
 
 
 <h3>3.1 基本概念</h3>
@@ -673,7 +701,7 @@ t(n) = 第 n 次實際 burst 長度；τ(n+1) = 下一次的預測值
      EDF：P1 0–25，P2 25–60（deadline 80 比 P1 第二次的 100 早）→ 準時；P1 60–85 ≤ 100 → 準時</div>
 <p class="small">補充（課本）：RMS 保證可排的上限是 N(2<sup>1/N</sup> − 1)，兩個 process 時約 83%。94% &gt; 83%，所以不保證。Proportional share 例：T=100，A 50、B 15、C 20 已用 85 份，D 要 30 份 → 拒絕。</p>
 <div class="quiz" data-quiz="ch3"></div></section>
-<section class="view" id="ch4" hidden><div class="vhead"><div class="seal" aria-hidden="true">第四章</div><div class="eyebrow">Chapter 4</div><h1>Ch4 Multithreaded Programming</h1><p>Thread（執行緒） 好處、parallelism（平行）、Amdahl、四種 thread model。讀完後做最下面的選擇題。</p></div>
+<section class="view" id="ch4" hidden><div class="vhead"><div class="pcb" data-pcb="ch4" role="img"></div><div class="eyebrow">Chapter 4</div><h1>Ch4 Multithreaded Programming</h1><p>Thread（執行緒） 好處、parallelism（平行）、Amdahl、四種 thread model。讀完後做最下面的選擇題。</p></div>
 
 
 <h3>4.1 Thread 是什麼、為什麼要用</h3>
@@ -774,7 +802,7 @@ N → ∞ 時，speedup → 1 / S   （serial 部分決定上限）</div>
 <tr><td>Grand Central Dispatch (GCD)</td><td class="l">Apple (Mac OS X, iOS)。Block 寫成 <span class="mono">^{ }</span>，放進 dispatch queue。兩種 queue：<b>serial</b>（FIFO 一次一個，main queue）、<b>concurrent</b>（FIFO 但一次可取多個；系統有 low/default/high 三條）。</td></tr>
 </table>
 <div class="quiz" data-quiz="ch4"></div></section>
-<section class="view" id="ch5" hidden><div class="vhead"><div class="seal" aria-hidden="true">第五章</div><div class="eyebrow">Chapter 5</div><h1>Ch5 Deadlocks（死結）</h1><p>四個必要條件、RAG、prevention（預防）、safe state（安全狀態）、Banker's、detection（偵測）。讀完後做最下面的選擇題。</p></div>
+<section class="view" id="ch5" hidden><div class="vhead"><div class="pcb" data-pcb="ch5" role="img"></div><div class="eyebrow">Chapter 5</div><h1>Ch5 Deadlocks（死結）</h1><p>四個必要條件、RAG、prevention（預防）、safe state（安全狀態）、Banker's、detection（偵測）。讀完後做最下面的選擇題。</p></div>
 
 
 <h3>5.1 Deadlock 是什麼</h3>
@@ -976,7 +1004,7 @@ P1 need 2 ≤ 2 → 4；P0 need 5 > 4、P2 need 6 > 4 → 卡住 → unsafe</div
 </div>
 </div>
 <div class="quiz" data-quiz="ch5"></div></section>
-<section class="view exam" id="past" data-exam="past" hidden><div class="vhead"><div class="seal" aria-hidden="true">考古題</div><div class="eyebrow">去年期中考</div><h1>去年考古題</h1><p>每題直接在框裡作答（中英文都可以），按「批改這題」或上方「批改全部」，網站會給分數和評語。參考答案和老師公布的一致，有些多補一句讓答案更完整。</p></div><div class="examtools"><span class="score"></span><span class="timer"></span><button class="btn tbtn" type="button">開始 60 分鐘計時</button><button class="btn primary gradeall" type="button">批改全部</button><button class="btn reset" type="button">清除作答</button><span class="gmsg"></span></div><p class="box tip nogradenote">這裡用關鍵字比對自動批改：有寫到必要的英文術語、中文關鍵字或數字就給分。分數僅供參考，寫完一定要展開參考答案對照。</p>
+<section class="view exam" id="past" data-exam="past" hidden><div class="vhead"><div class="pcb" data-pcb="past" role="img"></div><div class="eyebrow">去年期中考</div><h1>去年考古題</h1><p>每題直接在框裡作答（中英文都可以），按「批改這題」或上方「批改全部」，網站會給分數和評語。參考答案和老師公布的一致，有些多補一句讓答案更完整。</p></div><div class="examtools"><span class="score"></span><span class="timer"></span><button class="btn tbtn" type="button">開始 60 分鐘計時</button><button class="btn primary gradeall" type="button">批改全部</button><button class="btn reset" type="button">清除作答</button><span class="gmsg"></span></div><p class="box tip nogradenote">這裡用關鍵字比對自動批改：有寫到必要的英文術語、中文關鍵字或數字就給分。分數僅供參考，寫完一定要展開參考答案對照。</p>
 
 
 <h3>去年考卷結構</h3>
@@ -1183,7 +1211,7 @@ speedup = 1 / ( 0.4 + 0.6/4 )
 </div>
 
 </div></details><label class="self" for="past-14-c"><input type="checkbox" id="past-14-c"> 我答對了（15 分）</label></div></section>
-<section class="view exam" id="mock-a" data-exam="mock-a" hidden><div class="vhead"><div class="seal" aria-hidden="true">模擬甲</div><div class="eyebrow">Mock Exam · 100 分</div><h1>模擬試題 A</h1><p>格式照去年：簡答 35%（7 題）＋申論 65%。建議開計時器 60 分鐘，全部寫完再按「批改全部」。</p></div><div class="examtools"><span class="score"></span><span class="timer"></span><button class="btn tbtn" type="button">開始 60 分鐘計時</button><button class="btn primary gradeall" type="button">批改全部</button><button class="btn reset" type="button">清除作答</button><span class="gmsg"></span></div><p class="box tip nogradenote">這裡用關鍵字比對自動批改：有寫到必要的英文術語、中文關鍵字或數字就給分。分數僅供參考，寫完一定要展開參考答案對照。</p>
+<section class="view exam" id="mock-a" data-exam="mock-a" hidden><div class="vhead"><div class="pcb" data-pcb="mock-a" role="img"></div><div class="eyebrow">Mock Exam · 100 分</div><h1>模擬試題 A</h1><p>格式照去年：簡答 35%（7 題）＋申論 65%。建議開計時器 60 分鐘，全部寫完再按「批改全部」。</p></div><div class="examtools"><span class="score"></span><span class="timer"></span><button class="btn tbtn" type="button">開始 60 分鐘計時</button><button class="btn primary gradeall" type="button">批改全部</button><button class="btn reset" type="button">清除作答</button><span class="gmsg"></span></div><p class="box tip nogradenote">這裡用關鍵字比對自動批改：有寫到必要的英文術語、中文關鍵字或數字就給分。分數僅供參考，寫完一定要展開參考答案對照。</p>
 <h3>I. Short Answer（35%，每題 5%）</h3>
 
 <div class="exq" id="mock-a-1" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q1</span>Please list three advantages of multiprocessor systems.</p></div><label class="small" for="mock-a-1-a">你的答案</label><textarea id="mock-a-1-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
@@ -1323,7 +1351,7 @@ N→∞：1 / S = 1 / 0.3 ≈ 3.33</div>
 </div>
 
 </div></details><label class="self" for="mock-a-15-c"><input type="checkbox" id="mock-a-15-c"> 我答對了（15 分）</label></div></section>
-<section class="view exam" id="mock-b" data-exam="mock-b" hidden><div class="vhead"><div class="seal" aria-hidden="true">模擬乙</div><div class="eyebrow">Mock Exam · 100 分</div><h1>模擬試題 B</h1><p>格式照去年：簡答 35%（7 題）＋申論 65%。建議開計時器 60 分鐘，全部寫完再按「批改全部」。</p></div><div class="examtools"><span class="score"></span><span class="timer"></span><button class="btn tbtn" type="button">開始 60 分鐘計時</button><button class="btn primary gradeall" type="button">批改全部</button><button class="btn reset" type="button">清除作答</button><span class="gmsg"></span></div><p class="box tip nogradenote">這裡用關鍵字比對自動批改：有寫到必要的英文術語、中文關鍵字或數字就給分。分數僅供參考，寫完一定要展開參考答案對照。</p>
+<section class="view exam" id="mock-b" data-exam="mock-b" hidden><div class="vhead"><div class="pcb" data-pcb="mock-b" role="img"></div><div class="eyebrow">Mock Exam · 100 分</div><h1>模擬試題 B</h1><p>格式照去年：簡答 35%（7 題）＋申論 65%。建議開計時器 60 分鐘，全部寫完再按「批改全部」。</p></div><div class="examtools"><span class="score"></span><span class="timer"></span><button class="btn tbtn" type="button">開始 60 分鐘計時</button><button class="btn primary gradeall" type="button">批改全部</button><button class="btn reset" type="button">清除作答</button><span class="gmsg"></span></div><p class="box tip nogradenote">這裡用關鍵字比對自動批改：有寫到必要的英文術語、中文關鍵字或數字就給分。分數僅供參考，寫完一定要展開參考答案對照。</p>
 <h3>I. Short Answer（35%，每題 5%）</h3>
 
 <div class="exq" id="mock-b-1" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q1</span>Please list the five states of a process.</p></div><label class="small" for="mock-b-1-a">你的答案</label><textarea id="mock-b-1-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
@@ -1460,7 +1488,7 @@ RMS：period 越短越優先 → P1 (50) 優先於 P2 (80)
     Unsafe → No, P1 must wait.</div>
 </div>
 </div></details><label class="self" for="mock-b-15-c"><input type="checkbox" id="mock-b-15-c"> 我答對了（15 分）</label></div></section>
-<section class="view" id="review" hidden><div class="vhead"><div class="seal" aria-hidden="true">總複習</div><div class="eyebrow">考前一天</div><h1>總複習</h1><p>速記頁、必畫的 8 張圖、額外的預測題。</p></div><h3>考前 10 分鐘速記</h3><div class="cheat">
+<section class="view" id="review" hidden><div class="vhead"><div class="pcb" data-pcb="review" role="img"></div><div class="eyebrow">考前一天</div><h1>總複習</h1><p>速記頁、必畫的 8 張圖、額外的預測題。</p></div><h3>考前 10 分鐘速記</h3><div class="cheat">
 
 <div class="two">
 <div>
@@ -1725,13 +1753,32 @@ function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 
 const tabs=document.getElementById("tabs");
 function quizDone(ch){const a=S.quiz[ch]||{};return QUIZ[ch]&&Object.keys(a).length>=QUIZ[ch].length;}
+const PID={home:0,ch1:1,ch2:2,ch3:3,ch4:4,ch5:5,past:6,"mock-a":7,"mock-b":8,review:9};
+function procState(id){
+  if(QUIZ[id]){const n=QUIZ[id].length,k=Object.keys(S.quiz[id]||{}).length;return {state:k===0?"new":k<n?"running":"terminated",done:k,n};}
+  if(id==="past"||id.startsWith("mock")){const e=(typeof EX!=="undefined"&&EX[id])||{};const n=e.n||0,k=e.graded||0;return {state:k===0?"new":k<n?"running":"terminated",done:k,n};}
+  if(id==="home"){const c=["ch1","ch2","ch3","ch4","ch5"].filter(c=>quizDone(c)).length;return {state:"running",done:c,n:5};}
+  return {state:"ready",done:0,n:0};
+}
+function refreshPCB(){
+  document.querySelectorAll(".pcb[data-pcb]").forEach(el=>{
+    const id=el.dataset.pcb,p=procState(id),pct=p.n?Math.round(p.done/p.n*100):0;
+    const lab=id==="home"?"chapters":QUIZ[id]?"quiz":p.n?"graded":"progress";
+    el.innerHTML='<div class="ph"><span>PCB</span><span>pid '+String(PID[id]??0).padStart(2,"0")+'</span></div>'+
+      '<div class="pr"><span>state</span><b class="st '+p.state+'">'+p.state+'</b></div>'+
+      '<div class="pr"><span>'+lab+'</span><b>'+(p.n?p.done+" / "+p.n:"—")+'</b></div>'+
+      '<div class="bar"><i style="width:'+pct+'%"></i></div>';
+    el.setAttribute("aria-label","進度："+p.state+(p.n?"，"+p.done+"/"+p.n:""));
+  });
+}
+document.addEventListener("click",e=>{if(e.target.closest(".opt"))setTimeout(()=>{refreshPCB();renderTabs(S.last);},0);});
 function renderTabs(cur){
   tabs.innerHTML="";
   VIEWS.forEach(v=>{
     if(v[0]==="|"){const s=document.createElement("span");s.className="sep";tabs.appendChild(s);return;}
     const b=document.createElement("button");b.textContent=v[1];b.dataset.go=v[0];
     if(v[0]===cur)b.setAttribute("aria-current","true");
-    if(quizDone(v[0])){const d=document.createElement("span");d.className="dot";d.title="選擇題已完成";b.appendChild(d);}
+    const ps=procState(v[0]);b.dataset.state=ps.state;b.title=v[1]+"："+ps.state;
     tabs.appendChild(b);
   });
 }
@@ -1743,6 +1790,7 @@ function show(id,scroll){
   if(scroll!==false)window.scrollTo(0,0);
   S.last=id;save();
   if(id==="home")renderHome();
+  refreshPCB();
   try{history.replaceState(null,"","#"+id);}catch(e){}
 }
 document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b){show(b.dataset.go);}});
@@ -1922,7 +1970,8 @@ document.querySelectorAll(".exam").forEach(ex=>{
     let got=0,graded=0;
     qs.forEach(q=>{const g=st.grade[q.id];if(g){got+=+g.score||0;graded++;}});
     score.textContent="得分 "+(Math.round(got*10)/10)+" / "+total+" 分"+(graded?"（已批改 "+graded+"/"+qs.length+" 題）":"");
-    EX[id]={total,got,graded};
+    EX[id]=Object.assign(EX[id]||{},{total,got,graded,n:qs.length});
+    if(typeof refreshPCB==="function"){refreshPCB();renderTabs(S.last);}
   }
   function kwGrade(list){
     list.forEach(it=>{const r=keywordGrade(it.id,it.pts,it.ans);if(!r)return;r.ans=it.ans;st.grade[it.id]=r;render(document.getElementById(it.id));});

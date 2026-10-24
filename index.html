@@ -10,40 +10,42 @@
 <style>
 /* Layout: case-book cover with a red seal, then one shelf of exam cards per subject. Same tokens as the subject pages. */
 :root{
-  --bg:#f3ede0; --paper:#fffdf8; --paper2:#fbf8f1;
-  --ink:#16233b; --ink70:rgba(22,35,59,.74); --muted:rgba(22,35,59,.58); --line:#ddd3bf; --line-strong:#cbbfa5;
-  --indigo:#2c4a76; --indigo-soft:rgba(44,74,118,.08); --indigo-mid:rgba(44,74,118,.18);
-  --seal:#9c2b3a; --seal-soft:rgba(156,43,58,.06); --seal-line:rgba(156,43,58,.28);
-  --brass:#8f6d22; --brass-soft:rgba(169,131,47,.08); --brass-line:rgba(169,131,47,.3);
-  --ok:#2f7d5c; --ok-soft:rgba(47,125,92,.08); --ok-line:rgba(47,125,92,.3);
-  --accent:#2c4a76; --accent-ink:#ffffff; --accent-soft:rgba(44,74,118,.08);
-  --bad:#9c2b3a; --bad-soft:rgba(156,43,58,.06); --warn:#8f6d22; --warn-soft:rgba(169,131,47,.1);
-  --code:#f6f1e6; --fig:#fffdf8; --shadow:0 6px 18px rgba(22,35,59,.10);
+  --bg:#edf1f0; --paper:#fbfcfb; --paper2:#f3f6f5;
+  --ink:#13272b; --ink70:rgba(19,39,43,.76); --muted:rgba(19,39,43,.58); --line:#d2dbd9; --line-strong:#b5c3c0;
+  --indigo:#17616a; --indigo-soft:rgba(23,97,106,.08); --indigo-mid:rgba(23,97,106,.18);
+  --seal:#c4472a; --seal-soft:rgba(196,71,42,.06); --seal-line:rgba(196,71,42,.3);
+  --brass:#64489c; --brass-soft:rgba(100,72,156,.07); --brass-line:rgba(100,72,156,.28);
+  --ok:#2d7a3e; --ok-soft:rgba(45,122,62,.08); --ok-line:rgba(45,122,62,.3);
+  --accent:#17616a; --accent-ink:#ffffff; --accent-soft:rgba(23,97,106,.08);
+  --bad:#c4472a; --bad-soft:rgba(196,71,42,.06); --warn:#a26300; --warn-soft:rgba(196,128,20,.09); --warn-line:rgba(196,128,20,.32);
+  --code:#eef3f2; --fig:#fbfcfb; --shadow:0 6px 18px rgba(19,39,43,.10);
   --f-display:"Noto Serif TC","Songti TC",serif;
   --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
   --f-en:"Source Serif 4","Georgia","Noto Serif TC",serif;
   --f-mono:"JetBrains Mono","Menlo","Consolas","Noto Sans TC",monospace;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#14181f; --paper:#1c2129; --paper2:#181c23;
-  --ink:#e8e3d6; --ink70:rgba(232,227,214,.8); --muted:rgba(232,227,214,.55); --line:#333b47; --line-strong:#465061;
-  --indigo:#7ba3d9; --indigo-soft:rgba(123,163,217,.1); --indigo-mid:rgba(123,163,217,.22);
-  --seal:#e0616e; --seal-soft:rgba(224,97,110,.08); --seal-line:rgba(224,97,110,.32);
-  --brass:#d4ac5c; --brass-soft:rgba(212,172,92,.08); --brass-line:rgba(212,172,92,.3);
-  --ok:#5cbf94; --ok-soft:rgba(92,191,148,.09); --ok-line:rgba(92,191,148,.32);
-  --accent:#7ba3d9; --accent-ink:#14181f; --accent-soft:rgba(123,163,217,.1);
-  --bad:#e0616e; --bad-soft:rgba(224,97,110,.08); --warn:#d4ac5c; --warn-soft:rgba(212,172,92,.1);
-  --code:#0f1318; --fig:#f3ede0; --shadow:0 6px 18px rgba(0,0,0,.35); color-scheme:dark}}
+  --bg:#0e1819; --paper:#152224; --paper2:#122021;
+  --ink:#e2ece9; --ink70:rgba(226,236,233,.8); --muted:rgba(226,236,233,.55); --line:#253a3c; --line-strong:#36514f;
+  --indigo:#5ec4c6; --indigo-soft:rgba(94,196,198,.09); --indigo-mid:rgba(94,196,198,.2);
+  --seal:#ff7d5a; --seal-soft:rgba(255,125,90,.08); --seal-line:rgba(255,125,90,.34);
+  --brass:#b9a3e6; --brass-soft:rgba(185,163,230,.08); --brass-line:rgba(185,163,230,.3);
+  --ok:#73d48f; --ok-soft:rgba(115,212,143,.09); --ok-line:rgba(115,212,143,.32);
+  --accent:#5ec4c6; --accent-ink:#0e1819; --accent-soft:rgba(94,196,198,.09);
+  --bad:#ff7d5a; --bad-soft:rgba(255,125,90,.08); --warn:#f2bd5a; --warn-soft:rgba(242,189,90,.09); --warn-line:rgba(242,189,90,.32);
+  --code:#0a1213; --fig:#eef3f2; --shadow:0 6px 18px rgba(0,0,0,.4);
+  color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#14181f; --paper:#1c2129; --paper2:#181c23;
-  --ink:#e8e3d6; --ink70:rgba(232,227,214,.8); --muted:rgba(232,227,214,.55); --line:#333b47; --line-strong:#465061;
-  --indigo:#7ba3d9; --indigo-soft:rgba(123,163,217,.1); --indigo-mid:rgba(123,163,217,.22);
-  --seal:#e0616e; --seal-soft:rgba(224,97,110,.08); --seal-line:rgba(224,97,110,.32);
-  --brass:#d4ac5c; --brass-soft:rgba(212,172,92,.08); --brass-line:rgba(212,172,92,.3);
-  --ok:#5cbf94; --ok-soft:rgba(92,191,148,.09); --ok-line:rgba(92,191,148,.32);
-  --accent:#7ba3d9; --accent-ink:#14181f; --accent-soft:rgba(123,163,217,.1);
-  --bad:#e0616e; --bad-soft:rgba(224,97,110,.08); --warn:#d4ac5c; --warn-soft:rgba(212,172,92,.1);
-  --code:#0f1318; --fig:#f3ede0; --shadow:0 6px 18px rgba(0,0,0,.35); color-scheme:dark}
+  --bg:#0e1819; --paper:#152224; --paper2:#122021;
+  --ink:#e2ece9; --ink70:rgba(226,236,233,.8); --muted:rgba(226,236,233,.55); --line:#253a3c; --line-strong:#36514f;
+  --indigo:#5ec4c6; --indigo-soft:rgba(94,196,198,.09); --indigo-mid:rgba(94,196,198,.2);
+  --seal:#ff7d5a; --seal-soft:rgba(255,125,90,.08); --seal-line:rgba(255,125,90,.34);
+  --brass:#b9a3e6; --brass-soft:rgba(185,163,230,.08); --brass-line:rgba(185,163,230,.3);
+  --ok:#73d48f; --ok-soft:rgba(115,212,143,.09); --ok-line:rgba(115,212,143,.32);
+  --accent:#5ec4c6; --accent-ink:#0e1819; --accent-soft:rgba(94,196,198,.09);
+  --bad:#ff7d5a; --bad-soft:rgba(255,125,90,.08); --warn:#f2bd5a; --warn-soft:rgba(242,189,90,.09); --warn-line:rgba(242,189,90,.32);
+  --code:#0a1213; --fig:#eef3f2; --shadow:0 6px 18px rgba(0,0,0,.4);
+  color-scheme:dark}
 [hidden]{display:none!important}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);line-height:1.8;-webkit-font-smoothing:antialiased;transition:background .25s,color .25s}
@@ -84,13 +86,16 @@ footer{margin-top:48px;font-size:13px;color:var(--muted);border-left:3px solid v
 .thmenu button:hover{background:var(--indigo-soft)}
 .thmenu button[aria-checked="true"]{color:var(--seal);font-weight:700}
 .thmenu button[aria-checked="true"]::before{content:"✓";position:absolute;left:11px}
+.themebtn.wide{width:auto;height:38px;border-radius:99px;padding:0 14px 0 12px;display:flex;align-items:center;gap:7px;font:inherit;font-size:13.5px;font-weight:500;color:var(--indigo)}
+.themebtn.wide:hover{transform:none}
+.themebtn.wide .lab::before{content:"外觀：";color:var(--muted)}
 @media (max-width:520px){.seal{width:58px;height:58px;font-size:14px}.cover h1,.cover .sub{padding-right:72px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
 <header class="wrap cover">
-  <div class="corner"><div class="theme"><button class="themebtn" id="themeBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="themeMenu" title="外觀：跟隨裝置"><svg class="i-system" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><svg class="i-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2 12h2.2M19.8 12H22M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg><svg class="i-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button><div class="thmenu" id="themeMenu" role="menu" hidden><button type="button" role="menuitemradio" data-t="system">跟隨裝置</button><button type="button" role="menuitemradio" data-t="light">淺色</button><button type="button" role="menuitemradio" data-t="dark">深色</button></div></div></div>
+  <div class="corner"><div class="theme"><button class="themebtn wide" id="themeBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="themeMenu" title="外觀：跟隨裝置"><svg class="i-system" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><svg class="i-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2 12h2.2M19.8 12H22M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg><svg class="i-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><span class="lab">跟隨裝置</span></button><div class="thmenu" id="themeMenu" role="menu" hidden><button type="button" role="menuitemradio" data-t="system">跟隨裝置</button><button type="button" role="menuitemradio" data-t="light">淺色</button><button type="button" role="menuitemradio" data-t="dark">深色</button></div></div></div>
   <div class="eyebrow">EZEXAMS · 考前衝刺</div>
   <h1>考試衝刺講義集</h1>
   <p class="sub">白話講義、章末選擇題、考古題和模擬試題。作答後可以直接批改。</p>
@@ -121,7 +126,7 @@ footer{margin-top:48px;font-size:13px;color:var(--muted);border-left:3px solid v
   function apply(m){
     if(m==="light"||m==="dark")root.setAttribute("data-theme",m);
     else if(host)root.setAttribute("data-theme",host);else root.removeAttribute("data-theme");
-    btn.dataset.mode=m;btn.title="外觀："+NAME[m];
+    btn.dataset.mode=m;btn.title="外觀："+NAME[m];const lab=btn.querySelector(".lab");if(lab)lab.textContent=NAME[m];
     menu.querySelectorAll("[data-t]").forEach(b=>b.setAttribute("aria-checked",String(b.dataset.t===m)));
   }
   let mode="system";try{const t=localStorage.getItem(TK);if(t==="light"||t==="dark")mode=t;}catch(e){}

@@ -63,7 +63,11 @@ header.wrap{padding-block:max(20px,env(safe-area-inset-top,0px)) 0}
 .hero h1 em{font-style:normal;color:var(--seal)}
 .hero p{margin:0;color:var(--ink70);max-width:46ch;font-size:16.5px}
 main{padding-block:36px 72px}
-main .exam-subj+.exam-subj{margin-top:48px}
+#subjects{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:44px 24px;align-items:start}
+#subjects .tickets{grid-template-columns:1fr}
+.subj.ghost{visibility:hidden}
+#subjects .slot{min-height:258px}
+@media (max-width:760px){#subjects{grid-template-columns:1fr;gap:36px}}
 .subj{display:flex;align-items:baseline;gap:12px;margin:0 0 16px}
 .subj h2{font-family:var(--f-display);font-size:26px;font-weight:700;margin:0}
 .subj .en{font-family:var(--f-mono);font-size:12.5px;color:var(--muted)}
@@ -166,6 +170,7 @@ footer::before{content:"// ";}
     </div>
   </section>
   <section class="exam-subj" data-date="9999-12-31">
+    <div class="subj ghost" aria-hidden="true"><h2>下一科</h2><span class="en">next/</span></div>
     <div class="tickets"><div class="slot">下一張准考證<br>還沒發</div></div>
   </section>
   </div>

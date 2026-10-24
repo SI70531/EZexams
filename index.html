@@ -92,6 +92,28 @@ main{padding-block:36px 72px}
 .ticket .go{display:inline-block;margin-top:14px;font-family:var(--f-mono);font-size:13px;font-weight:600;color:var(--indigo)}
 .ticket:hover .go{color:var(--seal)}
 .slot{display:grid;place-items:center;border:1.5px dashed var(--line-strong);border-radius:10px;padding:24px;color:var(--muted);font-family:var(--f-mono);font-size:13px;min-height:170px;text-align:center}
+.sync{margin-top:48px}
+.syncbox{background:var(--paper);border:1.5px solid var(--ink);border-radius:10px;box-shadow:5px 5px 0 var(--hard);padding:18px 22px;max-width:720px}
+.syncbox p{margin:8px 0;color:var(--ink70);font-size:15px}
+.syncstate{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-family:var(--f-mono);font-size:14px}
+.syncstate .small{color:var(--muted);font-size:12.5px}
+.led{width:10px;height:10px;border-radius:50%;background:var(--muted)}
+.led.ok{background:var(--ok)}.led.sync{background:var(--warn);animation:blink 1s steps(1) infinite}.led.err{background:var(--seal)}
+.steps{margin:10px 0;padding-left:22px;font-size:14.5px;color:var(--ink70)}
+.steps li{margin:4px 0}
+.steps a{color:var(--indigo);font-weight:600}
+code{font-family:var(--f-mono);font-size:.9em;background:var(--indigo-soft);padding:0 5px;border-radius:4px}
+.tokrow{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 6px}
+.tokrow input{flex:1 1 220px;min-width:0;font-family:var(--f-mono);font-size:14px;padding:8px 12px;border:1.5px solid var(--line-strong);border-radius:8px;background:var(--paper2);color:var(--ink)}
+.tokrow input:focus{outline:none;border-color:var(--indigo);box-shadow:0 0 0 3px var(--indigo-soft)}
+.btn{font:inherit;font-size:14px;font-weight:500;border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:8px;padding:7px 16px;cursor:pointer}
+.btn:hover:not([disabled]){background:var(--indigo-soft)}
+.btn.primary{background:var(--indigo);border-color:var(--indigo);color:var(--accent-ink);font-weight:600}
+.btn.primary:hover:not([disabled]){background:var(--seal);border-color:var(--seal)}
+.btn[disabled]{opacity:.55;cursor:default}
+.small{font-size:13px;color:var(--muted)}
+.msg{font-size:14px;min-height:1.2em}.msg.err{color:var(--seal)}.msg.ok{color:var(--ok)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 footer{margin-top:52px;font-size:13px;color:var(--muted);font-family:var(--f-mono)}
 footer::before{content:"// ";}
 .theme{position:relative;flex:0 0 auto}
@@ -174,7 +196,32 @@ footer::before{content:"// ";}
     <div class="tickets"><div class="slot">下一張准考證<br>還沒發</div></div>
   </section>
   </div>
-  <footer>作答和分數只存在你這台裝置的瀏覽器裡</footer>
+  <section class="sync" id="sync">
+    <div class="subj"><h2>跨裝置同步</h2><span class="en">sync/</span></div>
+    <div class="syncbox">
+      <div class="syncstate"><span class="led" id="syncLed"></span><b id="syncTitle">只存在這台裝置</b><span class="small" id="syncSub"></span></div>
+      <div id="syncOff">
+        <p>所有科目的作答、分數和選擇題進度，會存到你 GitHub 帳號裡一個私人的 Gist。每台裝置只要貼一次同一把金鑰，打開哪一科都是同樣的進度。</p>
+        <ol class="steps">
+          <li>打開 <a href="https://github.com/settings/tokens/new?scopes=gist&amp;description=EZexams%20sync" target="_blank" rel="noopener">GitHub 建立金鑰頁</a>（已經幫你勾好 <code>gist</code>）。</li>
+          <li>Expiration 選 <b>No expiration</b> 或期末之後的日期，拉到最下面按 <b>Generate token</b>。</li>
+          <li>複製那串 <code>ghp_</code> 開頭的金鑰，貼到下面按「連結」。其他裝置也貼同一串。</li>
+        </ol>
+        <form class="tokrow" id="tokForm" autocomplete="off">
+          <label for="tokInput" class="sr">GitHub 金鑰</label>
+          <input id="tokInput" type="password" placeholder="ghp_…" spellcheck="false">
+          <button class="btn primary" type="submit" id="tokBtn">連結</button>
+        </form>
+        <p class="small">金鑰只存在這台裝置的瀏覽器裡，而且只有建立和修改 Gist 的權限，看不到你的程式碼。</p>
+      </div>
+      <div id="syncOn" hidden>
+        <p>進度會自動同步：作答後 2 秒內上傳，切回分頁或打開頁面時下載最新的。</p>
+        <div class="tokrow"><button class="btn primary" type="button" id="syncNow">立即同步</button><button class="btn" type="button" id="syncOut">這台裝置取消同步</button></div>
+      </div>
+      <p class="msg" id="syncMsg" role="status"></p>
+    </div>
+  </section>
+  <footer id="foot">作答和分數只存在你這台裝置的瀏覽器裡</footer>
 </main>
 <script>
 /* ---------- subjects ordered by exam date (data-date, earliest first) ---------- */
@@ -200,6 +247,37 @@ footer::before{content:"// ";}
   menu.addEventListener("click",e=>{const b=e.target.closest("[data-t]");if(!b)return;mode=b.dataset.t;apply(mode);try{mode==="system"?localStorage.removeItem(TK):localStorage.setItem(TK,mode);}catch(err){}close();btn.focus();});
   document.addEventListener("click",e=>{if(!menu.hidden&&!e.target.closest(".theme"))close();});
   document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!menu.hidden){close();btn.focus();}});
+})();
+</script>
+<script src="assets/ezsync.js"></script>
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  function fmt(t){if(!t)return "";const d=new Date(t);return "最後同步 "+d.toLocaleString("zh-TW",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"});}
+  function render(st){
+    const on=EZSync.connected();
+    $("syncOff").hidden=on;$("syncOn").hidden=!on;
+    $("syncLed").className="led "+(on?(st.state==="dirty"?"sync":st.state):"");
+    $("syncTitle").textContent=on?("已連結 GitHub"+(EZSync.user()?" @"+EZSync.user():"")):"只存在這台裝置";
+    $("syncSub").textContent=on?(st.state==="sync"?"同步中…":fmt(EZSync.lastSync())):"";
+    $("foot").textContent=on?"進度同步在你的私人 Gist，各裝置共用":"作答和分數只存在你這台裝置的瀏覽器裡";
+    if(st.state==="err"){$("syncMsg").textContent=st.msg;$("syncMsg").className="msg err";}
+  }
+  EZSync.onStatus(render);
+  $("tokForm").addEventListener("submit",async e=>{
+    e.preventDefault();const b=$("tokBtn"),m=$("syncMsg");
+    b.disabled=true;m.className="msg";m.textContent="檢查金鑰中…";
+    try{const login=await EZSync.connect($("tokInput").value);$("tokInput").value="";m.className="msg ok";m.textContent="連結成功（@"+login+"）。打開任何一科，進度就會自動同步。";render(EZSync.status());}
+    catch(err){m.className="msg err";m.textContent=err.code==="empty"?"請先貼上金鑰。":err.code==="auth"?"金鑰不對，或沒有勾 gist 權限。請重新產生一把。":EZSync.errMsg(err);}
+    finally{b.disabled=false;}
+  });
+  $("syncNow").addEventListener("click",async()=>{const m=$("syncMsg");m.className="msg";m.textContent="";await EZSync.syncAll();if(EZSync.status().state==="ok"){m.className="msg ok";m.textContent="已同步。";}render(EZSync.status());});
+  $("syncOut").addEventListener("click",e=>{
+    const b=e.currentTarget;
+    if(b.dataset.armed!=="1"){b.dataset.armed="1";b.textContent="確定？雲端資料會保留";setTimeout(()=>{b.dataset.armed="";b.textContent="這台裝置取消同步";},4000);return;}
+    EZSync.disconnect();$("syncMsg").className="msg";$("syncMsg").textContent="這台裝置已取消同步，雲端的進度還在。";render(EZSync.status());
+  });
+  render(EZSync.status());
 })();
 </script>
 </body>

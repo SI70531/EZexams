@@ -2,37 +2,73 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>EZexams 考試衝刺</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@800&family=JetBrains+Mono:wght@500;600&display=swap">
 <style>
-:root{--bg:#f5f7fb;--paper:#fff;--ink:#18213a;--muted:#5d6782;--line:#d8deea;--accent:#2457c5;--accent-soft:#e7eefc}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#11151f;--paper:#181e2b;--ink:#e4e8f2;--muted:#9aa4bd;--line:#2c3447;--accent:#7ea4ff;--accent-soft:#1f2b48}}
-:root[data-theme="dark"]{--bg:#11151f;--paper:#181e2b;--ink:#e4e8f2;--muted:#9aa4bd;--line:#2c3447;--accent:#7ea4ff;--accent-soft:#1f2b48}
+/* Layout: the same graph-paper desk as the subject pages; one shelf of subject cards, newest exam first. */
+:root{
+  --desk:#eef1f6; --grid:#dfe4ee; --paper:#ffffff; --ink:#141b2d; --muted:#5a6480; --line:#dde2ec; --line-strong:#c3cad9;
+  --accent:#2742d6; --accent-soft:#eaedfc; --marker:#fff3b8; --ok:#137a4a;
+  --shadow:0 1px 2px rgba(20,27,45,.06),0 8px 24px rgba(20,27,45,.06);
+  --f-display:"Noto Serif TC","Songti TC",serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-mono:"JetBrains Mono","Menlo","Consolas",monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--desk:#0e1220;--grid:#171d2e;--paper:#161c2c;--ink:#e6e9f3;--muted:#9ba4bf;--line:#283048;--line-strong:#3a4462;--accent:#8aa0ff;--accent-soft:#1f2848;--marker:#3a3115;--ok:#5fd09a;--shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);color-scheme:dark}}
+:root[data-theme="dark"]{--desk:#0e1220;--grid:#171d2e;--paper:#161c2c;--ink:#e6e9f3;--muted:#9ba4bf;--line:#283048;--line-strong:#3a4462;--accent:#8aa0ff;--accent-soft:#1f2848;--marker:#3a3115;--ok:#5fd09a;--shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);color-scheme:dark}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;line-height:1.7}
-main{max-width:720px;margin:0 auto;padding:40px 16px 60px}
-h1{font-size:28px;margin:0 0 4px}
-.sub{color:var(--muted);margin:0 0 28px}
-h2{font-size:15px;color:var(--muted);font-weight:600;margin:28px 0 10px;letter-spacing:.04em}
-.card{display:block;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:12px;color:inherit;text-decoration:none}
-.card:hover{border-color:var(--accent)}
-.card b{font-size:18px;color:var(--accent)}
-.card span{display:block;color:var(--muted);font-size:14px;margin-top:2px}
-.soon{color:var(--muted);font-size:14px}
+body{margin:0;background-color:var(--desk);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px;background-attachment:fixed;color:var(--ink);font-family:var(--f-body);line-height:1.7}
+main{max-width:860px;margin:0 auto;padding-block:max(56px,env(safe-area-inset-top,0px)) 72px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.mark{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:11px;background:var(--ink);color:var(--paper);font-family:var(--f-mono);font-weight:600;font-size:16px}
+h1{font-family:var(--f-display);font-weight:800;font-size:clamp(34px,6vw,48px);line-height:1.15;margin:18px 0 8px;letter-spacing:.01em}
+h1 span{background-image:linear-gradient(transparent 60%,var(--marker) 60%,var(--marker) 92%,transparent 92%)}
+.sub{color:var(--muted);margin:0;max-width:52ch;font-size:16.5px}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:600}
+section{margin-top:44px}
+.subj{display:flex;align-items:baseline;gap:10px;margin:0 0 12px}
+.subj h2{font-size:18px;margin:0}
+.subj .en{font-family:var(--f-mono);font-size:12.5px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.card{position:relative;display:flex;flex-direction:column;gap:6px;background:var(--paper);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:20px 22px 18px;color:inherit;text-decoration:none;transition:transform .15s,border-color .15s}
+.card:hover{transform:translateY(-2px);border-color:var(--accent)}
+.card:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.card .top{display:flex;justify-content:space-between;align-items:center}
+.card .tag{font-family:var(--f-mono);font-size:11.5px;font-weight:600;letter-spacing:.06em;color:var(--accent);background:var(--accent-soft);border-radius:5px;padding:2px 8px}
+.card .date{font-family:var(--f-mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.card h3{font-family:var(--f-display);font-weight:800;font-size:22px;margin:6px 0 0}
+.card p{margin:0;color:var(--muted);font-size:14.5px}
+.card ul{list-style:none;padding:0;margin:8px 0 0;display:flex;flex-wrap:wrap;gap:6px}
+.card li{font-size:12.5px;border:1px solid var(--line-strong);border-radius:999px;padding:1px 10px;color:var(--muted)}
+.card .go{margin-top:10px;font-weight:700;font-size:14px;color:var(--accent)}
+.empty{display:grid;place-items:center;border:1.5px dashed var(--line-strong);border-radius:16px;padding:20px;color:var(--muted);font-size:14px;text-align:center;min-height:120px}
+footer{margin-top:56px;font-size:13px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.card{transition:none}.card:hover{transform:none}}
 </style>
 </head>
 <body>
 <main>
-<h1>EZexams</h1>
-<p class="sub">各科考前衝刺：白話講義、選擇題、考古題和模擬試題。</p>
+  <span class="mark" aria-hidden="true">EZ</span>
+  <h1><span>EZexams</span></h1>
+  <p class="sub">考前衝刺用的讀書網站。每科有白話講義、章末選擇題、考古題和模擬試題，作答後可以直接批改。</p>
 
-<h2>作業系統 Operating Systems</h2>
-<a class="card" href="operating-systems/midterm/">
-  <b>期中考衝刺</b>
-  <span>Silberschatz 9th Ch1–Ch5・章末選擇題・去年考古題・模擬試題 A / B（可作答自動批改）</span>
-</a>
+  <section>
+    <div class="subj"><h2>作業系統</h2><span class="en">Operating Systems</span></div>
+    <div class="grid">
+      <a class="card" href="operating-systems/midterm/">
+        <div class="top"><span class="tag">MIDTERM</span><span class="date">2026 · 10</span></div>
+        <h3>期中考衝刺</h3>
+        <p>Silberschatz 9th，Ch1 到 Ch5</p>
+        <ul><li>5 章講義</li><li>58 題選擇題</li><li>考古題</li><li>模擬試題 ×2</li></ul>
+        <span class="go">開始讀 →</span>
+      </a>
+      <div class="empty">下一份考試<br>放在這裡</div>
+    </div>
+  </section>
 
-<p class="soon">其他科目陸續加入。</p>
+  <footer>作答和分數只存在你這台裝置的瀏覽器裡。</footer>
 </main>
 </body>
 </html>

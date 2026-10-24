@@ -63,7 +63,7 @@ header.wrap{padding-block:max(20px,env(safe-area-inset-top,0px)) 0}
 .hero h1 em{font-style:normal;color:var(--seal)}
 .hero p{margin:0;color:var(--ink70);max-width:46ch;font-size:16.5px}
 main{padding-block:36px 72px}
-main section+section{margin-top:48px}
+main .exam-subj+.exam-subj{margin-top:48px}
 .subj{display:flex;align-items:baseline;gap:12px;margin:0 0 16px}
 .subj h2{font-family:var(--f-display);font-size:26px;font-weight:700;margin:0}
 .subj .en{font-family:var(--f-mono);font-size:12.5px;color:var(--muted)}
@@ -119,7 +119,23 @@ footer::before{content:"// ";}
   </div>
 </header>
 <main class="wrap">
-  <section>
+  <div id="subjects">
+  <section class="exam-subj" data-date="2026-10-21">
+    <div class="subj"><h2>統計學</h2><span class="en">statistics/</span></div>
+    <div class="tickets">
+      <a class="ticket" href="statistics/midterm/">
+        <div class="main">
+          <span class="kind">MIDTERM</span>
+          <h3>期中考衝刺</h3>
+          <p>Anderson 14e，Ch1 到 Ch4</p>
+          <dl><dt>講義</dt><dd>4 章重點＋易混淆觀念 32 組</dd><dt>練習</dt><dd>32 題選擇題</dd><dt>考卷</dt><dd>期中作業 9 大題，附英文答案</dd></dl>
+          <span class="go">開始讀 →</span>
+        </div>
+        <div class="stub"><span class="k">EXAM</span><span class="v">10/21</span><span class="s">2026</span></div>
+      </a>
+    </div>
+  </section>
+  <section class="exam-subj" data-date="2026-10-29">
     <div class="subj"><h2>作業系統</h2><span class="en">operating-systems/</span></div>
     <div class="tickets">
       <a class="ticket" href="operating-systems/midterm/">
@@ -134,7 +150,7 @@ footer::before{content:"// ";}
       </a>
     </div>
   </section>
-  <section>
+  <section class="exam-subj" data-date="2026-11-06">
     <div class="subj"><h2>資料與檔案結構</h2><span class="en">data-structures/</span></div>
     <div class="tickets">
       <a class="ticket" href="data-structures/midterm/">
@@ -147,12 +163,20 @@ footer::before{content:"// ";}
         </div>
         <div class="stub"><span class="k">EXAM</span><span class="v">11/6</span><span class="s">2026</span></div>
       </a>
-      <div class="slot">下一張准考證<br>還沒發</div>
     </div>
   </section>
+  <section class="exam-subj" data-date="9999-12-31">
+    <div class="tickets"><div class="slot">下一張准考證<br>還沒發</div></div>
+  </section>
+  </div>
   <footer>作答和分數只存在你這台裝置的瀏覽器裡</footer>
 </main>
 <script>
+/* ---------- subjects ordered by exam date (data-date, earliest first) ---------- */
+(function(){
+  const box=document.getElementById("subjects");if(!box)return;
+  [...box.querySelectorAll(":scope>.exam-subj")].sort((a,b)=>a.dataset.date.localeCompare(b.dataset.date)).forEach(el=>box.appendChild(el));
+})();
 /* ---------- theme: system / light / dark ---------- */
 (function(){
   const TK="ezexams-theme",root=document.documentElement,host=root.getAttribute("data-theme");

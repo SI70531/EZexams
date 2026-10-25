@@ -661,12 +661,14 @@ Waiting time    = Turnaround time − Burst time</div>
 <div class="calc">順序 P1, P2, P3：waiting  P1=0, P2=24, P3=27 → 平均 (0+24+27)/3 = 17
 若順序改 P2, P3, P1：waiting P1=6, P2=0, P3=3   → 平均 (6+0+3)/3 = 3   ← convoy effect 的證據</div>
 
+<div class="widget" data-w="sched" data-algs="FCFS" data-name="FCFS"></div>
 <h4>例 2：SJF（nonpreemptive）</h4>
 <table><tr><th>Process</th><th>Burst</th></tr><tr><td>P1</td><td>6</td></tr><tr><td>P2</td><td>8</td></tr><tr><td>P3</td><td>7</td></tr><tr><td>P4</td><td>3</td></tr></table>
 <div class="gantt"><div class="gbar"><span style="flex:3;background:#fbdcdc">P4</span><span style="flex:6;background:#dbe8fb">P1</span><span style="flex:7;background:#fff0c9">P3</span><span style="flex:8;background:#d9f0e2">P2</span></div><div class="gt"><b style="left:0%">0</b><b style="left:12.500%">3</b><b style="left:37.500%">9</b><b style="left:66.667%">16</b><b style="left:100.000%">24</b></div></div>
 <div class="calc">都在時間 0 到達：waiting P1=3, P2=16, P3=9, P4=0 → 平均 (3+16+9+0)/4 = 7</div>
 <div class="box warn"><span class="lbl">陷阱：投影片這題寫了 arrival time（0, 2, 4, 5）</span>投影片的答案 7 其實是當作「全部時間 0 到達」算的。如果真的照 arrival time 算 nonpreemptive SJF：時間 0 只有 P1 → P1 先跑 0–6；之後 P4(3) 6–9、P3(7) 9–16、P2(8) 16–24。waiting：P1=0, P2=16−2=14, P3=9−4=5, P4=6−5=1 → 平均 20/4 = <b>5</b>。<br>考試時<b>看清楚題目有沒有給 arrival time</b>，有就照到達時間算。</div>
 
+<div class="widget" data-w="sched" data-algs="SJF" data-name="SJF"></div>
 <h4>例 3：SRTF（preemptive SJF）</h4>
 <table><tr><th>Process</th><th>Arrival</th><th>Burst</th></tr><tr><td>P1</td><td>0</td><td>8</td></tr><tr><td>P2</td><td>1</td><td>4</td></tr><tr><td>P3</td><td>2</td><td>9</td></tr><tr><td>P4</td><td>3</td><td>5</td></tr></table>
 <div class="gantt"><div class="gbar"><span style="flex:1;background:#dbe8fb">P1</span><span style="flex:4;background:#d9f0e2">P2</span><span style="flex:5;background:#fbdcdc">P4</span><span style="flex:7;background:#dbe8fb">P1</span><span style="flex:9;background:#fff0c9">P3</span></div><div class="gt"><b style="left:0%">0</b><b style="left:3.846%">1</b><b style="left:19.231%">5</b><b style="left:38.462%">10</b><b style="left:65.385%">17</b><b style="left:100.000%">26</b></div></div>
@@ -680,17 +682,19 @@ t=10 剩：P1=7, P3=9 → P1 (10–17)，最後 P3 (17–26)
 waiting: P1=(10−1)=9, P2=0, P3=17−2=15, P4=5−3=2
 平均 = (9+0+15+2)/4 = 26/4 = 6.5</div>
 
+<div class="widget" data-w="sched" data-algs="SRTF" data-name="SRTF"></div>
 <h4>例 4：Priority（nonpreemptive，數字小＝優先，都在 0 到達）</h4>
 <table><tr><th>Process</th><th>Burst</th><th>Priority</th></tr><tr><td>P1</td><td>10</td><td>3</td></tr><tr><td>P2</td><td>1</td><td>1</td></tr><tr><td>P3</td><td>2</td><td>4</td></tr><tr><td>P4</td><td>1</td><td>5</td></tr><tr><td>P5</td><td>5</td><td>2</td></tr></table>
 <div class="gantt"><div class="gbar"><span style="flex:1;background:#d9f0e2">P2</span><span style="flex:5;background:#e7defb">P5</span><span style="flex:10;background:#dbe8fb">P1</span><span style="flex:2;background:#fff0c9">P3</span><span style="flex:1;background:#fbdcdc">P4</span></div><div class="gt"><b style="left:0%">0</b><b style="left:5.263%">1</b><b style="left:31.579%">6</b><b style="left:84.211%">16</b><b style="left:94.737%">18</b><b style="left:100.000%">19</b></div></div>
 <div class="calc">waiting: P1=6, P2=0, P3=16, P4=18, P5=1 → 平均 41/5 = 8.2</div>
 
+<div class="widget" data-w="sched" data-algs="PRI,PPRI" data-name="Priority"></div>
 <h4>例 5：RR（q = 4，P1=24, P2=3, P3=3）</h4>
 <div class="gantt"><div class="gbar"><span style="flex:4;background:#dbe8fb">P1</span><span style="flex:3;background:#d9f0e2">P2</span><span style="flex:3;background:#fff0c9">P3</span><span style="flex:4;background:#dbe8fb">P1</span><span style="flex:4;background:#dbe8fb">P1</span><span style="flex:4;background:#dbe8fb">P1</span><span style="flex:4;background:#dbe8fb">P1</span><span style="flex:4;background:#dbe8fb">P1</span></div><div class="gt"><b style="left:0%">0</b><b style="left:13.333%">4</b><b style="left:23.333%">7</b><b style="left:33.333%">10</b><b style="left:46.667%">14</b><b style="left:60.000%">18</b><b style="left:73.333%">22</b><b style="left:86.667%">26</b><b style="left:100.000%">30</b></div></div>
 <div class="calc">P1 跑 4 → P2 跑 3 做完 → P3 跑 3 做完 → 只剩 P1 一直跑
 waiting: P1 = 10−4 = 6, P2 = 4, P3 = 7 → 平均 17/3 ≈ 5.67</div>
 
-<div class="widget" data-w="sched"></div>
+<div class="widget" data-w="sched" data-algs="RR" data-name="Round Robin"></div>
 <h3>3.5 預測下一次 CPU burst（Exponential Averaging）<span class="star">★</span></h3>
 <div class="calc">τ(n+1) = α · t(n) + (1 − α) · τ(n)        0 ≤ α ≤ 1，通常 α = 1/2
 t(n) = 第 n 次實際 burst 長度；τ(n+1) = 下一次的預測值
@@ -2202,6 +2206,13 @@ W.sched=function(box){
   const algS=box.querySelector(".alg"),qI=box.querySelector(".q"),ql=box.querySelector(".ql");
   let ps=[[0,24,1],[0,3,1],[0,3,1]];
   const pr=box.querySelector(".presets");
+  const only=box.dataset.algs?box.dataset.algs.split(","):null;
+  if(only){[...algS.options].forEach(o=>{if(!only.includes(o.value))o.remove();});
+    const k0=Object.keys(presets).find(k=>only.includes(presets[k].alg));for(const k in presets)if(k!==k0)delete presets[k];
+    const P=presets[k0];ps=P.ps.map(r=>r.slice());algS.value=P.alg;if(P.q)qI.value=P.q;
+    if(only.length===1)algS.closest("label").style.display="none";
+    box.querySelector(".wtitle").textContent="換你試："+box.dataset.name+" 模擬器（改數字，Gantt chart 和等待時間自動算）";
+    pr.insertAdjacentHTML("afterbegin",'<span class="small">還原成上面的例題：</span>');}
   Object.keys(presets).forEach(k=>{const b=el("button",{cls:"btn chip",type:"button"},k);b.onclick=()=>{const P=presets[k];ps=P.ps.map(r=>r.slice());algS.value=P.alg;if(P.q)qI.value=P.q;table();run();};pr.appendChild(b);});
   function table(){
     const w=box.querySelector(".wtable");let h='<table><tr><th>Process</th><th>Arrival</th><th>Burst</th><th>Priority</th><th></th></tr>';

@@ -136,6 +136,8 @@ b{font-weight:700}
 .box .lbl{display:table;font-family:var(--f-mono);font-size:11.5px;font-weight:600;margin:-14px 0 8px -18px;padding:3px 10px;border-radius:0 0 6px 0;letter-spacing:.02em}
 .box.en{background:var(--indigo-soft);border-color:var(--indigo-mid);font-family:var(--f-en);font-size:17px;line-height:1.7}
 .box.en .lbl{background:var(--indigo);color:var(--accent-ink)}
+.zhtr{font-family:var(--f-body);font-size:14.5px;line-height:1.75;color:var(--ink70);margin-top:10px;padding-top:9px;border-top:1px dashed var(--indigo-mid)}
+.zhtr span{display:inline-block;font-family:var(--f-mono);font-size:11px;font-weight:600;color:var(--indigo);border:1px solid var(--indigo-mid);border-radius:4px;padding:0 6px;margin-right:8px;vertical-align:1px}
 .box.zh{background:var(--brass-soft);border-color:var(--brass-line)}.box.zh .lbl{background:var(--brass);color:var(--paper)}
 .box.warn{background:var(--seal-soft);border-color:var(--seal-line)}.box.warn .lbl{background:var(--seal);color:var(--paper)}
 .box.tip{background:var(--warn-soft);border-color:var(--warn-line)}.box.tip .lbl{background:var(--warn);color:var(--paper)}
@@ -203,6 +205,7 @@ body.nograde .nogradenote{display:block}
 .quiz{margin-top:48px;padding-top:6px}
 .quiz h2{font-family:var(--f-display);font-size:26px;font-weight:700;margin:0 0 4px;padding-bottom:8px;border-bottom:1px solid var(--line)}
 .qitem{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin:14px 0;scroll-margin-top:80px}
+.qitem .hard{display:inline-block;font-family:var(--f-mono);font-size:11px;font-weight:600;color:var(--accent-ink);background:var(--seal);border-radius:4px;padding:1px 7px;margin-right:8px;vertical-align:2px}
 .qitem .stem{font-weight:700;margin-bottom:10px;line-height:1.65}
 .qitem .num{font-family:var(--f-mono);font-weight:600;color:var(--seal);margin-right:6px}
 .opts{display:grid;gap:8px}
@@ -281,7 +284,7 @@ body.nograde .nogradenote{display:block}
 <h3>1.1 OS 是什麼</h3>
 <div class="box zh"><span class="lbl">白話</span>OS 是介於「使用者」和「硬體」之間的<b>中間人</b>。它幫你管 CPU、memory（記憶體）、disk（硬碟），讓程式好寫、電腦好用、硬體不浪費。</div>
 <div class="box en"><span class="lbl">ANSWER TEMPLATE — What is an OS?</span>An operating system is a program that acts as an intermediary between a user of a computer and the computer hardware.<br>
-Goals: (1) execute user programs and make solving user problems easier; (2) make the computer system convenient to use; (3) use the computer hardware in an efficient manner.</div>
+Goals: (1) execute user programs and make solving user problems easier; (2) make the computer system convenient to use; (3) use the computer hardware in an efficient manner.<div class="zhtr"><span>中文</span>作業系統是介於使用者和電腦硬體之間的「中間人」程式。目標：(1) 執行使用者程式、讓解決問題更容易；(2) 讓電腦系統方便使用；(3) 有效率地使用硬體。</div></div>
 <ul>
 <li><b>電腦系統四個元件</b>：Hardware（CPU、memory、I/O）→ Operating system → Application programs → Users。</li>
 <li><b>從電腦角度看 OS 的兩個角色</b>：<b>Resource（資源） allocator</b>（分配 resource，公平又有效率）、<b>Control program</b>（控制程式執行，防止錯誤與不當使用）。</li>
@@ -290,11 +293,11 @@ Goals: (1) execute user programs and make solving user problems easier; (2) make
 </ul>
 
 <h3>1.2 CPU 三大元件 <span class="star">★★★</span></h3>
-<div class="box en"><span class="lbl">ANSWER</span>Control Unit (CU), Arithmetic and Logic Unit (ALU), and Registers.</div>
+<div class="box en"><span class="lbl">ANSWER</span>Control Unit (CU), Arithmetic and Logic Unit (ALU), and Registers.<div class="zhtr"><span>中文</span>控制單元（Control Unit, CU）、算術邏輯單元（ALU）和暫存器（Registers）。</div></div>
 
 <h3>1.3 Interrupt（中斷）<span class="star">★★</span></h3>
 <div class="box zh"><span class="lbl">白話</span>device（裝置）做完事，就「按門鈴」通知 CPU，這就是 interrupt。CPU 暫停手上工作 → 查表 (interrupt vector) 找到對應的處理程式 (ISR) → 處理完再回去。<b>Trap（陷阱） / exception</b> 是軟體自己造成的 interrupt（例如除以 0、呼叫 system call）。</div>
-<div class="box en"><span class="lbl">ANSWER TEMPLATE</span>An interrupt transfers control to the interrupt service routine through the interrupt vector, which contains the addresses of all the service routines. The interrupt architecture must save the address of the interrupted instruction. A trap (exception) is a software-generated interrupt caused either by an error or a user request. An operating system is interrupt driven.</div>
+<div class="box en"><span class="lbl">ANSWER TEMPLATE</span>An interrupt transfers control to the interrupt service routine through the interrupt vector, which contains the addresses of all the service routines. The interrupt architecture must save the address of the interrupted instruction. A trap (exception) is a software-generated interrupt caused either by an error or a user request. An operating system is interrupt driven.<div class="zhtr"><span>中文</span>中斷（interrupt）透過中斷向量（interrupt vector，存放所有服務程式的位址）把控制權交給中斷服務程式（ISR）。中斷機制必須保存被中斷那條指令的位址。陷阱（trap／exception）是軟體產生的中斷，原因是錯誤或使用者請求。作業系統是靠中斷驅動的（interrupt driven）。</div></div>
 <ul>
 <li>處理 interrupt 時 OS 會保存 CPU 狀態（registers（暫存器）、program counter）。</li>
 <li>判斷是哪種 interrupt：<b>polling（輪詢）</b>（輪流問）或 <b>vectored interrupt system</b>（直接查表）。</li>
@@ -319,7 +322,7 @@ Goals: (1) execute user programs and make solving user problems easier; (2) make
  <text x="190" y="150" fill="#b3261e" font-size="11.5">1 interrupt per block</text>
 </svg>
 </div>
-<div class="box en"><span class="lbl">ANSWER</span>DMA is used for high-speed I/O devices able to transmit information at close to memory speeds. The device controller transfers blocks of data from buffer storage directly to main memory without CPU intervention. Only one interrupt is generated per block, rather than one interrupt per byte.</div>
+<div class="box en"><span class="lbl">ANSWER</span>DMA is used for high-speed I/O devices able to transmit information at close to memory speeds. The device controller transfers blocks of data from buffer storage directly to main memory without CPU intervention. Only one interrupt is generated per block, rather than one interrupt per byte.<div class="zhtr"><span>中文</span>DMA 用在傳輸速度接近記憶體的高速 I/O 裝置。裝置控制器（device controller）不經過 CPU，直接把整塊資料從緩衝區搬到主記憶體。每一「塊」只產生一次中斷，而不是每個 byte 一次。</div></div>
 
 <h3>1.5 Storage（儲存）</h3>
 <ul>
@@ -332,7 +335,7 @@ Goals: (1) execute user programs and make solving user problems easier; (2) make
 </ul>
 
 <h3>1.6 Computer-System Architecture</h3>
-<div class="box en"><span class="lbl">ANSWER TEMPLATE — Advantages of multiprocessor systems</span>(1) Increased throughput; (2) Economy of scale; (3) Increased reliability (graceful degradation or fault tolerance).</div>
+<div class="box en"><span class="lbl">ANSWER TEMPLATE — Advantages of multiprocessor systems</span>(1) Increased throughput; (2) Economy of scale; (3) Increased reliability (graceful degradation or fault tolerance).<div class="zhtr"><span>中文</span>多處理器系統的優點：(1) 提高吞吐量（throughput）；(2) 規模經濟（共用周邊、電源，比較省）；(3) 提高可靠度（一顆壞了還能降級運作 graceful degradation，或容錯 fault tolerance）。</div></div>
 <ul>
 <li>Multiprocessor（多處理器） 又叫 <b>parallel systems / tightly-coupled systems</b>。</li>
 <li>兩種：<b>Asymmetric multiprocessing</b>（有主從，一個 CPU 分派工作）、<b>Symmetric multiprocessing (SMP)</b>（每個 CPU 地位相同，都做所有工作）。</li>
@@ -343,16 +346,16 @@ Goals: (1) execute user programs and make solving user problems easier; (2) make
 <h3>1.7 Multiprogramming（多元程式） vs. Timesharing（分時） <span class="star">★★</span></h3>
 <div class="box zh"><span class="lbl">白話</span><b>Multiprogramming</b>：memory 放好幾個工作，一個去等 I/O，CPU 馬上換另一個做 → CPU 永遠有事做（為了<b>效率</b>）。<br><b>Timesharing (multitasking)</b>：CPU 切換得超快，每個使用者都覺得電腦只為他服務 → 為了<b>互動</b>，response time（回應時間） &lt; 1 秒。</div>
 <div class="box en"><span class="lbl">ANSWER TEMPLATE</span>Multiprogramming organizes jobs (code and data) so the CPU always has one to execute; when a job has to wait (for I/O, for example), the OS switches to another job.<br>
-Timesharing (multitasking) is a logical extension in which the CPU switches jobs so frequently that users can interact with each job while it is running (response time &lt; 1 second).</div>
+Timesharing (multitasking) is a logical extension in which the CPU switches jobs so frequently that users can interact with each job while it is running (response time &lt; 1 second).<div class="zhtr"><span>中文</span>多元程式（multiprogramming）把多個工作放在記憶體，讓 CPU 永遠有事做；某個工作要等（例如等 I/O）時，OS 就切到另一個。分時（timesharing／multitasking）是延伸：CPU 切換得非常頻繁，使用者可以在程式執行時跟它互動（回應時間 &lt; 1 秒）。</div></div>
 <ul><li>相關名詞：多個工作同時 ready → <b>CPU scheduling（排班）</b>；memory 放不下 → <b>swapping（置換）</b>；process（行程） 不必全部在 memory → <b>virtual memory</b>。</li></ul>
 
 <h3>1.8 Dual-mode（雙模式） Operation ＆ Timer <span class="star">★★</span></h3>
 <div class="box zh"><span class="lbl">白話</span>CPU 有兩種模式：<b>user mode（使用者模式）</b>（一般程式）和 <b>kernel mode（核心模式）</b>（OS 自己）。硬體用一個 <b>mode bit（模式位元）</b> 區分。危險的指令（privileged instructions）只有 kernel mode 能執行。程式要請 OS 幫忙就呼叫 <b>system call（系統呼叫）</b> → 切到 kernel mode → 做完切回 user mode。<br><b>Timer</b>：定時鬧鐘，防止某個程式無窮迴圈霸佔 CPU，時間到就產生 interrupt 讓 OS 拿回控制權。</div>
 <div class="box en"><span class="lbl">ANSWER TEMPLATE</span>Dual-mode operation (user mode and kernel mode) allows the OS to protect itself and other system components. A mode bit is provided by hardware to distinguish whether the system is running user code or kernel code. Some instructions are privileged and only executable in kernel mode. A system call changes the mode to kernel; return from the call resets it to user.<br>
-A timer is used to prevent an infinite loop / a process hogging resources: it generates an interrupt after a specific period so the OS can regain control.</div>
+A timer is used to prevent an infinite loop / a process hogging resources: it generates an interrupt after a specific period so the OS can regain control.<div class="zhtr"><span>中文</span>雙模式（使用者模式 user mode／核心模式 kernel mode）讓 OS 保護自己和其他元件。硬體提供模式位元（mode bit）來分辨現在跑的是使用者程式還是核心程式。部分指令是特權指令（privileged），只能在核心模式執行。系統呼叫（system call）會切到核心模式，返回時切回使用者模式。計時器（timer）用來防止無窮迴圈或某個 process 霸佔資源：時間到就發中斷，讓 OS 拿回控制權。</div></div>
 
 <h3>1.9 OS 的管理工作</h3>
-<div class="box en"><span class="lbl">ANSWER TEMPLATE — Process vs. Program</span>A process is a program in execution; it is a unit of work within the system. A program is a passive entity; a process is an active entity.</div>
+<div class="box en"><span class="lbl">ANSWER TEMPLATE — Process vs. Program</span>A process is a program in execution; it is a unit of work within the system. A program is a passive entity; a process is an active entity.<div class="zhtr"><span>中文</span>Process 是「正在執行的程式」，是系統裡的工作單位。程式（program）是被動的（存在硬碟上的檔案），process 是主動的。</div></div>
 <table style="width:100%">
 <tr><th>管理類別</th><th class="l">OS 負責的事（list 題用）</th></tr>
 <tr><td>Process management</td><td class="l">Creating and deleting processes; suspending and resuming processes; providing mechanisms for process synchronization, communication, and deadlock（死結） handling.</td></tr>
@@ -444,11 +447,11 @@ A timer is used to prevent an infinite loop / a process hogging resources: it ge
 
 <h3>2.3 PCB（Process Control Block）<span class="star">★★</span></h3>
 <div class="box zh"><span class="lbl">白話</span>PCB＝OS 為每個 process 建的「身分證＋存檔」。切換 process 時，就是把目前狀態存進 PCB，再從另一個 PCB 讀回來。</div>
-<div class="box en"><span class="lbl">ANSWER TEMPLATE — Information in a PCB</span>Process state, program counter, CPU registers, CPU-scheduling information, memory-management information, accounting information, and I/O status information.</div>
+<div class="box en"><span class="lbl">ANSWER TEMPLATE — Information in a PCB</span>Process state, program counter, CPU registers, CPU-scheduling information, memory-management information, accounting information, and I/O status information.<div class="zhtr"><span>中文</span>PCB 裡的資訊：process 狀態、程式計數器（PC）、CPU 暫存器、CPU 排班資訊、記憶體管理資訊、帳務資訊（用了多少 CPU 時間）、I/O 狀態資訊。</div></div>
 <p class="small">口訣：「狀、PC、暫、排、記、帳、I/O」。Linux 用 C 結構 <span class="mono">task_struct</span> 表示 PCB。</p>
 
 <h3>2.4 Context Switch（內容切換） <span class="star">★★</span></h3>
-<div class="box en"><span class="lbl">ANSWER TEMPLATE</span>When the CPU switches to another process, the system must save the state of the old process and load the saved state for the new process via a context switch. The context of a process is represented in the PCB. Context-switch time is overhead; the system does no useful work while switching.</div>
+<div class="box en"><span class="lbl">ANSWER TEMPLATE</span>When the CPU switches to another process, the system must save the state of the old process and load the saved state for the new process via a context switch. The context of a process is represented in the PCB. Context-switch time is overhead; the system does no useful work while switching.<div class="zhtr"><span>中文</span>CPU 換到另一個 process 時，系統要先保存舊 process 的狀態，再載入新 process 的狀態，這叫內容切換（context switch）。process 的狀態記在 PCB 裡。切換時間是額外負擔（overhead），切換期間系統沒做任何有用的事。</div></div>
 <ul><li>OS 和 PCB 越複雜 → context switch 越久。時間取決於硬體支援（有些 CPU 有多組 registers）。</li></ul>
 
 <h3>2.5 Scheduling（排班） Queues 與三種 Scheduler <span class="star">★★★</span></h3>
@@ -459,7 +462,7 @@ A timer is used to prevent an infinite loop / a process hogging resources: it ge
 <div class="box en"><span class="lbl">ANSWER</span>
 (1) <b>Long-term scheduler</b> (job scheduler): selects which processes should be brought into the ready queue. It also controls the degree of multiprogramming. It is invoked infrequently (seconds, minutes).<br>
 (2) <b>Mid-term scheduler</b>: decreases the degree of multiprogramming. It removes a process from memory, stores it on disk, and brings it back in from disk to continue execution (swapping).<br>
-(3) <b>Short-term scheduler</b> (CPU scheduler): selects which process should be executed next and allocates the CPU. It is invoked very frequently (milliseconds), so it must be fast.</div>
+(3) <b>Short-term scheduler</b> (CPU scheduler): selects which process should be executed next and allocates the CPU. It is invoked very frequently (milliseconds), so it must be fast.<div class="zhtr"><span>中文</span>(1) 長期排程器（long-term／job scheduler）：決定哪些 process 可以進入就緒佇列（ready queue），也控制多元程式的程度（記憶體裡有幾個 process）。很少執行（幾秒、幾分鐘一次）。(2) 中期排程器（mid-term scheduler）：降低多元程式程度，把 process 從記憶體搬到硬碟，之後再搬回來繼續執行（swapping，置換）。(3) 短期排程器（short-term／CPU scheduler）：決定下一個由誰用 CPU 並分配 CPU。非常頻繁（毫秒等級），所以一定要快。</div></div>
 <div class="fig">
 <svg viewBox="0 0 660 200" width="560" xmlns="http://www.w3.org/2000/svg" font-family="Liberation Sans, WenQuanYi Zen Hei" font-size="12.5">
  <defs><marker id="b2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1d2433"/></marker></defs>
@@ -511,7 +514,7 @@ A timer is used to prevent an infinite loop / a process hogging resources: it ge
 
 <h3>2.7 IPC（Interprocess Communication）<span class="star">★★★</span></h3>
 <div class="box en"><span class="lbl">ANSWER TEMPLATE</span>Two models of IPC: <b>shared memory</b> and <b>message passing</b>.<br>
-Reasons for cooperating processes: information sharing, computation speedup, modularity, and convenience.</div>
+Reasons for cooperating processes: information sharing, computation speedup, modularity, and convenience.<div class="zhtr"><span>中文</span>行程間通訊（IPC）的兩種模型：共享記憶體（shared memory）和訊息傳遞（message passing）。需要合作 process 的理由：資訊分享、加快計算、模組化、方便。</div></div>
 <div class="fig">
 <svg viewBox="0 0 600 200" width="500" xmlns="http://www.w3.org/2000/svg" font-family="Liberation Sans, WenQuanYi Zen Hei" font-size="12.5">
  <defs><marker id="a4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1d2433"/></marker></defs>
@@ -571,7 +574,7 @@ Consumer:  while (in == out) ;                       // 空了就等
 <tr><td>4</td><td class="l">terminates（結束）</td><td>nonpreemptive</td></tr>
 </table>
 <div class="box zh"><span class="lbl">白話</span><b>Nonpreemptive（不可搶奪）</b>：process 自己放棄 CPU（去等 I/O 或做完）才換人。<b>Preemptive（可搶奪）</b>：OS 可以強迫正在跑的 process 讓出 CPU。</div>
-<div class="box en"><span class="lbl">ANSWER TEMPLATE — Dispatcher</span>The dispatcher gives control of the CPU to the process selected by the short-term scheduler; this involves: switching context, switching to user mode, and jumping to the proper location in the user program to restart that program. <b>Dispatch latency</b> is the time it takes for the dispatcher to stop one process and start another running.</div>
+<div class="box en"><span class="lbl">ANSWER TEMPLATE — Dispatcher</span>The dispatcher gives control of the CPU to the process selected by the short-term scheduler; this involves: switching context, switching to user mode, and jumping to the proper location in the user program to restart that program. <b>Dispatch latency</b> is the time it takes for the dispatcher to stop one process and start another running.<div class="zhtr"><span>中文</span>分派器（dispatcher）把 CPU 交給短期排程器選中的 process，工作包括：內容切換、切回使用者模式、跳到程式該繼續的位置。分派延遲（dispatch latency）是停掉一個 process、啟動另一個所花的時間。</div></div>
 
 <h3>3.2 Scheduling Criteria（評估標準）<span class="star">★★</span></h3>
 <table style="width:100%">
@@ -594,8 +597,8 @@ Waiting time    = Turnaround time − Burst time</div>
 <tr><td>Priority（優先權）</td><td class="l">priority 最高的先做（<b>數字越小越優先</b>）</td><td>兩種都有</td><td class="l"><b>Starvation</b>，解法 <b>aging（老化）</b>（等越久 priority 越高）；SJF 是 priority 的特例</td></tr>
 <tr><td>RR</td><td class="l">每人輪流用一個 time quantum（時間片段） q</td><td>是</td><td class="l">q 太大 → 變 FCFS；q 太小 → context switch（內容切換） 太多。回應快，但平均 turnaround 通常比 SJF 高</td></tr>
 </table>
-<div class="box en"><span class="lbl">ANSWER TEMPLATE — Starvation & Aging</span>Starvation: low-priority processes may never execute. Solution — Aging: as time progresses, increase the priority of the process.</div>
-<div class="box en"><span class="lbl">ANSWER TEMPLATE — Round Robin</span>Each process gets a small unit of CPU time (time quantum q), usually 10–100 ms. After this time has elapsed, the process is preempted and added to the end of the ready queue. If there are n processes, no process waits more than (n−1)q time units. If q is large, RR becomes FCFS; if q is small, q must be large with respect to context-switch time, otherwise overhead is too high. (Rule of thumb: 80% of CPU bursts should be shorter than q.)</div>
+<div class="box en"><span class="lbl">ANSWER TEMPLATE — Starvation & Aging</span>Starvation: low-priority processes may never execute. Solution — Aging: as time progresses, increase the priority of the process.<div class="zhtr"><span>中文</span>飢餓（starvation）：低優先權的 process 可能永遠輪不到。解法是老化（aging）：等越久，優先權就逐漸調高。</div></div>
+<div class="box en"><span class="lbl">ANSWER TEMPLATE — Round Robin</span>Each process gets a small unit of CPU time (time quantum q), usually 10–100 ms. After this time has elapsed, the process is preempted and added to the end of the ready queue. If there are n processes, no process waits more than (n−1)q time units. If q is large, RR becomes FCFS; if q is small, q must be large with respect to context-switch time, otherwise overhead is too high. (Rule of thumb: 80% of CPU bursts should be shorter than q.)<div class="zhtr"><span>中文</span>每個 process 一次只拿到一小段 CPU 時間（時間配額 time quantum q，通常 10～100 ms）。時間到就被搶走、排到就緒佇列最後面。有 n 個 process 時，沒有人會等超過 (n−1)q。q 太大會變成 FCFS；q 太小則切換負擔太重，所以 q 要遠大於內容切換時間（經驗法則：80% 的 CPU burst 要比 q 短）。</div></div>
 
 <h3>3.4 scheduling 計算 SOP（Gantt chart）<span class="star">★★★</span></h3>
 <div class="box tip"><span class="lbl">4 步驟，每題都一樣</span>
@@ -680,7 +683,7 @@ t(n) = 第 n 次實際 burst 長度；τ(n+1) = 下一次的預測值
 </svg>
 <div class="cap">MLFQ 例子：短工作在 Q0 就做完（優先），長工作慢慢沉到 Q2。</div>
 </div>
-<div class="box en"><span class="lbl">ANSWER</span>The main difference is process moving between queues: in multilevel queue scheduling, processes are permanently assigned to a queue; in multilevel feedback queue scheduling, a process can move between the queues.</div>
+<div class="box en"><span class="lbl">ANSWER</span>The main difference is process moving between queues: in multilevel queue scheduling, processes are permanently assigned to a queue; in multilevel feedback queue scheduling, a process can move between the queues.<div class="zhtr"><span>中文</span>主要差別在 process 能不能在佇列之間移動：多層佇列（MLQ）的 process 永遠固定在某個佇列；多層回饋佇列（MLFQ）的 process 可以在佇列間移動。</div></div>
 
 <h3>3.7 Real-Time Scheduling <span class="star">★</span></h3>
 <ul>
@@ -710,7 +713,7 @@ t(n) = 第 n 次實際 burst 長度；τ(n+1) = 下一次的預測值
 (1) <b>Responsiveness</b> – may allow continued execution if part of the process is blocked, especially important for user interfaces.<br>
 (2) <b>Resource sharing</b> – threads share resources of the process, easier than shared memory or message passing.<br>
 (3) <b>Economy</b> – cheaper than process creation; thread switching has lower overhead than context switching.<br>
-(4) <b>Scalability</b> – a process can take advantage of multiprocessor architectures.</div>
+(4) <b>Scalability</b> – a process can take advantage of multiprocessor architectures.<div class="zhtr"><span>中文</span>多執行緒的 4 個好處：(1) 反應快（responsiveness）：一部分卡住時其他部分還能繼續，對使用者介面特別重要。(2) 資源共享：thread 共用 process 的資源，比共享記憶體或訊息傳遞簡單。(3) 經濟：建立 thread 比建立 process 便宜，切換負擔也比較小。(4) 可擴充（scalability）：能利用多處理器架構。</div></div>
 <p class="small">口訣「回、共、省、擴」。Process creation is heavy-weight while thread creation is light-weight.</p>
 
 <h3>4.2 Concurrency（並行） vs. Parallelism <span class="star">★★</span></h3>
@@ -727,9 +730,9 @@ t(n) = 第 n 次實際 burst 長度；τ(n+1) = 下一次的預測值
 <p class="small">core 1 / core 2</p>
 </div>
 </div>
-<div class="box en"><span class="lbl">ANSWER TEMPLATE</span>Parallelism implies a system can perform more than one task simultaneously. Concurrency supports more than one task making progress (on a single processor/core, the scheduler provides concurrency).</div>
-<div class="box en"><span class="lbl">ANSWER TEMPLATE — Two types of parallelism ★★★</span><b>Data parallelism</b> – distributes subsets of the same data across multiple cores, same operation on each.<br><b>Task parallelism</b> – distributes threads across cores, each thread performing a unique operation.</div>
-<div class="box en"><span class="lbl">ANSWER TEMPLATE — Challenges of multicore programming（5 個）</span>Dividing activities, balance, data splitting, data dependency, and testing and debugging.</div>
+<div class="box en"><span class="lbl">ANSWER TEMPLATE</span>Parallelism implies a system can perform more than one task simultaneously. Concurrency supports more than one task making progress (on a single processor/core, the scheduler provides concurrency).<div class="zhtr"><span>中文</span>平行（parallelism）是系統可以「同時」執行多個工作。並行（concurrency）是讓多個工作「都有進展」（單核心時由排程器輪流執行也算）。</div></div>
+<div class="box en"><span class="lbl">ANSWER TEMPLATE — Two types of parallelism ★★★</span><b>Data parallelism</b> – distributes subsets of the same data across multiple cores, same operation on each.<br><b>Task parallelism</b> – distributes threads across cores, each thread performing a unique operation.<div class="zhtr"><span>中文</span>資料平行（data parallelism）：把同一份資料切成幾塊分給多個核心，每個核心做一樣的運算。工作平行（task parallelism）：把不同 thread 分給各核心，每個 thread 做不同的事。</div></div>
+<div class="box en"><span class="lbl">ANSWER TEMPLATE — Challenges of multicore programming（5 個）</span>Dividing activities, balance, data splitting, data dependency, and testing and debugging.<div class="zhtr"><span>中文</span>多核心程式設計的 5 個挑戰：切分工作、工作量平衡、切分資料、資料相依性、測試與除錯。</div></div>
 
 <h3>4.3 Amdahl's Law <span class="star">★★★</span></h3>
 <div class="calc">speedup ≤ 1 / ( S + (1 − S) / N )
@@ -743,7 +746,7 @@ N → ∞ 時，speedup → 1 / S   （serial 部分決定上限）</div>
   1 / (0.4 + 0.6/4) = 1 / 0.55 ≈ 1.818
 練習 C：80% parallel，N=8
   1 / (0.2 + 0.8/8) = 1 / 0.3 ≈ 3.33；N → ∞ 上限 = 1/0.2 = 5</div>
-<div class="box en"><span class="lbl">ANSWER TEMPLATE</span>Amdahl's law identifies performance gains from adding additional cores to an application that has both serial and parallel components. As N approaches infinity, speedup approaches 1/S, so the serial portion of an application has a disproportionate effect on the performance gained by adding additional cores.</div>
+<div class="box en"><span class="lbl">ANSWER TEMPLATE</span>Amdahl's law identifies performance gains from adding additional cores to an application that has both serial and parallel components. As N approaches infinity, speedup approaches 1/S, so the serial portion of an application has a disproportionate effect on the performance gained by adding additional cores.<div class="zhtr"><span>中文</span>Amdahl 定律算出：程式同時有循序（serial）和平行部分時，加核心能快多少。核心數 N 趨近無限大時，加速比趨近 1/S（S 是循序部分比例），所以循序部分對效能影響非常大。</div></div>
 
 <h3>4.4 User Threads（使用者執行緒） vs. Kernel Threads（核心執行緒）</h3>
 <ul>
@@ -819,7 +822,7 @@ Thread 2: lock(second_mutex); lock(first_mutex);
 <tr><td>No preemption（不可搶奪）</td><td class="l">A resource can be released only voluntarily by the process holding it, after that process has completed its task.</td><td class="l">不能硬搶</td></tr>
 <tr><td>Circular wait（循環等待）</td><td class="l">There exists a set {P0, P1, …, Pn} of waiting processes such that P0 waits for P1, P1 waits for P2, …, Pn waits for P0.</td><td class="l">等待形成一個圈</td></tr>
 </table>
-<div class="box en"><span class="lbl">ANSWER</span>Deadlock can arise if four conditions hold simultaneously: mutual exclusion, hold and wait, no preemption, and circular wait.</div>
+<div class="box en"><span class="lbl">ANSWER</span>Deadlock can arise if four conditions hold simultaneously: mutual exclusion, hold and wait, no preemption, and circular wait.<div class="zhtr"><span>中文</span>四個條件同時成立才可能死結：互斥（mutual exclusion）、持有並等待（hold and wait）、不可搶奪（no preemption）、循環等待（circular wait）。</div></div>
 
 <h3>5.3 Resource-Allocation Graph（RAG）<span class="star">★★</span></h3>
 <div class="two">
@@ -830,7 +833,7 @@ Thread 2: lock(second_mutex); lock(first_mutex);
 <li><b>Assignment edge（分配邊）</b>：R → P（R 已分配給 P）。</li>
 <li><b>Claim edge（宣告邊）</b>（avoidance（避免） 用）：P ⇢ R 虛線，表示「將來可能會要」。</li>
 </ul>
-<div class="box en"><span class="lbl">BASIC FACTS ★★★</span>If the graph contains no cycles → no deadlock.<br>If the graph contains a cycle → (1) if only one instance per resource type, then deadlock; (2) if several instances per resource type, possibility of deadlock.</div>
+<div class="box en"><span class="lbl">BASIC FACTS ★★★</span>If the graph contains no cycles → no deadlock.<br>If the graph contains a cycle → (1) if only one instance per resource type, then deadlock; (2) if several instances per resource type, possibility of deadlock.<div class="zhtr"><span>中文</span>圖裡沒有環 → 沒有死結。圖裡有環 → (1) 每種資源只有一個 instance：一定死結；(2) 每種資源有多個 instance：可能死結。</div></div>
 </div>
 <div class="fig" style="flex:0 0 240px">
 <svg viewBox="0 0 240 200" width="230" xmlns="http://www.w3.org/2000/svg" font-family="Liberation Sans, WenQuanYi Zen Hei" font-size="13">
@@ -849,7 +852,7 @@ Thread 2: lock(second_mutex); lock(first_mutex);
 </div>
 
 <h3>5.4 處理 Deadlock 的三種方法 <span class="star">★★</span></h3>
-<div class="box en"><span class="lbl">ANSWER TEMPLATE</span>(1) Ensure that the system will never enter a deadlock state (deadlock prevention or avoidance).<br>(2) Allow the system to enter a deadlock state and then recover (detection and recovery).<br>(3) Ignore the problem and pretend that deadlocks never occur in the system; used by most operating systems.</div>
+<div class="box en"><span class="lbl">ANSWER TEMPLATE</span>(1) Ensure that the system will never enter a deadlock state (deadlock prevention or avoidance).<br>(2) Allow the system to enter a deadlock state and then recover (detection and recovery).<br>(3) Ignore the problem and pretend that deadlocks never occur in the system; used by most operating systems.<div class="zhtr"><span>中文</span>處理死結的三種方法：(1) 保證系統永遠不進入死結（預防 prevention 或避免 avoidance）；(2) 允許進入死結，再偵測並恢復（detection and recovery）；(3) 不理它，假裝死結不會發生，大部分作業系統都這樣做。</div></div>
 
 <h3>5.5 Deadlock Prevention（破壞四條件之一）<span class="star">★★</span></h3>
 <table style="width:100%">
@@ -863,7 +866,7 @@ Thread 2: lock(second_mutex); lock(first_mutex);
 <h3>5.6 Deadlock Avoidance 與 Safe State <span class="star">★★★</span></h3>
 <div class="box zh"><span class="lbl">白話</span>Avoidance＝事先知道每個 process <b>最多</b>會要多少 resource (Max)，每次分配前先模擬：「給了之後，還找得到一個順序讓大家都做完嗎？」找得到＝<b>safe</b>，才給。</div>
 <div class="box en"><span class="lbl">ANSWER TEMPLATE — Safe state</span>A system is in a safe state if there exists a sequence &lt;P1, P2, …, Pn&gt; of ALL the processes such that for each Pi, the resources that Pi can still request can be satisfied by the currently available resources plus the resources held by all Pj, with j &lt; i.<br>
-If a system is in a safe state → no deadlocks. If a system is in an unsafe state → possibility of deadlock. Avoidance → ensure that a system will never enter an unsafe state.</div>
+If a system is in a safe state → no deadlocks. If a system is in an unsafe state → possibility of deadlock. Avoidance → ensure that a system will never enter an unsafe state.<div class="zhtr"><span>中文</span>安全狀態（safe state）：存在一個包含「所有」process 的順序 &lt;P1, P2, …, Pn&gt;，讓每個 Pi 還要的資源，都能被「目前可用的資源＋排在它前面所有 Pj 持有的資源」滿足。安全狀態 → 不會死結；不安全狀態 → 可能死結。避免（avoidance）就是確保系統永遠不進入不安全狀態。</div></div>
 <div class="fig">
 <svg viewBox="0 0 300 150" width="240" xmlns="http://www.w3.org/2000/svg" font-family="Liberation Sans, WenQuanYi Zen Hei" font-size="13">
  <ellipse cx="150" cy="75" rx="145" ry="70" fill="#eaf6ef" stroke="#1d7a4f" stroke-width="1.5"/>
@@ -900,7 +903,7 @@ P1 need 2 ≤ 2 → 4；P0 need 5 > 4、P2 need 6 > 4 → 卡住 → unsafe</div
 <b>Available</b>[m]: number of available instances of each resource type.<br>
 <b>Max</b>[n×m]: maximum demand of each process.<br>
 <b>Allocation</b>[n×m]: number of instances currently allocated to each process.<br>
-<b>Need</b>[n×m]: remaining need. <b>Need = Max − Allocation</b>.</div>
+<b>Need</b>[n×m]: remaining need. <b>Need = Max − Allocation</b>.<div class="zhtr"><span>中文</span>Available[m]：每種資源目前可用的數量。Max[n×m]：每個 process 最多需要多少。Allocation[n×m]：每個 process 目前分到多少。Need[n×m]：還需要多少。Need = Max − Allocation。</div></div>
 
 <div class="box tip"><span class="lbl">Safety Algorithm 白話版（考試照這樣寫）</span>
 <ol>
@@ -931,7 +934,7 @@ P1 need 2 ≤ 2 → 4；P0 need 5 > 4、P2 need 6 > 4 → 卡住 → unsafe</div
 <tr><td>3</td><td>(7,4,5)</td><td>P2</td><td>(6,0,0) ≤ (7,4,5) ✓</td><td>(7,4,5)+(3,0,2) = (10,4,7)</td></tr>
 <tr><td>4</td><td>(10,4,7)</td><td>P0</td><td>(7,4,3) ≤ (10,4,7) ✓</td><td>(10,4,7)+(0,1,0) = (10,5,7)</td></tr>
 </table>
-<div class="box en"><span class="lbl">ANSWER（結論句）</span>The system is in a safe state since the sequence &lt;P1, P3, P4, P2, P0&gt; satisfies the safety criteria.</div>
+<div class="box en"><span class="lbl">ANSWER（結論句）</span>The system is in a safe state since the sequence &lt;P1, P3, P4, P2, P0&gt; satisfies the safety criteria.<div class="zhtr"><span>中文</span>系統處於安全狀態，因為順序 &lt;P1, P3, P4, P2, P0&gt; 符合安全條件。</div></div>
 <div class="box tip"><span class="lbl">安心提示</span>Safe sequence（安全序列） 可能不只一個（例如 &lt;P1, P3, P0, P2, P4&gt; 也對），只要每一步都檢查正確就給分。最後 Work 一定等於 resource 總數 (10,5,7)，可以用來驗算。</div>
 
 <h4>Resource-Request Algorithm（某 process 提出 request 能不能給？）</h4>
@@ -1031,40 +1034,40 @@ P1 need 2 ≤ 2 → 4；P0 need 5 > 4、P2 need 6 > 4 → 卡住 → unsafe</div
 <h3>I. Short Answer（每題 5%）</h3>
 
 <div class="exq" id="past-1" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q1</span>Please list three main components of central process unit (CPU).</p></div><label class="small" for="past-1-a">你的答案</label><textarea id="past-1-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
-<div class="box en"><span class="lbl">ANSWER</span>Control Unit (CU), Arithmetic and Logic Unit (ALU), and Registers.</div>
+<div class="box en"><span class="lbl">ANSWER</span>Control Unit (CU), Arithmetic and Logic Unit (ALU), and Registers.<div class="zhtr"><span>中文</span>控制單元（CU）、算術邏輯單元（ALU）、暫存器（Registers）。</div></div>
 <div class="box zh"><span class="lbl">白話</span>CU＝指揮官（決定下一步做什麼）；ALU＝計算機（加減乘除、比大小）；Register＝CPU 裡超快的小抽屜（暫存資料）。口訣：<b>「控、算、存」</b>。</div>
 
 </div></details><label class="self" for="past-1-c"><input type="checkbox" id="past-1-c"> 我答對了（5 分）</label></div><div class="exq" id="past-2" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q2</span>Given FCFS, SJF, SRTF, Priority, RR scheduling algorithms, which will suffer from the starvation problem?</p></div><label class="small" for="past-2-a">你的答案</label><textarea id="past-2-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
-<div class="box en"><span class="lbl">ANSWER</span>SJF (and its preemptive version SRTF) and Priority scheduling. Long processes / low-priority processes may never get the CPU. Solution: <i>aging</i>.</div>
+<div class="box en"><span class="lbl">ANSWER</span>SJF (and its preemptive version SRTF) and Priority scheduling. Long processes / low-priority processes may never get the CPU. Solution: <i>aging</i>.<div class="zhtr"><span>中文</span>SJF（和它的可搶奪版本 SRTF）以及優先權排班（Priority）。長的或低優先權的 process 可能永遠拿不到 CPU。解法：老化（aging）。</div></div>
 <div class="box zh"><span class="lbl">白話</span>Starvation（飢餓）＝某個 process 一直被插隊，永遠輪不到。SJF 總是挑短的，長工作一直等；Priority 總是挑高優先，低優先一直等。FCFS 和 RR 是排隊輪流，不會餓死。</div>
 
 </div></details><label class="self" for="past-2-c"><input type="checkbox" id="past-2-c"> 我答對了（5 分）</label></div><div class="exq" id="past-3" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q3</span>Which schedulers are related to the degree of multiprogramming?</p></div><label class="small" for="past-3-a">你的答案</label><textarea id="past-3-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
-<div class="box en"><span class="lbl">ANSWER</span>Long-term scheduler and Mid-term (medium-term) scheduler.</div>
+<div class="box en"><span class="lbl">ANSWER</span>Long-term scheduler and Mid-term (medium-term) scheduler.<div class="zhtr"><span>中文</span>長期排程器（long-term）和中期排程器（mid-term／medium-term）。</div></div>
 <div class="box zh"><span class="lbl">白話</span>Degree of multiprogramming＝記憶體裡同時有幾個 process。Long-term 決定「放誰進來」(變多)，Mid-term 把 process 暫時搬到硬碟 (變少)。Short-term 只決定誰用 CPU，跟數量無關。</div>
 
 </div></details><label class="self" for="past-3-c"><input type="checkbox" id="past-3-c"> 我答對了（5 分）</label></div><div class="exq" id="past-4" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q4</span>What is the main difference between Multi-Level Queue scheduling and Multi-Level Feedback Queue scheduling?</p></div><label class="small" for="past-4-a">你的答案</label><textarea id="past-4-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
-<div class="box en"><span class="lbl">ANSWER</span>Process moving within (between) queues. In Multilevel Queue, a process is permanently assigned to one queue; in Multilevel Feedback Queue, a process can move between queues (so aging can be implemented).</div>
+<div class="box en"><span class="lbl">ANSWER</span>Process moving within (between) queues. In Multilevel Queue, a process is permanently assigned to one queue; in Multilevel Feedback Queue, a process can move between queues (so aging can be implemented).<div class="zhtr"><span>中文</span>差別在 process 能不能在佇列間移動。多層佇列：process 永遠固定在一個佇列；多層回饋佇列：process 可以移動（所以能實作老化）。</div></div>
 <div class="box zh"><span class="lbl">白話</span>MLQ＝分班後不能轉班；MLFQ＝可以升級／降級轉班。關鍵字就是 <b>"move between queues"</b>。</div>
 
 </div></details><label class="self" for="past-4-c"><input type="checkbox" id="past-4-c"> 我答對了（5 分）</label></div><div class="exq" id="past-5" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q5</span>What are two models of inter process communication (IPC)?</p></div><label class="small" for="past-5-a">你的答案</label><textarea id="past-5-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
-<div class="box en"><span class="lbl">ANSWER</span>Shared memory and message passing.</div>
+<div class="box en"><span class="lbl">ANSWER</span>Shared memory and message passing.<div class="zhtr"><span>中文</span>共享記憶體（shared memory）和訊息傳遞（message passing）。</div></div>
 
 </div></details><label class="self" for="past-5-c"><input type="checkbox" id="past-5-c"> 我答對了（5 分）</label></div><div class="exq" id="past-6" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q6</span>Please list four necessary conditions of deadlock occurrence.</p></div><label class="small" for="past-6-a">你的答案</label><textarea id="past-6-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
-<div class="box en"><span class="lbl">ANSWER</span>Mutual exclusion, hold and wait, no preemption, and circular wait.</div>
+<div class="box en"><span class="lbl">ANSWER</span>Mutual exclusion, hold and wait, no preemption, and circular wait.<div class="zhtr"><span>中文</span>互斥、持有並等待、不可搶奪、循環等待。</div></div>
 <div class="box zh"><span class="lbl">口訣</span><b>「互、持、不、環」</b>：互斥、持有並等待、不可搶奪、循環等待。四個<b>同時</b>成立才可能 deadlock。</div>
 
 </div></details><label class="self" for="past-6-c"><input type="checkbox" id="past-6-c"> 我答對了（5 分）</label></div><div class="exq" id="past-7" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q7</span>Please list two types of parallelism.</p></div><label class="small" for="past-7-a">你的答案</label><textarea id="past-7-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
-<div class="box en"><span class="lbl">ANSWER</span>Data parallelism and task parallelism.</div>
+<div class="box en"><span class="lbl">ANSWER</span>Data parallelism and task parallelism.<div class="zhtr"><span>中文</span>資料平行（data parallelism）和工作平行（task parallelism）。</div></div>
 <div class="box zh"><span class="lbl">白話</span>Data：同一件事，資料切開給不同核心做（每人改 10 份考卷）。Task：不同的事分給不同核心（一人改考卷、一人登成績）。</div>
 
 </div></details><label class="self" for="past-7-c"><input type="checkbox" id="past-7-c"> 我答對了（5 分）</label></div><h3>II. Essay（75%）</h3>
 
 <div class="exq" id="past-8" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q8 5%</span>What is direct memory access (DMA)?</p></div><label class="small" for="past-8-a">你的答案</label><textarea id="past-8-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
-<div class="box en"><span class="lbl">ANSWER</span>DMA is a hardware chip used for high-speed I/O devices able to transmit information at close to memory speeds. The device controller transfers blocks of data from buffer storage directly to main memory without CPU intervention. Only one interrupt is generated per block, rather than one interrupt per byte.</div>
+<div class="box en"><span class="lbl">ANSWER</span>DMA is a hardware chip used for high-speed I/O devices able to transmit information at close to memory speeds. The device controller transfers blocks of data from buffer storage directly to main memory without CPU intervention. Only one interrupt is generated per block, rather than one interrupt per byte.<div class="zhtr"><span>中文</span>DMA 是一顆硬體晶片，用在速度接近記憶體的高速 I/O 裝置。裝置控制器不經過 CPU，直接把整塊資料從緩衝區搬進主記憶體。每塊只發一次中斷，而不是每個 byte 一次。</div></div>
 <div class="box zh"><span class="lbl">白話</span>沒有 DMA：每搬 1 byte 都要 CPU 親自處理，CPU 很累。有 DMA：裝置控制器自己把<b>一整塊</b>資料直接搬到記憶體，搬完才通知 CPU 一次。關鍵字：<b>high-speed I/O、directly to memory、without CPU、one interrupt per block</b>。</div>
 
 </div></details><label class="self" for="past-8-c"><input type="checkbox" id="past-8-c"> 我答對了（5 分）</label></div><div class="exq" id="past-9" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q9 5%</span>What is convoy effect? Which scheduling algorithm will suffer this problem?</p></div><label class="small" for="past-9-a">你的答案</label><textarea id="past-9-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
-<div class="box en"><span class="lbl">ANSWER</span>Convoy effect is the case that short processes wait behind a long process, which leads to a much worse (longer) average waiting time. The FCFS (First-Come, First-Served) algorithm suffers this problem.</div>
+<div class="box en"><span class="lbl">ANSWER</span>Convoy effect is the case that short processes wait behind a long process, which leads to a much worse (longer) average waiting time. The FCFS (First-Come, First-Served) algorithm suffers this problem.<div class="zhtr"><span>中文</span>護航效應（convoy effect）：短的 process 卡在一個長 process 後面等，讓平均等待時間變得很長。FCFS（先到先服務）會有這個問題。</div></div>
 <div class="box zh"><span class="lbl">白話</span>超商排隊，前面一個人要結 50 樣東西，後面只買一瓶水的人全部被卡住。例：P1=24, P2=3, P3=3，P1 先到 → 平均等待 17；P1 最後 → 平均等待 3。</div>
 
 </div></details><label class="self" for="past-9-c"><input type="checkbox" id="past-9-c"> 我答對了（5 分）</label></div><div class="exq" id="past-10" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q10 5%</span>Application A has 60% parallel and 40% serial parts. Moving from 1-core to 4-cores CPU, what is the speedup based on Amdahl's law?</p></div><label class="small" for="past-10-a">你的答案</label><textarea id="past-10-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
@@ -1119,7 +1122,7 @@ speedup = 1 / ( 0.4 + 0.6/4 )
 <div class="box en"><span class="lbl">ANSWER</span>
 (1) <b>Long-term scheduler</b> (job scheduler): selects which processes should be brought into the ready queue. It also controls the degree of multiprogramming. It is invoked infrequently (seconds, minutes).<br>
 (2) <b>Mid-term scheduler</b>: decreases the degree of multiprogramming. It removes a process from memory, stores it on disk, and brings it back in from disk to continue execution (swapping).<br>
-(3) <b>Short-term scheduler</b> (CPU scheduler): selects which process should be executed next and allocates the CPU. It is invoked very frequently (milliseconds), so it must be fast.</div>
+(3) <b>Short-term scheduler</b> (CPU scheduler): selects which process should be executed next and allocates the CPU. It is invoked very frequently (milliseconds), so it must be fast.<div class="zhtr"><span>中文</span>(1) 長期排程器：決定哪些 process 進入就緒佇列，控制多元程式程度，很少執行（秒、分鐘）。(2) 中期排程器：降低多元程式程度，把 process 搬到硬碟、之後搬回來繼續（swapping）。(3) 短期排程器（CPU 排程器）：決定下一個用 CPU 的 process，非常頻繁（毫秒），所以要快。</div></div>
 <div class="fig">
 <svg viewBox="0 0 660 200" width="560" xmlns="http://www.w3.org/2000/svg" font-family="Liberation Sans, WenQuanYi Zen Hei" font-size="12.5">
  <defs><marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1d2433"/></marker></defs>
@@ -1176,7 +1179,7 @@ speedup = 1 / ( 0.4 + 0.6/4 )
 </svg>
 <div class="cap">左邊 4 條 user thread 多對多接到 3 個 kernel thread；右邊 1 條 user thread 被「綁定」到自己的 kernel thread。</div>
 </div>
-<div class="box en"><span class="lbl">可加一句說明</span>The two-level model is similar to the many-to-many model, except that it also allows a user thread to be bound to a kernel thread.</div>
+<div class="box en"><span class="lbl">可加一句說明</span>The two-level model is similar to the many-to-many model, except that it also allows a user thread to be bound to a kernel thread.<div class="zhtr"><span>中文</span>兩層模型（two-level model）和多對多模型很像，但還允許某個使用者 thread 綁定一個核心 thread。</div></div>
 <div class="box zh"><span class="lbl">白話</span>Two-level ＝ <b>many-to-many ＋ 一條綁定的 one-to-one</b>。畫法：波浪線＝user thread、圓圈 k＝kernel thread。左邊多條線匯集到一點再分到幾個 k；右邊一條直線直接接一個 k。</div>
 
 </div></details><label class="self" for="past-13-c"><input type="checkbox" id="past-13-c"> 我答對了（10 分）</label></div><div class="exq" id="past-14" data-pts="15"><div class="qtext"><p class="q"><span class="pts">Q15 15%</span>Consider the following snapshot of a system: Allocation / Max / Available … (Banker's algorithm)</p>
@@ -1215,33 +1218,33 @@ speedup = 1 / ( 0.4 + 0.6/4 )
 <h3>I. Short Answer（35%，每題 5%）</h3>
 
 <div class="exq" id="mock-a-1" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q1</span>Please list three advantages of multiprocessor systems.</p></div><label class="small" for="mock-a-1-a">你的答案</label><textarea id="mock-a-1-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
-<div class="box en"><span class="lbl">ANSWER</span>Increased throughput, economy of scale, and increased reliability (graceful degradation or fault tolerance).</div>
+<div class="box en"><span class="lbl">ANSWER</span>Increased throughput, economy of scale, and increased reliability (graceful degradation or fault tolerance).<div class="zhtr"><span>中文</span>提高吞吐量、規模經濟、提高可靠度（降級運作或容錯）。</div></div>
 
 </div></details><label class="self" for="mock-a-1-c"><input type="checkbox" id="mock-a-1-c"> 我答對了（5 分）</label></div><div class="exq" id="mock-a-2" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q2</span>What is the difference between a program and a process?</p></div><label class="small" for="mock-a-2-a">你的答案</label><textarea id="mock-a-2-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
-<div class="box en"><span class="lbl">ANSWER</span>A program is a passive entity stored on disk (an executable file); a process is an active entity, a program in execution. A program becomes a process when it is loaded into memory.</div>
+<div class="box en"><span class="lbl">ANSWER</span>A program is a passive entity stored on disk (an executable file); a process is an active entity, a program in execution. A program becomes a process when it is loaded into memory.<div class="zhtr"><span>中文</span>程式是存在硬碟上的被動實體（執行檔）；process 是主動實體，是執行中的程式。程式載入記憶體後就變成 process。</div></div>
 
 </div></details><label class="self" for="mock-a-2-c"><input type="checkbox" id="mock-a-2-c"> 我答對了（5 分）</label></div><div class="exq" id="mock-a-3" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q3</span>Please list four benefits of multithreaded programming.</p></div><label class="small" for="mock-a-3-a">你的答案</label><textarea id="mock-a-3-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
-<div class="box en"><span class="lbl">ANSWER</span>Responsiveness, resource sharing, economy, and scalability.</div>
+<div class="box en"><span class="lbl">ANSWER</span>Responsiveness, resource sharing, economy, and scalability.<div class="zhtr"><span>中文</span>反應快、資源共享、經濟、可擴充。</div></div>
 
 </div></details><label class="self" for="mock-a-3-c"><input type="checkbox" id="mock-a-3-c"> 我答對了（5 分）</label></div><div class="exq" id="mock-a-4" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q4</span>Which scheduling algorithm gives the minimum average waiting time? What is its main difficulty?</p></div><label class="small" for="mock-a-4-a">你的答案</label><textarea id="mock-a-4-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
-<div class="box en"><span class="lbl">ANSWER</span>SJF (Shortest-Job-First) is optimal. The difficulty is knowing the length of the next CPU burst (it can only be estimated, e.g., by exponential averaging).</div>
+<div class="box en"><span class="lbl">ANSWER</span>SJF (Shortest-Job-First) is optimal. The difficulty is knowing the length of the next CPU burst (it can only be estimated, e.g., by exponential averaging).<div class="zhtr"><span>中文</span>SJF（最短工作優先）是最佳的。難處是不知道下一次 CPU burst 多長，只能估計（例如用指數平均 exponential averaging）。</div></div>
 
 </div></details><label class="self" for="mock-a-4-c"><input type="checkbox" id="mock-a-4-c"> 我答對了（5 分）</label></div><div class="exq" id="mock-a-5" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q5</span>What are the two types of real-time systems?</p></div><label class="small" for="mock-a-5-a">你的答案</label><textarea id="mock-a-5-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
-<div class="box en"><span class="lbl">ANSWER</span>Soft real-time systems (no guarantee as to when a critical process will be scheduled) and hard real-time systems (a task must be serviced by its deadline).</div>
+<div class="box en"><span class="lbl">ANSWER</span>Soft real-time systems (no guarantee as to when a critical process will be scheduled) and hard real-time systems (a task must be serviced by its deadline).<div class="zhtr"><span>中文</span>軟即時系統（soft real-time：不保證關鍵 process 什麼時候被排到）和硬即時系統（hard real-time：工作一定要在期限前完成）。</div></div>
 
 </div></details><label class="self" for="mock-a-5-c"><input type="checkbox" id="mock-a-5-c"> 我答對了（5 分）</label></div><div class="exq" id="mock-a-6" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q6</span>What are three methods for handling deadlocks?</p></div><label class="small" for="mock-a-6-a">你的答案</label><textarea id="mock-a-6-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
-<div class="box en"><span class="lbl">ANSWER</span>(1) Ensure the system never enters a deadlock state (prevention or avoidance); (2) allow the system to enter a deadlock state and then recover (detection and recovery); (3) ignore the problem and pretend deadlocks never occur.</div>
+<div class="box en"><span class="lbl">ANSWER</span>(1) Ensure the system never enters a deadlock state (prevention or avoidance); (2) allow the system to enter a deadlock state and then recover (detection and recovery); (3) ignore the problem and pretend deadlocks never occur.<div class="zhtr"><span>中文</span>(1) 保證系統不進入死結（預防或避免）；(2) 允許進入死結再恢復（偵測與恢復）；(3) 不理它，假裝死結不會發生。</div></div>
 
 </div></details><label class="self" for="mock-a-6-c"><input type="checkbox" id="mock-a-6-c"> 我答對了（5 分）</label></div><div class="exq" id="mock-a-7" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q7</span>What is the difference between concurrency and parallelism?</p></div><label class="small" for="mock-a-7-a">你的答案</label><textarea id="mock-a-7-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
-<div class="box en"><span class="lbl">ANSWER</span>Concurrency supports more than one task making progress (possible on a single core by interleaving). Parallelism means a system can perform more than one task simultaneously (requires multiple cores).</div>
+<div class="box en"><span class="lbl">ANSWER</span>Concurrency supports more than one task making progress (possible on a single core by interleaving). Parallelism means a system can perform more than one task simultaneously (requires multiple cores).<div class="zhtr"><span>中文</span>並行：讓多個工作都有進展（單核心輪流也行）。平行：真的同時執行多個工作（需要多核心）。</div></div>
 
 </div></details><label class="self" for="mock-a-7-c"><input type="checkbox" id="mock-a-7-c"> 我答對了（5 分）</label></div><h3>II. Essay（65%）</h3>
 
 <div class="exq" id="mock-a-8" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q8 5%</span>What is dual-mode operation? Why does the OS need it?</p></div><label class="small" for="mock-a-8-a">你的答案</label><textarea id="mock-a-8-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
-<div class="box en"><span class="lbl">ANSWER</span>Dual-mode operation provides user mode and kernel mode, distinguished by a mode bit provided by hardware. Some instructions are privileged and can only be executed in kernel mode. It allows the OS to protect itself and other system components from errant or malicious user programs. A system call switches to kernel mode, and returning from the call resets it to user mode.</div>
+<div class="box en"><span class="lbl">ANSWER</span>Dual-mode operation provides user mode and kernel mode, distinguished by a mode bit provided by hardware. Some instructions are privileged and can only be executed in kernel mode. It allows the OS to protect itself and other system components from errant or malicious user programs. A system call switches to kernel mode, and returning from the call resets it to user mode.<div class="zhtr"><span>中文</span>雙模式提供使用者模式和核心模式，用硬體的模式位元區分。部分特權指令只能在核心模式執行。這讓 OS 能保護自己和其他元件，不被有問題或惡意的使用者程式破壞。系統呼叫切到核心模式，返回時切回使用者模式。</div></div>
 
 </div></details><label class="self" for="mock-a-8-c"><input type="checkbox" id="mock-a-8-c"> 我答對了（5 分）</label></div><div class="exq" id="mock-a-9" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q9 5%</span>What is a Process Control Block (PCB)? List the information it contains.</p></div><label class="small" for="mock-a-9-a">你的答案</label><textarea id="mock-a-9-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
-<div class="box en"><span class="lbl">ANSWER</span>The PCB (task control block) stores the information associated with each process: process state, program counter, CPU registers, CPU-scheduling information, memory-management information, accounting information, and I/O status information.</div>
+<div class="box en"><span class="lbl">ANSWER</span>The PCB (task control block) stores the information associated with each process: process state, program counter, CPU registers, CPU-scheduling information, memory-management information, accounting information, and I/O status information.<div class="zhtr"><span>中文</span>PCB（task control block）存每個 process 的資訊：狀態、程式計數器、CPU 暫存器、CPU 排班資訊、記憶體管理資訊、帳務資訊、I/O 狀態資訊。</div></div>
 
 </div></details><label class="self" for="mock-a-9-c"><input type="checkbox" id="mock-a-9-c"> 我答對了（5 分）</label></div><div class="exq" id="mock-a-10" data-pts="10"><div class="qtext"><p class="q"><span class="pts">Q10 10%</span>Consider the following processes. Draw the Gantt charts and compute the average waiting time for (a) non-preemptive SJF and (b) SRTF.</p>
 <table><tr><th>Process</th><th>Arrival</th><th>Burst</th></tr><tr><td>P1</td><td>0</td><td>7</td></tr><tr><td>P2</td><td>2</td><td>4</td></tr><tr><td>P3</td><td>4</td><td>1</td></tr><tr><td>P4</td><td>5</td><td>4</td></tr></table>
@@ -1301,7 +1304,7 @@ N→∞：1 / S = 1 / 0.3 ≈ 3.33</div>
 </svg>
 <div class="cap">波浪線 = user thread；圓圈 k = kernel thread。</div>
 </div>
-<div class="box en"><span class="lbl">ANSWER（disadvantage）</span>In the many-to-one model, one thread blocking causes all threads to block, and multiple threads cannot run in parallel on a multicore system because only one may be in the kernel at a time.</div>
+<div class="box en"><span class="lbl">ANSWER（disadvantage）</span>In the many-to-one model, one thread blocking causes all threads to block, and multiple threads cannot run in parallel on a multicore system because only one may be in the kernel at a time.<div class="zhtr"><span>中文</span>多對一模型的缺點：一個 thread 卡住（blocking）會讓全部 thread 卡住；而且一次只有一個 thread 能進核心，所以在多核心上不能平行執行。</div></div>
 </div>
 
 </div></details><label class="self" for="mock-a-12-c"><input type="checkbox" id="mock-a-12-c"> 我答對了（10 分）</label></div><div class="exq" id="mock-a-13" data-pts="10"><div class="qtext"><p class="q"><span class="pts">Q13 10%</span>Describe how deadlock can be prevented by ensuring that each of the four necessary conditions cannot hold.</p></div><label class="small" for="mock-a-13-a">你的答案</label><textarea id="mock-a-13-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
@@ -1309,10 +1312,10 @@ N→∞：1 / S = 1 / 0.3 ≈ 3.33</div>
 <b>Mutual exclusion</b>: not required for sharable resources (e.g., read-only files); in general it is difficult to deny.<br>
 <b>Hold and wait</b>: guarantee that whenever a process requests a resource, it does not hold any other resources: request and be allocated all resources before execution, or request resources only when holding none (low utilization, possible starvation).<br>
 <b>No preemption</b>: if a process holding resources requests another resource that cannot be immediately allocated, all resources it currently holds are released; it restarts only when it can regain the old and new resources.<br>
-<b>Circular wait</b>: impose a total ordering of all resource types and require each process to request resources in increasing order.</div>
+<b>Circular wait</b>: impose a total ordering of all resource types and require each process to request resources in increasing order.<div class="zhtr"><span>中文</span>互斥：可共享資源（例如唯讀檔）不需要，但一般很難否定。持有並等待：保證 process 要資源時手上沒有別的資源：執行前一次拿齊，或手上沒資源時才能要（缺點：使用率低、可能飢餓）。不可搶奪：持有資源的 process 要不到新資源時，就放掉手上全部資源，等新舊資源都能拿到才重新開始。循環等待：把所有資源類型排順序，每個 process 只能照遞增順序要。</div></div>
 
 </div></details><label class="self" for="mock-a-13-c"><input type="checkbox" id="mock-a-13-c"> 我答對了（10 分）</label></div><div class="exq" id="mock-a-14" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q14 5%</span>What is a context switch? Why is context-switch time considered overhead?</p></div><label class="small" for="mock-a-14-a">你的答案</label><textarea id="mock-a-14-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
-<div class="box en"><span class="lbl">ANSWER</span>When the CPU switches to another process, the system must save the state of the old process into its PCB and load the saved state of the new process. Context-switch time is overhead because the system does no useful work while switching.</div>
+<div class="box en"><span class="lbl">ANSWER</span>When the CPU switches to another process, the system must save the state of the old process into its PCB and load the saved state of the new process. Context-switch time is overhead because the system does no useful work while switching.<div class="zhtr"><span>中文</span>CPU 換到另一個 process 時，要把舊 process 的狀態存進 PCB，再載入新 process 的狀態。切換時間是額外負擔，因為切換時沒做有用的事。</div></div>
 
 </div></details><label class="self" for="mock-a-14-c"><input type="checkbox" id="mock-a-14-c"> 我答對了（5 分）</label></div><div class="exq" id="mock-a-15" data-pts="15"><div class="qtext"><p class="q"><span class="pts">Q15 15%</span>Consider the following snapshot. Total resources: A = 6, B = 4, C = 7.</p>
 <table>
@@ -1355,33 +1358,33 @@ N→∞：1 / S = 1 / 0.3 ≈ 3.33</div>
 <h3>I. Short Answer（35%，每題 5%）</h3>
 
 <div class="exq" id="mock-b-1" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q1</span>Please list the five states of a process.</p></div><label class="small" for="mock-b-1-a">你的答案</label><textarea id="mock-b-1-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
-<div class="box en"><span class="lbl">ANSWER</span>New, ready, running, waiting, and terminated.</div>
+<div class="box en"><span class="lbl">ANSWER</span>New, ready, running, waiting, and terminated.<div class="zhtr"><span>中文</span>新建（new）、就緒（ready）、執行（running）、等待（waiting）、結束（terminated）。</div></div>
 
 </div></details><label class="self" for="mock-b-1-c"><input type="checkbox" id="mock-b-1-c"> 我答對了（5 分）</label></div><div class="exq" id="mock-b-2" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q2</span>What is starvation, and what is its solution?</p></div><label class="small" for="mock-b-2-a">你的答案</label><textarea id="mock-b-2-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
-<div class="box en"><span class="lbl">ANSWER</span>Starvation: low-priority (or long) processes may never execute. Solution: aging, which gradually increases the priority of processes that wait for a long time.</div>
+<div class="box en"><span class="lbl">ANSWER</span>Starvation: low-priority (or long) processes may never execute. Solution: aging, which gradually increases the priority of processes that wait for a long time.<div class="zhtr"><span>中文</span>飢餓：低優先權（或很長）的 process 可能永遠不會執行。解法：老化，等越久優先權逐漸調高。</div></div>
 
 </div></details><label class="self" for="mock-b-2-c"><input type="checkbox" id="mock-b-2-c"> 我答對了（5 分）</label></div><div class="exq" id="mock-b-3" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q3</span>Please list three types of scheduling queues.</p></div><label class="small" for="mock-b-3-a">你的答案</label><textarea id="mock-b-3-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
-<div class="box en"><span class="lbl">ANSWER</span>Job queue (all processes in the system), ready queue (processes in main memory, ready and waiting to execute), and device queues (processes waiting for an I/O device).</div>
+<div class="box en"><span class="lbl">ANSWER</span>Job queue (all processes in the system), ready queue (processes in main memory, ready and waiting to execute), and device queues (processes waiting for an I/O device).<div class="zhtr"><span>中文</span>工作佇列（系統中所有 process）、就緒佇列（在主記憶體、準備好等著執行的 process）、裝置佇列（等某個 I/O 裝置的 process）。</div></div>
 
 </div></details><label class="self" for="mock-b-3-c"><input type="checkbox" id="mock-b-3-c"> 我答對了（5 分）</label></div><div class="exq" id="mock-b-4" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q4</span>In Round Robin scheduling, what happens if the time quantum is very large? If it is very small?</p></div><label class="small" for="mock-b-4-a">你的答案</label><textarea id="mock-b-4-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
-<div class="box en"><span class="lbl">ANSWER</span>If q is very large, RR becomes FCFS. If q is very small, the context-switch overhead becomes too high.</div>
+<div class="box en"><span class="lbl">ANSWER</span>If q is very large, RR becomes FCFS. If q is very small, the context-switch overhead becomes too high.<div class="zhtr"><span>中文</span>q 很大時 RR 會變成 FCFS；q 很小時內容切換的負擔太重。</div></div>
 
 </div></details><label class="self" for="mock-b-4-c"><input type="checkbox" id="mock-b-4-c"> 我答對了（5 分）</label></div><div class="exq" id="mock-b-5" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q5</span>Which multithreading model allows a user thread to be bound to a kernel thread?</p></div><label class="small" for="mock-b-5-a">你的答案</label><textarea id="mock-b-5-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
-<div class="box en"><span class="lbl">ANSWER</span>The two-level model (similar to many-to-many, but also allows a user thread to be bound to a kernel thread).</div>
+<div class="box en"><span class="lbl">ANSWER</span>The two-level model (similar to many-to-many, but also allows a user thread to be bound to a kernel thread).<div class="zhtr"><span>中文</span>兩層模型（像多對多，但還允許使用者 thread 綁定一個核心 thread）。</div></div>
 
 </div></details><label class="self" for="mock-b-5-c"><input type="checkbox" id="mock-b-5-c"> 我答對了（5 分）</label></div><div class="exq" id="mock-b-6" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q6</span>If a resource-allocation graph contains a cycle, is there always a deadlock? Explain.</p></div><label class="small" for="mock-b-6-a">你的答案</label><textarea id="mock-b-6-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
-<div class="box en"><span class="lbl">ANSWER</span>Not always. If there is only one instance per resource type, a cycle means deadlock. If there are several instances per resource type, a cycle means only a possibility of deadlock.</div>
+<div class="box en"><span class="lbl">ANSWER</span>Not always. If there is only one instance per resource type, a cycle means deadlock. If there are several instances per resource type, a cycle means only a possibility of deadlock.<div class="zhtr"><span>中文</span>不一定。每種資源只有一個 instance 時，有環就是死結；有多個 instance 時，有環只代表「可能」死結。</div></div>
 
 </div></details><label class="self" for="mock-b-6-c"><input type="checkbox" id="mock-b-6-c"> 我答對了（5 分）</label></div><div class="exq" id="mock-b-7" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q7</span>Please list three methods of implicit threading.</p></div><label class="small" for="mock-b-7-a">你的答案</label><textarea id="mock-b-7-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
-<div class="box en"><span class="lbl">ANSWER</span>Thread pools, OpenMP, and Grand Central Dispatch (GCD).</div>
+<div class="box en"><span class="lbl">ANSWER</span>Thread pools, OpenMP, and Grand Central Dispatch (GCD).<div class="zhtr"><span>中文</span>執行緒池（thread pools）、OpenMP、Grand Central Dispatch（GCD）。</div></div>
 
 </div></details><label class="self" for="mock-b-7-c"><input type="checkbox" id="mock-b-7-c"> 我答對了（5 分）</label></div><h3>II. Essay（65%）</h3>
 
 <div class="exq" id="mock-b-8" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q8 5%</span>What is an interrupt? What is a trap?</p></div><label class="small" for="mock-b-8-a">你的答案</label><textarea id="mock-b-8-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
-<div class="box en"><span class="lbl">ANSWER</span>An interrupt is a signal (e.g., from a device controller) that transfers control to the interrupt service routine through the interrupt vector, which contains the addresses of all service routines; the address of the interrupted instruction is saved. A trap (exception) is a software-generated interrupt caused either by an error (e.g., division by zero) or by a user request (a system call).</div>
+<div class="box en"><span class="lbl">ANSWER</span>An interrupt is a signal (e.g., from a device controller) that transfers control to the interrupt service routine through the interrupt vector, which contains the addresses of all service routines; the address of the interrupted instruction is saved. A trap (exception) is a software-generated interrupt caused either by an error (e.g., division by zero) or by a user request (a system call).<div class="zhtr"><span>中文</span>中斷是一個訊號（例如來自裝置控制器），透過中斷向量（存所有服務程式位址）把控制權交給中斷服務程式，並保存被中斷指令的位址。陷阱（trap／exception）是軟體產生的中斷，原因是錯誤（例如除以零）或使用者請求（系統呼叫）。</div></div>
 
 </div></details><label class="self" for="mock-b-8-c"><input type="checkbox" id="mock-b-8-c"> 我答對了（5 分）</label></div><div class="exq" id="mock-b-9" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q9 5%</span>Compare multiprogramming and timesharing.</p></div><label class="small" for="mock-b-9-a">你的答案</label><textarea id="mock-b-9-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
-<div class="box en"><span class="lbl">ANSWER</span>Multiprogramming keeps several jobs in memory so the CPU always has one to execute; when one job waits (e.g., for I/O), the OS switches to another job. Its goal is efficiency. Timesharing (multitasking) is a logical extension in which the CPU switches jobs so frequently that users can interact with each job while it is running; response time should be less than 1 second.</div>
+<div class="box en"><span class="lbl">ANSWER</span>Multiprogramming keeps several jobs in memory so the CPU always has one to execute; when one job waits (e.g., for I/O), the OS switches to another job. Its goal is efficiency. Timesharing (multitasking) is a logical extension in which the CPU switches jobs so frequently that users can interact with each job while it is running; response time should be less than 1 second.<div class="zhtr"><span>中文</span>多元程式把多個工作放在記憶體，CPU 永遠有事做；一個工作等待（例如等 I/O）時換另一個，目標是效率。分時（多工）是延伸：切換頻繁到使用者能跟每個工作互動，回應時間要小於 1 秒。</div></div>
 
 </div></details><label class="self" for="mock-b-9-c"><input type="checkbox" id="mock-b-9-c"> 我答對了（5 分）</label></div><div class="exq" id="mock-b-10" data-pts="10"><div class="qtext"><p class="q"><span class="pts">Q10 10%</span>All processes arrive at time 0 in the order P1, P2, P3, P4. Draw the Gantt charts and compute the average waiting time for (a) FCFS and (b) RR with time quantum = 4.</p>
 <table><tr><th>Process</th><th>Burst</th></tr><tr><td>P1</td><td>8</td></tr><tr><td>P2</td><td>4</td></tr><tr><td>P3</td><td>9</td></tr><tr><td>P4</td><td>5</td></tr></table>
@@ -1406,7 +1409,7 @@ RMS：period 越短越優先 → P1 (50) 優先於 P2 (80)
 </div>
 
 </div></details><label class="self" for="mock-b-11-c"><input type="checkbox" id="mock-b-11-c"> 我答對了（5 分）</label></div><div class="exq" id="mock-b-12" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q12 5%</span>In the shared-memory bounded-buffer solution, how do you tell that the buffer is empty or full? Why can it hold only BUFFER_SIZE − 1 items?</p></div><label class="small" for="mock-b-12-a">你的答案</label><textarea id="mock-b-12-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
-<div class="box en"><span class="lbl">ANSWER</span>Empty: in == out. Full: ((in + 1) % BUFFER_SIZE) == out. One slot is always left empty so that the "full" condition can be distinguished from the "empty" condition (otherwise both would be in == out), so at most BUFFER_SIZE − 1 items can be stored.</div>
+<div class="box en"><span class="lbl">ANSWER</span>Empty: in == out. Full: ((in + 1) % BUFFER_SIZE) == out. One slot is always left empty so that the "full" condition can be distinguished from the "empty" condition (otherwise both would be in == out), so at most BUFFER_SIZE − 1 items can be stored.<div class="zhtr"><span>中文</span>空：in == out。滿：((in + 1) % BUFFER_SIZE) == out。永遠留一格空的，才能分辨「滿」和「空」（不然兩者都是 in == out），所以最多只能放 BUFFER_SIZE − 1 個。</div></div>
 
 </div></details><label class="self" for="mock-b-12-c"><input type="checkbox" id="mock-b-12-c"> 我答對了（5 分）</label></div><div class="exq" id="mock-b-13" data-pts="10"><div class="qtext"><p class="q"><span class="pts">Q13 10%</span>Please draw the two models of interprocess communication and compare them.</p>
 </div><label class="small" for="mock-b-13-a">你的答案</label><textarea id="mock-b-13-a" rows="4" placeholder="畫圖題：用文字描述你的圖，例如列出每個狀態和每條箭頭（中英文都可以）"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="ansonly">
@@ -1424,7 +1427,7 @@ RMS：period 越短越優先 → P1 (50) 優先於 P2 (80)
  <g text-anchor="middle" font-weight="bold" fill="#b3261e"><text x="140" y="190">(a) Shared memory</text><text x="460" y="190">(b) Message passing</text></g>
 </svg>
 </div>
-<div class="box en"><span class="lbl">ANSWER</span>(a) Shared memory: cooperating processes share a region of memory and exchange information by reading and writing it; it is fast because the kernel is not involved after the region is set up. (b) Message passing: processes communicate through send() and receive() via the kernel without sharing variables; it is easier to implement and useful for small amounts of data and distributed systems.</div>
+<div class="box en"><span class="lbl">ANSWER</span>(a) Shared memory: cooperating processes share a region of memory and exchange information by reading and writing it; it is fast because the kernel is not involved after the region is set up. (b) Message passing: processes communicate through send() and receive() via the kernel without sharing variables; it is easier to implement and useful for small amounts of data and distributed systems.<div class="zhtr"><span>中文</span>(a) 共享記憶體：合作 process 共用一塊記憶體，靠讀寫交換資料；設定好後不經過核心，所以快。(b) 訊息傳遞：透過核心用 send() 和 receive() 溝通，不共用變數；比較好實作，適合少量資料和分散式系統。</div></div>
 </div>
 
 </div></details><label class="self" for="mock-b-13-c"><input type="checkbox" id="mock-b-13-c"> 我答對了（10 分）</label></div><div class="exq" id="mock-b-14" data-pts="10"><div class="qtext"><p class="q"><span class="pts">Q14 10%</span>Use the deadlock-detection algorithm. Total resources: A = 3, B = 3, C = 2. Available = (0,1,1).</p>
@@ -1602,40 +1605,40 @@ RMS：period 越短越優先 → P1 (50) 優先於 P2 (80)
 
 <h3>申論題型（describe / explain / compare）</h3>
 <p class="q">P1. What is a Process Control Block (PCB)? What information does it contain?</p>
-<div class="box en">A PCB (task control block) stores information associated with each process: process state, program counter, CPU registers, CPU-scheduling information, memory-management information, accounting information, and I/O status information.</div>
+<div class="box en">A PCB (task control block) stores information associated with each process: process state, program counter, CPU registers, CPU-scheduling information, memory-management information, accounting information, and I/O status information.<div class="zhtr"><span>中文</span>PCB（又叫 task control block）存每個 process 的資訊：process 狀態、程式計數器、CPU 暫存器、CPU 排班資訊、記憶體管理資訊、帳務資訊、I/O 狀態資訊。</div></div>
 
 <p class="q">P2. What is a context switch（內容切換）? Why is it overhead?</p>
-<div class="box en">When the CPU switches to another process, the system must save the state of the old process (into its PCB) and load the saved state for the new process. Context-switch time is overhead because the system does no useful work while switching.</div>
+<div class="box en">When the CPU switches to another process, the system must save the state of the old process (into its PCB) and load the saved state for the new process. Context-switch time is overhead because the system does no useful work while switching.<div class="zhtr"><span>中文</span>CPU 換到另一個 process 時，系統要把舊 process 的狀態存進它的 PCB，再載入新 process 的狀態。內容切換的時間是額外負擔，因為切換時系統沒做有用的事。</div></div>
 
 <p class="q">P3. Compare preemptive and nonpreemptive scheduling.</p>
-<div class="box en">In nonpreemptive scheduling, once the CPU is allocated to a process, the process keeps it until it terminates or switches to the waiting state. In preemptive scheduling, the CPU can be taken away from a running process (e.g., by a timer interrupt or a higher-priority arrival). Scheduling when a process switches from running to waiting or terminates is nonpreemptive; all other scheduling is preemptive.</div>
+<div class="box en">In nonpreemptive scheduling, once the CPU is allocated to a process, the process keeps it until it terminates or switches to the waiting state. In preemptive scheduling, the CPU can be taken away from a running process (e.g., by a timer interrupt or a higher-priority arrival). Scheduling when a process switches from running to waiting or terminates is nonpreemptive; all other scheduling is preemptive.<div class="zhtr"><span>中文</span>不可搶奪式（nonpreemptive）：CPU 一旦給了某個 process，它會一直用到結束或進入等待狀態。可搶奪式（preemptive）：正在執行的 process 可以被搶走 CPU（例如計時器中斷或有更高優先權的 process 到達）。從 running 變 waiting 或結束時的排班是不可搶奪的，其他情況都是可搶奪的。</div></div>
 
 <p class="q">P4. Compare multiprogramming and timesharing.</p>
-<div class="box en">Multiprogramming keeps several jobs in memory so the CPU always has one to execute; when one job waits for I/O, the OS switches to another job (for efficiency). Timesharing is a logical extension in which the CPU switches jobs so frequently that users can interact with each job while it is running (for interactivity, response time &lt; 1 second).</div>
+<div class="box en">Multiprogramming keeps several jobs in memory so the CPU always has one to execute; when one job waits for I/O, the OS switches to another job (for efficiency). Timesharing is a logical extension in which the CPU switches jobs so frequently that users can interact with each job while it is running (for interactivity, response time &lt; 1 second).<div class="zhtr"><span>中文</span>多元程式把多個工作放在記憶體，讓 CPU 永遠有事做；一個工作等 I/O 時就換另一個（目的是效率）。分時是延伸：CPU 換得非常頻繁，使用者能在執行時跟每個工作互動（目的是互動性，回應時間 &lt; 1 秒）。</div></div>
 
 <p class="q">P5. Explain the difference between concurrency（並行） and parallelism（平行）.</p>
-<div class="box en">Concurrency supports more than one task making progress, e.g., a single core interleaving tasks. Parallelism means a system can perform more than one task simultaneously, which requires multiple cores.</div>
+<div class="box en">Concurrency supports more than one task making progress, e.g., a single core interleaving tasks. Parallelism means a system can perform more than one task simultaneously, which requires multiple cores.<div class="zhtr"><span>中文</span>並行（concurrency）是讓多個工作都有進展，例如單核心輪流執行。平行（parallelism）是真的同時執行多個工作，需要多核心。</div></div>
 
 <p class="q">P6. Compare shared memory and message passing.</p>
-<div class="box en">In shared memory, cooperating processes share a region of memory and exchange data by reading and writing it; it is fast because the kernel is not involved after setup. In message passing, processes communicate through send() and receive() via the kernel without sharing variables; it is easier to implement and useful for small amounts of data and distributed systems.</div>
+<div class="box en">In shared memory, cooperating processes share a region of memory and exchange data by reading and writing it; it is fast because the kernel is not involved after setup. In message passing, processes communicate through send() and receive() via the kernel without sharing variables; it is easier to implement and useful for small amounts of data and distributed systems.<div class="zhtr"><span>中文</span>共享記憶體：合作的 process 共用一塊記憶體，靠讀寫它交換資料；設定好之後不用經過核心，所以快。訊息傳遞：process 透過核心用 send() 和 receive() 溝通，不共用變數；比較好實作，適合少量資料和分散式系統。</div></div>
 
 <p class="q">P7. Compare direct and indirect communication.</p>
-<div class="box en">In direct communication, processes must name each other explicitly (send(P, msg), receive(Q, msg)); a link is associated with exactly one pair of processes. In indirect communication, messages are sent to and received from mailboxes (ports); processes can communicate only if they share a mailbox, and a link may be associated with many processes.</div>
+<div class="box en">In direct communication, processes must name each other explicitly (send(P, msg), receive(Q, msg)); a link is associated with exactly one pair of processes. In indirect communication, messages are sent to and received from mailboxes (ports); processes can communicate only if they share a mailbox, and a link may be associated with many processes.<div class="zhtr"><span>中文</span>直接通訊：process 要明確指名對方（send(P, msg)、receive(Q, msg)），一條連結只屬於一對 process。間接通訊：訊息送到信箱（mailbox／port）再從信箱收；共用同一個信箱才能通訊，一條連結可以連很多 process。</div></div>
 
 <p class="q">P8. What is a safe state（安全狀態）? What is the relationship between safe, unsafe and deadlock?</p>
-<div class="box en">A system is in a safe state if there exists a safe sequence of all processes in which each process's remaining needs can be satisfied by the available resources plus resources held by all earlier processes. Safe state → no deadlock; unsafe state → possibility of deadlock. Deadlock states are a subset of unsafe states.</div>
+<div class="box en">A system is in a safe state if there exists a safe sequence of all processes in which each process's remaining needs can be satisfied by the available resources plus resources held by all earlier processes. Safe state → no deadlock; unsafe state → possibility of deadlock. Deadlock states are a subset of unsafe states.<div class="zhtr"><span>中文</span>如果存在一個所有 process 的安全順序，讓每個 process 還需要的資源都能由「可用資源＋前面所有 process 持有的資源」滿足，系統就是安全狀態。安全 → 不會死結；不安全 → 可能死結。死結狀態是不安全狀態的子集合。</div></div>
 
 <p class="q">P9. How can each deadlock condition be prevented?</p>
-<div class="box en">Mutual exclusion: not required for sharable resources (hard to deny in general). Hold and wait: a process must request all its resources before execution, or only when it holds none. No preemption: if a request cannot be granted, the process releases all resources it holds. Circular wait: impose a total ordering of resource types and request them in increasing order.</div>
+<div class="box en">Mutual exclusion: not required for sharable resources (hard to deny in general). Hold and wait: a process must request all its resources before execution, or only when it holds none. No preemption: if a request cannot be granted, the process releases all resources it holds. Circular wait: impose a total ordering of resource types and request them in increasing order.<div class="zhtr"><span>中文</span>互斥：可共享的資源不需要（但一般很難否定這個條件）。持有並等待：執行前一次要齊所有資源，或手上沒資源時才能要。不可搶奪：要求的資源拿不到時，就放掉手上所有資源。循環等待：把資源類型排好順序，只能照遞增順序要資源。</div></div>
 
 <p class="q">P10. Explain multilevel feedback queue scheduling with an example.</p>
-<div class="box en">A process can move between queues. Example: three queues — Q0 (RR, quantum 8 ms), Q1 (RR, quantum 16 ms), Q2 (FCFS). A new job enters Q0; if it does not finish in 8 ms it moves to Q1; if it still does not finish in 16 more ms it is moved to Q2. Short jobs finish quickly; aging can be implemented by moving a process up.</div>
+<div class="box en">A process can move between queues. Example: three queues — Q0 (RR, quantum 8 ms), Q1 (RR, quantum 16 ms), Q2 (FCFS). A new job enters Q0; if it does not finish in 8 ms it moves to Q1; if it still does not finish in 16 more ms it is moved to Q2. Short jobs finish quickly; aging can be implemented by moving a process up.<div class="zhtr"><span>中文</span>process 可以在佇列間移動。例子：三個佇列：Q0（RR，配額 8 ms）、Q1（RR，配額 16 ms）、Q2（FCFS）。新工作進 Q0，8 ms 內沒做完就降到 Q1；再 16 ms 還沒做完就降到 Q2。短工作很快做完；把 process 往上移就能實作老化（aging）。</div></div>
 
 <p class="q">P11. What is the bootstrap program（開機程式）?</p>
-<div class="box en">The bootstrap program is loaded at power-up or reboot. It is stored in ROM or EPROM (firmware), initializes all aspects of the system, and loads the operating-system kernel and starts its execution.</div>
+<div class="box en">The bootstrap program is loaded at power-up or reboot. It is stored in ROM or EPROM (firmware), initializes all aspects of the system, and loads the operating-system kernel and starts its execution.<div class="zhtr"><span>中文</span>開機程式（bootstrap program）在開機或重開機時載入，存在 ROM 或 EPROM（韌體 firmware）裡，負責初始化系統各部分，並載入作業系統核心（kernel）開始執行。</div></div>
 
 <p class="q">P12. What is the difference between fork() and exec()?</p>
-<div class="box en">fork() creates a new process that is a duplicate of the parent. exec() is used after fork() to replace the process's memory space with a new program.</div>
+<div class="box en">fork() creates a new process that is a duplicate of the parent. exec() is used after fork() to replace the process's memory space with a new program.<div class="zhtr"><span>中文</span>fork() 建立一個和父 process 一模一樣的新 process。exec() 在 fork() 之後用，把 process 的記憶體換成新的程式。</div></div>
 
 <h3>計算題型</h3>
 <ul>
@@ -1745,6 +1748,48 @@ ch5: [
  {q:"Work = (3,3,2). P1 has Need = (1,2,2) and Allocation = (2,0,0). After P1 finishes, Work = ?", o:["(4,5,4)","(5,3,2)","(2,1,0)","(1,2,2)"], a:1, e:"Need (1,2,2) ≤ (3,3,2) ✓ → Work + Allocation = (3,3,2) + (2,0,0) = (5,3,2)。"}
 ]
 };
+const HARD={
+ch1:[
+ {q:"Which of the following instructions does NOT need to be privileged?", o:["Set the value of the timer","Clear memory","Turn off interrupts","Read the clock"], a:3, e:"只有「讀時鐘」是無害的，使用者程式讀也沒關係。設定 timer、清記憶體、關中斷都能讓使用者程式搶走 OS 的控制權，所以必須是 privileged（特權）指令。"},
+ {q:"A device controller moves a 4 KB block to main memory using DMA. How many interrupts does the CPU receive for this block?", o:["0","1","512","4096"], a:1, e:"DMA 的重點：one interrupt per block（每個 block 一次）。如果是一般 interrupt-driven I/O，才會每個 byte 中斷一次（4096 次）。"},
+ {q:"If the hardware had NO timer, which problem could the OS NOT stop?", o:["A division by zero in a user program","A user program that enters an infinite loop and never calls the OS","A user program that tries to execute a privileged instruction","A user program that requests I/O"], a:1, e:"除以零、執行特權指令都會產生 trap，OS 自然拿回控制權；要 I/O 會呼叫 system call。只有無窮迴圈不會主動交還控制權，必須靠 timer interrupt（計時器中斷）。"},
+ {q:"A system keeps several jobs in memory and switches jobs ONLY when the running job waits for I/O. Users complain that the response time is several seconds. Which description fits?", o:["Timesharing system","Multiprogramming without timesharing","Hard real-time system","Multiprocessor system with graceful degradation"], a:1, e:"只在等 I/O 時才切換 = multiprogramming（目標是效率）。Timesharing 會頻繁切換，讓回應時間 < 1 秒（目標是互動）。"},
+ {q:"A server with 10 CPUs keeps running at a lower speed after one CPU fails. This property is called:", o:["Fault tolerance","Graceful degradation","Economy of scale","Asymmetric multiprocessing"], a:1, e:"Graceful degradation（降級運作）：壞一部分，還能用但變慢。Fault tolerance（容錯）更強：壞一部分也像沒事一樣繼續。兩個很容易搞混。"},
+ {q:"Which statement is FALSE?", o:["A trap is a software-generated interrupt","A system call switches the mode bit to kernel mode","A system call is a hardware interrupt sent by the device controller","The interrupt architecture must save the address of the interrupted instruction"], a:2, e:"System call 是程式自己發出的 trap（軟體中斷），不是裝置控制器送來的硬體中斷。"}
+],
+ch2:[
+ {q:"Which process-state transition is NOT possible?", o:["running → waiting","waiting → ready","ready → running","waiting → running"], a:3, e:"等完 I/O 的 process 要先回到 ready queue 排隊，再由 scheduler 挑中才能 running。不能從 waiting 直接跳到 running。"},
+ {q:"How many processes exist in total (including the original parent) after this code runs?  fork(); fork(); fork();", o:["3","6","7","8"], a:3, e:"每次 fork 都讓 process 數量加倍：1 → 2 → 4 → 8。題目問「總共」所以是 8；如果問「新建立幾個」才是 7。"},
+ {q:"What is printed?  int x = 5; if (fork() == 0) { x += 5; printf(\"%d \", x); } else { wait(NULL); x -= 5; printf(\"%d \", x); }", o:["10 0","0 10","10 10","5 5"], a:0, e:"Child 和 parent 各有一份自己的 x（fork 會複製記憶體）。Child 印 10；parent 因為 wait() 等 child 結束才印 0。所以是「10 0」。"},
+ {q:"A bounded buffer uses in/out pointers with BUFFER_SIZE = 8. At most how many items can it hold at the same time?", o:["6","7","8","9"], a:1, e:"要永遠留一格空的，才能分辨 full（(in+1)%8 == out）和 empty（in == out），所以最多 BUFFER_SIZE − 1 = 7 個。"},
+ {q:"Which of the following does NOT happen during a context switch?", o:["The old process's registers are saved into its PCB","The new process's saved state is loaded from its PCB","The new process's program code is reloaded from disk","The CPU does no useful work while switching"], a:2, e:"Context switch 只存／載入狀態（PCB 裡的 registers、PC 等），程式本身已經在記憶體裡，不會重新從硬碟載入。"},
+ {q:"After the shared region is set up, why is shared memory usually faster than message passing?", o:["It uses fewer CPU registers","Reads and writes do not need system calls into the kernel","It never needs synchronization","The kernel copies data in larger blocks"], a:1, e:"Shared memory 只有建立時需要 kernel；之後直接讀寫記憶體。Message passing 每次 send()/receive() 都要經過 kernel，所以比較慢。注意它仍然需要同步（synchronization）。"}
+],
+ch3:[
+ {q:"P1, P2, P3, P4 all arrive at time 0 with CPU bursts 6, 8, 7, 3. What is the average waiting time under (nonpreemptive) SJF?", o:["6","7","7.75","10.25"], a:1, e:"順序 P4(3) → P1(6) → P3(7) → P2(8)。等待時間 0、3、9、16，平均 28/4 = 7。10.25 是照 P1→P2→P3→P4 的 FCFS 答案，小心不要選到。"},
+ {q:"P1 = 24, P2 = 3, P3 = 3 (all arrive at 0, in that order). Round Robin with q = 4. What is the average waiting time?", o:["3","5.66","7","17"], a:1, e:"Gantt：P1(0–4) P2(4–7) P3(7–10) P1(10–30)。等待時間 P1 = 10 − 4 = 6，P2 = 4，P3 = 7，平均 17/3 ≈ 5.66。17 是總和不是平均。"},
+ {q:"SRTF (preemptive SJF): P1 arrives 0 burst 8, P2 arrives 1 burst 4, P3 arrives 2 burst 9, P4 arrives 3 burst 5. Average waiting time?", o:["5.75","6.5","7.75","8"], a:1, e:"Gantt：P1(0–1) P2(1–5) P4(5–10) P1(10–17) P3(17–26)。等待 P1 = 10−1 = 9，P2 = 0，P3 = 17−2 = 15，P4 = 5−3 = 2，平均 26/4 = 6.5。7.75 是不搶奪的 SJF 答案。"},
+ {q:"A process arrives at time 2, first gets the CPU at time 5, and finishes at time 12. Its CPU burst is 4. What is its waiting time?", o:["3","6","7","10"], a:1, e:"Turnaround = 12 − 2 = 10；waiting = turnaround − burst = 10 − 4 = 6。3 是 response time（第一次拿到 CPU 的時間 − 到達時間），不是 waiting time。"},
+ {q:"Exponential averaging with α = 0.5: the last predicted burst τn = 10 and the actual burst tn = 6. What is the next prediction τn+1?", o:["6","8","10","16"], a:1, e:"τn+1 = α·tn + (1 − α)·τn = 0.5×6 + 0.5×10 = 8。"},
+ {q:"Which statement is TRUE?", o:["RR always gives a lower average waiting time than FCFS","Preemptive priority scheduling cannot cause starvation","SJF gives the minimum average waiting time for a given set of processes","In a multilevel queue, processes move down when they use too much CPU"], a:2, e:"SJF 是 optimal（平均等待最小）。RR 的平均等待常常比 FCFS 長；preemptive priority 一樣會 starvation；會往下移動的是 multilevel FEEDBACK queue，不是 multilevel queue。"}
+],
+ch4:[
+ {q:"An application is 75% parallel and 25% serial. By Amdahl's law, what is the speedup on 4 cores?", o:["1.6","2.29","3","4"], a:1, e:"Speedup = 1 / (S + (1−S)/N) = 1 / (0.25 + 0.75/4) = 1 / 0.4375 ≈ 2.29。1.6 是 2 核心的答案。"},
+ {q:"For the same application (25% serial), what is the maximum speedup no matter how many cores are added?", o:["2","4","8","Unlimited"], a:1, e:"N → ∞ 時 speedup → 1/S = 1/0.25 = 4。循序部分決定上限。"},
+ {q:"A process uses the many-to-one model with 8 user threads on a 4-core machine. At most how many of its threads can run at the same instant?", o:["1","4","8","Depends on the scheduler"], a:0, e:"Many-to-one 只有一個 kernel thread，一次只有一個 thread 能進 kernel，所以多核心也只能跑 1 個。"},
+ {q:"Two threads read the SAME array: one finds the minimum, the other finds the maximum. This is an example of:", o:["Data parallelism","Task parallelism","Concurrency but not parallelism","Pipelining"], a:1, e:"關鍵在「做的事不一樣」（找最小 vs 找最大）→ task parallelism。如果是把陣列切兩半、兩個 thread 都做加總，才是 data parallelism。"},
+ {q:"Which of the following is NOT shared by the threads of the same process?", o:["Code section","Global variables","Open files","Stack"], a:3, e:"每個 thread 有自己的 stack、registers 和 PC（thread ID 也是自己的）；code、data（全域變數）、open files 是共用的。"},
+ {q:"Which statement is TRUE?", o:["Concurrency is impossible on a single-core CPU","Parallelism is possible on a single-core CPU","It is possible to have concurrency without parallelism","Parallelism and concurrency mean the same thing"], a:2, e:"單核心輪流執行就有 concurrency（每個工作都有進展），但沒有 parallelism（真正同時）。平行需要多核心。"}
+],
+ch5:[
+ {q:"A resource-allocation graph contains a cycle, and one resource type in the cycle has 2 instances. What can you conclude?", o:["There is definitely a deadlock","There is definitely no deadlock","There may or may not be a deadlock","The system is in a safe state"], a:2, e:"有環 + 多個 instance → 只是「可能」死結。只有在每種資源都只有一個 instance 時，有環才一定死結。"},
+ {q:"Three processes each need at most 2 units of the same resource. What is the minimum number of units that guarantees no deadlock?", o:["3","4","5","6"], a:1, e:"最壞情況每個人都拿到 (2 − 1) = 1 個在等。只要再多 1 個，就一定有人能做完：3 × 1 + 1 = 4。"},
+ {q:"Total 12 tape drives. P0: Max 10, Allocation 5; P1: Max 4, Allocation 2; P2: Max 9, Allocation 2. If P2 requests 1 more drive, should it be granted?", o:["Yes, the state stays safe","No, the resulting state is unsafe","Yes, because 1 ≤ Available","No, because P2's request exceeds its Max"], a:1, e:"假裝給：Available = 3 − 1 = 2。P1 還要 2 → 做完 → Available 4。P0 還要 5、P2 還要 6，都 > 4，找不到安全順序 → unsafe，要等。只檢查 request ≤ Available 是陷阱。"},
+ {q:"Requiring every process to request and be allocated all its resources before it starts executing denies which condition?", o:["Mutual exclusion","Hold and wait","No preemption","Circular wait"], a:1, e:"一開始就拿齊，執行中就不會「拿著一些、再等另一些」→ 破壞 hold and wait。破壞 circular wait 的方法是資源排序（total ordering）。"},
+ {q:"Which statement is TRUE?", o:["Every unsafe state is a deadlock","Every deadlock state is an unsafe state","A safe state can still deadlock","Deadlock avoidance needs no advance information"], a:1, e:"Deadlock ⊂ unsafe：死結一定不安全，但不安全不一定死結。Safe state 一定不會死結；避免法需要事先知道每個 process 的 Max。"},
+ {q:"Available = (3,3,2). P1's Need = (1,2,2) and P1 requests (1,0,2). If the Banker's algorithm pretends to grant it, what is the new Available?", o:["(2,3,0)","(4,3,4)","(2,1,0)","(3,3,2)"], a:0, e:"先檢查 (1,0,2) ≤ Need (1,2,2) 且 ≤ Available (3,3,2)。假裝給：Available = (3,3,2) − (1,0,2) = (2,3,0)。之後還要跑 safety algorithm 確認安全才真的給。"}
+]};
+for(const ch in HARD){HARD[ch].forEach(x=>x.h=1);QUIZ[ch].push(...HARD[ch]);}
 
 const VIEWS=[["home","首頁"],["ch1","Ch1 簡介"],["ch2","Ch2 Process"],["ch3","Ch3 排班"],["ch4","Ch4 Thread"],["ch5","Ch5 Deadlock"],["|"],["past","考古題"],["mock-a","模擬 A"],["mock-b","模擬 B"],["review","總複習"]];
 const KEY="os-midterm-v1";
@@ -1807,7 +1852,7 @@ function renderQuiz(ch){
   const p=document.createElement("p");p.className="small";p.textContent="點一個選項就會馬上對答案並顯示解析。錯的題目回上面找對應的段落再讀一次。";box.appendChild(p);
   qs.forEach((it,i)=>{
     const d=document.createElement("div");d.className="qitem";
-    const st=document.createElement("div");st.className="stem";st.innerHTML='<span class="num">'+(i+1)+'.</span>';st.appendChild(document.createTextNode(it.q));d.appendChild(st);
+    const st=document.createElement("div");st.className="stem";st.innerHTML='<span class="num">'+(i+1)+'.</span>'+(it.h?'<span class="hard">鑑別題</span>':'');st.appendChild(document.createTextNode(it.q));d.appendChild(st);
     const os=document.createElement("div");os.className="opts";
     const ord=order(it.o.length,i+ch.charCodeAt(2)*7);
     const btns=[];

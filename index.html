@@ -275,7 +275,7 @@ footer::before{content:"// ";}
     $("syncLed").className="led "+(on?(st.state==="dirty"?"sync":st.state):"");
     $("syncTitle").textContent=on?("已連結 GitHub"+(EZSync.user()?" @"+EZSync.user():"")):"只存在這台裝置";
     $("syncSub").textContent=on?(st.state==="sync"?"同步中…":fmt(EZSync.lastSync())):"";
-    $("foot").textContent=on?"進度同步在你的私人 Gist，各裝置共用":"作答和分數只存在你這台裝置的瀏覽器裡";
+    $("foot").textContent=on?"作答和分數只存在你這台裝置的瀏覽器裡";
     if(st.state==="err"){$("syncMsg").textContent=st.msg;$("syncMsg").className="msg err";}
   }
   EZSync.onStatus(render);

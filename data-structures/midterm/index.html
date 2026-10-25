@@ -247,6 +247,61 @@ body.nograde .nogradenote{display:block}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 /* data-structures additions */
+/* interactive labs */
+.lab{background:var(--paper);border:1.5px solid var(--ink);border-radius:10px;box-shadow:4px 4px 0 var(--hard);padding:14px 18px 16px;margin:20px 0}
+.labhead{display:flex;align-items:center;gap:10px;font-size:16px}
+.labtag{font-family:var(--f-mono);font-size:11px;font-weight:600;color:var(--accent-ink);background:var(--indigo);border-radius:4px;padding:1px 8px}
+.labhint{font-size:13.5px;color:var(--muted);margin:4px 0 10px}
+.labrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:8px 0}
+.labrow input[type=range]{flex:1 1 200px;accent-color:var(--indigo)}
+.labin{font:inherit;font-size:14px;color:var(--ink);background:var(--paper2);border:1px solid var(--line-strong);border-radius:6px;padding:5px 9px;max-width:100%}
+input.labin[type=number]{width:90px}
+.labgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.labgrid label{display:grid;gap:4px;font-size:12.5px;font-family:var(--f-mono);color:var(--muted);min-width:0}
+.labgrid label:first-child{grid-column:1/-1}
+.labgrid textarea{font-family:var(--f-mono);resize:vertical;width:100%}
+.labgrid select,.labgrid input{width:100%}
+.lablog{font-size:14px;line-height:1.7;background:var(--paper2);border:1px solid var(--line);border-radius:6px;padding:8px 12px;margin-top:10px;font-variant-numeric:tabular-nums}
+.lablog .bad,.arr.bad{color:var(--seal);font-weight:700}
+.labtbl{overflow-x:auto}.labtbl table{font-size:13px}
+.bars{display:grid;gap:6px;margin-top:6px}
+.bar-r{display:grid;grid-template-columns:96px 1fr 120px;gap:10px;align-items:center;font-family:var(--f-mono);font-size:12.5px}
+.bar-r .bt{height:14px;border:1px solid var(--ink);border-radius:3px;overflow:hidden;background:var(--paper2)}
+.bar-r .bt i{display:block;height:100%;background:var(--indigo);transition:width .15s}
+.bar-r:nth-child(4) .bt i,.bar-r:nth-child(5) .bt i{background:var(--seal)}
+.bar-r .bv{text-align:right;font-variant-numeric:tabular-nums}
+.cells,.slots{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.cell,.slot{min-width:46px;flex:0 0 auto;border:1.5px solid var(--ink);border-radius:5px;background:var(--paper);display:grid;justify-items:center;padding:2px 4px;font-variant-numeric:tabular-nums;transition:background .15s,opacity .15s}
+.cell .ci,.slot .ci{font-family:var(--f-mono);font-size:10.5px;color:var(--muted)}
+.cell .ct{font-family:var(--f-mono);font-size:10px;color:var(--seal);min-height:14px}
+.cell.out{opacity:.35}
+.cell.mid{background:var(--warn-soft);border-color:var(--warn)}
+.cell.hit{background:var(--ok-soft);border-color:var(--ok)}
+.slot{min-width:64px}.slot b{font-family:var(--f-mono);font-size:12.5px;min-height:18px}
+.slot.used{background:var(--indigo-soft)}
+.slot.new{background:var(--ok-soft);border-color:var(--ok)}
+.llwrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,300px);gap:12px;margin-top:8px}
+.llview{min-width:0;display:grid;gap:10px;align-content:start}
+.llrow{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.llrow.side{padding:8px;border:1px dashed var(--line-strong);border-radius:6px}
+.llhead{font-family:var(--f-mono);font-size:12px;border:1px solid var(--ink);border-radius:4px;padding:2px 6px;background:var(--paper2)}
+.node{display:grid;justify-items:center;min-width:52px;border:1.5px solid var(--ink);border-radius:6px;background:var(--paper);padding:3px 6px}
+.node b{font-family:var(--f-mono)}
+.node .ptr{font-family:var(--f-mono);font-size:10.5px;color:var(--seal);font-weight:600}
+.node.loc{background:var(--warn-soft)}
+.node.newn{background:var(--ok-soft);border-color:var(--ok)}
+.node.lost{opacity:.55;border-style:dashed}
+.arr{font-family:var(--f-mono);color:var(--indigo)}
+.nul{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.llcode{margin:0;font-size:12px;line-height:1.6;max-height:360px;overflow:auto}
+.llcode .cur{background:var(--warn-soft);outline:1px solid var(--warn-line);display:inline-block;width:100%}
+.chk{display:inline-flex;align-items:center;gap:4px}
+@media (max-width:640px){.llwrap{grid-template-columns:1fr}.bar-r{grid-template-columns:80px 1fr 92px}.lab{padding:12px}}
+
+.zhtr{font-family:var(--f-body);font-size:14.5px;line-height:1.75;color:var(--ink70);margin-top:10px;padding-top:9px;border-top:1px dashed var(--indigo-mid)}
+.zhtr span{display:inline-block;font-family:var(--f-mono);font-size:11px;font-weight:600;color:var(--indigo);border:1px solid var(--indigo-mid);border-radius:4px;padding:0 6px;margin-right:8px;vertical-align:1px}
+.qitem .hard,.wq .hard,.exq .hard{display:inline-block;font-family:var(--f-mono);font-size:11px;font-weight:600;color:var(--accent-ink);background:var(--seal);border-radius:4px;padding:1px 7px;margin-right:8px;vertical-align:2px}
+
 th,td{text-align:left}
 mark{background:linear-gradient(transparent 52%,var(--warn-line) 52%);color:inherit;padding:0 2px}
 pre{font-family:var(--f-mono);font-size:13.5px;line-height:1.7;background:var(--code);border:1px solid var(--line);border-radius:6px;padding:12px 16px;margin:12px 0;white-space:pre;overflow-x:auto}
@@ -419,6 +474,7 @@ f(n) = aⱼnᵏ + aⱼ₋₁nᵏ⁻¹ + … + a₁n + a₀  ⇒ O(nᵏ)</pre>
 <tr><td>Exponential</td><td>O(cⁿ)</td><td>2¹⁰⁰⁰⁰</td></tr>
 <tr><td>Factorial</td><td>O(n!)</td><td>10,000!</td></tr>
 </table></div>
+<div class="lab" data-lab="bigo"></div>
 <p>由快到慢：<b>O(1) &lt; O(log n) &lt; O(n) &lt; O(n log n) &lt; O(n²) &lt; O(nᵏ) &lt; O(cⁿ) &lt; O(n!)</b></p>
 <div class="two">
 <div class="box plain"><b>Add matrices（矩陣相加）</b>：兩層迴圈，每個 matrix1[r][c] + matrix2[r][c] → <b>O(n²)</b></div>
@@ -459,6 +515,16 @@ f(n) = aⱼnᵏ + aⱼ₋₁nᵏ⁻¹ + … + a₁n + a₀  ⇒ O(nᵏ)</pre>
 
   <div class="wq"><p class="q"><span class="pts">W5</span>Explain what an ADT is and why the bank-queue analyst should write a queue ADT instead of a program that only simulates the bank queue.</p>
   <details class="qa"><summary>看參考答案</summary><div class="inner">ADT = a data declaration packaged together with the operations that are meaningful for the data type；使用者只知道能做什麼（what），實作被隱藏（how）。寫 queue ADT 可重複用在任何 queue 問題；專用模擬程式只能用一次。用 ADT 後，分析師只要專心寫銀行應用。</div></details></div>
+<div class="wq"><p class="q"><span class="pts">W6</span><span class="hard">鑑別題</span>Count how many times <code>statement</code> runs, then give the Big-O. Explain why it is NOT O(n log n).</p><pre>1 i = 1
+2 loop (i &lt;= n)
+  1 j = 1
+  2 loop (j &lt;= i)
+    1 statement
+    2 j = j + 1
+  3 end loop
+  4 i = i * 2
+3 end loop</pre><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>The inner loop runs i times, and i = 1, 2, 4, …, n. Total = 1 + 2 + 4 + … + n ≈ 2n − 1, so the efficiency is O(n). It is not O(n log n) because the inner loop does not run n times on every pass; it runs only i times.<div class="zhtr"><span>中文</span>內層跑 i 次，而 i 依序是 1, 2, 4, …, n。總共 1 + 2 + 4 + … + n ≈ 2n − 1，所以是 O(n)。不是 O(n log n)，因為內層不是每次都跑 n 次，只跑 i 次。</div></div></div></details></div>
+<div class="wq"><p class="q"><span class="pts">W7</span><span class="hard">鑑別題</span>Algorithm A needs f(n) = 100 n log₂n steps and algorithm B needs f(n) = n²/2 steps. Which is faster when n = 1,000? When n = 10,000? What does this tell you about Big-O?</p><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>n = 1,000: A ≈ 100 × 1000 × 10 = 1,000,000; B = 500,000 → B is faster.<br>n = 10,000: A ≈ 100 × 10,000 × 13.3 ≈ 13,300,000; B = 50,000,000 → A is faster.<br>Big-O describes growth for large n: O(n log n) eventually beats O(n²) no matter how large its coefficient is, but for small n the coefficient can matter.<div class="zhtr"><span>中文</span>n = 1,000 時 B 比較快；n = 10,000 時 A 比較快。Big-O 描述的是 n 很大時的成長速度：不管係數多大，O(n log n) 最後一定贏 O(n²)；n 小的時候係數才有影響。</div></div></div></details></div>
 </div>
 <div class="quiz" data-quiz="ch1"></div></section>
 
@@ -528,6 +594,7 @@ end binarySearch</pre>
 <tr><td>6</td><td>7</td><td>6</td><td>22</td><td>找到</td></tr></table></div>
 找 11（不存在）：mid 5 (21) → last 4；mid 2 (8) → first 3；mid 3 (10) → first 4；mid 4 (14) → last 3；first 4 &gt; last 3，停止。</div>
 
+<div class="lab" data-lab="bsearch"></div>
 <h4>Comparison（Table 2-1，比較次數約略值）</h4>
 <div class="tbl"><table>
 <tr><th>List size</th><th>16</th><th>50</th><th>256</th><th>1,000</th><th>10,000</th><th>100,000</th><th>1,000,000</th></tr>
@@ -593,6 +660,7 @@ key 224562，list size 19：<br>
 <tr><td>0922</td><td>922 MOD 307 = 1</td><td>922 / 307 = 3</td><td>(3+1) = 4</td><td>(3+4) = 7</td></tr></table></div>
 課本範例：166702 MOD 307 = 1，offset 543，probe 1 = (543+1) MOD 307 = 237。</div>
 
+<div class="lab" data-lab="hash"></div>
 <h4>Linked list resolution（鏈結串列處理）</h4>
 <ul>
 <li>Open addressing 的缺點：每次碰撞處理都會提高之後碰撞的機率。</li>
@@ -627,6 +695,8 @@ key 224562，list size 19：<br>
   <details class="qa"><summary>看參考答案</summary><div class="inner">27→5；18→7；29→7 撞 → 8（1 次）；28→6；39→6 撞，7 撞，8 撞 → 9（3 次）；13→2；16→5 撞，6、7、8、9 撞 → 10（5 次）。<br>總碰撞 <span class="k">9 次</span>。<br>
   <div class="tbl"><table><tr><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th></tr><tr><td></td><td></td><td>13</td><td></td><td></td><td>27</td><td>28</td><td>18</td><td>29</td><td>39</td><td>16</td></tr></table></div>
   資料擠在 5–10 一整塊，這就是 linear probe 造成的 <b>primary clustering</b>。</div></details></div>
+<div class="wq"><p class="q"><span class="pts">W6</span><span class="hard">鑑別題</span>Insert keys 22, 33, 44, 55 (in order) into a list of size 11 with modulo division. Do it three times: with (a) linear probe, (b) quadratic probe, (c) key offset. For each, give the total collisions and the final addresses.</p><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>All four keys hash to 0.<br>(a) Linear: 22→0, 33→1 (1), 44→2 (2), 55→3 (3). Total 6; addresses 0, 1, 2, 3.<br>(b) Quadratic: 22→0, 33→0+1 = 1 (1), 44→1+4 = 5 (2), 55→5+9 = 14 MOD 11 = 3 (3). Total 6; addresses 0, 1, 5, 3.<br>(c) Key offset (offset = key / 11): 22→0, 33: offset 3 → 3 (1), 44: offset 4 → 4 (1), 55: offset 5 → 5 (1). Total 3; addresses 0, 3, 4, 5.<div class="zhtr"><span>中文</span>四個 key 都 hash 到 0。(a) 線性探測：碰撞 6 次，位置 0、1、2、3（擠在一起，primary clustering）。(b) 平方探測：碰撞 6 次，位置 0、1、5、3（散開一點，但大家走同一條路）。(c) 鍵值位移：每個 key 的 offset 不同，只碰撞 3 次，位置 0、3、4、5。這就是 key offset 能減少 secondary clustering 的原因。</div></div></div></details></div>
+<div class="wq"><p class="q"><span class="pts">W7</span><span class="hard">鑑別題</span>Keys are all multiples of 10 (10, 20, 30, …). Compare modulo division with list size 100 and list size 101. Which is better and why?</p><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>With size 100, key MOD 100 is always a multiple of 10, so only 10 addresses (0, 10, …, 90) are ever used and collisions pile up. With size 101 (a prime), multiples of 10 spread over all 101 addresses, so there are far fewer collisions. A prime list size is preferred.<div class="zhtr"><span>中文</span>用 100 時，餘數只會是 0、10、…、90 這 10 個位置，其他 90 格永遠空著，碰撞很多。用質數 101 時，10 的倍數會分散到全部 101 格。所以 list size 選質數比較好。</div></div></div></details></div>
 </div>
 <div class="quiz" data-quiz="ch2"></div></section>
 
@@ -745,6 +815,7 @@ end searchList</pre>
 <tr><td>Target &gt; last node</td><td><mark>Last node</mark></td><td><mark>Null</mark></td><td>False</td></tr>
 </table></div>
 <div class="box tip">記法：pLoc 永遠停在「第一個 ≥ target 的節點」，pPre 是它前一個。target 比全部都大，pLoc 跑到 null，pPre 停在 last node。</div>
+<div class="lab" data-lab="llist"></div>
 <p><b>Unordered list search</b>：用非 key 欄位找時，list 對該欄位是無序的，用簡單 sequential search；可能多筆符合，解法是回傳所有符合的元素。</p>
 
 <h4>retrieveNode、emptyList、fullList、listCount</h4>
@@ -973,13 +1044,25 @@ end deleteNode</pre>
 
   <div class="wq"><p class="q"><span class="pts">W5</span>In the searchList result table, fill pPre and pLoc for: (a) target &lt; first node, (b) target &gt; last node, (c) first &lt; target &lt; last (target not in list).</p>
   <details class="qa"><summary>看參考答案</summary><div class="inner">(a) pPre = null，pLoc = first node，return false<br>(b) pPre = last node，pLoc = null，return false<br>(c) pPre = largest node &lt; target，pLoc = first node &gt; target，return false</div></details></div>
+<div class="wq"><p class="q"><span class="pts">W6</span><span class="hard">鑑別題</span>Finish the algorithm that <b>reverses</b> a singly linked list in place (no new nodes).</p><pre><b>Algorithm</b> reverseList (ref list &lt;metadata&gt;)
+1 pPre = null
+2 pLoc = list.head
+3 loop (pLoc not null)
+  1 ___(a)___          <span class="c">remember the next node</span>
+  2 ___(b)___          <span class="c">turn the link around</span>
+  3 ___(c)___
+  4 ___(d)___
+4 end loop
+5 ___(e)___
+end reverseList</pre><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>(a) pNext = pLoc-&gt;link　(b) pLoc-&gt;link = pPre　(c) pPre = pLoc　(d) pLoc = pNext　(e) list.head = pPre<div class="zhtr"><span>中文</span>(a) 先記住下一個節點，不然改完 link 就找不到了　(b) 把目前節點的箭頭改成指向前一個　(c) pPre 前進到目前節點　(d) pLoc 前進到剛剛記住的下一個　(e) 迴圈結束時 pPre 停在原本的最後一個節點，它變成新的開頭</div></div></div></details></div>
+<div class="wq"><p class="q"><span class="pts">W7</span><span class="hard">鑑別題</span>A doubly linked list is 10 ⇄ 20 ⇄ 30. Insert 25 with insertDbl: searchList returns pPred = node 20 and pSucc = node 30. Write the four pointer assignments in the correct order.</p><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>1. pNew-&gt;back = pPred (25 → back → 20)<br>2. pNew-&gt;fore = pPred-&gt;fore (25 → fore → 30)<br>3. pPred-&gt;fore = pNew (20 → fore → 25)<br>4. pSucc-&gt;back = pNew (30 → back → 25)<div class="zhtr"><span>中文</span>1. 新節點的 back 指向 20　2. 新節點的 fore 指向 30（要在 20 的 fore 被改掉之前讀）　3. 20 的 fore 改指向新節點　4. 30 的 back 改指向新節點。第 2 步一定要在第 3 步前面。</div></div></div></details></div>
 </div>
 <div class="quiz" data-quiz="ch3"></div></section>
 <section class="view exam" id="y24" data-exam="y24" data-mins="110" hidden><div class="vhead"><div class="pcb" data-pcb="y24" role="img"></div><div class="eyebrow">2024 期中考</div><h1>2024 期中考古題</h1><p>Nov. 1, 2024　09:00–10:50。選擇題點了就對答案；手寫題在框裡作答，按「批改這題」或上方「批改全部手寫題」。題目照原卷打字。</p></div><div class="examtools"><span class="score"></span><span class="timer"></span><button class="btn tbtn" type="button">開始 110 分鐘計時</button><button class="btn primary gradeall" type="button">批改全部手寫題</button><button class="btn reset" type="button">清除作答</button><span class="gmsg"></span></div><p class="box tip nogradenote"><span class="lbl">批改方式</span>選擇題點了就對答案。手寫題用關鍵字比對自動批改：有寫到必要的英文術語或數字就給分。分數僅供參考，寫完一定要展開參考答案對照。</p>
 <h3>考卷結構</h3><table style="width:100%"><tr><th>大題</th><th>題號</th><th class="l">內容</th><th>配分</th></tr><tr><td>I 選擇</td><td>1–25</td><td class="l">Ch1 ×5、Ch2 ×11、Ch3 ×9</td><td>50%</td></tr><tr><td>II 填空</td><td>—</td><td class="l">Key offset 表格（1536、0922）</td><td>8%</td></tr><tr><td>III Quiz</td><td>26</td><td class="l">Fold boundary + modulo + linear probe / key offset</td><td>12%</td></tr><tr><td></td><td>27</td><td class="l">searchList 六種結果表</td><td>10%</td></tr><tr><td></td><td>28</td><td class="l">destroyList 程式填空</td><td>10%</td></tr><tr><td></td><td>29</td><td class="l">Append 程式填空</td><td>10%</td></tr></table>
 <h3>Part I. Multiple Choice（25 題，每題 2%）</h3><div class="quiz exmc" data-quiz="y24mc"></div>
 <h3>Part II. Fill-in（8%）</h3>
-<div class="exq" id="y24-2" data-pts="8"><div class="qtext"><p class="q"><span class="pts">II · 8%</span>Fill in the correct answer by considering <b>Key Offset</b> method with list size = 307.</p><table><tr><th>Key</th><th>Home address</th><th>Key Offset</th><th>Probe 1</th><th>Probe 2</th></tr><tr><td>1536</td><td></td><td></td><td></td><td></td></tr><tr><td>0922</td><td></td><td></td><td></td><td></td></tr></table></div><label class="small" for="y24-2-a">你的答案</label><textarea id="y24-2-a" rows="4" placeholder="例：1536: 1, 5, 6, 11 / 0922: ..."></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>1536：home 1, offset 5, probe 1 = 6, probe 2 = 11<br>0922：home 1, offset 3, probe 1 = 4, probe 2 = 7</div><div class="box zh"><span class="lbl">算法</span>Home = key MOD 307（1536 = 307×5 + 1）；Offset = key ÷ 307 取商；Probe 1 = (offset + home) MOD 307；Probe 2 = (offset + probe 1) MOD 307。</div></div></details><label class="self" for="y24-2-c"><input type="checkbox" id="y24-2-c"> 我答對了（8 分）</label></div>
+<div class="exq" id="y24-2" data-pts="8"><div class="qtext"><p class="q"><span class="pts">II · 8%</span>Fill in the correct answer by considering <b>Key Offset</b> method with list size = 307.</p><table><tr><th>Key</th><th>Home address</th><th>Key Offset</th><th>Probe 1</th><th>Probe 2</th></tr><tr><td>1536</td><td></td><td></td><td></td><td></td></tr><tr><td>0922</td><td></td><td></td><td></td><td></td></tr></table></div><label class="small" for="y24-2-a">你的答案</label><textarea id="y24-2-a" rows="4" placeholder="例：1536: 1, 5, 6, 11 / 0922: ..."></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>1536：home 1, offset 5, probe 1 = 6, probe 2 = 11<br>0922：home 1, offset 3, probe 1 = 4, probe 2 = 7<div class="zhtr"><span>中文</span>1536：本位地址（home address）1，位移量（key offset）5，第一次探測 6，第二次探測 11。0922：本位地址 1，位移量 3，第一次探測 4，第二次探測 7。</div></div><div class="box zh"><span class="lbl">算法</span>Home = key MOD 307（1536 = 307×5 + 1）；Offset = key ÷ 307 取商；Probe 1 = (offset + home) MOD 307；Probe 2 = (offset + probe 1) MOD 307。</div></div></details><label class="self" for="y24-2-c"><input type="checkbox" id="y24-2-c"> 我答對了（8 分）</label></div>
 
 <h3>Part III. Quiz（42%）</h3>
 <div class="exq" id="y24-26" data-pts="12"><div class="qtext"><p class="q"><span class="pts">26 · 12%</span>Store the keys shown below in an array with 19 elements by using the <b>fold-boundary</b> method and folding two digits at a time and then <b>modulo division</b> of the folded sum. You must show both the computing process and final answer.<br>(a) If using <b>linear probing</b> to resolve collision, how many collisions occurred? (2%)<br>(b) By (a), what is the final address? (3%)<br>(c) If using <b>key-offset</b> to resolve collision, how many collisions occurred? (2%)<br>(d) By (c), what is the final address? (3%)<br>(e) What is the <b>load factor</b> of the list after all keys have been inserted? (2%)</p><div class="calc">224562 → 137456 → 214572 →
@@ -993,7 +1076,7 @@ end deleteNode</pre>
 <tr><td>162145</td><td>61 + 21 + 54</td><td>136</td><td>3</td></tr>
 <tr><td>144457</td><td>41 + 44 + 75</td><td>160</td><td>8 ✗</td></tr>
 <tr><td>190255</td><td>91 + 02 + 55</td><td>148</td><td>15</td></tr>
-<tr><td>234554</td><td>32 + 45 + 45</td><td>122</td><td>8 ✗</td></tr></table><div class="box en"><span class="lbl">ANSWER</span>(a) 4 collisions<br>(b) 2: 140155, 3: 162145, 8: 214572, 9: 144457, 10: 214576, 11: 234554, 15: 190255, 17: 224562, 18: 137456<br>(c) 2 collisions<br>(d) 2: 140155, 3: 162145, 8: 214572, 10: 214576, 14: 234554, 15: 190255, 16: 144457, 17: 224562, 18: 137456<br>(e) 9 / 19 ≈ 47%</div><div class="box zh"><span class="lbl">過程</span><b>Linear</b>：144457 撞 8 → 9（1 次）；234554 撞 8、9、10 → 11（3 次）。<br><b>Key offset</b>（offset = 摺疊後的數字 ÷ 19 取商）：144457：160 ÷ 19 = 8，(8 + 8) MOD 19 = 16（1 次）；234554：122 ÷ 19 = 6，(6 + 8) MOD 19 = 14（1 次）。</div><div class="box warn"><span class="lbl">常見扣分</span>Key offset 要用<b>摺疊後的數字</b>去除以 19，不是用原本的 6 位數 key。2025 年有同學用原 key 算出「4 次、地址 9」被扣 6 分。</div></div></details><label class="self" for="y24-26-c"><input type="checkbox" id="y24-26-c"> 我答對了（12 分）</label></div>
+<tr><td>234554</td><td>32 + 45 + 45</td><td>122</td><td>8 ✗</td></tr></table><div class="box en"><span class="lbl">ANSWER</span>(a) 4 collisions<br>(b) 2: 140155, 3: 162145, 8: 214572, 9: 144457, 10: 214576, 11: 234554, 15: 190255, 17: 224562, 18: 137456<br>(c) 2 collisions<br>(d) 2: 140155, 3: 162145, 8: 214572, 10: 214576, 14: 234554, 15: 190255, 16: 144457, 17: 224562, 18: 137456<br>(e) 9 / 19 ≈ 47%<div class="zhtr"><span>中文</span>(a) 線性探測（linear probing）共碰撞 4 次。(b) 最後位置如上（234554 放在 11）。(c) 鍵值位移（key offset）共碰撞 2 次。(d) 最後位置如上（234554 放在 14、144457 放在 16）。(e) 負載因子（load factor）= 9 / 19 ≈ 47%。</div></div><div class="box zh"><span class="lbl">過程</span><b>Linear</b>：144457 撞 8 → 9（1 次）；234554 撞 8、9、10 → 11（3 次）。<br><b>Key offset</b>（offset = 摺疊後的數字 ÷ 19 取商）：144457：160 ÷ 19 = 8，(8 + 8) MOD 19 = 16（1 次）；234554：122 ÷ 19 = 6，(6 + 8) MOD 19 = 14（1 次）。</div><div class="box tip"><span class="lbl">自己驗算</span>Ch2 的「雜湊模擬器」預設就是這組 key，可以切換 linear／key offset 一步步看。<button class="btn" type="button" data-go="ch2">去 Ch2</button></div><div class="box warn"><span class="lbl">常見扣分</span>Key offset 要用<b>摺疊後的數字</b>去除以 19，不是用原本的 6 位數 key。2025 年有同學用原 key 算出「4 次、地址 9」被扣 6 分。</div></div></details><label class="self" for="y24-26-c"><input type="checkbox" id="y24-26-c"> 我答對了（12 分）</label></div>
 
 <div class="exq" id="y24-27" data-pts="10"><div class="qtext"><p class="q"><span class="pts">27 · 10%</span>The search list algorithm has 6 possible results. The text book summarizes them into the following table. Please finish the table.</p><table><tr><th class="l">Condition</th><th>pPre</th><th>pLoc</th><th>Return</th></tr>
 <tr><td class="l">Target &lt; first node</td><td>Null</td><td>(a)</td><td>False</td></tr>
@@ -1001,7 +1084,7 @@ end deleteNode</pre>
 <tr><td class="l">First &lt; Target &lt; last</td><td>Largest node &lt; target</td><td>(b)</td><td>False</td></tr>
 <tr><td class="l">Target equal middle node</td><td>Node’s Predecessor</td><td>Equal node</td><td>True</td></tr>
 <tr><td class="l">Target equal last node</td><td>Last’s Predecessor</td><td>(c)</td><td>True</td></tr>
-<tr><td class="l">Target &gt; last node</td><td>(d)</td><td>(e)</td><td>False</td></tr></table></div><label class="small" for="y24-27-a">你的答案</label><textarea id="y24-27-a" rows="4" placeholder="在這裡作答，英文或中文都可以；填空題寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>(a) First node　(b) First node &gt; target　(c) Last node　(d) Last node　(e) Null</div><div class="box zh"><span class="lbl">白話</span>pLoc 永遠停在第一個 ≥ target 的節點，pPre 是它前一個。target 比全部都大時，pLoc 走到 null，pPre 停在 last node。</div></div></details><label class="self" for="y24-27-c"><input type="checkbox" id="y24-27-c"> 我答對了（10 分）</label></div>
+<tr><td class="l">Target &gt; last node</td><td>(d)</td><td>(e)</td><td>False</td></tr></table></div><label class="small" for="y24-27-a">你的答案</label><textarea id="y24-27-a" rows="4" placeholder="在這裡作答，英文或中文都可以；填空題寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>(a) First node　(b) First node &gt; target　(c) Last node　(d) Last node　(e) Null<div class="zhtr"><span>中文</span>(a) 第一個節點　(b) 第一個大於 target 的節點　(c) 最後一個節點　(d) 最後一個節點　(e) 空指標（null）</div></div><div class="box zh"><span class="lbl">白話</span>pLoc 永遠停在第一個 ≥ target 的節點，pPre 是它前一個。target 比全部都大時，pLoc 走到 null，pPre 停在 last node。</div></div></details><label class="self" for="y24-27-c"><input type="checkbox" id="y24-27-c"> 我答對了（10 分）</label></div>
 
 <div class="exq" id="y24-28" data-pts="10"><div class="qtext"><p class="q"><span class="pts">28 · 10%</span>The algorithm <b>destroyList</b> can delete any nodes still in the list and recycle their memory. Please finish it by filling proper instructions.</p><div class="calc"><b>Algorithm</b> destroyList (ref list &lt;metadata&gt;)
   loop (list.count not zero)
@@ -1011,7 +1094,7 @@ end deleteNode</pre>
      ___(d)___
   end loop
   list.pos = ___(e)___
-end destroyList</div></div><label class="small" for="y24-28-a">你的答案</label><textarea id="y24-28-a" rows="4" placeholder="在這裡作答，英文或中文都可以；填空題寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>(a) list.head　(b) list.head = dltPtr-&gt;link　(c) list.count − 1　(d) recycle (dltPtr)　(e) null</div><div class="box zh"><span class="lbl">白話</span>每圈刪第一個節點：記住它 → head 往後移 → count 減 1 → 回收記憶體。最後把 pos 設成 null（null list condition）。</div></div></details><label class="self" for="y24-28-c"><input type="checkbox" id="y24-28-c"> 我答對了（10 分）</label></div>
+end destroyList</div></div><label class="small" for="y24-28-a">你的答案</label><textarea id="y24-28-a" rows="4" placeholder="在這裡作答，英文或中文都可以；填空題寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>(a) list.head　(b) list.head = dltPtr-&gt;link　(c) list.count − 1　(d) recycle (dltPtr)　(e) null<div class="zhtr"><span>中文</span>(a) 串列開頭（list.head）　(b) head 改指向被刪節點的下一個　(c) 節點數減 1　(d) 回收被刪節點的記憶體　(e) 設成 null</div></div><div class="box zh"><span class="lbl">白話</span>每圈刪第一個節點：記住它 → head 往後移 → count 減 1 → 回收記憶體。最後把 pos 設成 null（null list condition）。</div></div></details><label class="self" for="y24-28-c"><input type="checkbox" id="y24-28-c"> 我答對了（10 分）</label></div>
 
 <div class="exq" id="y24-29" data-pts="10"><div class="qtext"><p class="q"><span class="pts">29 · 10%</span>The following figure shows the execution result of algorithm <b>Append</b>. Before: list1 = 5 → 10 → 15 → 20 → 25 (count 5), list2 = 7 → 12 → 17 → 22 → 27 (count 5). After: the last node of list1 points to the first node of list2, and list1.count = 10.<br>(a) What is the effect of the loop in the algorithm? (2%)　(b)–(e) Finish the algorithm by filling proper instructions. (8%)</p><div class="calc"><b>Algorithm</b> Append (ref list1 &lt;metadata&gt;, val list2 &lt;metadata&gt;)
   if (list1.count zero)
@@ -1025,7 +1108,7 @@ end destroyList</div></div><label class="small" for="y24-28-a">你的答案</lab
   endif
   ___(e)___
   return
-end Append</div></div><label class="small" for="y24-29-a">你的答案</label><textarea id="y24-29-a" rows="4" placeholder="在這裡作答，英文或中文都可以；填空題寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>(a) The loop moves pLoc to the last node of list1 (the node whose link is null), so that it can be linked to list2.<br>(b) list1.head = list2.head　(c) pLoc = pLoc-&gt;link　(d) pLoc-&gt;link = list2.head　(e) list1.count = list1.count + list2.count</div></div></details><label class="self" for="y24-29-c"><input type="checkbox" id="y24-29-c"> 我答對了（10 分）</label></div>
+end Append</div></div><label class="small" for="y24-29-a">你的答案</label><textarea id="y24-29-a" rows="4" placeholder="在這裡作答，英文或中文都可以；填空題寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>(a) The loop moves pLoc to the last node of list1 (the node whose link is null), so that it can be linked to list2.<br>(b) list1.head = list2.head　(c) pLoc = pLoc-&gt;link　(d) pLoc-&gt;link = list2.head　(e) list1.count = list1.count + list2.count<div class="zhtr"><span>中文</span>(a) 迴圈讓 pLoc 走到 list1 的最後一個節點（link 是 null 的那個），才能把它接到 list2。(b) list1 是空的，head 直接指向 list2 的開頭　(c) pLoc 往下一個節點走　(d) 最後一個節點接到 list2 的開頭　(e) 兩個串列的節點數相加</div></div></div></details><label class="self" for="y24-29-c"><input type="checkbox" id="y24-29-c"> 我答對了（10 分）</label></div>
 
 <div class="next"><b>寫完了？接著寫 2025 考古題</b><button class="btn primary" type="button" data-go="y25">2025 →</button></div></section>
 <section class="view exam" id="y25" data-exam="y25" data-mins="110" hidden><div class="vhead"><div class="pcb" data-pcb="y25" role="img"></div><div class="eyebrow">2025 期中考</div><h1>2025 期中考古題</h1><p>Oct. 31, 2025　09:00–11:00。選擇題有 17 題和 2024 一樣，只差在第 1、2、7、11 題。</p></div><div class="examtools"><span class="score"></span><span class="timer"></span><button class="btn tbtn" type="button">開始 110 分鐘計時</button><button class="btn primary gradeall" type="button">批改全部手寫題</button><button class="btn reset" type="button">清除作答</button><span class="gmsg"></span></div><p class="box tip nogradenote"><span class="lbl">批改方式</span>選擇題點了就對答案。手寫題用關鍵字比對自動批改：有寫到必要的英文術語或數字就給分。分數僅供參考，寫完一定要展開參考答案對照。</p>
@@ -1033,13 +1116,13 @@ end Append</div></div><label class="small" for="y24-29-a">你的答案</label><t
 <h3>考卷結構</h3><table style="width:100%"><tr><th>大題</th><th>題號</th><th class="l">內容</th><th>配分</th></tr><tr><td>I 選擇</td><td>1–20</td><td class="l">Ch1 ×5、Ch2 ×10、Ch3 ×5</td><td>40%</td></tr><tr><td>II 填空</td><td>21–23</td><td class="l">名詞填空</td><td>6%</td></tr><tr><td></td><td>24</td><td class="l">Key offset 表格（1536、0922）</td><td>14%</td></tr><tr><td>III Quiz</td><td>25</td><td class="l">Fold boundary + modulo + linear probe / key offset</td><td>14%</td></tr><tr><td></td><td>26</td><td class="l">searchList 六種結果表</td><td>10%</td></tr><tr><td></td><td>27</td><td class="l">insertNode 程式填空</td><td>10%</td></tr><tr><td></td><td>28</td><td class="l">Dummy node 程式追蹤</td><td>6%</td></tr></table>
 <h3>Part I. Multiple Choice（20 題，每題 2%）</h3><div class="quiz exmc" data-quiz="y25mc"></div>
 <h3>Part II. Fill-in Questions（20%）</h3>
-<div class="exq" id="y25-21" data-pts="2"><div class="qtext"><p class="q"><span class="pts">21 · 2%</span>The three main constructs in pseudocode are sequence, selection, and ______.</p></div><label class="small" for="y25-21-a">你的答案</label><textarea id="y25-21-a" rows="1" placeholder="一個英文字"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>loop</div></div></details><label class="self" for="y25-21-c"><input type="checkbox" id="y25-21-c"> 我答對了（2 分）</label></div>
+<div class="exq" id="y25-21" data-pts="2"><div class="qtext"><p class="q"><span class="pts">21 · 2%</span>The three main constructs in pseudocode are sequence, selection, and ______.</p></div><label class="small" for="y25-21-a">你的答案</label><textarea id="y25-21-a" rows="1" placeholder="一個英文字"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>loop<div class="zhtr"><span>中文</span>迴圈（loop）</div></div></div></details><label class="self" for="y25-21-c"><input type="checkbox" id="y25-21-c"> 我答對了（2 分）</label></div>
 
-<div class="exq" id="y25-22" data-pts="2"><div class="qtext"><p class="q"><span class="pts">22 · 2%</span>In Big-O notation, the time complexity of a quadratic algorithm is ______.</p></div><label class="small" for="y25-22-a">你的答案</label><textarea id="y25-22-a" rows="1" placeholder="例：O(...)"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>O(n²)</div></div></details><label class="self" for="y25-22-c"><input type="checkbox" id="y25-22-c"> 我答對了（2 分）</label></div>
+<div class="exq" id="y25-22" data-pts="2"><div class="qtext"><p class="q"><span class="pts">22 · 2%</span>In Big-O notation, the time complexity of a quadratic algorithm is ______.</p></div><label class="small" for="y25-22-a">你的答案</label><textarea id="y25-22-a" rows="1" placeholder="例：O(...)"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>O(n²)<div class="zhtr"><span>中文</span>O(n²)，平方時間</div></div></div></details><label class="self" for="y25-22-c"><input type="checkbox" id="y25-22-c"> 我答對了（2 分）</label></div>
 
-<div class="exq" id="y25-23" data-pts="2"><div class="qtext"><p class="q"><span class="pts">23 · 2%</span>Secondary clustering occurs when data builds up along a ______ path in the list.</p></div><label class="small" for="y25-23-a">你的答案</label><textarea id="y25-23-a" rows="1" placeholder="一個英文字"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>collision</div><div class="box zh"><span class="lbl">白話</span>課本原文：data become grouped along a collision path throughout a list。原卷寫 “same” 被扣分。</div></div></details><label class="self" for="y25-23-c"><input type="checkbox" id="y25-23-c"> 我答對了（2 分）</label></div>
+<div class="exq" id="y25-23" data-pts="2"><div class="qtext"><p class="q"><span class="pts">23 · 2%</span>Secondary clustering occurs when data builds up along a ______ path in the list.</p></div><label class="small" for="y25-23-a">你的答案</label><textarea id="y25-23-a" rows="1" placeholder="一個英文字"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>collision<div class="zhtr"><span>中文</span>碰撞（collision）路徑</div></div><div class="box zh"><span class="lbl">白話</span>課本原文：data become grouped along a collision path throughout a list。原卷寫 “same” 被扣分。</div></div></details><label class="self" for="y25-23-c"><input type="checkbox" id="y25-23-c"> 我答對了（2 分）</label></div>
 
-<div class="exq" id="y25-24" data-pts="14"><div class="qtext"><p class="q"><span class="pts">24 · 14%</span>Fill in the correct answer by considering Key Offset method with list size = 307. (Home address 1%, Key Offset 1%, Probe 1 2%, Probe 2 3%)</p><table><tr><th>Key</th><th>Home address</th><th>Key Offset</th><th>Probe 1</th><th>Probe 2</th></tr><tr><td>1536</td><td></td><td></td><td></td><td></td></tr><tr><td>0922</td><td></td><td></td><td></td><td></td></tr></table></div><label class="small" for="y25-24-a">你的答案</label><textarea id="y25-24-a" rows="4" placeholder="例：1536: 1, 5, 6, 11 / 0922: ..."></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>1536：1, 5, 6, 11<br>0922：1, 3, 4, 7</div><div class="box zh"><span class="lbl">白話</span>和 2024 一模一樣，今年很可能再考。</div></div></details><label class="self" for="y25-24-c"><input type="checkbox" id="y25-24-c"> 我答對了（14 分）</label></div>
+<div class="exq" id="y25-24" data-pts="14"><div class="qtext"><p class="q"><span class="pts">24 · 14%</span>Fill in the correct answer by considering Key Offset method with list size = 307. (Home address 1%, Key Offset 1%, Probe 1 2%, Probe 2 3%)</p><table><tr><th>Key</th><th>Home address</th><th>Key Offset</th><th>Probe 1</th><th>Probe 2</th></tr><tr><td>1536</td><td></td><td></td><td></td><td></td></tr><tr><td>0922</td><td></td><td></td><td></td><td></td></tr></table></div><label class="small" for="y25-24-a">你的答案</label><textarea id="y25-24-a" rows="4" placeholder="例：1536: 1, 5, 6, 11 / 0922: ..."></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>1536：1, 5, 6, 11<br>0922：1, 3, 4, 7<div class="zhtr"><span>中文</span>1536：本位地址 1、位移量 5、第一次探測 6、第二次探測 11。0922：1、3、4、7。</div></div><div class="box zh"><span class="lbl">白話</span>和 2024 一模一樣，今年很可能再考。</div></div></details><label class="self" for="y25-24-c"><input type="checkbox" id="y25-24-c"> 我答對了（14 分）</label></div>
 
 <h3>Part III. Quiz（40%）</h3>
 <div class="exq" id="y25-25" data-pts="14"><div class="qtext"><p class="q"><span class="pts">25 · 14%</span>Store the keys shown below in an array with 19 elements by using the <b>fold-boundary</b> method and folding two digits at a time and then <b>modulo division</b> of the folded sum.<br>(a) If using linear probing to resolve collision, i. how many collisions occurred? (3%) ii. What address is the key 234554 finally put in? (3%)<br>(b) If using key-offset to resolve collision, i. how many collisions occurred? (3%) ii. What address is the key 234554 finally put in? (3%)<br>(c) What is the load factor of the list after all keys have been inserted? (2%)</p><div class="calc">224562 → 137456 → 214572 →
@@ -1053,7 +1136,7 @@ end Append</div></div><label class="small" for="y24-29-a">你的答案</label><t
 <tr><td>162145</td><td>61 + 21 + 54</td><td>136</td><td>3</td></tr>
 <tr><td>144457</td><td>41 + 44 + 75</td><td>160</td><td>8 ✗</td></tr>
 <tr><td>190255</td><td>91 + 02 + 55</td><td>148</td><td>15</td></tr>
-<tr><td>234554</td><td>32 + 45 + 45</td><td>122</td><td>8 ✗</td></tr></table><div class="box en"><span class="lbl">ANSWER</span>(a) i. 4　ii. 11<br>(b) i. 2　ii. 14<br>(c) 9 / 19 ≈ 47%</div><div class="box zh"><span class="lbl">過程</span>和 2024 第 26 題同一組 key。Key offset：234554 摺疊後 122，offset = 122 ÷ 19 = 6，(6 + 8) MOD 19 = 14。</div><div class="box warn"><span class="lbl">常見扣分</span>用原本的 6 位數 key 算 offset 會得到「4 次、地址 9」，這是錯的。</div></div></details><label class="self" for="y25-25-c"><input type="checkbox" id="y25-25-c"> 我答對了（14 分）</label></div>
+<tr><td>234554</td><td>32 + 45 + 45</td><td>122</td><td>8 ✗</td></tr></table><div class="box en"><span class="lbl">ANSWER</span>(a) i. 4　ii. 11<br>(b) i. 2　ii. 14<br>(c) 9 / 19 ≈ 47%<div class="zhtr"><span>中文</span>(a) 線性探測：i. 碰撞 4 次　ii. 234554 最後放在位置 11。(b) 鍵值位移：i. 碰撞 2 次　ii. 234554 最後放在位置 14。(c) 負載因子 9 / 19 ≈ 47%。</div></div><div class="box zh"><span class="lbl">過程</span>和 2024 第 26 題同一組 key。Key offset：234554 摺疊後 122，offset = 122 ÷ 19 = 6，(6 + 8) MOD 19 = 14。</div><div class="box warn"><span class="lbl">常見扣分</span>用原本的 6 位數 key 算 offset 會得到「4 次、地址 9」，這是錯的。</div></div></details><label class="self" for="y25-25-c"><input type="checkbox" id="y25-25-c"> 我答對了（14 分）</label></div>
 
 <div class="exq" id="y25-26" data-pts="10"><div class="qtext"><p class="q"><span class="pts">26 · 10%</span>The search list algorithm has 6 possible results. Please finish the table.</p><table><tr><th class="l">Condition</th><th>pPre</th><th>pLoc</th><th>Return</th></tr>
 <tr><td class="l">Target &lt; first node</td><td>Null</td><td>(a)</td><td>False</td></tr>
@@ -1061,7 +1144,7 @@ end Append</div></div><label class="small" for="y24-29-a">你的答案</label><t
 <tr><td class="l">First &lt; Target &lt; last</td><td>Largest node &lt; target</td><td>(b)</td><td>False</td></tr>
 <tr><td class="l">Target equal middle node</td><td>Node’s Predecessor</td><td>Equal node</td><td>True</td></tr>
 <tr><td class="l">Target equal last node</td><td>Last’s Predecessor</td><td>(c)</td><td>True</td></tr>
-<tr><td class="l">Target &gt; last node</td><td>(d)</td><td>(e)</td><td>False</td></tr></table></div><label class="small" for="y25-26-a">你的答案</label><textarea id="y25-26-a" rows="4" placeholder="在這裡作答，英文或中文都可以；填空題寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>(a) First node　(b) First node &gt; target　(c) Last node　(d) Last node　(e) Null</div><div class="box zh"><span class="lbl">白話</span>pLoc 永遠停在第一個 ≥ target 的節點，pPre 是它前一個。target 比全部都大時，pLoc 走到 null，pPre 停在 last node。</div></div></details><label class="self" for="y25-26-c"><input type="checkbox" id="y25-26-c"> 我答對了（10 分）</label></div>
+<tr><td class="l">Target &gt; last node</td><td>(d)</td><td>(e)</td><td>False</td></tr></table></div><label class="small" for="y25-26-a">你的答案</label><textarea id="y25-26-a" rows="4" placeholder="在這裡作答，英文或中文都可以；填空題寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>(a) First node　(b) First node &gt; target　(c) Last node　(d) Last node　(e) Null<div class="zhtr"><span>中文</span>(a) 第一個節點　(b) 第一個大於 target 的節點　(c) 最後一個節點　(d) 最後一個節點　(e) 空指標（null）</div></div><div class="box zh"><span class="lbl">白話</span>pLoc 永遠停在第一個 ≥ target 的節點，pPre 是它前一個。target 比全部都大時，pLoc 走到 null，pPre 停在 last node。</div></div></details><label class="self" for="y25-26-c"><input type="checkbox" id="y25-26-c"> 我答對了（10 分）</label></div>
 
 <div class="exq" id="y25-27" data-pts="10"><div class="qtext"><p class="q"><span class="pts">27 · 10%</span>The algorithm <b>insertNode</b> can insert a node into a linked list. Please finish it by filling proper instructions.</p><div class="calc"><b>Algorithm</b> insertNode (ref list &lt;metadata&gt;, val pPre &lt;node pointer&gt;,
                       val dataIn &lt;dataType&gt;)
@@ -1079,7 +1162,7 @@ end Append</div></div><label class="small" for="y24-29-a">你的答案</label><t
   end if
   list.count = list.count + 1
   return true
-end insertNode</div></div><label class="small" for="y25-27-a">你的答案</label><textarea id="y25-27-a" rows="4" placeholder="在這裡作答，英文或中文都可以；填空題寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>(a) pPre null　(b) pNew-&gt;link = list.head　(c) list.head = pNew　(d) pNew-&gt;link = pPre-&gt;link　(e) pPre-&gt;link = pNew</div><div class="box warn"><span class="lbl">順序</span>(b) 在 (c) 前、(d) 在 (e) 前：先讓新節點指向 successor，再讓 predecessor（或 head）指向新節點，不然後面的節點會弄丟。</div></div></details><label class="self" for="y25-27-c"><input type="checkbox" id="y25-27-c"> 我答對了（10 分）</label></div>
+end insertNode</div></div><label class="small" for="y25-27-a">你的答案</label><textarea id="y25-27-a" rows="4" placeholder="在這裡作答，英文或中文都可以；填空題寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>(a) pPre null　(b) pNew-&gt;link = list.head　(c) list.head = pNew　(d) pNew-&gt;link = pPre-&gt;link　(e) pPre-&gt;link = pNew<div class="zhtr"><span>中文</span>(a) pPre 是 null（插在最前面或空串列）　(b) 新節點指向原本的第一個節點　(c) head 改指向新節點　(d) 新節點指向 pPre 的下一個節點　(e) pPre 改指向新節點</div></div><div class="box warn"><span class="lbl">順序</span>(b) 在 (c) 前、(d) 在 (e) 前：先讓新節點指向 successor，再讓 predecessor（或 head）指向新節點，不然後面的節點會弄丟。</div></div></details><label class="self" for="y25-27-c"><input type="checkbox" id="y25-27-c"> 我答對了（10 分）</label></div>
 
 <div class="exq" id="y25-28" data-pts="6"><div class="qtext"><p class="q"><span class="pts">28 · 6%</span>Imagine we have the linked list shown in the following figure. The dummy node does not carry any data. It is an empty node. Show what happened if we applied the following statements to this list.</p><div class="calc">pList → [Dummy] → [ ] → [ ] → [ ] → null
 
@@ -1087,25 +1170,25 @@ end insertNode</div></div><label class="small" for="y25-27-a">你的答案</labe
 2 loop (temp-&gt;link not null)
   1 temp = temp-&gt;link
 3 end loop
-4 temp-&gt;link = pList</div></div><label class="small" for="y25-28-a">你的答案</label><textarea id="y25-28-a" rows="4" placeholder="用文字描述：哪個節點的 link 指向哪裡、最後變成什麼結構"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>The loop moves temp to the last node. Statement 4 makes the last node’s link point to the dummy node, so the list becomes a circularly linked list with a dummy (header) node: Dummy → ① → ② → ③ → Dummy.</div><div class="box zh"><span class="lbl">作答</span>在圖上畫一條從最後一個節點指回 Dummy 的箭頭，並把原本的 null 拿掉。</div></div></details><label class="self" for="y25-28-c"><input type="checkbox" id="y25-28-c"> 我答對了（6 分）</label></div>
+4 temp-&gt;link = pList</div></div><label class="small" for="y25-28-a">你的答案</label><textarea id="y25-28-a" rows="4" placeholder="用文字描述：哪個節點的 link 指向哪裡、最後變成什麼結構"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>The loop moves temp to the last node. Statement 4 makes the last node’s link point to the dummy node, so the list becomes a circularly linked list with a dummy (header) node: Dummy → ① → ② → ③ → Dummy.<div class="zhtr"><span>中文</span>迴圈讓 temp 走到最後一個節點。第 4 行讓最後一個節點的 link 指回 dummy 節點，所以整個串列變成以 dummy（標頭節點）開頭的環狀鏈結串列（circularly linked list）：Dummy → ① → ② → ③ → Dummy。</div></div><div class="box zh"><span class="lbl">作答</span>在圖上畫一條從最後一個節點指回 Dummy 的箭頭，並把原本的 null 拿掉。</div></div></details><label class="self" for="y25-28-c"><input type="checkbox" id="y25-28-c"> 我答對了（6 分）</label></div>
 
 <div class="next"><b>考古題寫完了，接著寫模擬試題 A</b><button class="btn primary" type="button" data-go="mock-a">模擬 A →</button></div></section>
 <section class="view exam" id="mock-a" data-exam="mock-a" data-mins="110" hidden><div class="vhead"><div class="pcb" data-pcb="mock-a" role="img"></div><div class="eyebrow">Mock Exam · 100 分</div><h1>模擬試題 A</h1><p>格式照 2025：選擇 40%（20 題）、填空 20%、Quiz 40%。建議開計時器 110 分鐘，全部寫完再批改。</p></div><div class="examtools"><span class="score"></span><span class="timer"></span><button class="btn tbtn" type="button">開始 110 分鐘計時</button><button class="btn primary gradeall" type="button">批改全部手寫題</button><button class="btn reset" type="button">清除作答</button><span class="gmsg"></span></div><p class="box tip nogradenote"><span class="lbl">批改方式</span>選擇題點了就對答案。手寫題用關鍵字比對自動批改：有寫到必要的英文術語或數字就給分。分數僅供參考，寫完一定要展開參考答案對照。</p>
 <h3>Part I. Multiple Choice（20 題，每題 2%）</h3><div class="quiz exmc" data-quiz="m1"></div>
 <h3>Part II. Fill-in Questions（20%）</h3>
-<div class="exq" id="mock-a-21" data-pts="2"><div class="qtext"><p class="q"><span class="pts">21 · 2%</span>A linked list in which the last node’s link points to the first node is called a ______ linked list.</p></div><label class="small" for="mock-a-21-a">你的答案</label><textarea id="mock-a-21-a" rows="1" placeholder="一個英文字"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>circularly (circular)</div></div></details><label class="self" for="mock-a-21-c"><input type="checkbox" id="mock-a-21-c"> 我答對了（2 分）</label></div>
+<div class="exq" id="mock-a-21" data-pts="2"><div class="qtext"><p class="q"><span class="pts">21 · 2%</span>A linked list in which the last node’s link points to the first node is called a ______ linked list.</p></div><label class="small" for="mock-a-21-a">你的答案</label><textarea id="mock-a-21-a" rows="1" placeholder="一個英文字"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>circularly (circular)<div class="zhtr"><span>中文</span>環狀（circularly linked list，環狀鏈結串列）</div></div></div></details><label class="self" for="mock-a-21-c"><input type="checkbox" id="mock-a-21-c"> 我答對了（2 分）</label></div>
 
-<div class="exq" id="mock-a-22" data-pts="2"><div class="qtext"><p class="q"><span class="pts">22 · 2%</span>The efficiency of the sequential search is ______.</p></div><label class="small" for="mock-a-22-a">你的答案</label><textarea id="mock-a-22-a" rows="1" placeholder="例：O(...)"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>O(n)</div></div></details><label class="self" for="mock-a-22-c"><input type="checkbox" id="mock-a-22-c"> 我答對了（2 分）</label></div>
+<div class="exq" id="mock-a-22" data-pts="2"><div class="qtext"><p class="q"><span class="pts">22 · 2%</span>The efficiency of the sequential search is ______.</p></div><label class="small" for="mock-a-22-a">你的答案</label><textarea id="mock-a-22-a" rows="1" placeholder="例：O(...)"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>O(n)<div class="zhtr"><span>中文</span>O(n)，線性時間</div></div></div></details><label class="self" for="mock-a-22-c"><input type="checkbox" id="mock-a-22-c"> 我答對了（2 分）</label></div>
 
-<div class="exq" id="mock-a-23" data-pts="2"><div class="qtext"><p class="q"><span class="pts">23 · 2%</span>Each calculation of an address and test for success is called a ______.</p></div><label class="small" for="mock-a-23-a">你的答案</label><textarea id="mock-a-23-a" rows="1" placeholder="一個英文字"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>probe</div></div></details><label class="self" for="mock-a-23-c"><input type="checkbox" id="mock-a-23-c"> 我答對了（2 分）</label></div>
+<div class="exq" id="mock-a-23" data-pts="2"><div class="qtext"><p class="q"><span class="pts">23 · 2%</span>Each calculation of an address and test for success is called a ______.</p></div><label class="small" for="mock-a-23-a">你的答案</label><textarea id="mock-a-23-a" rows="1" placeholder="一個英文字"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>probe<div class="zhtr"><span>中文</span>探測（probe）</div></div></div></details><label class="self" for="mock-a-23-c"><input type="checkbox" id="mock-a-23-c"> 我答對了（2 分）</label></div>
 
-<div class="exq" id="mock-a-24" data-pts="14"><div class="qtext"><p class="q"><span class="pts">24 · 14%</span>Fill in the correct answer by considering Key Offset method with list size = 307.</p><table><tr><th>Key</th><th>Home address</th><th>Key Offset</th><th>Probe 1</th><th>Probe 2</th></tr><tr><td>2150</td><td></td><td></td><td></td><td></td></tr><tr><td>0615</td><td></td><td></td><td></td><td></td></tr></table></div><label class="small" for="mock-a-24-a">你的答案</label><textarea id="mock-a-24-a" rows="4" placeholder="例：2150: ..., ..., ..., ..."></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>2150：1, 7, 8, 15<br>0615：1, 2, 3, 5</div><div class="box zh"><span class="lbl">算法</span>2150 = 307 × 7 + 1 → home 1、offset 7、probe 1 = 8、probe 2 = 7 + 8 = 15。<br>0615 = 307 × 2 + 1 → home 1、offset 2、probe 1 = 3、probe 2 = 5。</div></div></details><label class="self" for="mock-a-24-c"><input type="checkbox" id="mock-a-24-c"> 我答對了（14 分）</label></div>
+<div class="exq" id="mock-a-24" data-pts="14"><div class="qtext"><p class="q"><span class="pts">24 · 14%</span>Fill in the correct answer by considering Key Offset method with list size = 307.</p><table><tr><th>Key</th><th>Home address</th><th>Key Offset</th><th>Probe 1</th><th>Probe 2</th></tr><tr><td>2150</td><td></td><td></td><td></td><td></td></tr><tr><td>0615</td><td></td><td></td><td></td><td></td></tr></table></div><label class="small" for="mock-a-24-a">你的答案</label><textarea id="mock-a-24-a" rows="4" placeholder="例：2150: ..., ..., ..., ..."></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>2150：1, 7, 8, 15<br>0615：1, 2, 3, 5<div class="zhtr"><span>中文</span>2150：本位地址 1、位移量 7、第一次探測 8、第二次探測 15。0615：1、2、3、5。</div></div><div class="box zh"><span class="lbl">算法</span>2150 = 307 × 7 + 1 → home 1、offset 7、probe 1 = 8、probe 2 = 7 + 8 = 15。<br>0615 = 307 × 2 + 1 → home 1、offset 2、probe 1 = 3、probe 2 = 5。</div></div></details><label class="self" for="mock-a-24-c"><input type="checkbox" id="mock-a-24-c"> 我答對了（14 分）</label></div>
 
 <h3>Part III. Quiz（40%）</h3>
 <div class="exq" id="mock-a-25" data-pts="14"><div class="qtext"><p class="q"><span class="pts">25 · 14%</span>Store the keys shown below in an array with <b>13</b> elements by using the <b>fold-shift</b> method, folding two digits at a time, and then <b>modulo division</b> of the folded sum. Show the computing process.<br>(a) If using linear probing to resolve collision, i. how many collisions occurred? ii. What address is the key 334455 finally put in?<br>(b) If using key-offset to resolve collision, i. how many collisions occurred? ii. What address is the key 334455 finally put in?<br>(c) What is the load factor after all keys have been inserted?</p><div class="calc">345612 → 908134 → 223311 → 456712
 783421 → 120934 → 561290 → 334455</div></div><label class="small" for="mock-a-25-a">你的答案</label><textarea id="mock-a-25-a" rows="6" placeholder="在這裡作答，英文或中文都可以；填空題寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><table><tr><th>Key</th><th>Fold shift</th><th>Sum</th><th>MOD 13</th></tr>
 <tr><td>345612</td><td>34+56+12</td><td>102</td><td>11</td></tr><tr><td>908134</td><td>90+81+34</td><td>205</td><td>10</td></tr><tr><td>223311</td><td>22+33+11</td><td>66</td><td>1</td></tr><tr><td>456712</td><td>45+67+12</td><td>124</td><td>7</td></tr><tr><td>783421</td><td>78+34+21</td><td>133</td><td>3</td></tr><tr><td>120934</td><td>12+09+34</td><td>55</td><td>3 ✗</td></tr><tr><td>561290</td><td>56+12+90</td><td>158</td><td>2</td></tr><tr><td>334455</td><td>33+44+55</td><td>132</td><td>2 ✗</td></tr></table>
-<div class="box en"><span class="lbl">ANSWER</span>(a) i. 4　ii. 5<br>(b) i. 6　ii. 12<br>(c) 8 / 13 ≈ 61.5%</div>
+<div class="box en"><span class="lbl">ANSWER</span>(a) i. 4　ii. 5<br>(b) i. 6　ii. 12<br>(c) 8 / 13 ≈ 61.5%<div class="zhtr"><span>中文</span>(a) 線性探測：i. 碰撞 4 次　ii. 334455 放在位置 5。(b) 鍵值位移：i. 碰撞 6 次　ii. 334455 放在位置 12。(c) 負載因子 8 / 13 ≈ 61.5%。</div></div>
 <div class="box zh"><span class="lbl">過程</span><b>Linear</b>：120934 撞 3 → 4（1 次）；334455 撞 2、3、4 → 5（3 次）。<br><b>Key offset</b>：120934：offset = 55 ÷ 13 = 4，3 撞 → 7 撞 → 11 撞 → (4+11) MOD 13 = 2（3 次）；561290：offset = 158 ÷ 13 = 12，2 撞 → (12+2) MOD 13 = 1 撞 → (12+1) MOD 13 = 0（2 次）；334455：offset = 132 ÷ 13 = 10，2 撞 → 12（1 次）。</div></div></details><label class="self" for="mock-a-25-c"><input type="checkbox" id="mock-a-25-c"> 我答對了（14 分）</label></div>
 
 <div class="exq" id="mock-a-26" data-pts="10"><div class="qtext"><p class="q"><span class="pts">26 · 10%</span>The algorithm <b>deleteNode</b> deletes a node from a singly linked list. Please finish it.</p><div class="calc"><b>Algorithm</b> deleteNode (ref list &lt;metadata&gt;, val pPre &lt;node pointer&gt;,
@@ -1118,7 +1201,7 @@ end insertNode</div></div><label class="small" for="y25-27-a">你的答案</labe
   end if
   ___(d)___
   ___(e)___
-end deleteNode</div></div><label class="small" for="mock-a-26-a">你的答案</label><textarea id="mock-a-26-a" rows="4" placeholder="在這裡作答，英文或中文都可以；填空題寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>(a) pLoc-&gt;data　(b) list.head = pLoc-&gt;link　(c) pPre-&gt;link = pLoc-&gt;link　(d) list.count = list.count − 1　(e) recycle (pLoc)</div></div></details><label class="self" for="mock-a-26-c"><input type="checkbox" id="mock-a-26-c"> 我答對了（10 分）</label></div>
+end deleteNode</div></div><label class="small" for="mock-a-26-a">你的答案</label><textarea id="mock-a-26-a" rows="4" placeholder="在這裡作答，英文或中文都可以；填空題寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>(a) pLoc-&gt;data　(b) list.head = pLoc-&gt;link　(c) pPre-&gt;link = pLoc-&gt;link　(d) list.count = list.count − 1　(e) recycle (pLoc)<div class="zhtr"><span>中文</span>(a) 取出被刪節點的資料　(b) 刪第一個節點：head 指向它的下一個　(c) 刪其他節點：前一個節點跳過它，直接指向它的下一個　(d) 節點數減 1　(e) 回收記憶體</div></div></div></details><label class="self" for="mock-a-26-c"><input type="checkbox" id="mock-a-26-c"> 我答對了（10 分）</label></div>
 
 <div class="exq" id="mock-a-27" data-pts="10"><div class="qtext"><p class="q"><span class="pts">27 · 10%</span>The following algorithm <b>getNext</b> traverses a linked list. Please finish it.</p><div class="calc"><b>Algorithm</b> getNext (ref list &lt;metadata&gt;, val fromWhere &lt;Boolean&gt;,
                    ref dataOut &lt;dataType&gt;)
@@ -1140,31 +1223,31 @@ end deleteNode</div></div><label class="small" for="mock-a-26-a">你的答案</l
      end if
   end if
   return ___(e)___
-end getNext</div></div><label class="small" for="mock-a-27-a">你的答案</label><textarea id="mock-a-27-a" rows="4" placeholder="在這裡作答，英文或中文都可以；填空題寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>(a) list.pos = list.head　(b) dataOut = list.pos-&gt;data　(c) list.pos-&gt;link null　(d) list.pos = list.pos-&gt;link　(e) success</div></div></details><label class="self" for="mock-a-27-c"><input type="checkbox" id="mock-a-27-c"> 我答對了（10 分）</label></div>
+end getNext</div></div><label class="small" for="mock-a-27-a">你的答案</label><textarea id="mock-a-27-a" rows="4" placeholder="在這裡作答，英文或中文都可以；填空題寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>(a) list.pos = list.head　(b) dataOut = list.pos-&gt;data　(c) list.pos-&gt;link null　(d) list.pos = list.pos-&gt;link　(e) success<div class="zhtr"><span>中文</span>(a) 目前位置設成第一個節點　(b) 把資料傳出去　(c) 目前位置已經是最後一個（下一個是 null）　(d) 目前位置往下一個走　(e) 回傳是否成功</div></div></div></details><label class="self" for="mock-a-27-c"><input type="checkbox" id="mock-a-27-c"> 我答對了（10 分）</label></div>
 
-<div class="exq" id="mock-a-28" data-pts="6"><div class="qtext"><p class="q"><span class="pts">28 · 6%</span>A list contains 5 → 10 → 15 → 20. Explain what the following statements do, and point out the problem.</p><div class="calc">1 pLoc = list.head
+<div class="exq" id="mock-a-28" data-pts="6"><div class="qtext"><p class="q"><span class="pts">28 · 6%</span><span class="hard">鑑別題</span>A list contains 5 → 10 → 15 → 20. Explain what the following statements do, and point out the problem.</p><div class="calc">1 pLoc = list.head
 2 loop (pLoc-&gt;link-&gt;link not null)
   1 pLoc = pLoc-&gt;link
 3 end loop
-4 pLoc-&gt;link = null</div></div><label class="small" for="mock-a-28-a">你的答案</label><textarea id="mock-a-28-a" rows="4" placeholder="這段在做什麼？有什麼問題？"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>The loop stops at the second-to-last node (15). Statement 4 sets its link to null, so the list becomes 5 → 10 → 15: the last node is removed. Problems: node 20 is not recycled (memory leak) and list.count is not decreased. If the list has only one node, pLoc-&gt;link-&gt;link dereferences null.</div></div></details><label class="self" for="mock-a-28-c"><input type="checkbox" id="mock-a-28-c"> 我答對了（6 分）</label></div>
+4 pLoc-&gt;link = null</div></div><label class="small" for="mock-a-28-a">你的答案</label><textarea id="mock-a-28-a" rows="4" placeholder="這段在做什麼？有什麼問題？"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>The loop stops at the second-to-last node (15). Statement 4 sets its link to null, so the list becomes 5 → 10 → 15: the last node is removed. Problems: node 20 is not recycled (memory leak) and list.count is not decreased. If the list has only one node, pLoc-&gt;link-&gt;link dereferences null.<div class="zhtr"><span>中文</span>迴圈停在倒數第二個節點（15）。第 4 行把它的 link 設成 null，串列變成 5 → 10 → 15，等於刪掉最後一個節點。問題：節點 20 沒有被回收（記憶體洩漏 memory leak），list.count 也沒有減 1；如果串列只有一個節點，pLoc->link->link 會存取 null 而出錯。</div></div></div></details><label class="self" for="mock-a-28-c"><input type="checkbox" id="mock-a-28-c"> 我答對了（6 分）</label></div>
 
 <div class="next"><b>接著寫模擬試題 B</b><button class="btn primary" type="button" data-go="mock-b">模擬 B →</button></div></section>
-<section class="view exam" id="mock-b" data-exam="mock-b" data-mins="110" hidden><div class="vhead"><div class="pcb" data-pcb="mock-b" role="img"></div><div class="eyebrow">Mock Exam · 100 分</div><h1>模擬試題 B</h1><p>和 A 同樣格式，雜湊題加了 quadratic probe，程式填空換成 searchList 和 doubly linked list 刪除。</p></div><div class="examtools"><span class="score"></span><span class="timer"></span><button class="btn tbtn" type="button">開始 110 分鐘計時</button><button class="btn primary gradeall" type="button">批改全部手寫題</button><button class="btn reset" type="button">清除作答</button><span class="gmsg"></span></div><p class="box tip nogradenote"><span class="lbl">批改方式</span>選擇題點了就對答案。手寫題用關鍵字比對自動批改：有寫到必要的英文術語或數字就給分。分數僅供參考，寫完一定要展開參考答案對照。</p>
+<section class="view exam" id="mock-b" data-exam="mock-b" data-mins="110" hidden><div class="vhead"><div class="pcb" data-pcb="mock-b" role="img"></div><div class="eyebrow">Mock Exam · 100 分</div><h1>模擬試題 B</h1><p>和 A 同樣格式，雜湊題加了 quadratic probe，程式填空換成 searchList 和 doubly linked list 刪除。標「鑑別題」的是拉開分數的題目。</p></div><div class="examtools"><span class="score"></span><span class="timer"></span><button class="btn tbtn" type="button">開始 110 分鐘計時</button><button class="btn primary gradeall" type="button">批改全部手寫題</button><button class="btn reset" type="button">清除作答</button><span class="gmsg"></span></div><p class="box tip nogradenote"><span class="lbl">批改方式</span>選擇題點了就對答案。手寫題用關鍵字比對自動批改：有寫到必要的英文術語或數字就給分。分數僅供參考，寫完一定要展開參考答案對照。</p>
 <h3>Part I. Multiple Choice（20 題，每題 2%）</h3><div class="quiz exmc" data-quiz="m2"></div>
 <h3>Part II. Fill-in Questions（20%）</h3>
-<div class="exq" id="mock-b-21" data-pts="2"><div class="qtext"><p class="q"><span class="pts">21 · 2%</span>Data that we choose to consider as a single, nondecomposable entity are called ______ data.</p></div><label class="small" for="mock-b-21-a">你的答案</label><textarea id="mock-b-21-a" rows="1" placeholder="一個英文字"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>atomic</div></div></details><label class="self" for="mock-b-21-c"><input type="checkbox" id="mock-b-21-c"> 我答對了（2 分）</label></div>
+<div class="exq" id="mock-b-21" data-pts="2"><div class="qtext"><p class="q"><span class="pts">21 · 2%</span>Data that we choose to consider as a single, nondecomposable entity are called ______ data.</p></div><label class="small" for="mock-b-21-a">你的答案</label><textarea id="mock-b-21-a" rows="1" placeholder="一個英文字"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>atomic<div class="zhtr"><span>中文</span>原子（atomic data，不可再分割的資料）</div></div></div></details><label class="self" for="mock-b-21-c"><input type="checkbox" id="mock-b-21-c"> 我答對了（2 分）</label></div>
 
-<div class="exq" id="mock-b-22" data-pts="2"><div class="qtext"><p class="q"><span class="pts">22 · 2%</span>The textbook suggests considering a binary search whenever the list contains more than ______ elements.</p></div><label class="small" for="mock-b-22-a">你的答案</label><textarea id="mock-b-22-a" rows="1" placeholder="一個數字"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>16</div></div></details><label class="self" for="mock-b-22-c"><input type="checkbox" id="mock-b-22-c"> 我答對了（2 分）</label></div>
+<div class="exq" id="mock-b-22" data-pts="2"><div class="qtext"><p class="q"><span class="pts">22 · 2%</span>The textbook suggests considering a binary search whenever the list contains more than ______ elements.</p></div><label class="small" for="mock-b-22-a">你的答案</label><textarea id="mock-b-22-a" rows="1" placeholder="一個數字"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>16<div class="zhtr"><span>中文</span>16 個元素</div></div></div></details><label class="self" for="mock-b-22-c"><input type="checkbox" id="mock-b-22-c"> 我答對了（2 分）</label></div>
 
-<div class="exq" id="mock-b-23" data-pts="2"><div class="qtext"><p class="q"><span class="pts">23 · 2%</span>The tendency of data to build up unevenly across a hashed list is called ______.</p></div><label class="small" for="mock-b-23-a">你的答案</label><textarea id="mock-b-23-a" rows="1" placeholder="一個英文字"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>clustering</div></div></details><label class="self" for="mock-b-23-c"><input type="checkbox" id="mock-b-23-c"> 我答對了（2 分）</label></div>
+<div class="exq" id="mock-b-23" data-pts="2"><div class="qtext"><p class="q"><span class="pts">23 · 2%</span>The tendency of data to build up unevenly across a hashed list is called ______.</p></div><label class="small" for="mock-b-23-a">你的答案</label><textarea id="mock-b-23-a" rows="1" placeholder="一個英文字"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>clustering<div class="zhtr"><span>中文</span>叢集（clustering）</div></div></div></details><label class="self" for="mock-b-23-c"><input type="checkbox" id="mock-b-23-c"> 我答對了（2 分）</label></div>
 
-<div class="exq" id="mock-b-24" data-pts="14"><div class="qtext"><p class="q"><span class="pts">24 · 14%</span>Fill in the correct answer by considering Key Offset method with list size = 307.</p><table><tr><th>Key</th><th>Home address</th><th>Key Offset</th><th>Probe 1</th><th>Probe 2</th></tr><tr><td>3685</td><td></td><td></td><td></td><td></td></tr><tr><td>1229</td><td></td><td></td><td></td><td></td></tr></table></div><label class="small" for="mock-b-24-a">你的答案</label><textarea id="mock-b-24-a" rows="4" placeholder="例：3685: ..., ..., ..., ..."></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>3685：1, 12, 13, 25<br>1229：1, 4, 5, 9</div><div class="box zh"><span class="lbl">算法</span>3685 = 307 × 12 + 1；1229 = 307 × 4 + 1。Probe 2 = offset + probe 1。</div></div></details><label class="self" for="mock-b-24-c"><input type="checkbox" id="mock-b-24-c"> 我答對了（14 分）</label></div>
+<div class="exq" id="mock-b-24" data-pts="14"><div class="qtext"><p class="q"><span class="pts">24 · 14%</span>Fill in the correct answer by considering Key Offset method with list size = 307.</p><table><tr><th>Key</th><th>Home address</th><th>Key Offset</th><th>Probe 1</th><th>Probe 2</th></tr><tr><td>3685</td><td></td><td></td><td></td><td></td></tr><tr><td>1229</td><td></td><td></td><td></td><td></td></tr></table></div><label class="small" for="mock-b-24-a">你的答案</label><textarea id="mock-b-24-a" rows="4" placeholder="例：3685: ..., ..., ..., ..."></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>3685：1, 12, 13, 25<br>1229：1, 4, 5, 9<div class="zhtr"><span>中文</span>3685：本位地址 1、位移量 12、第一次探測 13、第二次探測 25。1229：1、4、5、9。</div></div><div class="box zh"><span class="lbl">算法</span>3685 = 307 × 12 + 1；1229 = 307 × 4 + 1。Probe 2 = offset + probe 1。</div></div></details><label class="self" for="mock-b-24-c"><input type="checkbox" id="mock-b-24-c"> 我答對了（14 分）</label></div>
 
 <h3>Part III. Quiz（40%）</h3>
 <div class="exq" id="mock-b-25" data-pts="14"><div class="qtext"><p class="q"><span class="pts">25 · 14%</span>Store the keys below in an array with <b>17</b> elements by using the <b>fold-boundary</b> method, folding two digits at a time, and then <b>modulo division</b> of the folded sum. Show the computing process.<br>(a) Using linear probing: i. how many collisions occurred? ii. Where is 116408 finally put?<br>(b) Using quadratic probing: i. how many collisions occurred? ii. Where is 116408 finally put?<br>(c) Using key-offset: i. how many collisions occurred? ii. Where is 116408 finally put?<br>(d) What is the load factor after all keys have been inserted?</p><div class="calc">424909 → 663039 → 929200 → 435958
 374604 → 853158 → 997354 → 116408</div></div><label class="small" for="mock-b-25-a">你的答案</label><textarea id="mock-b-25-a" rows="7" placeholder="在這裡作答，英文或中文都可以；填空題寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><table><tr><th>Key</th><th>Fold boundary</th><th>Sum</th><th>MOD 17</th></tr>
 <tr><td>424909</td><td>24+49+90</td><td>163</td><td>10</td></tr><tr><td>663039</td><td>66+30+93</td><td>189</td><td>2</td></tr><tr><td>929200</td><td>29+92+00</td><td>121</td><td>2 ✗</td></tr><tr><td>435958</td><td>34+59+85</td><td>178</td><td>8</td></tr><tr><td>374604</td><td>73+46+40</td><td>159</td><td>6</td></tr><tr><td>853158</td><td>58+31+85</td><td>174</td><td>4</td></tr><tr><td>997354</td><td>99+73+45</td><td>217</td><td>13</td></tr><tr><td>116408</td><td>11+64+80</td><td>155</td><td>2 ✗</td></tr></table>
-<div class="box en"><span class="lbl">ANSWER</span>(a) i. 4　ii. 5<br>(b) i. 3　ii. 7<br>(c) i. 2　ii. 11<br>(d) 8 / 17 ≈ 47%</div>
+<div class="box en"><span class="lbl">ANSWER</span>(a) i. 4　ii. 5<br>(b) i. 3　ii. 7<br>(c) i. 2　ii. 11<br>(d) 8 / 17 ≈ 47%<div class="zhtr"><span>中文</span>(a) 線性探測：碰撞 4 次，116408 放在 5。(b) 平方探測（quadratic）：碰撞 3 次，116408 放在 7。(c) 鍵值位移：碰撞 2 次，116408 放在 11。(d) 負載因子 8 / 17 ≈ 47%。</div></div>
 <div class="box zh"><span class="lbl">過程</span><b>Linear</b>：929200 撞 2 → 3（1 次）；116408 撞 2、3、4 → 5（3 次）。<br><b>Quadratic</b>（舊地址 + 1²，再 + 2²…）：929200 撞 2 → 3（1 次）；116408 撞 2 → 3 撞 → 3 + 4 = 7（2 次）。<br><b>Key offset</b>：929200 offset = 121 ÷ 17 = 7，(7+2) = 9（1 次）；116408 offset = 155 ÷ 17 = 9，(9+2) = 11（1 次）。<br>Linear probe 讓 2～5 擠成一團（primary clustering），key offset 把資料分散開。</div></div></details><label class="self" for="mock-b-25-c"><input type="checkbox" id="mock-b-25-c"> 我答對了（14 分）</label></div>
 
 <div class="exq" id="mock-b-26" data-pts="10"><div class="qtext"><p class="q"><span class="pts">26 · 10%</span>The algorithm <b>searchList</b> locates a target in an ordered singly linked list. Please finish it.</p><div class="calc"><b>Algorithm</b> searchList (val list &lt;metadata&gt;, ref pPre &lt;node pointer&gt;,
@@ -1185,7 +1268,7 @@ end getNext</div></div><label class="small" for="mock-a-27-a">你的答案</labe
      end if
   end if
   return found
-end searchList</div></div><label class="small" for="mock-b-26-a">你的答案</label><textarea id="mock-b-26-a" rows="4" placeholder="在這裡作答，英文或中文都可以；填空題寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>(a) null　(b) list.head　(c) target &gt; pLoc-&gt;data.key　(d) pLoc = pLoc-&gt;link　(e) target equal pLoc-&gt;data.key</div></div></details><label class="self" for="mock-b-26-c"><input type="checkbox" id="mock-b-26-c"> 我答對了（10 分）</label></div>
+end searchList</div></div><label class="small" for="mock-b-26-a">你的答案</label><textarea id="mock-b-26-a" rows="4" placeholder="在這裡作答，英文或中文都可以；填空題寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>(a) null　(b) list.head　(c) target &gt; pLoc-&gt;data.key　(d) pLoc = pLoc-&gt;link　(e) target equal pLoc-&gt;data.key<div class="zhtr"><span>中文</span>(a) pPre 從 null 開始　(b) pLoc 從第一個節點開始　(c) target 比目前節點的 key 大就繼續往後找　(d) pLoc 往下一個節點走　(e) target 等於目前節點的 key 就是找到</div></div></div></details><label class="self" for="mock-b-26-c"><input type="checkbox" id="mock-b-26-c"> 我答對了（10 分）</label></div>
 
 <div class="exq" id="mock-b-27" data-pts="10"><div class="qtext"><p class="q"><span class="pts">27 · 10%</span>The algorithm <b>deleteDbl</b> deletes the node pointed to by pDlt from a doubly linked list (with head, rear and count). Please finish it.</p><div class="calc"><b>Algorithm</b> deleteDbl (ref list &lt;metadata&gt;, val pDlt &lt;node pointer&gt;)
   if (pDlt null)
@@ -1206,9 +1289,9 @@ end searchList</div></div><label class="small" for="mock-b-26-a">你的答案</l
   end if
   ___(e)___
   return
-end deleteDbl</div></div><label class="small" for="mock-b-27-a">你的答案</label><textarea id="mock-b-27-a" rows="4" placeholder="在這裡作答，英文或中文都可以；填空題寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>(a) pPred-&gt;fore = pDlt-&gt;fore　(b) list.head = pDlt-&gt;fore　(c) pSucc-&gt;back = pDlt-&gt;back　(d) list.rear = pDlt-&gt;back　(e) recycle (pDlt)</div></div></details><label class="self" for="mock-b-27-c"><input type="checkbox" id="mock-b-27-c"> 我答對了（10 分）</label></div>
+end deleteDbl</div></div><label class="small" for="mock-b-27-a">你的答案</label><textarea id="mock-b-27-a" rows="4" placeholder="在這裡作答，英文或中文都可以；填空題寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>(a) pPred-&gt;fore = pDlt-&gt;fore　(b) list.head = pDlt-&gt;fore　(c) pSucc-&gt;back = pDlt-&gt;back　(d) list.rear = pDlt-&gt;back　(e) recycle (pDlt)<div class="zhtr"><span>中文</span>(a) 前一個節點的 fore 跳過被刪節點，指向它的下一個　(b) 刪的是第一個：head 指向下一個　(c) 下一個節點的 back 指向被刪節點的前一個　(d) 刪的是最後一個：rear 指向前一個　(e) 回收記憶體</div></div></div></details><label class="self" for="mock-b-27-c"><input type="checkbox" id="mock-b-27-c"> 我答對了（10 分）</label></div>
 
-<div class="exq" id="mock-b-28" data-pts="6"><div class="qtext"><p class="q"><span class="pts">28 · 6%</span>Trace the binary search on the list [3, 9, 14, 22, 31, 40, 47, 58, 66, 75] for target <b>47</b> and for target <b>50</b>. Show first, mid and last in each step, and give the number of loop iterations.</p></div><label class="small" for="mock-b-28-a">你的答案</label><textarea id="mock-b-28-a" rows="5" placeholder="每一步寫 (first, mid, last) 和比較結果"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>Target 47: (first, mid, last) = (0, 4, 9) 31 &lt; 47 → (5, 7, 9) 58 &gt; 47 → (5, 5, 6) 40 &lt; 47 → (6, 6, 6) found at index 6. 4 iterations.<br>Target 50: same first three steps, then (6, 6, 6) 47 &lt; 50 → first = 7 &gt; last = 6, not found. 4 iterations.</div></div></details><label class="self" for="mock-b-28-c"><input type="checkbox" id="mock-b-28-c"> 我答對了（6 分）</label></div>
+<div class="exq" id="mock-b-28" data-pts="6"><div class="qtext"><p class="q"><span class="pts">28 · 6%</span><span class="hard">鑑別題</span>A circularly linked list keeps only a <b>rear</b> pointer: rear → 40, and 40 → 10 → 20 → 30 → 40. pNew is a new node. Write the statements to (a) insert pNew at the <b>beginning</b>, and (b) insert pNew at the <b>end</b>. Explain the only difference between (a) and (b).</p></div><label class="small" for="mock-b-28-a">你的答案</label><textarea id="mock-b-28-a" rows="5" placeholder="(a) ... (b) ... 差別：..."></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>(a) pNew-&gt;link = rear-&gt;link; rear-&gt;link = pNew<br>(b) pNew-&gt;link = rear-&gt;link; rear-&gt;link = pNew; rear = pNew<br>The only difference is that inserting at the end also moves the rear pointer to the new node.<div class="zhtr"><span>中文</span>(a) 新節點先指向原本的第一個（rear->link），再讓最後一個節點指向新節點，新節點就變成第一個。(b) 前兩步完全一樣，再多一步把 rear 移到新節點，它就變成最後一個。差別只有「rear 要不要移」。</div></div><div class="box zh"><span class="lbl">為什麼是鑑別題</span>環狀串列只存 rear 時，第一個節點是 rear-&gt;link。插頭插尾的指標動作一樣，很多人會以為插尾要從頭走到尾。</div></div></details><label class="self" for="mock-b-28-c"><input type="checkbox" id="mock-b-28-c"> 我答對了（6 分）</label></div>
 
 <div class="next"><b>兩份模擬卷寫完了，考前一天看總複習</b><button class="btn primary" type="button" data-go="review">總複習 →</button></div></section><section class="view" id="review" hidden><div class="vhead"><div class="pcb" data-pcb="review" role="img"></div><div class="eyebrow">考前一天</div><h1>總複習</h1><p>考前一天和考前 10 分鐘看這頁就好：必背清單、公式和六段一定要會寫的程式。</p></div>
 <h3>必背 12 點 <span class="star">★★★</span></h3>
@@ -1343,7 +1426,14 @@ ch1: [
  {"q":"Which ordering is correct from most efficient to least efficient?","o":["O(log n) < O(n) < O(n log n) < O(n²) < O(2ⁿ)","O(n) < O(log n) < O(n²) < O(n log n) < O(2ⁿ)","O(log n) < O(n log n) < O(n) < O(n²) < O(n!)","O(1) < O(n) < O(log n) < O(n²) < O(n!)"],"a":0,"e":"log n < n < n log n < n² < nᵏ < cⁿ < n!"},
  {"q":"In the textbook’s pseudocode, arrays are indexed starting at","o":["0","1","−1","Any value chosen by the programmer"],"a":0,"e":"Pseudocode arrays are indexed starting at 0."},
  {"q":"\"All processing for an object is bundled together in a library and hidden from the user.\" This describes","o":["Modular programming","Spaghetti code","Encapsulation","Recursion"],"a":2,"e":"Encapsulation（封裝）是 OOP 的一部分。"},
- {"q":"A loop whose inner loop runs 1, 2, 3, …, n times (dependent quadratic) executes its body how many times?","o":["n","n log n","n(n+1)/2","n²"],"a":2,"e":"1+2+…+n = n(n+1)/2，仍是 O(n²)。"}
+ {"q":"A loop whose inner loop runs 1, 2, 3, …, n times (dependent quadratic) executes its body how many times?","o":["n","n log n","n(n+1)/2","n²"],"a":2,"e":"1+2+…+n = n(n+1)/2，仍是 O(n²)。"},
+ {"q":"How many times does the inner statement run, and what is the Big-O?  for (i = 1; i <= n; i = i * 2)  for (j = 1; j <= i; j++)  statement;","o":["About log n times, O(log n)","About 2n times, O(n)","About n log n times, O(n log n)","About n²/2 times, O(n²)"],"a":1,"e":"內層次數是 1 + 2 + 4 + … + n ≈ 2n，不是「外層 log n × 內層 n」。這題專門抓直接相乘的人。","h":1},
+ {"q":"What is the efficiency of: i = n; loop (i > 1) { for (j = 0; j < n; j++) statement; i = i / 2 }","o":["O(log n)","O(n)","O(n log n)","O(n²)"],"a":2,"e":"外層每次除 2 → log n 次；內層每次都跑滿 n 次 → n log n。","h":1},
+ {"q":"What is the Big-O of f(n) = n log n + n√n + 500n?","o":["O(n log n)","O(n√n)","O(n)","O(n² )"],"a":1,"e":"n√n = n^1.5，比 n log n 長得快（√n 比 log n 大），所以留 n^1.5。","h":1},
+ {"q":"For n = 1000, how many times does this loop body run?  for (i = 1; i < 1000; i = i * 2)","o":["9","10","11","500"],"a":1,"e":"i = 1, 2, 4, …, 512 共 10 次（2⁹ = 512 < 1000，2¹⁰ = 1024 停）。","h":1},
+ {"q":"An algorithm has a parameter 'ref locn <index>' and returns a Boolean. Which header parts describe locn and the Boolean respectively?","o":["Precondition and Postcondition","Postcondition and Return condition","Return condition and Postcondition","Purpose and Return condition"],"a":1,"e":"ref 參數是 output parameter，執行後的狀態寫在 Postcondition；回傳值寫在 Return condition。","h":1},
+ {"q":"Which statement best distinguishes a data structure from composite data?","o":["A data structure can only contain atomic data","A data structure is an aggregation of data with defined relationships among its elements","Composite data cannot be divided","A data structure must be stored contiguously"],"a":1,"e":"關鍵字是 defined relationships（定義好的關係）。Composite data 只是可拆，不一定有元素間的關係。","h":1},
+ {"q":"A list ADT is first implemented with an array and later re-implemented with a linked list. If the ADT is designed correctly, what must the application programs change?","o":["All calls to the list operations","Only the calls that insert data","Nothing; only the implementation inside the ADT changes","The data type of every variable"],"a":2,"e":"ADT 隱藏實作（hide the implementation），使用者只依賴 operation name 和 parameters，所以外部程式不用改。","h":1}
 ],
 ch2: [
  {"q":"When should a sequential search be used?","o":["Only when the list is sorted","Whenever the list is not ordered","Only for lists larger than 16 elements","Only for hashed lists"],"a":1,"e":"Sequential search 用在無序、小的、不常搜尋的 list。"},
@@ -1360,7 +1450,15 @@ ch2: [
  {"q":"What is the significant limitation of pseudorandom collision resolution?","o":["It requires a prime list size","All keys follow only one collision resolution path","It cannot be used with modulo division","It needs an overflow area"],"a":1,"e":"所以會有 secondary clustering；key offset 可改善。"},
  {"q":"A list of 19 elements contains 9 keys. Its load factor is about","o":["19%","47%","53%","211%"],"a":1,"e":"9/19 × 100 ≈ 47%。"},
  {"q":"Which is NOT a problem of bucket hashing?","o":["It uses significantly more space","It does not completely resolve the collision problem","Collisions are postponed until the bucket is full","Both (A) and (B)"],"a":2,"e":"延後碰撞是 bucket 的優點，不是問題。"},
- {"q":"Linked list collision resolution uses which two storage areas?","o":["Prime area and overflow area","Bucket and stack","Home address and sentinel","Array and queue"],"a":0,"e":"碰撞的資料放 overflow area，常用 LIFO 或 key sequence。"}
+ {"q":"Linked list collision resolution uses which two storage areas?","o":["Prime area and overflow area","Bucket and stack","Home address and sentinel","Array and queue"],"a":0,"e":"碰撞的資料放 overflow area，常用 LIFO 或 key sequence。"},
+ {"q":"Binary search on [4, 7, 8, 10, 14, 21, 22, 36, 62, 77, 81, 91] for target 77. How many loop iterations are needed?","o":["2","3","4","5"],"a":2,"e":"mid 依序 5(21) → 8(62) → 10(81) → 9(77)，第 4 次找到。","h":1},
+ {"q":"Binary search on the same list for target 23 (not in the list). When the search stops, what are first and last?","o":["first = 6, last = 7","first = 7, last = 6","first = 6, last = 6","first = 8, last = 7"],"a":1,"e":"mid 5(21) → first 6；mid 8(62) → last 7；mid 6(22) → first 7；mid 7(36) → last 6；first 7 > last 6 停。","h":1},
+ {"q":"In a sentinel search, the loop stops at the sentinel position (index last + 1). What does this mean?","o":["The target is the last real element","The target is not in the original list","The list is sorted","The list is full"],"a":1,"e":"Sentinel 是我們自己放進去的 target，停在那裡代表真正的 list 裡沒有。","h":1},
+ {"q":"A probability search runs on [A, B, C, D, E]. D is searched twice. What is the list afterwards?","o":["[D, A, B, C, E]","[A, D, B, C, E]","[A, B, D, C, E]","[A, B, C, D, E]"],"a":1,"e":"每找到一次就和前一個交換：第一次 → [A, B, D, C, E]，第二次 → [A, D, B, C, E]。","h":1},
+ {"q":"Using fold shift, key 123456789 is hashed into a 3-digit address. What is the address?","o":["368","1368","764","864"],"a":0,"e":"123 + 456 + 789 = 1368，去掉超出位數的 1 → 368。764 是 fold boundary 的答案。","h":1},
+ {"q":"List size 17, home address 5, quadratic probe (add 1², then 2², then 3² to the previous address). The first three probes collide. Where is the third probe?","o":["8","14","2","19"],"a":2,"e":"5 → 5+1 = 6 → 6+4 = 10 → 10+9 = 19，19 MOD 17 = 2。忘了 MOD 會選 19。","h":1},
+ {"q":"Midsquare variation: take the first three digits of 379452, square them, and take the middle three digits of the 6-digit result. What is the address?","o":["364","436","143","641"],"a":0,"e":"379² = 143641，中間三位 364。","h":1},
+ {"q":"Which collision resolution method makes every key follow the same collision path, causing secondary clustering?","o":["Key offset","Pseudorandom collision resolution","Linked list resolution","Bucket hashing"],"a":1,"e":"Pseudorandom 只用碰撞地址算下一個位置，同一個地址撞到的 key 都走同一條路。Key offset 跟 key 有關，路徑不同。","h":1}
 ],
 ch3: [
  {"q":"A restricted list in which data are processed first in-first out is a","o":["Stack","Queue","Random list","Multilinked list"],"a":1,"e":"FIFO = queue；LIFO = stack。"},
@@ -1377,7 +1475,15 @@ ch3: [
  {"q":"Algorithm insertDbl returns 2 when","o":["Memory is full","The insert is successful","The data matches data already in the list (duplicate)","The list is empty"],"a":2,"e":"0 = overflow、1 = success、2 = duplicate。"},
  {"q":"Which statement about multilinked lists is correct?","o":["The data are replicated for each sequence","The same data exist only once, connected by multiple sets of links","Each node has exactly one link","They must be doubly linked"],"a":1,"e":"資料只存一次，用不同 link 組成多種順序。"},
  {"q":"To append list2 to list1, we","o":["Copy every node of list2","Change the link of the last node of list1 to point to the first node of list2","Change list2.head to point to list1","Set list1.count to zero"],"a":1,"e":"並把 count 相加。"},
- {"q":"Which pointer in a doubly linked list is not always necessary but improves efficiency?","o":["Head pointer","Forward pointer","Rear pointer","Backward pointer"],"a":2,"e":"Rear pointer 是 head structure 裡的 metadata。"}
+ {"q":"Which pointer in a doubly linked list is not always necessary but improves efficiency?","o":["Head pointer","Forward pointer","Rear pointer","Backward pointer"],"a":2,"e":"Rear pointer 是 head structure 裡的 metadata。"},
+ {"q":"searchList is called with target 25 on the ordered list 10 → 20 → 30 → 40. What are pPre, pLoc and the return value?","o":["pPre = 10, pLoc = 20, false","pPre = 20, pLoc = 30, false","pPre = 20, pLoc = null, false","pPre = 30, pLoc = 40, true"],"a":1,"e":"pLoc 停在第一個 ≥ 25 的節點 30，pPre 是它前一個 20；沒有相等 → false。","h":1},
+ {"q":"In the else-branch of insertNode, a student writes 'pPre->link = pNew' BEFORE 'pNew->link = pPre->link'. What happens?","o":["Nothing changes; the order does not matter","pNew points to itself and every node after pPre is lost","pNew becomes the first node","The count becomes wrong but the links are fine"],"a":1,"e":"第一行把 pPre->link 改成 pNew，第二行讀到的 pPre->link 已經是 pNew，所以 pNew 指向自己。","h":1},
+ {"q":"deleteNode is called to delete the only node in a list (pPre = null). What is list.head afterwards?","o":["It still points to the deleted node","null, because list.head = pLoc->link and pLoc->link is null","It must be set to null by a separate statement","It points to the head structure"],"a":1,"e":"刪第一個節點的程式就能處理唯一節點，不用另外寫。","h":1},
+ {"q":"If 'list.count = list.count - 1' is removed from destroyList, what happens?","o":["The list is destroyed normally","The loop never ends normally; after the last node it keeps trying to delete from a null head","Only the first node is deleted","The memory is not recycled but the loop ends"],"a":1,"e":"迴圈條件是 list.count not zero，count 不減就跳不出去，head 變 null 後還會繼續存取。","h":1},
+ {"q":"In a doubly linked list, deleteDbl removes the LAST node (pDlt->fore is null). Which two pointers change?","o":["list.head and pSucc->back","pPred->fore becomes null and list.rear points to pPred","list.rear becomes null and list.head points to pPred","Only list.count changes"],"a":1,"e":"pPred->fore = pDlt->fore（null）；因為沒有 successor，所以改 list.rear = pDlt->back。","h":1},
+ {"q":"A circularly linked list keeps only a rear pointer in its head structure. How do you reach the first node in O(1)?","o":["list.rear->back","list.rear->link","Traverse from rear until null","It is impossible"],"a":1,"e":"環狀串列最後一個節點的 link 就是第一個節點。","h":1},
+ {"q":"What is the efficiency of append(list1, list2) as written in the textbook, where list1 has n nodes? How could it become O(1)?","o":["O(1) already","O(n); keep a rear pointer to list1’s last node","O(n²); use binary search","O(log n); use a sentinel"],"a":1,"e":"Append 要走到 list1 最後一個節點；有 rear pointer 就不用走。","h":1},
+ {"q":"A list has 5 nodes. getNext is called first with fromWhere = 0 and then 5 more times with fromWhere = 1. What do the six calls return?","o":["true six times","true five times, then false","false, then true five times","true four times, then false twice"],"a":1,"e":"第 1 次取第 1 個；後 4 次取第 2～5 個；第 6 次時 pos->link 是 null → false。","h":1}
 ],
 y24mc: [
  {"q":"The postcondition in pseudocode specifies:","o":["What happens before execution","The status of the output after the algorithm is complete","A loop continuation condition","The parameters passed into the algorithm"],"a":1,"e":"Postcondition identifies any action taken and the status of any output parameters。(A) 是 precondition。原卷這題答 A 被扣分。"},
@@ -1433,42 +1539,42 @@ m1: [
  {"q":"Which of the following is NOT a good intelligent data name?","o":["sum","numOfStu","avgScore","totalSalesTax"],"a":0,"e":"sum 屬於 generic name（count、sum、total、row、column、file）。"},
  {"q":"The study of algorithm efficiency focuses mainly on","o":["Variables","Loops","Comments","Headers"],"a":1,"e":"The study of algorithm efficiency focuses on loops。"},
  {"q":"What is the efficiency of: i = n; loop (i >= 1) { application code; i = i / 2 }?","o":["O(1)","O(log n)","O(n)","O(n²)"],"a":1,"e":"每次除 2 → logarithmic。"},
- {"q":"Which of the following is NOT an atomic data type?","o":["Integer","Character","Floating point","Array"],"a":3,"e":"Array 由多個元素組成，是 data structure。"},
+ {"q":"What is the efficiency of: for (i = 1; i <= n; i = i * 2) { for (j = 1; j <= n; j++) statement; }","o":["O(n)","O(log n)","O(n log n)","O(n²)"],"a":2,"e":"外層 log n 次，內層每次都是 n（不是 i）→ n log n。和 Ch1 那題的差別就在內層上限。","h":1},
  {"q":"In the ADT model, which of the following is within the user’s scope?","o":["The data structure","The implementation of the operational functions","The operation names and their parameters","The hidden pointer’s target structure"],"a":2,"e":"Data structure 和 functions 都不在使用者範圍內，只有介面看得到。"},
  {"q":"In ADT class templates, the identifier KTYPE refers to","o":["The kind of loop used","The key type","The size of the list","The node pointer type"],"a":1,"e":"TYPE = data structure template；KTYPE = key type（optional）。"},
  {"q":"Which search method requires the list to be sorted?","o":["Sequential search","Sentinel search","Binary search","Probability search"],"a":2,"e":"Binary search 要有序 array。"},
  {"q":"In a sentinel search, where is the target placed?","o":["At the beginning of the array","In a sentinel entry added at the end of the array","In the middle of the array","In a separate overflow area"],"a":1,"e":"加在尾端，保證找得到。"},
- {"q":"For a list with indexes 0 to 11, the first mid calculated by binary search is","o":["5","6","5.5","11"],"a":0,"e":"(0 + 11) / 2 = 5（取整數）。"},
+ {"q":"Binary search on indexes 0 to 11. The target is smaller than every element. Which index is compared last?","o":["0","1","5","2"],"a":0,"e":"mid 5 → last 4；mid 2 → last 1；mid 0 → last −1，最後比的是 index 0。","h":1},
  {"q":"Which hashing method uses the key as the seed of a random number generator?","o":["Midsquare","Pseudorandom","Digit extraction","Rotation"],"a":1,"e":"y = ax + c，再 MOD list size。"},
  {"q":"Which hashing method is most useful when keys are serial?","o":["Direct","Rotation","Subtraction","Midsquare"],"a":1,"e":"把最後一個字元轉到前面，打散連號。"},
  {"q":"Employee numbers are 1001 to 1100 for 100 employees. Which hashing method is most suitable?","o":["Subtraction","Midsquare","Pseudorandom","Fold boundary"],"a":0,"e":"Keys consecutive but not starting from 1 → 減 1000。"},
  {"q":"When data become grouped along a collision path throughout a list, this is called","o":["Primary clustering","Secondary clustering","Load factor","Overflow"],"a":1,"e":"Secondary clustering，不容易看出來。"},
  {"q":"Which open addressing method produces different collision paths for different keys?","o":["Linear probe","Quadratic probe","Pseudorandom collision resolution","Key offset"],"a":3,"e":"Key offset 是 double hashing，offset 跟 key 有關。"},
- {"q":"Using key offset with list size 307, key 1536 hashes to 1. What is its first probe address?","o":["2","5","6","11"],"a":2,"e":"offset = 1536/307 = 5；(5+1) MOD 307 = 6。"},
+ {"q":"List size 307, key offset method. Key 0922 hashes to 1 and collides twice. Where is the second probe?","o":["4","7","8","10"],"a":1,"e":"offset = 922/307 = 3；probe 1 = (3+1) = 4；probe 2 = (3+4) = 7。","h":1},
  {"q":"Compared with an array, a major advantage of a linked list is that","o":["Search is faster","It supports binary search","Insertion and deletion are efficient","It uses less memory per element"],"a":2,"e":"Linked list 插入刪除快，但 search 慢。"},
- {"q":"When inserting at the end of a singly linked list, the revised code is exactly the same as","o":["Inserting into an empty list","Inserting at the beginning","Inserting in the middle","Deleting the first node"],"a":2,"e":"pNew->link = pPre->link（null）；pPre->link = pNew。"},
+ {"q":"insertNode is called with pPre pointing to the last node. Which statements execute, and why is no special code needed?","o":["pNew->link = list.head; list.head = pNew, because it becomes first","pNew->link = pPre->link (which is null); pPre->link = pNew, so pNew becomes the last node","Only list.rear = pNew","The function returns false"],"a":1,"e":"Insert at end 跟 insert in middle 用同一段程式，pPre->link 本來就是 null。","h":1},
  {"q":"When deleting a node from a doubly linked list, the predecessor’s forward pointer is set to","o":["null","The deleted node’s successor","The head pointer","The deleted node itself"],"a":1,"e":"pPred->fore = pDlt->fore；successor 的 back 指向 predecessor。"},
- {"q":"What is the first step of the deleteNode algorithm’s caller before calling deleteNode?","o":["Recycle the node","Locate the node to be deleted (identify pLoc)","Set the head to null","Decrease the count"],"a":1,"e":"The node to be deleted must be identified before the procedure is called。"}
+ {"q":"Which is the correct reason the caller of deleteNode must call searchList first?","o":["deleteNode sorts the list","deleteNode needs pPre and pLoc; it does not search by itself","searchList recycles the memory","deleteNode only works on the first node"],"a":1,"e":"Algorithm 3-3 analysis：The node to be deleted must be identified before the procedure is called。","h":1}
 ],
 m2: [
  {"q":"Pseudocode is best described as","o":["A machine language","An English-like representation of the code","A flowchart","A compiled programming language"],"a":1,"e":"Part English, part structured code。"},
  {"q":"In Algorithm 1-1, statement 3.1 means","o":["The 31st statement","The first statement expanded within statement 3","Version 3.1 of the algorithm","A loop that runs 3.1 times"],"a":1,"e":"Statement numbers 的展開編號。"},
  {"q":"An aggregation of atomic and composite data types into a set with defined relationships is a","o":["Data type","Data structure","Pseudocode","Header"],"a":1,"e":"Data structure 的定義。"},
  {"q":"Nonstructural, linear programs are known as","o":["Modular programs","Spaghetti code","Object-oriented programs","Abstract data types"],"a":1,"e":"Spaghetti code。"},
- {"q":"What is the Big-O of f(n) = 5n³ + 2n² log n + 1000?","o":["O(n² log n)","O(n³)","O(5n³)","O(1000)"],"a":1,"e":"只留最大項 n³。"},
- {"q":"For n = 10,000, approximately how many iterations does an O(n log n) algorithm take?","o":["14","10,000","140,000","100,000,000"],"a":2,"e":"10,000 × 14 = 140,000。"},
+ {"q":"What is the Big-O of f(n) = 2ⁿ + n¹⁰⁰ + n!?","o":["O(2ⁿ)","O(n¹⁰⁰)","O(n!)","O(n¹⁰⁰ · 2ⁿ)"],"a":2,"e":"成長速度：polynomial < exponential < factorial，n! 最大。","h":1},
+ {"q": "Which of these loops runs O(log n) times?", "o": ["for (i = 0; i < n; i = i + 2)", "for (i = 1; i < n; i = i * 3)", "for (i = 0; i < n * n; i++)", "for (i = n; i > 0; i--)"], "a": 1, "e": "每次乘 3 → log₃n 次，仍是 O(log n)。每次加 2 是 n/2 次，還是 O(n)。", "h": 1},
  {"q":"Adding two n × n matrices has an efficiency of","o":["O(n)","O(n log n)","O(n²)","O(n³)"],"a":2,"e":"兩層迴圈。"},
  {"q":"A sequential search must tell the calling algorithm which two things?","o":["The list size and the target","Whether it found the target and at what index","The first and last index","The time and space used"],"a":1,"e":"Did it find the target? At what index?"},
  {"q":"Why does the C++ sequential search use a while loop rather than a for loop?","o":["for loops cannot use arrays","Finding something is an event, so an event loop is used","while loops are always faster","To avoid using a reference parameter"],"a":1,"e":"Program 2-1 analysis。"},
  {"q":"A probability search is especially useful when","o":["The list is sorted","Few elements are the targets for most of the searches","The list has more than 16 elements","Keys are serial"],"a":1,"e":"常被找的移到前面。"},
  {"q":"The address produced by the hashing algorithm is called the","o":["Home address","Prime area","Overflow address","Probe"],"a":0,"e":"Home address。"},
  {"q":"What is the most obvious limitation of the midsquare method?","o":["It needs a prime list size","The size of the key (its square becomes too large)","It always produces collisions","It only works with letters"],"a":1,"e":"例：9452² = 89340304。"},
- {"q":"How does fold boundary differ from fold shift?","o":["Fold boundary multiplies the parts","In fold boundary, the left and right parts are reversed before adding","Fold boundary uses only the middle part","There is no difference"],"a":1,"e":"兩種方法算出的地址不同。"},
+ {"q":"With fold boundary (two digits at a time), what is the folded sum of key 137456?","o":["170","167","137","1745"],"a":0,"e":"13 → 31，74 不變，56 → 65：31 + 74 + 65 = 170。","h":1},
  {"q":"For maximum efficiency in the pseudorandom method y = ax + c, the factors a and c should be","o":["Even numbers","Prime numbers","Equal","Powers of two"],"a":1,"e":"a and c should be prime numbers。"},
  {"q":"Which formula gives the load factor of a hashed list (k = filled elements, n = total elements)?","o":["n / k × 100","k / n × 100","k × n","(n − k) / n"],"a":1,"e":"α = k/n × 100。"},
- {"q":"In bucket hashing, collisions are","o":["Completely eliminated","Postponed until the bucket is full","Resolved by key offset only","Stored in the prime area"],"a":1,"e":"但會用更多空間，也沒有完全解決碰撞。"},
+ {"q":"Insert keys 27, 18, 29, 28, 39 into a list of size 11 with modulo division and linear probe. How many collisions in total?","o":["2","3","4","5"],"a":2,"e":"27→5、18→7、29→7 撞 → 8（1）、28→6、39→6 撞 7 撞 8 撞 → 9（3）。共 4 次。","h":1},
  {"q":"Which of the following is a restricted list?","o":["Random list","Ordered list","Stack","Multilinked list"],"a":2,"e":"Stack（LIFO）和 queue（FIFO）是 restricted list。"},
- {"q":"List traversal requires","o":["A binary search","A looping algorithm rather than a search","A rear pointer","A sorted list"],"a":1,"e":"每次迴圈處理一個元素。"},
+ {"q":"Which statement about searching a doubly linked list is TRUE?","o":["Binary search becomes possible because there are two pointers","It is still a sequential search, but it can move backward from the rear","It is always O(1)","It cannot be searched"],"a":1,"e":"雙向只是多了往回走的指標，節點還是不連續，仍是 sequential search。","h":1},
  {"q":"Why do we write an emptyList module even though it contains only one statement?","o":["To make the program longer","Because the calling module has no direct access to the list structure","Because it uses recursion","Because it allocates memory"],"a":1,"e":"資料結構對使用者是隱藏的。"},
  {"q":"In the multilinked list of presidents, how many link fields does each node have?","o":["One","Two","Three","It depends on the number of presidents"],"a":1,"e":"一個依 president 排序，一個依 spouse 排序。"}
 ],
@@ -1546,7 +1652,7 @@ function renderQuiz(key){
   }
   qs.forEach((it,i)=>{
     const d=document.createElement("div");d.className="qitem";
-    const st=document.createElement("div");st.className="stem";st.innerHTML='<span class="num">'+(i+1)+'.</span>';st.appendChild(document.createTextNode(it.q));d.appendChild(st);
+    const st=document.createElement("div");st.className="stem";st.innerHTML='<span class="num">'+(i+1)+'.</span>'+(it.h?'<span class="hard">鑑別題</span>':'');st.appendChild(document.createTextNode(it.q));d.appendChild(st);
     const os=document.createElement("div");os.className="opts";
     const btns=[];
     it.o.forEach((txt,oi)=>{
@@ -1620,7 +1726,7 @@ const KEYS={
 "mock-b-25":[G(2,NUM(4),"(a) i. 4"),G(2,NUM(5),"(a) ii. 5"),G(2,NUM(3),"(b) i. 3"),G(2,NUM(7),"(b) ii. 7"),G(2,NUM(2),"(c) i. 2"),G(2,NUM(11),"(c) ii. 11"),G(2,"47|8\\s*/\\s*17","(d) 47%")],
 "mock-b-26":[G(2,FB("a","null")+"|ppre\\s*=\\s*null","(a) null"),G(2,FB("b","list"+ARR+"head")+"|ploc\\s*=\\s*list"+ARR+"head","(b) list.head"),G(2,"target\\s*>","(c) target > pLoc->data.key"),G(2,"ploc\\s*=\\s*ploc"+ARR+"link","(d) pLoc = pLoc->link"),G(2,"target\\s*(==?|equal|is)\\s*(to\\s*)?ploc","(e) target equal pLoc->data.key")],
 "mock-b-27":[G(2,"ppred"+ARR+"fore\\s*=\\s*pdlt"+ARR+"fore","(a) pPred->fore = pDlt->fore"),G(2,"list"+ARR+"head\\s*=\\s*pdlt"+ARR+"fore","(b) list.head = pDlt->fore"),G(2,"psucc"+ARR+"back\\s*=\\s*pdlt"+ARR+"back","(c) pSucc->back = pDlt->back"),G(2,"list"+ARR+"rear\\s*=\\s*pdlt"+ARR+"back","(d) list.rear = pDlt->back"),G(2,"recycle","(e) recycle(pDlt)")],
-"mock-b-28":[G(2,"index\\s*6|found|找到","47 found at index 6"),G(2,"not\\s*found|找不到|first\\s*>\\s*last|7\\s*>\\s*6","50 not found (first > last)"),G(2,NUM(4),"4 iterations")]
+"mock-b-28":[G(2,"pnew"+ARR+"link\\s*=\\s*rear"+ARR+"link","pNew->link = rear->link"),G(2,"rear"+ARR+"link\\s*=\\s*pnew","rear->link = pNew"),G(2,"rear\\s*=\\s*pnew","(b) rear = pNew")]
 };
 function normAns(s){
   return s.toLowerCase()
@@ -1796,6 +1902,222 @@ function renderHome(){
   if(next){p.textContent="下一步："+(next[0].startsWith("ch")?"讀 "+next[1]+" 再做章末練習":"寫"+next[1]+"（限時 110 分鐘）");ns.appendChild(p);const b=document.createElement("button");b.className="btn primary";b.textContent="開始";b.dataset.go=next[0];ns.appendChild(b);}
   else{p.textContent="全部完成了。考前一天看「總複習」，然後早點睡。";ns.appendChild(p);const b=document.createElement("button");b.className="btn primary";b.textContent="總複習";b.dataset.go="review";ns.appendChild(b);}
 }
+
+/* ---------- interactive labs ---------- */
+(function(){
+const $=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;};
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+function frame(el,title,hint){
+  el.innerHTML="";
+  const h=$("div","labhead",'<span class="labtag">互動</span><b>'+title+'</b>');el.appendChild(h);
+  if(hint)el.appendChild($("p","labhint",hint));
+  return el;
+}
+
+/* 1. Big-O growth */
+function bigo(el){
+  frame(el,"拉拉看：n 變大時，各種 Big-O 要跑幾次","拖動滑桿改變 n。長條用對數刻度畫，每多一格就是多 10 倍。");
+  const row=$("div","labrow");
+  const lab=$("label","small","n = ");const out=$("b","mono");lab.appendChild(out);
+  const sl=$("input");sl.type="range";sl.min="1";sl.max="6";sl.step="0.01";sl.value="4";sl.id="bigo-n";sl.setAttribute("aria-label","n");
+  row.append(lab,sl);el.appendChild(row);
+  const bars=$("div","bars");el.appendChild(bars);
+  const F=[["O(log n)",n=>Math.log2(n)],["O(n)",n=>n],["O(n log n)",n=>n*Math.log2(n)],["O(n²)",n=>n*n],["O(2ⁿ)",n=>Math.pow(2,n)]];
+  function fmt(v){if(!isFinite(v)||v>1e15)return "超過 10¹⁵";if(v>=1e6)return v.toExponential(2).replace("e+"," × 10^");return Math.round(v).toLocaleString();}
+  function draw(){
+    const n=Math.round(Math.pow(10,+sl.value));out.textContent=n.toLocaleString();
+    bars.innerHTML="";
+    F.forEach(([k,f])=>{const v=f(n);const w=Math.max(1,Math.min(100,(Math.log10(Math.max(v,1))/15)*100));
+      const r=$("div","bar-r");r.append($("span","bk",k));const t=$("span","bt");const i=$("i");i.style.width=w+"%";t.appendChild(i);r.append(t,$("span","bv",fmt(v)));bars.appendChild(r);});
+  }
+  sl.addEventListener("input",draw);draw();
+}
+
+/* 2. Binary search stepper */
+function bsearch(el){
+  frame(el,"Binary search 逐步走","輸入 target，按「下一步」看 first、mid、last 怎麼移動。灰色是已經被排除的範圍。");
+  const A=[4,7,8,10,14,21,22,36,62,77,81,91];
+  const ctl=$("div","labrow");
+  const inp=$("input");inp.type="number";inp.value="22";inp.id="bs-target";inp.className="labin";inp.setAttribute("aria-label","target");
+  const bN=$("button","btn primary","下一步"),bR=$("button","btn","重來");bN.type=bR.type="button";
+  ctl.append($("label","small","target"),inp,bN,bR);el.appendChild(ctl);
+  const arr=$("div","cells");el.appendChild(arr);
+  const log=$("div","lablog");el.appendChild(log);
+  let first,last,mid,done,steps;
+  function reset(){first=0;last=A.length-1;mid=null;done=false;steps=0;log.innerHTML="first = 0、last = 11，還沒開始比。";draw();}
+  function draw(){
+    arr.innerHTML="";
+    A.forEach((v,i)=>{const c=$("div","cell");if(i<first||i>last)c.classList.add("out");if(i===mid)c.classList.add(done&&A[mid]===+inp.value?"hit":"mid");
+      c.append($("span","ci",i),$("b",null,v));const tags=[];if(i===first)tags.push("first");if(i===mid)tags.push("mid");if(i===last)tags.push("last");c.append($("span","ct",tags.join(" ")));arr.appendChild(c);});
+  }
+  function step(){
+    if(done)return;const t=+inp.value;
+    if(first>last){done=true;log.innerHTML+="<br><b>first "+first+" &gt; last "+last+"，找不到</b>，共 "+steps+" 次迴圈。";draw();return;}
+    steps++;mid=Math.floor((first+last)/2);let msg="第 "+steps+" 次：mid = ("+first+" + "+last+") / 2 = "+mid+"，list[mid] = "+A[mid]+"。";
+    if(t>A[mid]){msg+=" "+t+" &gt; "+A[mid]+" → first = "+(mid+1);first=mid+1;}
+    else if(t<A[mid]){msg+=" "+t+" &lt; "+A[mid]+" → last = "+(mid-1);last=mid-1;}
+    else{msg+=" <b>找到了</b>，共 "+steps+" 次迴圈。";done=true;}
+    log.innerHTML+="<br>"+msg;
+    if(!done&&first>last){done=true;log.innerHTML+="<br><b>first "+first+" &gt; last "+last+"，找不到</b>，共 "+steps+" 次迴圈。";}
+    draw();
+  }
+  bN.addEventListener("click",step);bR.addEventListener("click",reset);inp.addEventListener("change",reset);reset();
+}
+
+/* 3. Hashing simulator */
+function hash(el){
+  frame(el,"雜湊模擬器：自己出題自己對答案","預設是 2024／2025 考古題那組 key。改 key、list size、摺疊方法或碰撞處理，按「插入下一個」一步步看，或按「全部插入」直接看結果。");
+  const g=$("div","labgrid");
+  g.innerHTML='<label>Keys<textarea id="hs-keys" rows="2" class="labin">224562, 137456, 214572, 140155, 214576, 162145, 144457, 190255, 234554</textarea></label>'+
+   '<label>List size<input id="hs-n" class="labin" type="number" value="19" min="2" max="997"></label>'+
+   '<label>Hashing<select id="hs-fold" class="labin"><option value="fb">Fold boundary（每 2 位）＋ MOD</option><option value="fs">Fold shift（每 2 位）＋ MOD</option><option value="mod">Modulo division 直接取餘</option></select></label>'+
+   '<label>Collision<select id="hs-col" class="labin"><option value="lin">Linear probe</option><option value="quad">Quadratic probe</option><option value="ko">Key offset</option></select></label>';
+  el.appendChild(g);
+  const ctl=$("div","labrow");const bS=$("button","btn primary","插入下一個"),bA=$("button","btn","全部插入"),bR=$("button","btn","重來");[bS,bA,bR].forEach(b=>b.type="button");ctl.append(bS,bA,bR);el.appendChild(ctl);
+  const slots=$("div","slots");el.appendChild(slots);
+  const sum=$("div","lablog");el.appendChild(sum);
+  const tw=$("div","labtbl");el.appendChild(tw);
+  const q=id=>el.querySelector("#"+id);
+  let T,keys,idx,rows,col,N,fold,mode,lastAt;
+  function folded(k){
+    const s=String(k);
+    if(fold==="mod")return {v:k,expr:String(k)};
+    const parts=[];for(let i=0;i<s.length;i+=2)parts.push(s.slice(i,i+2));
+    const used=parts.map((p,i)=>fold==="fb"&&(i===0||i===parts.length-1)&&parts.length>1?p.split("").reverse().join(""):p);
+    return {v:used.reduce((a,b)=>a+ +b,0),expr:used.join(" + ")};
+  }
+  function reset(){
+    N=Math.max(2,Math.min(997,parseInt(q("hs-n").value)||19));fold=q("hs-fold").value;mode=q("hs-col").value;
+    keys=q("hs-keys").value.split(/[^0-9]+/).filter(Boolean).map(x=>x.replace(/^0+(?=\d)/,"")).map(Number).slice(0,60);
+    T=new Array(N).fill(null);idx=0;rows=[];col=0;lastAt=null;draw();
+  }
+  function insert(){
+    if(idx>=keys.length)return false;
+    const k=keys[idx++];const f=folded(k);const h=f.v%N;let a=h;const path=[h];let c=0,i=0;
+    while(T[a]!==null&&c<N*2){c++;i++;
+      if(mode==="lin")a=(a+1)%N;else if(mode==="quad")a=(a+i*i)%N;else{const off=Math.floor(f.v/N);a=(off+a)%N;}
+      path.push(a);}
+    let ok=T[a]===null;if(ok)T[a]=k;col+=c;lastAt=ok?a:null;
+    rows.push({k,expr:f.expr,v:f.v,h,path,c,ok,off:Math.floor(f.v/N)});
+    return true;
+  }
+  function draw(){
+    slots.innerHTML="";
+    T.forEach((v,i)=>{const d=$("div","slot");if(v!==null)d.classList.add("used");if(i===lastAt)d.classList.add("new");d.append($("span","ci",i),$("b",null,v===null?"":v));slots.appendChild(d);});
+    const filled=T.filter(x=>x!==null).length;
+    sum.innerHTML="已插入 "+idx+" / "+keys.length+" 個　碰撞 <b>"+col+"</b> 次　load factor = "+filled+" / "+N+" ≈ <b>"+(filled/N*100).toFixed(1)+"%</b>"+(rows.some(r=>!r.ok)?'　<span class="bad">有 key 找不到空位（quadratic probe 探不到全部位置）</span>':"");
+    let h='<table><tr><th>Key</th><th>'+(fold==="mod"?"—":"摺疊")+'</th><th>Sum</th><th>Home</th>'+(mode==="ko"?"<th>Offset</th>":"")+'<th>探測路徑</th><th>碰撞</th></tr>';
+    rows.forEach(r=>{h+='<tr><td>'+r.k+'</td><td>'+(fold==="mod"?"—":esc(r.expr))+'</td><td>'+r.v+'</td><td>'+r.h+'</td>'+(mode==="ko"?"<td>"+r.off+"</td>":"")+'<td>'+r.path.join(" → ")+(r.ok?"":" ✗")+'</td><td>'+r.c+'</td></tr>';});
+    tw.innerHTML=h+"</table>";
+  }
+  bS.addEventListener("click",()=>{insert();draw();});
+  bA.addEventListener("click",()=>{while(insert());draw();});
+  bR.addEventListener("click",reset);
+  el.querySelectorAll(".labin").forEach(x=>x.addEventListener("change",reset));
+  reset();
+}
+
+/* 4. Linked list lab */
+function llist(el){
+  frame(el,"Linked list 實驗室：searchList、insertNode、deleteNode","輸入一個數字，選操作，然後按「下一步」一行一行執行 pseudocode。打開「錯誤順序」看看先改 pPre->link 會發生什麼事。");
+  const ctl=$("div","labrow");
+  const inp=$("input");inp.type="number";inp.value="25";inp.className="labin";inp.id="ll-val";inp.setAttribute("aria-label","value");
+  const bS=$("button","btn","searchList"),bI=$("button","btn","insert"),bD=$("button","btn","delete"),bN=$("button","btn primary","下一步"),bR=$("button","btn","重設串列");
+  [bS,bI,bD,bN,bR].forEach(b=>b.type="button");
+  const wrong=$("label","small chk");const wc=$("input");wc.type="checkbox";wc.id="ll-wrong";wrong.append(wc,document.createTextNode(" 錯誤順序（insert）"));
+  ctl.append($("label","small","值"),inp,bS,bI,bD,bN,bR,wrong);el.appendChild(ctl);
+  const wrap=$("div","llwrap");const view=$("div","llview");const code=$("pre","llcode");wrap.append(view,code);el.appendChild(wrap);
+  const log=$("div","lablog");el.appendChild(log);
+  let st,steps,si,nid;
+  function init(){nid=4;st={nodes:{1:{v:10,link:2},2:{v:20,link:3},3:{v:30,link:4},4:{v:40,link:null}},head:1,count:4,pPre:null,pLoc:null,pNew:null};steps=[];si=0;code.textContent="";log.textContent="串列：10 → 20 → 30 → 40。選一個操作開始。";render();}
+  const clone=o=>JSON.parse(JSON.stringify(o));
+  const SEARCH=["pPre = null","pLoc = list.head","loop (pLoc not null AND target > pLoc->data.key)","   pPre = pLoc","   pLoc = pLoc->link","end loop","found = (pLoc not null AND target equal pLoc->data.key)"];
+  function searchSteps(s,t,acc){
+    s.pPre=null;acc.push([clone(s),0,"pPre = null"]);
+    s.pLoc=s.head;acc.push([clone(s),1,"pLoc 指向第一個節點"+(s.head?"（"+s.nodes[s.head].v+"）":"（串列是空的）")]);
+    while(s.pLoc!==null&&t>s.nodes[s.pLoc].v){
+      acc.push([clone(s),2,t+" > "+s.nodes[s.pLoc].v+"，繼續往後"]);
+      s.pPre=s.pLoc;acc.push([clone(s),3,"pPre 移到 "+s.nodes[s.pPre].v]);
+      s.pLoc=s.nodes[s.pLoc].link;acc.push([clone(s),4,"pLoc 移到 "+(s.pLoc?s.nodes[s.pLoc].v:"null")]);
+    }
+    const found=s.pLoc!==null&&s.nodes[s.pLoc].v===t;
+    acc.push([clone(s),2,s.pLoc===null?"pLoc 是 null，迴圈結束":t+" ≤ "+s.nodes[s.pLoc].v+"，迴圈結束"]);
+    acc.push([clone(s),6,"回傳 "+found+"。pPre = "+(s.pPre?s.nodes[s.pPre].v:"null")+"，pLoc = "+(s.pLoc?s.nodes[s.pLoc].v:"null")+caseName(s,t)]);
+    return found;
+  }
+  function caseName(s,t){
+    const order=chain(s).ids;if(!order.length)return "";
+    const f=s.nodes[order[0]].v,l=s.nodes[order[order.length-1]].v;
+    const c=t<f?"Target < first node":t===f?"Target = first node":t>l?"Target > last node":t===l?"Target = last node":order.some(i=>s.nodes[i].v===t)?"Target = middle node":"First < Target < last";
+    return "　→ 六種結果表的「"+c+"」";
+  }
+  function plan(kind){
+    const t=parseInt(inp.value);if(isNaN(t)){log.textContent="請先輸入數字。";return;}
+    const s=clone(st);s.pNew=null;const acc=[];
+    if(kind==="search"){code.textContent="Algorithm searchList\n"+SEARCH.join("\n");searchSteps(s,t,acc);}
+    else if(kind==="insert"){
+      const W=wc.checked;
+      const INS=["allocate (pNew); pNew->data = dataIn","if (pPre null)","   pNew->link = list.head","   list.head = pNew","else",W?"   pPre->link = pNew        ← 順序錯了":"   pNew->link = pPre->link",W?"   pNew->link = pPre->link  ← 順序錯了":"   pPre->link = pNew","list.count = list.count + 1"];
+      code.textContent="Algorithm searchList\n"+SEARCH.join("\n")+"\n\nAlgorithm insertNode\n"+INS.join("\n");
+      const off=SEARCH.length;
+      if(searchSteps(s,t,acc)){acc.push([clone(s),6,t+" 已經在串列裡（duplicate），不插入。"]);}
+      else{
+        const id=++nid;s.nodes[id]={v:t,link:null,fresh:1};s.pNew=id;acc.push([clone(s),off,"配置新節點 pNew，資料 "+t]);
+        if(s.pPre===null){acc.push([clone(s),off+1,"pPre 是 null → 插在最前面"]);
+          s.nodes[id].link=s.head;acc.push([clone(s),off+2,"pNew->link = list.head（先接後面）"]);
+          s.head=id;acc.push([clone(s),off+3,"list.head = pNew（再改前面）"]);}
+        else{acc.push([clone(s),off+4,"pPre 不是 null → 插在 "+s.nodes[s.pPre].v+" 後面"]);
+          if(!W){s.nodes[id].link=s.nodes[s.pPre].link;acc.push([clone(s),off+5,"pNew->link = pPre->link（先接後面）"]);
+            s.nodes[s.pPre].link=id;acc.push([clone(s),off+6,"pPre->link = pNew（再改前面）"]);}
+          else{s.nodes[s.pPre].link=id;acc.push([clone(s),off+5,"先改 pPre->link = pNew：原本後面那個節點的位址已經沒人記得了"]);
+            s.nodes[id].link=s.nodes[s.pPre].link;acc.push([clone(s),off+6,"pNew->link = pPre->link，但 pPre->link 現在是 pNew 自己 → 指向自己，後面的節點全部弄丟"]);}}
+        s.count++;delete s.nodes[id].fresh;acc.push([clone(s),off+7,"count = "+s.count]);
+      }
+    }else{
+      const DEL=["if (pPre null)","   list.head = pLoc->link","else","   pPre->link = pLoc->link","list.count = list.count - 1","recycle (pLoc)"];
+      code.textContent="Algorithm searchList\n"+SEARCH.join("\n")+"\n\nAlgorithm deleteNode\n"+DEL.join("\n");
+      const off=SEARCH.length;
+      if(!searchSteps(s,t,acc)){acc.push([clone(s),6,t+" 不在串列裡，不能刪。"]);}
+      else{
+        if(s.pPre===null){acc.push([clone(s),off,"pPre 是 null → 刪的是第一個節點"]);s.head=s.nodes[s.pLoc].link;acc.push([clone(s),off+1,"list.head = pLoc->link"]);}
+        else{acc.push([clone(s),off+2,"pPre 不是 null"]);s.nodes[s.pPre].link=s.nodes[s.pLoc].link;acc.push([clone(s),off+3,"pPre->link = pLoc->link：前一個節點跳過 "+t]);}
+        s.count--;acc.push([clone(s),off+4,"count = "+s.count]);
+        delete s.nodes[s.pLoc];s.pLoc=null;acc.push([clone(s),off+5,"recycle (pLoc)：回收記憶體"]);
+      }
+    }
+    steps=acc;si=0;log.textContent="按「下一步」開始執行。";render(st,-1);
+  }
+  function chain(s){const ids=[],seen=new Set();let p=s.head,cyc=null;while(p!==null&&p!==undefined&&s.nodes[p]){if(seen.has(p)){cyc=p;break;}seen.add(p);ids.push(p);p=s.nodes[p].link;}return {ids,cyc,seen};}
+  function render(s,line){
+    s=s||st;view.innerHTML="";
+    const c=chain(s);
+    const head=$("div","llrow");head.append($("span","llhead","list.head"),$("span","arr","→"));
+    const tag=id=>{const t=[];if(id===s.pPre)t.push("pPre");if(id===s.pLoc)t.push("pLoc");if(id===s.pNew)t.push("pNew");return t.join(" ");};
+    const node=id=>{const n=s.nodes[id];const b=$("div","node"+(id===s.pNew?" newn":"")+(id===s.pLoc?" loc":""));b.append($("b",null,n.v),$("span","ptr",tag(id)||" "));return b;};
+    if(!c.ids.length)head.append($("span","nul","null"));
+    c.ids.forEach((id,i)=>{head.appendChild(node(id));const nx=s.nodes[id].link;
+      if(nx===null)head.append($("span","arr","→"),$("span","nul","null"));
+      else if(c.cyc!==null&&i===c.ids.length-1)head.append($("span","arr bad","↺ 指回 "+s.nodes[nx].v));
+      else head.appendChild($("span","arr","→"));});
+    view.appendChild(head);
+    const off=Object.keys(s.nodes).map(Number).filter(id=>!c.seen.has(id));
+    if(off.length){const r=$("div","llrow side");
+      off.forEach(id=>{const n=s.nodes[id];const lost=id!==s.pNew;r.append($("span","small",lost?"弄丟的節點：":"還沒接上："));const b=node(id);if(lost)b.classList.add("lost");r.appendChild(b);r.append($("span","arr","→"),$("span","nul",n.link===null?"null":s.nodes[n.link]?s.nodes[n.link].v:"?"));});
+      view.appendChild(r);}
+    view.appendChild($("div","small","count = "+s.count+(s.pPre===null&&s.pLoc===null&&s.pNew===null?"":"　pPre = "+(s.pPre?s.nodes[s.pPre].v:"null")+"　pLoc = "+(s.pLoc&&s.nodes[s.pLoc]?s.nodes[s.pLoc].v:"null"))));
+    const lines=code.textContent.split("\n");
+    if(lines.length>1){code.innerHTML=lines.map((l,i)=>{const L=lineIndex(i);return '<span class="'+(L===line?"cur":"")+'">'+esc(l)+"</span>";}).join("\n");}
+  }
+  function lineIndex(i){const lines=code.textContent.split("\n");let k=-1;for(let j=0;j<=i;j++){const l=lines[j];if(!l||/^Algorithm /.test(l))continue;k++;}const l=lines[i];return (!l||/^Algorithm /.test(l))?-2:k;}
+  bN.addEventListener("click",()=>{if(si>=steps.length){log.textContent=steps.length?"執行完畢。可以換一個數字或操作。":"先選 searchList、insert 或 delete。";return;}
+    const [s,line,msg]=steps[si++];render(s,line);log.textContent="步驟 "+si+" / "+steps.length+"："+msg;if(si===steps.length){st=clone(s);st.pPre=st.pLoc=st.pNew=null;}});
+  bS.addEventListener("click",()=>plan("search"));bI.addEventListener("click",()=>plan("insert"));bD.addEventListener("click",()=>plan("delete"));
+  bR.addEventListener("click",init);
+  init();
+}
+const LABS={bigo,bsearch,hash,llist};
+document.querySelectorAll("[data-lab]").forEach(el=>{try{LABS[el.dataset.lab](el);}catch(e){el.textContent="互動圖載入失敗："+e.message;}});
+})();
 
 const start=(location.hash||"").slice(1)||S.last||"home";
 show(start);

@@ -7,6 +7,7 @@
 | 統計學 | 期中考 10/21（Anderson 14e, Ch1–Ch4） | https://si70531.github.io/EZexams/statistics/midterm/ |
 | 作業系統 | 期中考 10/29（Silberschatz 9th, Ch1–Ch5） | https://si70531.github.io/EZexams/operating-systems/midterm/ |
 | 資料與檔案結構 | 期中考 11/6（Gilberg & Forouzan, Ch1–Ch3） | https://si70531.github.io/EZexams/data-structures/midterm/ |
+| 經濟學 | 期中考 11/9（Mankiw, Ch1–Ch9） | https://si70531.github.io/EZexams/economics/midterm/ |
 
 ## 資料夾規則
 
@@ -17,6 +18,7 @@
 operating-systems/midterm/index.html
 operating-systems/final/index.html      ← 之後的期末考
 data-structures/midterm/index.html
+economics/midterm/index.html
 statistics/midterm/index.html
 ```
 

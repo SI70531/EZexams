@@ -2214,15 +2214,16 @@ W.sched=function(box){
     box.querySelector(".wtitle").textContent="換你試："+box.dataset.name+" 模擬器（改數字，Gantt chart 和等待時間自動算）";
     pr.insertAdjacentHTML("afterbegin",'<span class="small">還原成上面的例題：</span>');}
   Object.keys(presets).forEach(k=>{const b=el("button",{cls:"btn chip",type:"button"},k);b.onclick=()=>{const P=presets[k];ps=P.ps.map(r=>r.slice());algS.value=P.alg;if(P.q)qI.value=P.q;table();run();};pr.appendChild(b);});
+  function usePri(){return /PRI/.test(algS.value);}
   function table(){
-    const w=box.querySelector(".wtable");let h='<table><tr><th>Process</th><th>Arrival</th><th>Burst</th><th>Priority</th><th></th></tr>';
-    ps.forEach((r,i)=>{h+='<tr><td>P'+(i+1)+'</td>'+[0,1,2].map(j=>'<td><input type="number" min="'+(j===1?1:0)+'" max="99" value="'+r[j]+'" data-i="'+i+'" data-j="'+j+'"></td>').join("")+'<td>'+(ps.length>1?'<button class="btn x" type="button" data-del="'+i+'" aria-label="刪除 P'+(i+1)+'">×</button>':'')+'</td></tr>';});
+    const w=box.querySelector(".wtable");let h='<table><tr><th>Process</th><th>Arrival</th><th>Burst</th>'+(usePri()?'<th>Priority（小＝優先）</th>':'')+'<th></th></tr>';
+    ps.forEach((r,i)=>{h+='<tr><td>P'+(i+1)+'</td>'+(usePri()?[0,1,2]:[0,1]).map(j=>'<td><input type="number" min="'+(j===1?1:0)+'" max="99" value="'+r[j]+'" data-i="'+i+'" data-j="'+j+'"></td>').join("")+'<td>'+(ps.length>1?'<button class="btn x" type="button" data-del="'+i+'" aria-label="刪除 P'+(i+1)+'">×</button>':'')+'</td></tr>';});
     w.innerHTML=h+'</table>';
     w.querySelectorAll("input").forEach(inp=>inp.addEventListener("input",()=>{let v=Math.max(+inp.min,Math.min(99,parseInt(inp.value)||0));ps[inp.dataset.i][inp.dataset.j]=v;run();}));
     w.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{ps.splice(+b.dataset.del,1);table();run();});
   }
   box.querySelector(".add").onclick=()=>{if(ps.length<8){ps.push([0,3,1]);table();run();}};
-  algS.onchange=run;qI.oninput=run;
+  algS.onchange=()=>{table();run();};qI.oninput=run;
   function run(){
     const alg=algS.value;ql.style.display=alg==="RR"?"":"none";
     const P=ps.map(r=>({a:r[0],b:Math.max(1,r[1]),p:r[2]}));

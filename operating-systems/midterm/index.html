@@ -249,6 +249,51 @@ body.nograde .nogradenote{display:block}
   .qitem{padding:14px 14px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* interactive widgets */
+.widget select,.widget input:not([type=range]){background:var(--paper2);color:var(--ink);border:1px solid var(--line-strong);border-radius:6px;padding:4px 8px;font:inherit;font-family:var(--f-mono)}
+.wedge.on path{fill:var(--seal)}
+.widget{background:var(--paper);border:1.5px solid var(--line-strong);border-radius:12px;box-shadow:4px 4px 0 var(--hard);padding:16px;margin:22px 0;overflow-x:auto}
+.wtitle{font-family:var(--f-display);font-size:1.08rem;color:var(--indigo);margin-bottom:10px}
+.wtitle::before{content:"▶ ";color:var(--seal)}
+.wsvg{width:100%;height:auto;display:block;min-width:420px}
+.wsvg text{fill:var(--ink);font-family:var(--f-mono);font-size:13px}
+.wedge line{stroke:var(--line-strong);stroke-width:2}
+.wedge text{fill:var(--muted);font-size:11px}
+.wedge.on line{stroke:var(--seal);stroke-width:3.5}
+.wedge.on text{fill:var(--seal);font-weight:700}
+.wnode ellipse{fill:var(--paper2);stroke:var(--indigo);stroke-width:2}
+.wnode.on ellipse{fill:var(--indigo)}
+.wnode.on text{fill:var(--accent-ink);font-weight:700}
+#wsa path,.wsvg marker path{fill:var(--line-strong)}
+.wbtns,.wrow{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;align-items:center}
+.wrow label{display:flex;flex-direction:column;gap:4px;font-size:.92rem;min-width:180px;flex:1}
+.wrow input[type=range]{accent-color:var(--indigo);width:100%}
+.btn.chip{padding:4px 10px;font-size:.85rem}
+.btn.x{padding:2px 8px;color:var(--bad)}
+.wnote,.wcalc,.wavg{font-size:.95rem;color:var(--ink70);margin-top:8px}
+.wcalc{font-family:var(--f-mono)}
+.wtable{border-collapse:collapse;font-size:.9rem;margin:8px 0}
+.wres table{border-collapse:collapse;font-size:.9rem}.wres th,.wres td,.wtable th,.wtable td{border:1px solid var(--line);padding:4px 8px;text-align:center}
+.wtable th{background:var(--indigo-soft)}
+.wtable input{width:4.2em;background:var(--paper2);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:2px 4px;font-family:var(--f-mono)}
+.wtable tr.hl td{background:var(--warn-soft)}
+.wtable tr.fin td{background:var(--ok-soft);color:var(--muted)}
+.wgantt{margin:12px 0 4px;min-width:420px}
+.wgantt .gb{display:flex;height:34px;border:1.5px solid var(--hard);border-radius:6px;overflow:hidden}
+.wgantt .gb span{display:flex;align-items:center;justify-content:center;font-family:var(--f-mono);font-size:.82rem;font-weight:700;color:#fff;border-right:1px solid rgba(0,0,0,.25)}
+.gb .c0{background:#17616a}.gb .c1{background:#c4472a}.gb .c2{background:#64489c}.gb .c3{background:#a26300}.gb .c4{background:#2d7a3e}.gb .c5{background:#3a5f9e}
+.gb .idle{background:repeating-linear-gradient(45deg,var(--paper2),var(--paper2) 4px,var(--line) 4px,var(--line) 8px);color:var(--muted)!important}
+.wgantt .gtk{position:relative;height:18px;font-family:var(--f-mono);font-size:.75rem;color:var(--muted)}
+.wgantt .gtk b{position:absolute;transform:translateX(-50%);font-weight:400}
+.wres{margin-top:8px}
+.amd .grid{stroke:var(--line);stroke-width:1}
+.amd .ax{stroke:var(--ink70);stroke-width:1.5}
+.amd .cap{stroke:var(--seal);stroke-dasharray:6 4;stroke-width:1.5}
+.amd .capt{fill:var(--seal)}
+.amd .curve{fill:none;stroke:var(--indigo);stroke-width:3}
+.amd .dot{fill:var(--seal);stroke:var(--paper);stroke-width:2}
+.wlog{font-family:var(--f-mono);font-size:.85rem;max-height:220px;overflow:auto;background:var(--code);border-radius:8px;padding:8px 12px;margin-top:8px}
+.wlog p{margin:3px 0}.wlog p.ok{color:var(--ok)}.wlog p.no{color:var(--muted)}.wlog p.bad{color:var(--bad);font-weight:700}
 </style>
 
 <header class="top"><div class="bar"><a class="brand" href="../../" title="回到所有科目"><span class="mk">OS</span><span class="nm">← 所有科目</span></a><nav class="tabs" aria-label="章節"><div class="row" id="tabs"></div></nav><div class="theme"><button class="themebtn" id="themeBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="themeMenu" title="外觀：跟隨裝置"><svg class="i-system" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><svg class="i-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2 12h2.2M19.8 12H22M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg><svg class="i-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button><div class="thmenu" id="themeMenu" role="menu" hidden><button type="button" role="menuitemradio" data-t="system">跟隨裝置</button><button type="button" role="menuitemradio" data-t="light">淺色</button><button type="button" role="menuitemradio" data-t="dark">深色</button></div></div></div></header>
@@ -445,6 +490,7 @@ A timer is used to prevent an infinite loop / a process hogging resources: it ge
 </div>
 <div class="box warn"><span class="lbl">易混淆</span>ready 是「等 CPU」；waiting 是「等 I/O／事件」。同一時間一顆 CPU 只有<b>一個</b> process 在 running，但可以有很多在 ready 和 waiting。</div>
 
+<div class="widget" data-w="states"></div>
 <h3>2.3 PCB（Process Control Block）<span class="star">★★</span></h3>
 <div class="box zh"><span class="lbl">白話</span>PCB＝OS 為每個 process 建的「身分證＋存檔」。切換 process 時，就是把目前狀態存進 PCB，再從另一個 PCB 讀回來。</div>
 <div class="box en"><span class="lbl">ANSWER TEMPLATE — Information in a PCB</span>Process state, program counter, CPU registers, CPU-scheduling information, memory-management information, accounting information, and I/O status information.<div class="zhtr"><span>中文</span>PCB 裡的資訊：process 狀態、程式計數器（PC）、CPU 暫存器、CPU 排班資訊、記憶體管理資訊、帳務資訊（用了多少 CPU 時間）、I/O 狀態資訊。</div></div>
@@ -644,6 +690,7 @@ waiting: P1=(10−1)=9, P2=0, P3=17−2=15, P4=5−3=2
 <div class="calc">P1 跑 4 → P2 跑 3 做完 → P3 跑 3 做完 → 只剩 P1 一直跑
 waiting: P1 = 10−4 = 6, P2 = 4, P3 = 7 → 平均 17/3 ≈ 5.67</div>
 
+<div class="widget" data-w="sched"></div>
 <h3>3.5 預測下一次 CPU burst（Exponential Averaging）<span class="star">★</span></h3>
 <div class="calc">τ(n+1) = α · t(n) + (1 − α) · τ(n)        0 ≤ α ≤ 1，通常 α = 1/2
 t(n) = 第 n 次實際 burst 長度；τ(n+1) = 下一次的預測值
@@ -748,6 +795,7 @@ N → ∞ 時，speedup → 1 / S   （serial 部分決定上限）</div>
   1 / (0.2 + 0.8/8) = 1 / 0.3 ≈ 3.33；N → ∞ 上限 = 1/0.2 = 5</div>
 <div class="box en"><span class="lbl">ANSWER TEMPLATE</span>Amdahl's law identifies performance gains from adding additional cores to an application that has both serial and parallel components. As N approaches infinity, speedup approaches 1/S, so the serial portion of an application has a disproportionate effect on the performance gained by adding additional cores.<div class="zhtr"><span>中文</span>Amdahl 定律算出：程式同時有循序（serial）和平行部分時，加核心能快多少。核心數 N 趨近無限大時，加速比趨近 1/S（S 是循序部分比例），所以循序部分對效能影響非常大。</div></div>
 
+<div class="widget" data-w="amdahl"></div>
 <h3>4.4 User Threads（使用者執行緒） vs. Kernel Threads（核心執行緒）</h3>
 <ul>
 <li><b>User threads</b>：由 user-level thread library 管理。三大 library：<b>POSIX Pthreads、Win32 threads、Java threads</b>。</li>
@@ -960,6 +1008,7 @@ P1 need 2 ≤ 2 → 4；P0 need 5 > 4、P2 need 6 > 4 → 卡住 → unsafe</div
    沒有任何 process 能完成 → unsafe → 不給 (No)</div>
 <div class="box warn"><span class="lbl">注意：投影片寫 P0 (0,2,0) 是「Yes」</span>那是用<b>原本 T0 狀態</b>（Available = 3,3,2，沒先給 P1）去算的：給了之後 Available = (3,1,2)，可找到 &lt;P3, P1, P2, P0, P4&gt;，所以 Yes。如果是接在 P1 的 request 之後（課本的問法），答案是 No。<br><b>考試寫法：先寫一句「Assume the state after granting P1's request」或「Based on the original state at T0」</b>，再照步驟算，就不會被扣分。</div>
 
+<div class="widget" data-w="banker"></div>
 <h3>5.8 Deadlock Detection <span class="star">★★</span></h3>
 <ul>
 <li><b>Single instance</b>：用 <b>wait-for graph（等待圖）</b>（只有 process 節點，Pi → Pj 表示 Pi 在等 Pj）。定期找 cycle，有 cycle 就有 deadlock。找 cycle 需要 O(n<sup>2</sup>)。</li>
@@ -2089,6 +2138,155 @@ function setGradingMode(){
 }
 setGradingMode();
 (async()=>{try{SAMPLE=window.claude&&await window.claude.use("sample");}catch(e){SAMPLE=null;}setGradingMode();})();
+
+/* ---------- interactive figures ---------- */
+const W={};
+function el(tag,attrs,html){const e=document.createElement(tag);if(attrs)for(const k in attrs){if(k==="cls")e.className=attrs[k];else e.setAttribute(k,attrs[k]);}if(html!=null)e.innerHTML=html;return e;}
+function fmtN(x){return Math.round(x*100)/100;}
+
+/* 1. process state machine */
+W.states=function(box){
+  const S={new:[90,60],ready:[200,170],running:[500,170],waiting:[350,280],terminated:[620,60]};const LP=[[118,128,"end"],[350,206,"middle"],[350,142,"middle"],[468,258,"start"],[232,258,"end"],[590,128,"start"]];
+  const T=[["new","ready","admitted","被系統接受，放進 ready queue"],["ready","running","scheduler dispatch","short-term scheduler 選中它，dispatcher 把 CPU 交給它"],["running","ready","interrupt","時間配額用完（timer interrupt）或被更高優先權搶走"],["running","waiting","I/O or event wait","要等 I/O 或某個事件，自己讓出 CPU"],["waiting","ready","I/O or event completion","等的東西好了，回 ready queue 重新排隊（不能直接回 running！）"],["running","terminated","exit","執行完畢"]];
+  let cur="new",log=[];
+  box.innerHTML='<div class="wtitle">試試看：按下事件，看 process 怎麼移動</div><svg viewBox="0 0 700 330" class="wsvg"></svg><div class="wbtns"></div><div class="wnote"></div>';
+  const svg=box.querySelector("svg"),btns=box.querySelector(".wbtns"),note=box.querySelector(".wnote");
+  function draw(){
+    let h='<defs><marker id="wsa" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M0,0L10,5L0,10z" fill="currentColor"/></marker></defs>';
+    T.forEach(([a,b,lab],i)=>{const [x1,y1]=S[a],[x2,y2]=S[b];const dx=x2-x1,dy=y2-y1,L=Math.hypot(dx,dy);const ox=-dy/L*14,oy=dx/L*14;const sx=x1+dx/L*62+ox,sy=y1+dy/L*26+oy,ex=x2-dx/L*62+ox,ey=y2-dy/L*26+oy;
+      const act=a===cur;h+='<g class="wedge'+(act?' on':'')+'"><line x1="'+sx+'" y1="'+sy+'" x2="'+ex+'" y2="'+ey+'" marker-end="url(#wsa)"/><text x="'+LP[i][0]+'" y="'+LP[i][1]+'" text-anchor="'+LP[i][2]+'">'+lab+'</text></g>';});
+    for(const k in S){const [x,y]=S[k];h+='<g class="wnode'+(k===cur?' on':'')+'"><ellipse cx="'+x+'" cy="'+y+'" rx="60" ry="24"/><text x="'+x+'" y="'+(y+5)+'" text-anchor="middle">'+k+'</text></g>';}
+    svg.innerHTML=h;
+    btns.innerHTML="";
+    T.filter(t=>t[0]===cur).forEach(t=>{const b=el("button",{cls:"btn",type:"button"},t[2]);b.onclick=()=>{cur=t[1];log.push(t);note.innerHTML='<b>'+t[0]+' → '+t[1]+'</b>：'+t[3];draw();};btns.appendChild(b);});
+    const r=el("button",{cls:"btn",type:"button"},"重來");r.onclick=()=>{cur="new";log=[];note.textContent="";draw();};btns.appendChild(r);
+    if(cur==="terminated")note.innerHTML+='<br>結束。注意 waiting 只能回 ready，不能直接到 running。';
+  }
+  draw();
+};
+
+/* 2. CPU scheduling simulator */
+function simulate(ps,alg,q){
+  const n=ps.length,rem=ps.map(p=>p.b),done=Array(n).fill(-1),seg=[];
+  let t=0,finished=0,curP=-1,slice=0;const rq=[];const added=Array(n).fill(false);
+  const arrive=t=>ps.forEach((p,i)=>{if(!added[i]&&p.a<=t){added[i]=true;rq.push(i);}});
+  const pick=()=>{if(!rq.length)return -1;let best=0;
+    const key=i=>alg==="SJF"||alg==="SRTF"?rem[i]:alg==="PRI"||alg==="PPRI"?ps[i].p:0;
+    if(alg==="FCFS"||alg==="RR")return rq.shift();
+    for(let k=1;k<rq.length;k++){const a=rq[k],b=rq[best];if(key(a)<key(b)||(key(a)===key(b)&&(ps[a].a<ps[b].a||(ps[a].a===ps[b].a&&a<b))))best=k;}
+    return rq.splice(best,1)[0];};
+  arrive(0);let guard=0;
+  while(finished<n&&guard++<10000){
+    if(curP===-1){curP=pick();slice=0;}
+    else if(alg==="SRTF"||alg==="PPRI"){rq.push(curP);curP=pick();if(seg.length&&seg[seg.length-1].p!==curP)slice=0;}
+    const id=curP===-1?null:curP;
+    if(seg.length&&seg[seg.length-1].p===id)seg[seg.length-1].e++;else seg.push({p:id,s:t,e:t+1});
+    t++;
+    if(curP!==-1){rem[curP]--;slice++;}
+    arrive(t);
+    if(curP!==-1&&rem[curP]===0){done[curP]=t;finished++;curP=-1;}
+    else if(alg==="RR"&&curP!==-1&&slice>=q){rq.push(curP);curP=-1;}
+  }
+  return {seg,done};
+}
+W.sched=function(box){
+  const presets={
+    "FCFS 例（24,3,3）":{alg:"FCFS",ps:[[0,24,1],[0,3,1],[0,3,1]]},
+    "SJF 例（6,8,7,3）":{alg:"SJF",ps:[[0,6,1],[0,8,1],[0,7,1],[0,3,1]]},
+    "SRTF 例（有到達時間）":{alg:"SRTF",ps:[[0,8,1],[1,4,1],[2,9,1],[3,5,1]]},
+    "Priority 例（10,1,2,1,5）":{alg:"PRI",ps:[[0,10,3],[0,1,1],[0,2,4],[0,1,5],[0,5,2]]},
+    "RR q=4 例（24,3,3）":{alg:"RR",ps:[[0,24,1],[0,3,1],[0,3,1]],q:4}};
+  box.innerHTML='<div class="wtitle">排班模擬器：改數字、換演算法，Gantt chart 和等待時間會自動算</div>'+
+   '<div class="wrow"><label>演算法 <select class="alg"><option value="FCFS">FCFS</option><option value="SJF">SJF（不搶奪）</option><option value="SRTF">SRTF（搶奪式 SJF）</option><option value="PRI">Priority（不搶奪）</option><option value="PPRI">Priority（搶奪）</option><option value="RR">Round Robin</option></select></label><label class="ql">q = <input class="q" type="number" min="1" max="50" value="4"></label></div>'+
+   '<div class="wrow presets"></div><div class="wtable"></div><div class="wrow"><button class="btn add" type="button">＋ 加一個 process</button></div><div class="wgantt"></div><div class="wres"></div>';
+  const algS=box.querySelector(".alg"),qI=box.querySelector(".q"),ql=box.querySelector(".ql");
+  let ps=[[0,24,1],[0,3,1],[0,3,1]];
+  const pr=box.querySelector(".presets");
+  Object.keys(presets).forEach(k=>{const b=el("button",{cls:"btn chip",type:"button"},k);b.onclick=()=>{const P=presets[k];ps=P.ps.map(r=>r.slice());algS.value=P.alg;if(P.q)qI.value=P.q;table();run();};pr.appendChild(b);});
+  function table(){
+    const w=box.querySelector(".wtable");let h='<table><tr><th>Process</th><th>Arrival</th><th>Burst</th><th>Priority</th><th></th></tr>';
+    ps.forEach((r,i)=>{h+='<tr><td>P'+(i+1)+'</td>'+[0,1,2].map(j=>'<td><input type="number" min="'+(j===1?1:0)+'" max="99" value="'+r[j]+'" data-i="'+i+'" data-j="'+j+'"></td>').join("")+'<td>'+(ps.length>1?'<button class="btn x" type="button" data-del="'+i+'" aria-label="刪除 P'+(i+1)+'">×</button>':'')+'</td></tr>';});
+    w.innerHTML=h+'</table>';
+    w.querySelectorAll("input").forEach(inp=>inp.addEventListener("input",()=>{let v=Math.max(+inp.min,Math.min(99,parseInt(inp.value)||0));ps[inp.dataset.i][inp.dataset.j]=v;run();}));
+    w.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{ps.splice(+b.dataset.del,1);table();run();});
+  }
+  box.querySelector(".add").onclick=()=>{if(ps.length<8){ps.push([0,3,1]);table();run();}};
+  algS.onchange=run;qI.oninput=run;
+  function run(){
+    const alg=algS.value;ql.style.display=alg==="RR"?"":"none";
+    const P=ps.map(r=>({a:r[0],b:Math.max(1,r[1]),p:r[2]}));
+    const {seg,done}=simulate(P,alg,Math.max(1,+qI.value||1));
+    const end=seg.length?seg[seg.length-1].e:1;
+    let g='<div class="gb">';seg.forEach(s=>{g+='<span style="flex:'+(s.e-s.s)+'" class="'+(s.p==null?"idle":"c"+(s.p%6))+'">'+(s.p==null?"idle":"P"+(s.p+1))+'</span>';});g+='</div><div class="gtk">';
+    const ticks=[0,...seg.map(s=>s.e)];ticks.forEach(x=>{g+='<b style="left:'+(x/end*100)+'%">'+x+'</b>';});g+='</div>';
+    box.querySelector(".wgantt").innerHTML=g;
+    let tw=0,tt=0,rows='';P.forEach((p,i)=>{const ta=done[i]-p.a,wt=ta-p.b;tw+=wt;tt+=ta;rows+='<tr><td>P'+(i+1)+'</td><td>'+done[i]+'</td><td>'+done[i]+' − '+p.a+' = '+ta+'</td><td>'+ta+' − '+p.b+' = <b>'+wt+'</b></td></tr>';});
+    box.querySelector(".wres").innerHTML='<table><tr><th>Process</th><th>完成時間</th><th>Turnaround = 完成 − 到達</th><th>Waiting = Turnaround − Burst</th></tr>'+rows+'</table><p class="wavg">平均等待時間 = '+tw+' / '+P.length+' = <b>'+fmtN(tw/P.length)+'</b>　平均 turnaround = <b>'+fmtN(tt/P.length)+'</b></p>';
+  }
+  table();run();
+};
+
+/* 3. Amdahl */
+W.amdahl=function(box){
+  box.innerHTML='<div class="wtitle">Amdahl 滑桿：拉拉看，serial 比例怎麼限制加速</div><div class="wrow"><label>Serial 比例 S = <b class="sv"></b><input class="s" type="range" min="0" max="100" value="25"></label><label>核心數 N = <b class="nv"></b><input class="n" type="range" min="1" max="64" value="4"></label></div><div class="wcalc"></div><svg class="wsvg amd" viewBox="0 0 640 220"></svg>';
+  const s=box.querySelector(".s"),n=box.querySelector(".n");
+  function run(){
+    const S=+s.value/100,N=+n.value,sp=1/(S+(1-S)/N),mx=S?1/S:Infinity;
+    box.querySelector(".sv").textContent=Math.round(S*100)+"%";box.querySelector(".nv").textContent=N;
+    box.querySelector(".wcalc").innerHTML='speedup = 1 / ('+fmtN(S)+' + '+fmtN(1-S)+' / '+N+') = 1 / '+fmtN(S+(1-S)/N)+' ≈ <b>'+fmtN(sp)+'</b>　上限 1/S = <b>'+(isFinite(mx)?fmtN(mx):"∞")+'</b>';
+    const W=640,H=220,L=40,B=190,top=15,maxY=Math.max(2,Math.min(64,isFinite(mx)?mx*1.1:64));
+    let h='';const xs=k=>L+(k-1)/63*(W-L-15),ys=v=>B-(Math.min(v,maxY)/maxY)*(B-top);
+    for(let v=0;v<=maxY;v+=Math.max(1,Math.ceil(maxY/5))){h+='<line class="grid" x1="'+L+'" x2="'+(W-15)+'" y1="'+ys(v)+'" y2="'+ys(v)+'"/><text class="ax" x="'+(L-6)+'" y="'+(ys(v)+4)+'" text-anchor="end">'+v+'</text>';}
+    [1,8,16,32,48,64].forEach(k=>h+='<text class="ax" x="'+xs(k)+'" y="'+(B+18)+'" text-anchor="middle">'+k+'</text>');
+    if(isFinite(mx)&&mx<=maxY)h+='<line class="cap" x1="'+L+'" x2="'+(W-15)+'" y1="'+ys(mx)+'" y2="'+ys(mx)+'"/><text class="capt" x="'+(W-18)+'" y="'+(ys(mx)-6)+'" text-anchor="end">上限 1/S = '+fmtN(mx)+'</text>';
+    let d='';for(let k=1;k<=64;k++){d+=(k===1?'M':'L')+xs(k)+','+ys(1/(S+(1-S)/k));}
+    h+='<path class="curve" d="'+d+'"/><circle class="dot" cx="'+xs(N)+'" cy="'+ys(sp)+'" r="5"/><text class="ax" x="'+(W/2)+'" y="'+(H-2)+'" text-anchor="middle">核心數 N</text>';
+    box.querySelector("svg").innerHTML=h;
+  }
+  s.oninput=run;n.oninput=run;run();
+};
+
+/* 4. Banker's safety algorithm step-through */
+W.banker=function(box){
+  const presets={
+    "課本例（5 個 process）":{r:"ABC",alloc:[[0,1,0],[2,0,0],[3,0,2],[2,1,1],[0,0,2]],max:[[7,5,3],[3,2,2],[9,0,2],[2,2,2],[4,3,3]],avail:[3,3,2]},
+    "模擬 A Q15":null,"模擬 B Q15":null};
+  delete presets["模擬 A Q15"];delete presets["模擬 B Q15"];
+  box.innerHTML='<div class="wtitle">Banker\'s 一步一步跑：按「下一步」看 Work 怎麼變</div><div class="wrow presets"></div><div class="wrow"><label>Available <input class="av" value="3 3 2" size="10"></label><span class="small">表格裡的 Allocation、Max 也可以直接改</span></div><div class="wtable"></div><div class="wrow"><button class="btn primary nx" type="button">下一步</button><button class="btn all" type="button">一次跑完</button><button class="btn rs" type="button">重來</button></div><div class="wlog"></div>';
+  let D=JSON.parse(JSON.stringify(presets["課本例（5 個 process）"]));
+  let work,fin,seq,ptr,stuck;
+  const pr=box.querySelector(".presets");
+  Object.keys(presets).forEach(k=>{const b=el("button",{cls:"btn chip",type:"button"},k);b.onclick=()=>{D=JSON.parse(JSON.stringify(presets[k]));box.querySelector(".av").value=D.avail.join(" ");reset();};pr.appendChild(b);});
+  const need=i=>D.max[i].map((m,j)=>m-D.alloc[i][j]);
+  const le=(a,b)=>a.every((x,j)=>x<=b[j]);
+  const v=a=>"("+a.join(", ")+")";
+  function table(hl){
+    let h='<table><tr><th>Process</th><th>Allocation</th><th>Max</th><th>Need = Max − Alloc</th><th>Finish</th></tr>';
+    D.alloc.forEach((a,i)=>{h+='<tr class="'+(i===hl?"hl":"")+(fin[i]?" fin":"")+'"><td>P'+i+'</td><td><input data-k="alloc" data-i="'+i+'" value="'+a.join(" ")+'" size="7"></td><td><input data-k="max" data-i="'+i+'" value="'+D.max[i].join(" ")+'" size="7"></td><td>'+v(need(i))+'</td><td>'+(fin[i]?"true":"false")+'</td></tr>';});
+    const w=box.querySelector(".wtable");w.innerHTML=h+'</table>';
+    w.querySelectorAll("input").forEach(inp=>inp.onchange=()=>{const arr=inp.value.trim().split(/[\s,]+/).map(x=>parseInt(x)||0);D[inp.dataset.k][inp.dataset.i]=arr;reset();});
+  }
+  function reset(){
+    D.avail=box.querySelector(".av").value.trim().split(/[\s,]+/).map(x=>parseInt(x)||0);
+    work=D.avail.slice();fin=D.alloc.map(()=>false);seq=[];ptr=0;stuck=false;
+    box.querySelector(".wlog").innerHTML='<p>Work = Available = <b>'+v(work)+'</b>。從 P0 開始找 Need ≤ Work 的 process。</p>';table(-1);
+  }
+  function step(){
+    if(stuck||seq.length===fin.length)return;
+    const n=fin.length,log=box.querySelector(".wlog");
+    for(let k=0;k<n;k++){const i=(ptr+k)%n;if(fin[i])continue;
+      if(le(need(i),work)){const nw=work.map((x,j)=>x+D.alloc[i][j]);log.insertAdjacentHTML("beforeend",'<p>P'+i+'：Need '+v(need(i))+' ≤ Work '+v(work)+' ✓ → Work = '+v(work)+' + Allocation '+v(D.alloc[i])+' = <b>'+v(nw)+'</b></p>');work=nw;fin[i]=true;seq.push(i);ptr=(i+1)%n;table(i);
+        if(seq.length===n)log.insertAdjacentHTML("beforeend",'<p class="ok">全部 Finish = true → <b>safe</b>。Safe sequence <b>&lt;'+seq.map(x=>"P"+x).join(", ")+'&gt;</b>（其他合法順序也對）</p>');
+        return;}
+      else log.insertAdjacentHTML("beforeend",'<p class="no">P'+i+'：Need '+v(need(i))+' ≰ Work '+v(work)+' ✗ 跳過</p>');}
+    stuck=true;table(-1);log.insertAdjacentHTML("beforeend",'<p class="bad">剩下的 process 都不能滿足 → <b>unsafe</b>（可能死結）。</p>');
+  }
+  box.querySelector(".nx").onclick=step;
+  box.querySelector(".all").onclick=()=>{for(let k=0;k<20&&!stuck&&seq.length<fin.length;k++)step();};
+  box.querySelector(".rs").onclick=reset;
+  reset();
+};
+document.querySelectorAll(".widget[data-w]").forEach(b=>{try{W[b.dataset.w](b);}catch(e){b.textContent="互動圖載入失敗";}});
 
 /* ---------- home ---------- */
 function renderHome(){

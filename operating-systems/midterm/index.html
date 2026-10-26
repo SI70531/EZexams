@@ -249,6 +249,7 @@ body.nograde .nogradenote{display:block}
   .qitem{padding:14px 14px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.full{display:block;font-size:.82em;color:var(--muted);line-height:1.35;margin-top:2px}
 /* interactive widgets */
 .widget select,.widget input:not([type=range]){background:var(--paper2);color:var(--ink);border:1px solid var(--line-strong);border-radius:6px;padding:4px 8px;font:inherit;font-family:var(--f-mono)}
 .wedge.on path{fill:var(--seal)}
@@ -323,11 +324,11 @@ body.nograde .nogradenote{display:block}
   <li>畫圖題每條箭頭都要標英文名稱。不會的題目也寫關鍵字，空白一定 0 分。</li></ul></div>
 </section>
 
-<section class="view" id="ch1" hidden><div class="vhead"><div class="pcb" data-pcb="ch1" role="img"></div><div class="eyebrow">Chapter 1</div><h1>Ch1 Introduction</h1><p>operating system（作業系統）是什麼、interrupt（中斷）、DMA、儲存階層、dual mode。讀完後做最下面的選擇題。</p></div>
+<section class="view" id="ch1" hidden><div class="vhead"><div class="pcb" data-pcb="ch1" role="img"></div><div class="eyebrow">Chapter 1</div><h1>Ch1 Introduction</h1><p>operating system（作業系統）是什麼、interrupt（中斷）、DMA（Direct Memory Access，直接記憶體存取）、儲存階層、dual mode。讀完後做最下面的選擇題。</p></div>
 
 
 <h3>1.1 OS 是什麼</h3>
-<div class="box zh"><span class="lbl">白話</span>OS 是介於「使用者」和「硬體」之間的<b>中間人</b>。它幫你管 CPU、memory（記憶體）、disk（硬碟），讓程式好寫、電腦好用、硬體不浪費。</div>
+<div class="box zh"><span class="lbl">白話</span>OS 是介於「使用者」和「硬體」之間的<b>中間人</b>。它幫你管 CPU（Central Processing Unit，中央處理器）、memory（記憶體）、disk（硬碟），讓程式好寫、電腦好用、硬體不浪費。</div>
 <div class="box en"><span class="lbl">ANSWER TEMPLATE — What is an OS?</span>An operating system is a program that acts as an intermediary between a user of a computer and the computer hardware.<br>
 Goals: (1) execute user programs and make solving user problems easier; (2) make the computer system convenient to use; (3) use the computer hardware in an efficient manner.<div class="zhtr"><span>中文</span>作業系統是介於使用者和電腦硬體之間的「中間人」程式。目標：(1) 執行使用者程式、讓解決問題更容易；(2) 讓電腦系統方便使用；(3) 有效率地使用硬體。</div></div>
 <ul>
@@ -414,7 +415,7 @@ A timer is used to prevent an infinite loop / a process hogging resources: it ge
 <li>Kernel data structures：linked list（單向、雙向、環狀）、binary search tree（一般 O(n)，平衡樹 O(lg n)）、hash map、bitmap。</li>
 </ul>
 <div class="quiz" data-quiz="ch1"></div></section>
-<section class="view" id="ch2" hidden><div class="vhead"><div class="pcb" data-pcb="ch2" role="img"></div><div class="eyebrow">Chapter 2</div><h1>Ch2 Process（行程） Concept</h1><p>Process state diagram（狀態圖）、PCB、三種 scheduler（排程器）、IPC。讀完後做最下面的選擇題。</p></div>
+<section class="view" id="ch2" hidden><div class="vhead"><div class="pcb" data-pcb="ch2" role="img"></div><div class="eyebrow">Chapter 2</div><h1>Ch2 Process（行程） Concept</h1><p>Process state diagram（狀態圖）、PCB（Process Control Block，行程控制區塊）、三種 scheduler（排程器）、IPC（Interprocess Communication，行程間通訊）。讀完後做最下面的選擇題。</p></div>
 
 
 <h3>2.1 Process 是什麼、memory（記憶體）長怎樣</h3>
@@ -446,7 +447,7 @@ A timer is used to prevent an infinite loop / a process hogging resources: it ge
 <table style="width:100%">
 <tr><th>狀態</th><th class="l">英文定義（背）</th><th class="l">白話</th></tr>
 <tr><td>new</td><td class="l">The process is being created.</td><td class="l">剛建立</td></tr>
-<tr><td>ready</td><td class="l">The process is waiting to be assigned to a processor.</td><td class="l">準備好了，排隊等 CPU</td></tr>
+<tr><td>ready</td><td class="l">The process is waiting to be assigned to a processor.</td><td class="l">準備好了，排隊等 CPU（Central Processing Unit，中央處理器）</td></tr>
 <tr><td>running</td><td class="l">Instructions are being executed.</td><td class="l">正在用 CPU</td></tr>
 <tr><td>waiting</td><td class="l">The process is waiting for some event to occur.</td><td class="l">在等 I/O 或事件</td></tr>
 <tr><td>terminated</td><td class="l">The process has finished execution.</td><td class="l">結束</td></tr>
@@ -491,7 +492,7 @@ A timer is used to prevent an infinite loop / a process hogging resources: it ge
 <div class="box warn"><span class="lbl">易混淆</span>ready 是「等 CPU」；waiting 是「等 I/O／事件」。同一時間一顆 CPU 只有<b>一個</b> process 在 running，但可以有很多在 ready 和 waiting。</div>
 
 <div class="widget" data-w="states"></div>
-<h3>2.3 PCB（Process Control Block）<span class="star">★★</span></h3>
+<h3>2.3 PCB（Process Control Block，行程控制區塊）<span class="star">★★</span></h3>
 <div class="box zh"><span class="lbl">白話</span>PCB＝OS 為每個 process 建的「身分證＋存檔」。切換 process 時，就是把目前狀態存進 PCB，再從另一個 PCB 讀回來。</div>
 <div class="box en"><span class="lbl">ANSWER TEMPLATE — Information in a PCB</span>Process state, program counter, CPU registers, CPU-scheduling information, memory-management information, accounting information, and I/O status information.<div class="zhtr"><span>中文</span>PCB 裡的資訊：process 狀態、程式計數器（PC）、CPU 暫存器、CPU 排班資訊、記憶體管理資訊、帳務資訊（用了多少 CPU 時間）、I/O 狀態資訊。</div></div>
 <p class="small">口訣：「狀、PC、暫、排、記、帳、I/O」。Linux 用 C 結構 <span class="mono">task_struct</span> 表示 PCB。</p>
@@ -558,7 +559,7 @@ A timer is used to prevent an infinite loop / a process hogging resources: it ge
 <li>UNIX：<span class="mono">fork()</span> 建立新 process（複製 parent）；<span class="mono">exec()</span> 在 fork 之後用新程式取代 memory 內容。</li>
 </ul>
 
-<h3>2.7 IPC（Interprocess Communication）<span class="star">★★★</span></h3>
+<h3>2.7 IPC（Interprocess Communication，行程間通訊）<span class="star">★★★</span></h3>
 <div class="box en"><span class="lbl">ANSWER TEMPLATE</span>Two models of IPC: <b>shared memory</b> and <b>message passing</b>.<br>
 Reasons for cooperating processes: information sharing, computation speedup, modularity, and convenience.<div class="zhtr"><span>中文</span>行程間通訊（IPC）的兩種模型：共享記憶體（shared memory）和訊息傳遞（message passing）。需要合作 process 的理由：資訊分享、加快計算、模組化、方便。</div></div>
 <div class="fig">
@@ -603,12 +604,12 @@ Consumer:  while (in == out) ;                       // 空了就等
 <tr><td>Buffering</td><td class="l">Zero capacity（sender 一定要等 receiver）；Bounded capacity（n 個，滿了才等）；Unbounded capacity（sender 永遠不用等）。</td></tr>
 </table>
 <div class="quiz" data-quiz="ch2"></div></section>
-<section class="view" id="ch3" hidden><div class="vhead"><div class="pcb" data-pcb="ch3" role="img"></div><div class="eyebrow">Chapter 3</div><h1>Ch3 Process（行程） Scheduling（排班）</h1><p>scheduling 標準、五種 algorithm（演算法）、Gantt chart 計算、MLQ／MLFQ、real-time。讀完後做最下面的選擇題。</p></div>
+<section class="view" id="ch3" hidden><div class="vhead"><div class="pcb" data-pcb="ch3" role="img"></div><div class="eyebrow">Chapter 3</div><h1>Ch3 Process（行程） Scheduling（排班）</h1><p>scheduling 標準、五種 algorithm（演算法）、Gantt chart 計算、MLQ（Multilevel Queue，多層佇列）／MLFQ（Multilevel Feedback Queue，多層回饋佇列）、real-time。讀完後做最下面的選擇題。</p></div>
 
 
 <h3>3.1 基本概念</h3>
 <ul>
-<li><b>CPU–I/O burst（執行區段） cycle</b>：process 的執行就是「用 CPU 一段 → 等 I/O 一段」不斷循環。</li>
+<li><b>CPU（Central Processing Unit，中央處理器）–I/O burst（執行區段） cycle</b>：process 的執行就是「用 CPU 一段 → 等 I/O 一段」不斷循環。</li>
 <li><b>Short-term scheduler（排程器）</b> 從 ready queue（就緒佇列） 挑一個給 CPU。</li>
 </ul>
 <h4>什麼時候會做 scheduling 決策？<span class="star">★★</span></h4>
@@ -637,11 +638,11 @@ Waiting time    = Turnaround time − Burst time</div>
 <h3>3.3 五種 algorithm 一覽 <span class="star">★★★</span></h3>
 <table style="width:100%">
 <tr><th>algorithm</th><th class="l">規則</th><th>搶奪？</th><th class="l">優缺點／考點</th></tr>
-<tr><td>FCFS</td><td class="l">先到先做</td><td>否</td><td class="l"><b>Convoy effect（護航效應）</b>（短的卡在長的後面）</td></tr>
-<tr><td>SJF</td><td class="l">下一次 CPU burst 最短的先做</td><td>否</td><td class="l"><b>Optimal</b>：平均 waiting time 最小；難處是不知道下一次 burst 多長；會 <b>starvation（飢餓）</b></td></tr>
-<tr><td>SRTF</td><td class="l">SJF 的可搶奪版：剩餘時間最短的先做</td><td>是</td><td class="l">新來的比較短就搶走 CPU；會 starvation</td></tr>
-<tr><td>Priority（優先權）</td><td class="l">priority 最高的先做（<b>數字越小越優先</b>）</td><td>兩種都有</td><td class="l"><b>Starvation</b>，解法 <b>aging（老化）</b>（等越久 priority 越高）；SJF 是 priority 的特例</td></tr>
-<tr><td>RR</td><td class="l">每人輪流用一個 time quantum（時間片段） q</td><td>是</td><td class="l">q 太大 → 變 FCFS；q 太小 → context switch（內容切換） 太多。回應快，但平均 turnaround 通常比 SJF 高</td></tr>
+<tr><td class="l full-cell"><b>FCFS</b><span class="full">First-Come, First-Served<br>先到先服務</span></td><td class="l">先到先做</td><td>否</td><td class="l"><b>Convoy effect（護航效應）</b>（短的卡在長的後面）</td></tr>
+<tr><td class="l full-cell"><b>SJF</b><span class="full">Shortest-Job-First<br>最短工作優先</span></td><td class="l">下一次 CPU burst 最短的先做</td><td>否</td><td class="l"><b>Optimal</b>：平均 waiting time 最小；難處是不知道下一次 burst 多長；會 <b>starvation（飢餓）</b></td></tr>
+<tr><td class="l full-cell"><b>SRTF</b><span class="full">Shortest-Remaining-Time-First<br>最短剩餘時間優先</span></td><td class="l">SJF（Shortest-Job-First，最短工作優先） 的可搶奪版：剩餘時間最短的先做</td><td>是</td><td class="l">新來的比較短就搶走 CPU；會 starvation</td></tr>
+<tr><td class="l full-cell"><b>Priority</b><span class="full">Priority Scheduling<br>優先權排班</span></td><td class="l">priority（優先權）最高的先做（<b>數字越小越優先</b>）</td><td>兩種都有</td><td class="l"><b>Starvation</b>，解法 <b>aging（老化）</b>（等越久 priority 越高）；SJF 是 priority 的特例</td></tr>
+<tr><td class="l full-cell"><b>RR</b><span class="full">Round Robin<br>輪流排班</span></td><td class="l">每人輪流用一個 time quantum（時間片段） q</td><td>是</td><td class="l">q 太大 → 變 FCFS（First-Come, First-Served，先到先服務）；q 太小 → context switch（內容切換） 太多。回應快，但平均 turnaround 通常比 SJF 高</td></tr>
 </table>
 <div class="box en"><span class="lbl">ANSWER TEMPLATE — Starvation & Aging</span>Starvation: low-priority processes may never execute. Solution — Aging: as time progresses, increase the priority of the process.<div class="zhtr"><span>中文</span>飢餓（starvation）：低優先權的 process 可能永遠輪不到。解法是老化（aging）：等越久，優先權就逐漸調高。</div></div>
 <div class="box en"><span class="lbl">ANSWER TEMPLATE — Round Robin</span>Each process gets a small unit of CPU time (time quantum q), usually 10–100 ms. After this time has elapsed, the process is preempted and added to the end of the ready queue. If there are n processes, no process waits more than (n−1)q time units. If q is large, RR becomes FCFS; if q is small, q must be large with respect to context-switch time, otherwise overhead is too high. (Rule of thumb: 80% of CPU bursts should be shorter than q.)<div class="zhtr"><span>中文</span>每個 process 一次只拿到一小段 CPU 時間（時間配額 time quantum q，通常 10～100 ms）。時間到就被搶走、排到就緒佇列最後面。有 n 個 process 時，沒有人會等超過 (n−1)q。q 太大會變成 FCFS；q 太小則切換負擔太重，所以 q 要遠大於內容切換時間（經驗法則：80% 的 CPU burst 要比 q 短）。</div></div>
@@ -654,7 +655,7 @@ Waiting time    = Turnaround time − Burst time</div>
 <li>每個 process 的 <b>waiting time = 完成時間 − 到達時間 − burst time</b>。</li>
 <li>平均 = 全部加起來 ÷ 個數。</li>
 </ol>
-<b>Preemptive 的題目（SRTF、preemptive priority）</b>：每當有新 process 到達，都要重新比一次。</div>
+<b>Preemptive 的題目（SRTF（Shortest-Remaining-Time-First，最短剩餘時間優先）、preemptive priority）</b>：每當有新 process 到達，都要重新比一次。</div>
 
 <h4>例 1：FCFS（P1=24, P2=3, P3=3，都在 0 到達）</h4>
 <div class="gantt"><div class="gbar"><span style="flex:24;background:#dbe8fb">P1</span><span style="flex:3;background:#d9f0e2">P2</span><span style="flex:3;background:#fff0c9">P3</span></div><div class="gt"><b style="left:0%">0</b><b style="left:80.000%">24</b><b style="left:90.000%">27</b><b style="left:100.000%">30</b></div></div>
@@ -669,7 +670,7 @@ Waiting time    = Turnaround time − Burst time</div>
 <div class="box warn"><span class="lbl">陷阱：投影片這題寫了 arrival time（0, 2, 4, 5）</span>投影片的答案 7 其實是當作「全部時間 0 到達」算的。如果真的照 arrival time 算 nonpreemptive SJF：時間 0 只有 P1 → P1 先跑 0–6；之後 P4(3) 6–9、P3(7) 9–16、P2(8) 16–24。waiting：P1=0, P2=16−2=14, P3=9−4=5, P4=6−5=1 → 平均 20/4 = <b>5</b>。<br>考試時<b>看清楚題目有沒有給 arrival time</b>，有就照到達時間算。</div>
 
 <div class="widget" data-w="sched" data-algs="SJF" data-name="SJF"></div>
-<h4>例 3：SRTF（preemptive SJF）</h4>
+<h4>例 3：SRTF（Shortest-Remaining-Time-First，最短剩餘時間優先；即 preemptive SJF）</h4>
 <table><tr><th>Process</th><th>Arrival</th><th>Burst</th></tr><tr><td>P1</td><td>0</td><td>8</td></tr><tr><td>P2</td><td>1</td><td>4</td></tr><tr><td>P3</td><td>2</td><td>9</td></tr><tr><td>P4</td><td>3</td><td>5</td></tr></table>
 <div class="gantt"><div class="gbar"><span style="flex:1;background:#dbe8fb">P1</span><span style="flex:4;background:#d9f0e2">P2</span><span style="flex:5;background:#fbdcdc">P4</span><span style="flex:7;background:#dbe8fb">P1</span><span style="flex:9;background:#fff0c9">P3</span></div><div class="gt"><b style="left:0%">0</b><b style="left:3.846%">1</b><b style="left:19.231%">5</b><b style="left:38.462%">10</b><b style="left:65.385%">17</b><b style="left:100.000%">26</b></div></div>
 <div class="calc">t=0  只有 P1 → 跑 P1
@@ -857,7 +858,7 @@ N → ∞ 時，speedup → 1 / S   （serial 部分決定上限）</div>
 <tr><td>Grand Central Dispatch (GCD)</td><td class="l">Apple (Mac OS X, iOS)。Block 寫成 <span class="mono">^{ }</span>，放進 dispatch queue。兩種 queue：<b>serial</b>（FIFO 一次一個，main queue）、<b>concurrent</b>（FIFO 但一次可取多個；系統有 low/default/high 三條）。</td></tr>
 </table>
 <div class="quiz" data-quiz="ch4"></div></section>
-<section class="view" id="ch5" hidden><div class="vhead"><div class="pcb" data-pcb="ch5" role="img"></div><div class="eyebrow">Chapter 5</div><h1>Ch5 Deadlocks（死結）</h1><p>四個必要條件、RAG、prevention（預防）、safe state（安全狀態）、Banker's、detection（偵測）。讀完後做最下面的選擇題。</p></div>
+<section class="view" id="ch5" hidden><div class="vhead"><div class="pcb" data-pcb="ch5" role="img"></div><div class="eyebrow">Chapter 5</div><h1>Ch5 Deadlocks（死結）</h1><p>四個必要條件、RAG（Resource-Allocation Graph，資源配置圖）、prevention（預防）、safe state（安全狀態）、Banker's、detection（偵測）。讀完後做最下面的選擇題。</p></div>
 
 
 <h3>5.1 Deadlock 是什麼</h3>
@@ -1120,7 +1121,7 @@ P1 need 2 ≤ 2 → 4；P0 need 5 > 4、P2 need 6 > 4 → 卡住 → unsafe</div
 <div class="box zh"><span class="lbl">白話</span>沒有 DMA：每搬 1 byte 都要 CPU 親自處理，CPU 很累。有 DMA：裝置控制器自己把<b>一整塊</b>資料直接搬到記憶體，搬完才通知 CPU 一次。關鍵字：<b>high-speed I/O、directly to memory、without CPU、one interrupt per block</b>。</div>
 
 </div></details><label class="self" for="past-8-c"><input type="checkbox" id="past-8-c"> 我答對了（5 分）</label></div><div class="exq" id="past-9" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q9 5%</span>What is convoy effect? Which scheduling algorithm will suffer this problem?</p></div><label class="small" for="past-9-a">你的答案</label><textarea id="past-9-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
-<div class="box en"><span class="lbl">ANSWER</span>Convoy effect is the case that short processes wait behind a long process, which leads to a much worse (longer) average waiting time. The FCFS (First-Come, First-Served) algorithm suffers this problem.<div class="zhtr"><span>中文</span>護航效應（convoy effect）：短的 process 卡在一個長 process 後面等，讓平均等待時間變得很長。FCFS（先到先服務）會有這個問題。</div></div>
+<div class="box en"><span class="lbl">ANSWER</span>Convoy effect is the case that short processes wait behind a long process, which leads to a much worse (longer) average waiting time. The FCFS (First-Come, First-Served) algorithm suffers this problem.<div class="zhtr"><span>中文</span>護航效應（convoy effect）：短的 process 卡在一個長 process 後面等，讓平均等待時間變得很長。FCFS（First-Come, First-Served，先到先服務）會有這個問題。</div></div>
 <div class="box zh"><span class="lbl">白話</span>超商排隊，前面一個人要結 50 樣東西，後面只買一瓶水的人全部被卡住。例：P1=24, P2=3, P3=3，P1 先到 → 平均等待 17；P1 最後 → 平均等待 3。</div>
 
 </div></details><label class="self" for="past-9-c"><input type="checkbox" id="past-9-c"> 我答對了（5 分）</label></div><div class="exq" id="past-10" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q10 5%</span>Application A has 60% parallel and 40% serial parts. Moving from 1-core to 4-cores CPU, what is the speedup based on Amdahl's law?</p></div><label class="small" for="past-10-a">你的答案</label><textarea id="past-10-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
@@ -1280,7 +1281,7 @@ speedup = 1 / ( 0.4 + 0.6/4 )
 <div class="box en"><span class="lbl">ANSWER</span>Responsiveness, resource sharing, economy, and scalability.<div class="zhtr"><span>中文</span>反應快、資源共享、經濟、可擴充。</div></div>
 
 </div></details><label class="self" for="mock-a-3-c"><input type="checkbox" id="mock-a-3-c"> 我答對了（5 分）</label></div><div class="exq" id="mock-a-4" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q4</span>Which scheduling algorithm gives the minimum average waiting time? What is its main difficulty?</p></div><label class="small" for="mock-a-4-a">你的答案</label><textarea id="mock-a-4-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
-<div class="box en"><span class="lbl">ANSWER</span>SJF (Shortest-Job-First) is optimal. The difficulty is knowing the length of the next CPU burst (it can only be estimated, e.g., by exponential averaging).<div class="zhtr"><span>中文</span>SJF（最短工作優先）是最佳的。難處是不知道下一次 CPU burst 多長，只能估計（例如用指數平均 exponential averaging）。</div></div>
+<div class="box en"><span class="lbl">ANSWER</span>SJF (Shortest-Job-First) is optimal. The difficulty is knowing the length of the next CPU burst (it can only be estimated, e.g., by exponential averaging).<div class="zhtr"><span>中文</span>SJF（Shortest-Job-First，最短工作優先）是最佳的。難處是不知道下一次 CPU burst 多長，只能估計（例如用指數平均 exponential averaging）。</div></div>
 
 </div></details><label class="self" for="mock-a-4-c"><input type="checkbox" id="mock-a-4-c"> 我答對了（5 分）</label></div><div class="exq" id="mock-a-5" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q5</span>What are the two types of real-time systems?</p></div><label class="small" for="mock-a-5-a">你的答案</label><textarea id="mock-a-5-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
 <div class="box en"><span class="lbl">ANSWER</span>Soft real-time systems (no guarantee as to when a critical process will be scheduled) and hard real-time systems (a task must be serviced by its deadline).<div class="zhtr"><span>中文</span>軟即時系統（soft real-time：不保證關鍵 process 什麼時候被排到）和硬即時系統（hard real-time：工作一定要在期限前完成）。</div></div>
@@ -1550,10 +1551,10 @@ RMS：period 越短越優先 → P1 (50) 優先於 P2 (80)
 <div>
 <h3>Ch1</h3>
 <ul>
-<li>CPU = <b>CU + ALU + Registers（暫存器）</b></li>
+<li>CPU（Central Processing Unit，中央處理器） = <b>CU + ALU + Registers（暫存器）</b></li>
 <li>OS = intermediary between user and hardware；resource（資源） allocator + control program</li>
-<li>Interrupt（中斷） → interrupt vector（中斷向量） → ISR；trap（陷阱） = software interrupt</li>
-<li><b>DMA</b>：high-speed I/O，block 直接到 memory（記憶體），without CPU，one interrupt per block</li>
+<li>Interrupt（中斷） → interrupt vector（中斷向量） → ISR（Interrupt Service Routine，中斷服務程式）；trap（陷阱） = software interrupt</li>
+<li><b>DMA（Direct Memory Access，直接記憶體存取）</b>：high-speed I/O，block 直接到 memory（記憶體），without CPU，one interrupt per block</li>
 <li>Multiprocessor（多處理器） 優點：throughput（吞吐量）、economy of scale、reliability</li>
 <li>Asymmetric vs Symmetric (SMP)</li>
 <li>Multiprogramming（效率）vs Timesharing（互動 &lt;1s）</li>
@@ -1565,11 +1566,11 @@ RMS：period 越短越優先 → P1 (50) 優先於 P2 (80)
 <li>memory：text / data / heap / stack</li>
 <li>5 states：new, ready, running, waiting, terminated</li>
 <li>6 箭頭：admitted、dispatch、interrupt、I/O wait、I/O completion、exit</li>
-<li>PCB：狀、PC、register、scheduling（排班）、memory、帳、I/O</li>
+<li>PCB（Process Control Block，行程控制區塊）：狀、PC、register、scheduling（排班）、memory、帳、I/O</li>
 <li>Long-term：選誰進 ready queue（就緒佇列），<b>控制</b> degree of MP</li>
 <li>Mid-term：swap，<b>降低</b> degree of MP</li>
 <li>Short-term：選誰用 CPU，ms 級要快</li>
-<li>IPC：<b>shared memory（共享記憶體） ＆ message passing（訊息傳遞）</b></li>
+<li>IPC（Interprocess Communication，行程間通訊）：<b>shared memory（共享記憶體） ＆ message passing（訊息傳遞）</b></li>
 <li>Buffer 滿：(in+1)%SIZE==out；空：in==out；最多 SIZE−1</li>
 <li>Blocking（阻塞）=synchronous（同步）；兩邊都 blocking = rendezvous（會合）</li>
 </ul>
@@ -1580,12 +1581,12 @@ RMS：period 越短越優先 → P1 (50) 優先於 P2 (80)
 <li>Nonpreemptive（不可搶奪）：running→waiting、terminate</li>
 <li>Criteria：utilization（使用率）、throughput ↑；turnaround、waiting、response ↓</li>
 <li>Waiting = 完成 − 到達 − burst（執行區段）</li>
-<li>FCFS → <b>convoy effect（護航效應）</b></li>
-<li>SJF optimal；SRTF = preemptive（可搶奪） SJF</li>
+<li>FCFS（First-Come, First-Served，先到先服務） → <b>convoy effect（護航效應）</b></li>
+<li>SJF（Shortest-Job-First，最短工作優先） optimal；SRTF（Shortest-Remaining-Time-First，最短剩餘時間優先） = preemptive（可搶奪） SJF</li>
 <li><b>Starvation（飢餓）：SJF(SRTF)、Priority（優先權）</b> → 解法 aging（老化）</li>
 <li>RR：q 大 → FCFS；q 小 → overhead</li>
-<li>MLQ vs MLFQ：<b>process moving between queues</b></li>
-<li>RMS：period 短優先；EDF：deadline（截止期限） 早優先；U = Σ t/p</li>
+<li>MLQ（Multilevel Queue，多層佇列） vs MLFQ（Multilevel Feedback Queue，多層回饋佇列）：<b>process moving between queues</b></li>
+<li>RMS：period 短優先；EDF（Earliest Deadline First，最早截止期限優先）：deadline（截止期限） 早優先；U = Σ t/p</li>
 <li>τ(n+1) = α t(n) + (1−α) τ(n)</li>
 </ul>
 <h3>Ch4</h3>
@@ -1602,7 +1603,7 @@ RMS：period 越短越優先 → P1 (50) 優先於 P2 (80)
 <li><b>Mutual exclusion（互斥）、hold and wait（持有並等待）、no preemption（不可搶奪）、circular wait（循環等待）</b></li>
 <li>No cycle → no deadlock（死結）；cycle＋single instance → deadlock</li>
 <li>Safe → no deadlock；unsafe → 可能</li>
-<li>Single instance → RAG；multiple → Banker's</li>
+<li>Single instance → RAG（Resource-Allocation Graph，資源配置圖）；multiple → Banker's</li>
 <li><b>Need = Max − Allocation</b></li>
 <li>Need ≤ Work → Work += <b>Allocation</b></li>
 <li>Request：≤ Need → ≤ Available → 假裝給再跑 safety</li>
@@ -1658,7 +1659,7 @@ RMS：period 越短越優先 → P1 (50) 優先於 P2 (80)
 
 <h3>申論題型（describe / explain / compare）</h3>
 <p class="q">P1. What is a Process Control Block (PCB)? What information does it contain?</p>
-<div class="box en">A PCB (task control block) stores information associated with each process: process state, program counter, CPU registers, CPU-scheduling information, memory-management information, accounting information, and I/O status information.<div class="zhtr"><span>中文</span>PCB（又叫 task control block）存每個 process 的資訊：process 狀態、程式計數器、CPU 暫存器、CPU 排班資訊、記憶體管理資訊、帳務資訊、I/O 狀態資訊。</div></div>
+<div class="box en">A PCB (task control block) stores information associated with each process: process state, program counter, CPU registers, CPU-scheduling information, memory-management information, accounting information, and I/O status information.<div class="zhtr"><span>中文</span>PCB（Process Control Block，行程控制區塊；又叫 task control block）存每個 process 的資訊：process 狀態、程式計數器、CPU 暫存器、CPU 排班資訊、記憶體管理資訊、帳務資訊、I/O 狀態資訊。</div></div>
 
 <p class="q">P2. What is a context switch（內容切換）? Why is it overhead?</p>
 <div class="box en">When the CPU switches to another process, the system must save the state of the old process (into its PCB) and load the saved state for the new process. Context-switch time is overhead because the system does no useful work while switching.<div class="zhtr"><span>中文</span>CPU 換到另一個 process 時，系統要把舊 process 的狀態存進它的 PCB，再載入新 process 的狀態。內容切換的時間是額外負擔，因為切換時系統沒做有用的事。</div></div>
@@ -1751,25 +1752,25 @@ ch2: [
  {q:"In the process state diagram, what is the transition from running to ready called?", o:["admitted","scheduler dispatch","interrupt","exit"], a:2, e:"running → ready 是 interrupt（中斷）；ready → running 才是 scheduler dispatch（排程器派送）。"},
  {q:"In which section of a process's memory are local variables stored?", o:["text","data","heap","stack"], a:3, e:"Stack（堆疊）：function parameters、return address、local variables。Global variables 在 data section。"},
  {q:"Memory allocated by malloc() at run time is in the:", o:["stack","heap","text section","data section"], a:1, e:"Heap（堆積）= memory dynamically allocated during run time（執行時動態配置）。"},
- {q:"Which of the following is NOT stored in a PCB?", o:["Program counter","CPU registers","Memory-management information","The source code of other processes"], a:3, e:"PCB（行程控制區塊）：process state、program counter、CPU registers、CPU-scheduling info、memory-management info、accounting info、I/O status info。"},
+ {q:"Which of the following is NOT stored in a PCB?", o:["Program counter","CPU registers","Memory-management information","The source code of other processes"], a:3, e:"PCB（Process Control Block，行程控制區塊）：process state、program counter、CPU registers、CPU-scheduling info、memory-management info、accounting info、I/O status info。"},
  {q:"Which scheduler decreases the degree of multiprogramming by swapping processes out to disk?", o:["Long-term scheduler","Short-term scheduler","Mid-term scheduler","Dispatcher"], a:2, e:"Mid-term scheduler（中期排程器）：swap out／swap in（換出／換入），降低 degree of multiprogramming（多元程式程度）。Long-term scheduler 控制它。"},
  {q:"Which statement about the short-term scheduler is correct?", o:["It is invoked only every few minutes","It is invoked very frequently (milliseconds), so it must be fast","It selects which processes enter the ready queue","It performs swapping"], a:1, e:"Short-term scheduler（短期排程器，CPU scheduler）毫秒級頻繁執行，所以必須快。"},
- {q:"What are the two models of interprocess communication (IPC)?", o:["Direct and indirect","Shared memory and message passing","Blocking and non-blocking","fork() and exec()"], a:1, e:"Two models of IPC（行程間通訊）：shared memory（共享記憶體）與 message passing（訊息傳遞）。"},
+ {q:"What are the two models of interprocess communication (IPC)?", o:["Direct and indirect","Shared memory and message passing","Blocking and non-blocking","fork() and exec()"], a:1, e:"Two models of IPC（Interprocess Communication，行程間通訊）：shared memory（共享記憶體）與 message passing（訊息傳遞）。"},
  {q:"With BUFFER_SIZE = 10, how many items can the in/out bounded-buffer solution hold at most?", o:["10","9","11","5"], a:1, e:"Bounded buffer（有限緩衝區）最多 BUFFER_SIZE − 1 個。Full：(in+1) % SIZE == out；empty：in == out。"},
  {q:"In message passing, when both send and receive are blocking, it is called a:", o:["mailbox","rendezvous","zero buffer","context switch"], a:1, e:"Both blocking → rendezvous（會合）。Blocking 也叫 synchronous（同步）。"},
  {q:"What does the UNIX fork() system call do?", o:["Replaces the process's memory space with a new program","Creates a new child process that is a duplicate of the parent","Terminates a process","Sends a message to another process"], a:1, e:"fork() 建立 child process（子行程）；exec() 在 fork 之後用新 program 取代 memory space。"}
 ],
 ch3: [
  {q:"Under which two circumstances is CPU scheduling nonpreemptive?", o:["Running → waiting, and termination","Running → ready, and waiting → ready","Only waiting → ready","All scheduling is preemptive"], a:0, e:"Process 自己放棄 CPU（去等 I/O 或結束）= nonpreemptive（不可搶奪）；其他都是 preemptive（可搶奪）。"},
- {q:"\"Short processes wait behind a long process\" is called ___, and it occurs in ___.", o:["starvation; SJF","convoy effect; FCFS","aging; Priority","thrashing; RR"], a:1, e:"Convoy effect（護航效應）：short process behind long process → FCFS（先到先服務）。"},
- {q:"Which algorithm gives the minimum average waiting time (it is optimal)?", o:["FCFS","RR","SJF","Priority"], a:2, e:"SJF（最短工作優先）is optimal；difficulty（困難）是無法得知下一次 CPU burst 的長度。"},
+ {q:"\"Short processes wait behind a long process\" is called ___, and it occurs in ___.", o:["starvation; SJF","convoy effect; FCFS","aging; Priority","thrashing; RR"], a:1, e:"Convoy effect（護航效應）：short process behind long process → FCFS（First-Come, First-Served，先到先服務）。"},
+ {q:"Which algorithm gives the minimum average waiting time (it is optimal)?", o:["FCFS","RR","SJF","Priority"], a:2, e:"SJF（Shortest-Job-First，最短工作優先）is optimal；difficulty（困難）是無法得知下一次 CPU burst 的長度。"},
  {q:"Which scheduling algorithms may suffer from starvation?", o:["FCFS and RR","SJF and Priority","Only RR","Only FCFS"], a:1, e:"SJF（含 SRTF）一直挑短的，Priority 一直挑高 priority 的 → 長的或低 priority 的 process 可能永遠等（starvation 飢餓）。"},
  {q:"What is the solution to starvation?", o:["Aging: increase the priority of a process as it waits longer","Use a smaller time quantum","Always switch to FCFS","Add more memory"], a:0, e:"Aging（老化）：as time progresses, increase the priority of the process。"},
  {q:"If the time quantum in Round Robin is very large, RR becomes:", o:["SJF","FCFS","Priority","MLFQ"], a:1, e:"q large → FCFS；q small → context switch（內容切換）overhead 太高。"},
- {q:"What is the main difference between multilevel queue and multilevel feedback queue scheduling?", o:["The number of queues","Whether a process can move between queues","Whether RR is used","Whether priorities are used"], a:1, e:"MLQ（多層佇列）：process 永久在同一條 queue；MLFQ（多層回饋佇列）：可以在 queues 之間移動（可實作 aging）。"},
+ {q:"What is the main difference between multilevel queue and multilevel feedback queue scheduling?", o:["The number of queues","Whether a process can move between queues","Whether RR is used","Whether priorities are used"], a:1, e:"MLQ（Multilevel Queue，多層佇列）：process 永久在同一條 queue；MLFQ（Multilevel Feedback Queue，多層回饋佇列）：可以在 queues 之間移動（可實作 aging）。"},
  {q:"How is waiting time computed?", o:["Completion time − arrival time","Completion time − arrival time − burst time","First run time − arrival time","Burst time − arrival time"], a:1, e:"Turnaround time（周轉時間）= completion − arrival；waiting time（等待時間）= turnaround − burst。"},
  {q:"FCFS with P1 = 24, P2 = 3, P3 = 3 arriving at time 0 in the order P1, P2, P3. What is the average waiting time?", o:["3","15","17","27"], a:2, e:"Waiting：P1 = 0、P2 = 24、P3 = 27 → 51 / 3 = 17。"},
- {q:"In rate-monotonic scheduling, how is priority assigned?", o:["Earlier deadline, higher priority","Shorter period, higher priority","Longer burst, higher priority","Earlier arrival, higher priority"], a:1, e:"RMS（速率單調排程）：priority = 1/period（固定）。看 deadline（截止期限）的是 EDF。"},
+ {q:"In rate-monotonic scheduling, how is priority assigned?", o:["Earlier deadline, higher priority","Shorter period, higher priority","Longer burst, higher priority","Earlier arrival, higher priority"], a:1, e:"RMS（Rate-Monotonic Scheduling，速率單調排程）：priority = 1/period（固定）。看 deadline（截止期限）的是 EDF。"},
  {q:"Exponential averaging with α = 1/2, τn = 10, tn = 6. What is τn+1?", o:["6","8","10","16"], a:1, e:"τn+1 = α·tn + (1−α)·τn = 0.5×6 + 0.5×10 = 8。"},
  {q:"What is dispatch latency?", o:["Time from the arrival of an interrupt to the start of its service routine","Time for the dispatcher to stop one process and start another running","Time a process waits in the ready queue","The length of a CPU burst"], a:1, e:"Interrupt latency（中斷延遲）是中斷到開始處理；dispatch latency（派送延遲）是換 process 的時間。"}
 ],

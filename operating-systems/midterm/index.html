@@ -295,6 +295,7 @@ body.nograde .nogradenote{display:block}
 .amd .dot{fill:var(--seal);stroke:var(--paper);stroke-width:2}
 .wlog{font-family:var(--f-mono);font-size:.85rem;max-height:220px;overflow:auto;background:var(--code);border-radius:8px;padding:8px 12px;margin-top:8px}
 .wlog p{margin:3px 0}.wlog p.ok{color:var(--ok)}.wlog p.no{color:var(--muted)}.wlog p.bad{color:var(--bad);font-weight:700}
+.plansep{border:0;border-top:1px dashed var(--line);margin:10px 0}
 </style>
 
 <header class="top"><div class="bar"><a class="brand" href="../../" title="回到所有科目"><span class="mk">OS</span><span class="nm">← 所有科目</span></a><nav class="tabs" aria-label="章節"><div class="row" id="tabs"></div></nav><div class="theme"><button class="themebtn" id="themeBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="themeMenu" title="外觀：跟隨裝置"><svg class="i-system" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><svg class="i-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2 12h2.2M19.8 12H22M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg><svg class="i-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button><div class="thmenu" id="themeMenu" role="menu" hidden><button type="button" role="menuitemradio" data-t="system">跟隨裝置</button><button type="button" role="menuitemradio" data-t="light">淺色</button><button type="button" role="menuitemradio" data-t="dark">深色</button></div></div></div></header>
@@ -305,9 +306,8 @@ body.nograde .nogradenote{display:block}
   <div class="vhead"><div class="pcb" data-pcb="home" role="img"></div><div class="eyebrow">Operating Systems · Midterm</div><h1>作業系統期中衝刺</h1>
   <p>考試是手寫英文作答，沒有選擇題。這裡的選擇題只是用來快速檢查觀念，真正要練的是後面的考古題和模擬試題。</p></div>
   <div class="next" id="nextStep"></div>
-  <h3 id="planTitle">讀書計畫</h3>
-  <p class="small" id="planNote"></p>
-  <div class="plan" id="plan"></div>
+  <h3>讀書計畫</h3>
+  <div class="plan" data-exam="2026-10-29"><div class="day"><div class="d"></div><div class="t">讀 Ch1＋Ch2，各做一次章末選擇題。練畫 process state 圖 2 次。<br><button class="btn" data-go="ch1">Ch1</button><button class="btn" data-go="ch2">Ch2</button></div></div><div class="day"><div class="d"></div><div class="t">讀 Ch3，自己算一遍 FCFS／SJF／SRTF／Priority／RR 例題，做選擇題。<br><button class="btn" data-go="ch3">Ch3</button></div></div><div class="day"><div class="d"></div><div class="t">讀 Ch4（Amdahl、4 種 thread model 圖），做選擇題。<br><button class="btn" data-go="ch4">Ch4</button></div></div><div class="day"><div class="d"></div><div class="t">讀 Ch5，親手算一遍 Banker's 和 detection，做選擇題。<br><button class="btn" data-go="ch5">Ch5</button></div></div><div class="day"><div class="d"></div><div class="t">寫模擬試題 A（限時 60 分鐘），錯的回章節補。<br><button class="btn" data-go="mock-a">模擬 A</button></div></div><div class="day"><div class="d"></div><div class="t">寫去年考古題，對答案，錯的回章節補。<br><button class="btn" data-go="past">考古題</button></div></div><div class="day"><div class="d"></div><div class="t">寫模擬試題 B，最後看總複習的速記。<br><button class="btn" data-go="mock-b">模擬 B</button><button class="btn" data-go="review">總複習</button></div></div></div>
   <h3>進度</h3>
   <table class="prog" id="progTable"></table>
   <p class="small" id="storeNote">分數只存在這台裝置的瀏覽器裡。換裝置或清除瀏覽資料就會歸零。</p>
@@ -2445,37 +2445,41 @@ W.expavg=function(box){
 
 document.querySelectorAll(".widget[data-w]").forEach(b=>{try{W[b.dataset.w](b);}catch(e){b.textContent="互動圖載入失敗";}});
 
-
-/* ---------- study plan: re-split by days left until the exam, at least 3 days ---------- */
+/* EZexams study plan: <div class="plan" data-exam="YYYY-MM-DD"> with one .day per unit.
+   Re-splits the units over the days left before the exam (at least 3 days), shows dates, and redraws at midnight. */
 (function(){
-  const EXAM=new Date(2026,9,29); /* 2026-10-29, local time */
-  const U=[
-    ["讀 Ch1＋Ch2，各做一次章末選擇題。練畫 process state 圖 2 次。",["ch1","Ch1"],["ch2","Ch2"]],
-    ["讀 Ch3，自己算一遍 FCFS／SJF／SRTF／Priority／RR 例題，做選擇題。",["ch3","Ch3"]],
-    ["讀 Ch4（Amdahl、4 種 thread model 圖），做選擇題。",["ch4","Ch4"]],
-    ["讀 Ch5，親手算一遍 Banker's 和 detection，做選擇題。",["ch5","Ch5"]],
-    ["寫模擬試題 A（限時 60 分鐘），錯的回章節補。",["mock-a","模擬 A"]],
-    ["寫去年考古題，對答案，錯的回章節補。",["past","考古題"]],
-    ["寫模擬試題 B，最後看總複習的速記。",["mock-b","模擬 B"],["review","總複習"]]];
-  const day0=d=>new Date(d.getFullYear(),d.getMonth(),d.getDate());
-  function render(){
-    const today=day0(new Date());
-    const left=Math.round((EXAM-today)/864e5); /* days before exam day */
-    const n=Math.min(U.length,Math.max(3,left));
-    document.getElementById("planTitle").textContent=n+" 天讀書計畫";
-    document.getElementById("planNote").textContent=left>0?("今天起到考試前還有 "+left+" 天"+(left<3?"，時間不夠就把每天的份量加重，最少照 3 天排。":"。每天 0:00 會自動重排。")):"考試日到了，照下面順序做最後複習。";
-    let h="",k=0;
-    for(let i=0;i<n;i++){
-      const take=Math.floor(U.length/n)+(i<U.length%n?1:0),items=U.slice(k,k+take);k+=take;
-      const d=new Date(today);d.setDate(d.getDate()+i);
-      const lab=(d.getMonth()+1)+"/"+d.getDate();
-      h+='<div class="day"><div class="d">Day '+(i+1)+'<br><span class="small">'+lab+'</span></div><div class="t">'+items.map(x=>x[0]).join("<br>")+'<br>'+items.flatMap(x=>x.slice(1)).map(b=>'<button class="btn" data-go="'+b[0]+'">'+b[1]+'</button>').join("")+'</div></div>';
+  function setup(box){
+    const units=[...box.querySelectorAll(".day .t")].map(t=>t.innerHTML);
+    if(!units.length)return;
+    const [y,m,d]=box.dataset.exam.split("-").map(Number),EXAM=new Date(y,m-1,d);
+    const title=box.previousElementSibling&&/H[2-4]/.test(box.previousElementSibling.tagName)?box.previousElementSibling:null;
+    const note=document.createElement("p");note.className="small";box.parentNode.insertBefore(note,box);
+    function render(){
+      const now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+      const left=Math.round((EXAM-today)/864e5);
+      const n=Math.max(3,left),U=units.length;
+      if(title)title.textContent=n+" 天讀書計畫（考試 "+(EXAM.getMonth()+1)+"/"+EXAM.getDate()+"）";
+      note.textContent=left>0?("今天起到考試前還有 "+left+" 天。"+(left<3?"時間不夠，每天的份量要加重，最少照 3 天排。":"每天 0:00 會自動重排。")):left===0?"今天考試，照下面順序做最後複習。":"考試已經過了，下面是複習順序。";
+      const lab=i=>{const dd=new Date(today);dd.setDate(dd.getDate()+i);return (dd.getMonth()+1)+"/"+dd.getDate();};
+      let h="";
+      if(n>=U){ /* more days than units: each unit gets a run of days */
+        for(let u=0;u<U;u++){const a=Math.floor(u*n/U),z=Math.floor((u+1)*n/U)-1;
+          h+='<div class="day"><div class="d">Day '+(a+1)+(z>a?"–"+(z+1):"")+'<br><span class="small">'+lab(a)+(z>a?"–"+lab(z):"")+'</span></div><div class="t">'+units[u]+'</div></div>';}
+      }else{ /* fewer days than units: several units per day */
+        let k=0;for(let i=0;i<n;i++){const take=Math.floor(U/n)+(i<U%n?1:0),items=units.slice(k,k+take);k+=take;
+          h+='<div class="day"><div class="d">Day '+(i+1)+'<br><span class="small">'+lab(i)+'</span></div><div class="t">'+items.join('<hr class="plansep">')+'</div></div>';}
+      }
+      box.innerHTML=h;
+      const nx=new Date(today);nx.setDate(nx.getDate()+1);setTimeout(render,nx-new Date()+1000);
     }
-    const box=document.getElementById("plan");box.innerHTML=h;
-    const nx=new Date(today);nx.setDate(nx.getDate()+1);setTimeout(render,nx-new Date()+1000);
+    render();
   }
-  render();
+  function init(){document.querySelectorAll(".plan[data-exam]").forEach(setup);}
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init();
 })();
+
+
+
 
 /* ---------- home ---------- */
 function renderHome(){

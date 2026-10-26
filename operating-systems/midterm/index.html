@@ -410,12 +410,6 @@ Timesharing (multitasking) is a logical extension in which the CPU switches jobs
 <div class="box en"><span class="lbl">ANSWER TEMPLATE</span>Dual-mode operation (user mode and kernel mode) allows the OS to protect itself and other system components. A mode bit is provided by hardware to distinguish whether the system is running user code or kernel code. Some instructions are privileged and only executable in kernel mode. A system call changes the mode to kernel; return from the call resets it to user.<br>
 A timer is used to prevent an infinite loop / a process hogging resources: it generates an interrupt after a specific period so the OS can regain control.<div class="zhtr"><span>中文</span>雙模式（使用者模式 user mode／核心模式 kernel mode）讓 OS 保護自己和其他元件。硬體提供模式位元（mode bit）來分辨現在跑的是使用者程式還是核心程式。部分指令是特權指令（privileged），只能在核心模式執行。系統呼叫（system call）會切到核心模式，返回時切回使用者模式。計時器（timer）用來防止無窮迴圈或某個 process 霸佔資源：時間到就發中斷，讓 OS 拿回控制權。</div></div>
 
-<h4>哪些指令是 privileged？<span class="star">★★</span></h4>
-<p>判斷原則：<b>會影響其他程式或整個系統的</b>就要 privileged；只是「讀」資訊、不會破壞別人的就不用。</p>
-<table><tr><th class="l">要 privileged（只能 kernel mode）</th><th class="l">不用 privileged</th></tr>
-<tr><td class="l">Set value of timer（設定計時器，不然程式可以讓自己永不被打斷）<br>Clear memory（清 memory）<br>Turn off interrupts（關 interrupt）<br>Modify entries in device-status table<br>Switch from user to kernel mode<br>Access I/O device（直接存取 I/O）</td><td class="l">Read the clock（讀時間）<br>Issue a trap instruction（發 trap，也就是呼叫 system call 的方法）<br>一般的加減運算、讀寫自己的變數</td></tr></table>
-<p>沒有 timer 會怎樣：一個 user program 跑進無窮迴圈、又不呼叫 system call，OS 就永遠拿不回 CPU。除以零之類的錯誤會產生 trap，不需要 timer 也能處理。</p>
-
 <h3>1.9 OS 的管理工作</h3>
 <div class="box en"><span class="lbl">ANSWER TEMPLATE — Process vs. Program</span>A process is a program in execution; it is a unit of work within the system. A program is a passive entity; a process is an active entity.<div class="zhtr"><span>中文</span>Process 是「正在執行的程式」，是系統裡的工作單位。程式（program）是被動的（存在硬碟上的檔案），process 是主動的。</div></div>
 <table style="width:100%">
@@ -574,21 +568,6 @@ A timer is used to prevent an infinite loop / a process hogging resources: it ge
 <li>resource（資源）分享三種：全部共享／共享部分／完全不共享。執行方式兩種：同時執行／parent 等 child 結束。</li>
 <li>UNIX：<span class="mono">fork()</span> 建立新 process（複製 parent）；<span class="mono">exec()</span> 在 fork 之後用新程式取代 memory 內容。</li>
 </ul>
-<h4>fork() 怎麼算？<span class="star">★★</span></h4>
-<ul>
-<li><span class="mono">fork()</span> 呼叫一次、<b>回傳兩次</b>：child 拿到 <b>0</b>，parent 拿到 <b>child 的 pid（&gt; 0）</b>，失敗回傳 −1。程式就靠這個回傳值分辨自己是誰。</li>
-<li>fork 之後 parent 和 child 各有一份<b>獨立的</b>memory 副本，改自己的變數不會影響對方。</li>
-<li><span class="mono">wait(NULL)</span>：parent 停下來，等 child 結束才繼續。</li>
-<li><span class="mono">exec()</span>：把自己的 memory 換成另一個程式，exec 後面的程式碼不會再執行（除非 exec 失敗）。</li>
-</ul>
-<div class="calc">連續 n 個 fork()：每個 fork 都讓「目前所有 process」各變兩個 → 總共 2^n 個 process（含原本的 parent）
-fork(); fork(); fork();  → 2³ = 8 個（新建立的 child 有 7 個）
-
-int x = 5;
-if (fork() == 0) { x += 5; printf("%d ", x); }   ← child：自己的 x 變 10，印 10
-else { wait(NULL); x -= 5; printf("%d ", x); }   ← parent：先等 child，自己的 x 變 0，印 0
-輸出：10 0</div>
-
 <h3>2.7 IPC（Interprocess Communication，行程間通訊）<span class="star">★★★</span></h3>
 <div class="box en"><span class="lbl">ANSWER TEMPLATE</span>Two models of IPC: <b>shared memory</b> and <b>message passing</b>.<br>
 Reasons for cooperating processes: information sharing, computation speedup, modularity, and convenience.<div class="zhtr"><span>中文</span>行程間通訊（IPC）的兩種模型：共享記憶體（shared memory）和訊息傳遞（message passing）。需要合作 process 的理由：資訊分享、加快計算、模組化、方便。</div></div>
@@ -1010,11 +989,6 @@ P2 need 7 ≤ 10 → 做完 → 12      Safe sequence = &lt;P1, P0, P2&gt;
 
 若 P2 再多拿 1 台（Allocation P2=3，Available=2）：
 P1 need 2 ≤ 2 → 4；P0 need 5 > 4、P2 need 6 > 4 → 卡住 → unsafe</div>
-
-<h4>最少要幾個 resource 才保證不會 deadlock？<span class="star">★</span></h4>
-<p>n 個 process，每個最多要 m 個同一種 resource。最糟情況是每個人都剛好拿到 m−1 個、都在等最後 1 個。只要再多 1 個，就一定有人能做完、還回 resource，接著其他人也都能做完。</p>
-<div class="calc">最少資源數 = n·(m − 1) + 1
-例：3 個 process，每個最多要 2 個 → 3·(2−1) + 1 = 4 個</div>
 
 <h4>Avoidance 用哪種方法？</h4>
 <ul>
@@ -1875,7 +1849,6 @@ ch5: [
 };
 const HARD={
 ch1:[
- {q:"Which of the following instructions does NOT need to be privileged?", o:["Set the value of the timer","Clear memory","Turn off interrupts","Read the clock"], a:3, e:"只有「讀時鐘」是無害的，使用者程式讀也沒關係。設定 timer、清記憶體、關中斷都能讓使用者程式搶走 OS 的控制權，所以必須是 privileged（特權）指令。"},
  {q:"A device controller moves a 4 KB block to main memory using DMA. How many interrupts does the CPU receive for this block?", o:["0","1","512","4096"], a:1, e:"DMA 的重點：one interrupt per block（每個 block 一次）。如果是一般 interrupt-driven I/O，才會每個 byte 中斷一次（4096 次）。"},
  {q:"If the hardware had NO timer, which problem could the OS NOT stop?", o:["A division by zero in a user program","A user program that enters an infinite loop and never calls the OS","A user program that tries to execute a privileged instruction","A user program that requests I/O"], a:1, e:"除以零、執行特權指令都會產生 trap，OS 自然拿回控制權；要 I/O 會呼叫 system call。只有無窮迴圈不會主動交還控制權，必須靠 timer interrupt（計時器中斷）。"},
  {q:"A system keeps several jobs in memory and switches jobs ONLY when the running job waits for I/O. Users complain that the response time is several seconds. Which description fits?", o:["Timesharing system","Multiprogramming without timesharing","Hard real-time system","Multiprocessor system with graceful degradation"], a:1, e:"只在等 I/O 時才切換 = multiprogramming（目標是效率）。Timesharing 會頻繁切換，讓回應時間 < 1 秒（目標是互動）。"},
@@ -1884,8 +1857,6 @@ ch1:[
 ],
 ch2:[
  {q:"Which process-state transition is NOT possible?", o:["running → waiting","waiting → ready","ready → running","waiting → running"], a:3, e:"等完 I/O 的 process 要先回到 ready queue 排隊，再由 scheduler 挑中才能 running。不能從 waiting 直接跳到 running。"},
- {q:"How many processes exist in total (including the original parent) after this code runs?  fork(); fork(); fork();", o:["3","6","7","8"], a:3, e:"每次 fork 都讓 process 數量加倍：1 → 2 → 4 → 8。題目問「總共」所以是 8；如果問「新建立幾個」才是 7。"},
- {q:"What is printed?  int x = 5; if (fork() == 0) { x += 5; printf(\"%d \", x); } else { wait(NULL); x -= 5; printf(\"%d \", x); }", o:["10 0","0 10","10 10","5 5"], a:0, e:"Child 和 parent 各有一份自己的 x（fork 會複製記憶體）。Child 印 10；parent 因為 wait() 等 child 結束才印 0。所以是「10 0」。"},
  {q:"A bounded buffer uses in/out pointers with BUFFER_SIZE = 8. At most how many items can it hold at the same time?", o:["6","7","8","9"], a:1, e:"要永遠留一格空的，才能分辨 full（(in+1)%8 == out）和 empty（in == out），所以最多 BUFFER_SIZE − 1 = 7 個。"},
  {q:"Which of the following does NOT happen during a context switch?", o:["The old process's registers are saved into its PCB","The new process's saved state is loaded from its PCB","The new process's program code is reloaded from disk","The CPU does no useful work while switching"], a:2, e:"Context switch 只存／載入狀態（PCB 裡的 registers、PC 等），程式本身已經在記憶體裡，不會重新從硬碟載入。"},
  {q:"After the shared region is set up, why is shared memory usually faster than message passing?", o:["It uses fewer CPU registers","Reads and writes do not need system calls into the kernel","It never needs synchronization","The kernel copies data in larger blocks"], a:1, e:"Shared memory 只有建立時需要 kernel；之後直接讀寫記憶體。Message passing 每次 send()/receive() 都要經過 kernel，所以比較慢。注意它仍然需要同步（synchronization）。"}
@@ -1908,7 +1879,6 @@ ch4:[
 ],
 ch5:[
  {q:"A resource-allocation graph contains a cycle, and one resource type in the cycle has 2 instances. What can you conclude?", o:["There is definitely a deadlock","There is definitely no deadlock","There may or may not be a deadlock","The system is in a safe state"], a:2, e:"有環 + 多個 instance → 只是「可能」死結。只有在每種資源都只有一個 instance 時，有環才一定死結。"},
- {q:"Three processes each need at most 2 units of the same resource. What is the minimum number of units that guarantees no deadlock?", o:["3","4","5","6"], a:1, e:"最壞情況每個人都拿到 (2 − 1) = 1 個在等。只要再多 1 個，就一定有人能做完：3 × 1 + 1 = 4。"},
  {q:"Total 12 tape drives. P0: Max 10, Allocation 5; P1: Max 4, Allocation 2; P2: Max 9, Allocation 2. If P2 requests 1 more drive, should it be granted?", o:["Yes, the state stays safe","No, the resulting state is unsafe","Yes, because 1 ≤ Available","No, because P2's request exceeds its Max"], a:1, e:"假裝給：Available = 3 − 1 = 2。P1 還要 2 → 做完 → Available 4。P0 還要 5、P2 還要 6，都 > 4，找不到安全順序 → unsafe，要等。只檢查 request ≤ Available 是陷阱。"},
  {q:"Requiring every process to request and be allocated all its resources before it starts executing denies which condition?", o:["Mutual exclusion","Hold and wait","No preemption","Circular wait"], a:1, e:"一開始就拿齊，執行中就不會「拿著一些、再等另一些」→ 破壞 hold and wait。破壞 circular wait 的方法是資源排序（total ordering）。"},
  {q:"Which statement is TRUE?", o:["Every unsafe state is a deadlock","Every deadlock state is an unsafe state","A safe state can still deadlock","Deadlock avoidance needs no advance information"], a:1, e:"Deadlock ⊂ unsafe：死結一定不安全，但不安全不一定死結。Safe state 一定不會死結；避免法需要事先知道每個 process 的 Max。"},

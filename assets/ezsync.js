@@ -127,7 +127,9 @@
     out.quiz=out.quiz||{};
     const rr=out.quizReset||{},lr=local.quizReset||{},lq=local.quiz||{};
     Object.keys(lq).forEach(ch=>{if((rr[ch]||0)>(lr[ch]||0))return;out.quiz[ch]=Object.assign({},lq[ch],out.quiz[ch]||{});});
-    Object.keys(lr).forEach(ch=>{if((lr[ch]||0)>(rr[ch]||0)){out.quizReset=out.quizReset||{};out.quizReset[ch]=lr[ch];}});
+    Object.keys(lr).forEach(ch=>{if((lr[ch]||0)>(rr[ch]||0)){out.quizReset=out.quizReset||{};out.quizReset[ch]=lr[ch];
+      /* local reset is newer: remote answers for this chapter are stale */
+      if(lq[ch])out.quiz[ch]=Object.assign({},lq[ch]);else delete out.quiz[ch];}});
     if(local.ex2){out.ex2=out.ex2||{};
       Object.keys(local.ex2).forEach(id=>{
         const L=local.ex2[id]||{},Rm=out.ex2[id]||(out.ex2[id]={ans:{},grade:{},self:{}});

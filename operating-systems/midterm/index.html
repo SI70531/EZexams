@@ -389,6 +389,16 @@ Goals: (1) execute user programs and make solving user problems easier; (2) make
 <li><b>Clustered systems（叢集系統）</b>：多台電腦一起工作，通常透過 SAN 共用儲存，提供 <b>high availability</b>。Asymmetric clustering：一台 hot-standby 待命；Symmetric clustering：多台都跑應用並互相監控。</li>
 </ul>
 
+<h4>Increased reliability 的兩種程度：graceful degradation vs. fault tolerance <span class="star">★★</span></h4>
+<div class="box zh"><span class="lbl">白話</span>多處理器系統壞掉一顆 CPU 時，還能不能繼續工作？有兩種程度：<br>
+<b>Graceful degradation（優雅降級）</b>：壞掉的部分不做了，系統<b>繼續跑，但變慢</b>。速度和剩下能用的硬體成正比。例：10 顆 CPU 壞 1 顆，剩 9 顆繼續做，大約慢 10%。<br>
+<b>Fault tolerance（容錯）</b>：比降級更強，壞掉一個元件<b>完全不影響運作</b>，使用者感覺不到。做法是多準備一份硬體（redundancy）同時做同樣的事，並能偵測、診斷、修正錯誤。例：兩顆 CPU 同步執行同一份工作，一顆壞了另一顆照常輸出。</div>
+<table><tr><th></th><th class="l">壞掉一個元件後</th><th class="l">關鍵字</th></tr>
+<tr><td>Graceful degradation</td><td class="l">繼續服務，效能下降</td><td class="l">continue providing service proportional to the surviving hardware</td></tr>
+<tr><td>Fault tolerance</td><td class="l">繼續服務，效能不變</td><td class="l">continue operation despite failure；需要 redundancy／duplication</td></tr></table>
+<div class="box en"><span class="lbl">ANSWER TEMPLATE — Graceful degradation / Fault tolerance</span>Graceful degradation is the ability to continue providing service proportional to the level of surviving hardware. Fault tolerance goes beyond graceful degradation: a fault-tolerant system can suffer a failure of any single component and still continue operation, which requires a mechanism to allow the failure to be detected, diagnosed, and, if possible, corrected.<div class="zhtr"><span>中文</span>優雅降級（graceful degradation）：依照剩下還能用的硬體多寡，繼續提供相應程度的服務。容錯（fault tolerance）比降級更進一步：任何單一元件故障，系統都能繼續運作，需要能偵測、診斷、並盡可能修正錯誤的機制。</div></div>
+<div class="box warn"><span class="lbl">分辨口訣</span>題目說「<b>變慢但還能跑</b>」→ graceful degradation。說「<b>完全不受影響</b>、有備援」→ fault tolerance。</div>
+
 <h3>1.7 Multiprogramming（多元程式） vs. Timesharing（分時） <span class="star">★★</span></h3>
 <div class="box zh"><span class="lbl">白話</span><b>Multiprogramming</b>：memory 放好幾個工作，一個去等 I/O，CPU 馬上換另一個做 → CPU 永遠有事做（為了<b>效率</b>）。<br><b>Timesharing (multitasking)</b>：CPU 切換得超快，每個使用者都覺得電腦只為他服務 → 為了<b>互動</b>，response time（回應時間） &lt; 1 秒。</div>
 <div class="box en"><span class="lbl">ANSWER TEMPLATE</span>Multiprogramming organizes jobs (code and data) so the CPU always has one to execute; when a job has to wait (for I/O, for example), the OS switches to another job.<br>
@@ -399,6 +409,12 @@ Timesharing (multitasking) is a logical extension in which the CPU switches jobs
 <div class="box zh"><span class="lbl">白話</span>CPU 有兩種模式：<b>user mode（使用者模式）</b>（一般程式）和 <b>kernel mode（核心模式）</b>（OS 自己）。硬體用一個 <b>mode bit（模式位元）</b> 區分。危險的指令（privileged instructions）只有 kernel mode 能執行。程式要請 OS 幫忙就呼叫 <b>system call（系統呼叫）</b> → 切到 kernel mode → 做完切回 user mode。<br><b>Timer</b>：定時鬧鐘，防止某個程式無窮迴圈霸佔 CPU，時間到就產生 interrupt 讓 OS 拿回控制權。</div>
 <div class="box en"><span class="lbl">ANSWER TEMPLATE</span>Dual-mode operation (user mode and kernel mode) allows the OS to protect itself and other system components. A mode bit is provided by hardware to distinguish whether the system is running user code or kernel code. Some instructions are privileged and only executable in kernel mode. A system call changes the mode to kernel; return from the call resets it to user.<br>
 A timer is used to prevent an infinite loop / a process hogging resources: it generates an interrupt after a specific period so the OS can regain control.<div class="zhtr"><span>中文</span>雙模式（使用者模式 user mode／核心模式 kernel mode）讓 OS 保護自己和其他元件。硬體提供模式位元（mode bit）來分辨現在跑的是使用者程式還是核心程式。部分指令是特權指令（privileged），只能在核心模式執行。系統呼叫（system call）會切到核心模式，返回時切回使用者模式。計時器（timer）用來防止無窮迴圈或某個 process 霸佔資源：時間到就發中斷，讓 OS 拿回控制權。</div></div>
+
+<h4>哪些指令是 privileged？<span class="star">★★</span></h4>
+<p>判斷原則：<b>會影響其他程式或整個系統的</b>就要 privileged；只是「讀」資訊、不會破壞別人的就不用。</p>
+<table><tr><th class="l">要 privileged（只能 kernel mode）</th><th class="l">不用 privileged</th></tr>
+<tr><td class="l">Set value of timer（設定計時器，不然程式可以讓自己永不被打斷）<br>Clear memory（清 memory）<br>Turn off interrupts（關 interrupt）<br>Modify entries in device-status table<br>Switch from user to kernel mode<br>Access I/O device（直接存取 I/O）</td><td class="l">Read the clock（讀時間）<br>Issue a trap instruction（發 trap，也就是呼叫 system call 的方法）<br>一般的加減運算、讀寫自己的變數</td></tr></table>
+<p>沒有 timer 會怎樣：一個 user program 跑進無窮迴圈、又不呼叫 system call，OS 就永遠拿不回 CPU。除以零之類的錯誤會產生 trap，不需要 timer 也能處理。</p>
 
 <h3>1.9 OS 的管理工作</h3>
 <div class="box en"><span class="lbl">ANSWER TEMPLATE — Process vs. Program</span>A process is a program in execution; it is a unit of work within the system. A program is a passive entity; a process is an active entity.<div class="zhtr"><span>中文</span>Process 是「正在執行的程式」，是系統裡的工作單位。程式（program）是被動的（存在硬碟上的檔案），process 是主動的。</div></div>
@@ -558,6 +574,20 @@ A timer is used to prevent an infinite loop / a process hogging resources: it ge
 <li>resource（資源）分享三種：全部共享／共享部分／完全不共享。執行方式兩種：同時執行／parent 等 child 結束。</li>
 <li>UNIX：<span class="mono">fork()</span> 建立新 process（複製 parent）；<span class="mono">exec()</span> 在 fork 之後用新程式取代 memory 內容。</li>
 </ul>
+<h4>fork() 怎麼算？<span class="star">★★</span></h4>
+<ul>
+<li><span class="mono">fork()</span> 呼叫一次、<b>回傳兩次</b>：child 拿到 <b>0</b>，parent 拿到 <b>child 的 pid（&gt; 0）</b>，失敗回傳 −1。程式就靠這個回傳值分辨自己是誰。</li>
+<li>fork 之後 parent 和 child 各有一份<b>獨立的</b>memory 副本，改自己的變數不會影響對方。</li>
+<li><span class="mono">wait(NULL)</span>：parent 停下來，等 child 結束才繼續。</li>
+<li><span class="mono">exec()</span>：把自己的 memory 換成另一個程式，exec 後面的程式碼不會再執行（除非 exec 失敗）。</li>
+</ul>
+<div class="calc">連續 n 個 fork()：每個 fork 都讓「目前所有 process」各變兩個 → 總共 2^n 個 process（含原本的 parent）
+fork(); fork(); fork();  → 2³ = 8 個（新建立的 child 有 7 個）
+
+int x = 5;
+if (fork() == 0) { x += 5; printf("%d ", x); }   ← child：自己的 x 變 10，印 10
+else { wait(NULL); x -= 5; printf("%d ", x); }   ← parent：先等 child，自己的 x 變 0，印 0
+輸出：10 0</div>
 
 <h3>2.7 IPC（Interprocess Communication，行程間通訊）<span class="star">★★★</span></h3>
 <div class="box en"><span class="lbl">ANSWER TEMPLATE</span>Two models of IPC: <b>shared memory</b> and <b>message passing</b>.<br>
@@ -980,6 +1010,11 @@ P2 need 7 ≤ 10 → 做完 → 12      Safe sequence = &lt;P1, P0, P2&gt;
 
 若 P2 再多拿 1 台（Allocation P2=3，Available=2）：
 P1 need 2 ≤ 2 → 4；P0 need 5 > 4、P2 need 6 > 4 → 卡住 → unsafe</div>
+
+<h4>最少要幾個 resource 才保證不會 deadlock？<span class="star">★</span></h4>
+<p>n 個 process，每個最多要 m 個同一種 resource。最糟情況是每個人都剛好拿到 m−1 個、都在等最後 1 個。只要再多 1 個，就一定有人能做完、還回 resource，接著其他人也都能做完。</p>
+<div class="calc">最少資源數 = n·(m − 1) + 1
+例：3 個 process，每個最多要 2 個 → 3·(2−1) + 1 = 4 個</div>
 
 <h4>Avoidance 用哪種方法？</h4>
 <ul>

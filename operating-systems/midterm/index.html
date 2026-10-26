@@ -782,24 +782,107 @@ t(n)    = 第 n 次「實際」跑了多久（已經發生的事實）
 </div>
 <div class="box en"><span class="lbl">ANSWER</span>The main difference is process moving between queues: in multilevel queue scheduling, processes are permanently assigned to a queue; in multilevel feedback queue scheduling, a process can move between the queues.<div class="zhtr"><span>中文</span>主要差別在 process 能不能在佇列之間移動：多層佇列（MLQ）的 process 永遠固定在某個佇列；多層回饋佇列（MLFQ）的 process 可以在佇列間移動。</div></div>
 
-<h3>3.7 Real-Time Scheduling <span class="star">★</span></h3>
+<h3>3.7 Real-Time Scheduling（即時排班）<span class="star">★★</span></h3>
+<p>Real-time 系統的工作有<b>時間限制</b>，晚了就沒用（例如煞車控制）。這會帶來明顯的挑戰（obvious challenges）。</p>
+
+<h4>Soft vs. Hard real-time</h4>
+<table><tr><th></th><th class="l">意思</th><th class="l">白話</th></tr>
+<tr><td>Soft real-time systems</td><td class="l">No guarantee as to when a critical real-time process will be scheduled</td><td class="l">重要的 process 會優先，但<b>不保證</b>什麼時候被排到</td></tr>
+<tr><td>Hard real-time systems</td><td class="l">Task must be serviced by its deadline</td><td class="l">一定要在 deadline 前做完，超過就算失敗</td></tr></table>
+
+<h4>影響效能的兩種 latency（延遲）</h4>
+<ol>
+<li><b>Interrupt latency</b>：從 interrupt 到達，到開始執行處理它的程式（ISR，interrupt service routine）的時間。</li>
+<li><b>Dispatch latency</b>：scheduler 把目前的 process 從 CPU 拿下來、換另一個上去的時間。</li>
+</ol>
+<div class="calc">Interrupt latency 的過程（投影片右圖）：
+task T running → interrupt 到達 → 判斷是哪種 interrupt（determine interrupt type）
+→ context switch → 開始跑 ISR
+|←———————— 這一整段 = interrupt latency ————————→|</div>
+
+<h4>Priority-based Scheduling</h4>
 <ul>
-<li><b>Soft real-time</b>：不保證重要的 process 什麼時候會被排到。<b>Hard real-time</b>：工作一定要在 deadline 前完成。</li>
-<li>兩種 latency：<b>Interrupt latency</b>（中斷到達 → 開始處理）、<b>Dispatch latency</b>（把目前 process 換下 → 換上另一個）。</li>
-<li>Periodic task：processing time t、deadline d、period p，0 ≤ t ≤ d ≤ p，rate＝1/p。</li>
+<li>Real-time 排班的 scheduler 必須支援 <b>preemptive、priority-based scheduling</b>（可搶奪、依優先權）。但這樣只能保證 <b>soft real-time</b>。</li>
+<li>要做到 hard real-time，還必須有能力<b>保證趕上 deadline</b>。</li>
+<li>Real-time process 有新特性：<b>periodic</b>（週期性），每隔固定時間就要用一次 CPU。</li>
 </ul>
-<table style="width:100%">
-<tr><th>演算法</th><th class="l">規則</th></tr>
-<tr><td>Rate Monotonic (RMS)</td><td class="l">優先權 = 1/period：<b>period 越短越優先</b>（固定優先權）</td></tr>
-<tr><td>Earliest Deadline First (EDF)</td><td class="l"><b>deadline 越早越優先</b>（動態，每次重新比）</td></tr>
-<tr><td>Proportional Share</td><td class="l">總共 T 份，分給 app N 份 → 得到 N/T 的 CPU 時間；超過總份數就拒絕</td></tr>
-</table>
-<div class="calc">CPU utilization = Σ (t_i / p_i)
-例1：p1=50,t1=20；p2=100,t2=35 → 20/50 + 35/100 = 0.40 + 0.35 = 75% → RMS 可行（P1 優先）
-例2：p1=50,t1=25；p2=80,t2=35  → 25/50 + 35/80  = 0.50 + 0.44 = 94% → RMS 不行！
-     RMS：P1 0–25，P2 25–50（做 25），P1 50–75，P2 75–85 才做完 > deadline 80 → miss
-     EDF：P1 0–25，P2 25–60（deadline 80 比 P1 第二次的 100 早）→ 準時；P1 60–85 ≤ 100 → 準時</div>
-<p class="small">補充（課本）：RMS 保證可排的上限是 N(2<sup>1/N</sup> − 1)，兩個 process 時約 83%。94% &gt; 83%，所以不保證。Proportional share 例：T=100，A 50、B 15、C 20 已用 85 份，D 要 30 份 → 拒絕。</p>
+<div class="calc">每個 periodic task 有三個數字：
+t = processing time（每次要跑多久）
+d = deadline（每次最晚什麼時候要做完，可省略）
+p = period（多久來一次）
+關係：0 ≤ t ≤ d ≤ p
+Rate（頻率）= 1/p
+
+|←———————— p ————————→|←———————— p ————————→|
+|←—— d ——→|           |←—— d ——→|
+|▇▇ t ▇▇|             |▇▇ t ▇▇|
+  period 1               period 2</div>
+<div class="box tip"><span class="lbl">算 CPU utilization（使用率）</span>每個 process 的使用率 = t / p。全部加起來 ≤ 100% 才有可能排得完，但<b>不一定</b>真的排得完（看例 2）。</div>
+
+<h4>Rate Monotonic Scheduling（RMS，速率單調排班）</h4>
+<ul>
+<li>優先權依 <b>period 的倒數</b>決定（priority = 1/p）。</li>
+<li><b>Period 越短 → 優先權越高</b>；period 越長 → 優先權越低。</li>
+<li>優先權是<b>固定的</b>（static），一開始就決定好，之後不變。</li>
+</ul>
+
+<h4>例 1：p1 = 50, t1 = 20；p2 = 100, t2 = 35</h4>
+<div class="calc">CPU utilization：P1 = 20/50 = 0.4，P2 = 35/100 = 0.35
+Total = 0.4 + 0.35 = 0.75 = 75% &lt; 100%</div>
+<p><b>先看錯的做法</b>：如果讓 P2 優先（period 長的反而優先），P2 先跑 0–35，P1 接著跑 35–55，但 P1 的 deadline 是 50 → <b>來不及，not work！</b></p>
+<div class="gantt"><div class="gbar"><span style="flex:35;background:#d9f0e2">P2</span><span style="flex:20;background:#dbe8fb">P1</span></div><div class="gt"><b style="left:0%">0</b><b style="left:63.636%">35</b><b style="left:100.000%">55</b></div></div>
+<p><b>用 RMS</b>：P1 的 period 比較短 → P1 優先。</p>
+<div class="gantt"><div class="gbar"><span style="flex:20;background:#dbe8fb">P1</span><span style="flex:30;background:#d9f0e2">P2</span><span style="flex:20;background:#dbe8fb">P1</span><span style="flex:5;background:#d9f0e2">P2</span><span style="flex:25;background:#eceff4">idle</span><span style="flex:20;background:#dbe8fb">P1</span><span style="flex:30;background:#d9f0e2">P2</span><span style="flex:20;background:#dbe8fb">P1</span><span style="flex:5;background:#d9f0e2">P2</span><span style="flex:25;background:#eceff4">idle</span></div><div class="gt"><b style="left:0%">0</b><b style="left:10.000%">20</b><b style="left:25.000%">50</b><b style="left:35.000%">70</b><b style="left:37.500%">75</b><b style="left:50.000%">100</b><b style="left:60.000%">120</b><b style="left:75.000%">150</b><b style="left:85.000%">170</b><b style="left:87.500%">175</b><b style="left:100.000%">200</b></div></div>
+<div class="calc">t=0    P1、P2 同時到 → P1 優先，跑 0–20 做完
+t=20   P2 跑 20–50（做了 30，還剩 5）
+t=50   P1 第二次到（period 50）→ 搶走 CPU，跑 50–70
+t=70   P2 繼續 70–75 做完（deadline 100 ✓）
+t=75   沒事做（idle），等到 100 兩個又一起來，重複同樣的過程
+→ 所有 deadline 都趕上，RMS 可行</div>
+
+<h4>例 2：Missed deadlines with RMS（p1 = 50, t1 = 25；p2 = 80, t2 = 35）</h4>
+<div class="calc">CPU utilization：P1 = 25/50 = 0.5，P2 = 35/80 ≈ 0.44
+Total = 0.5 + 0.44 = 0.94 = 94% &lt; 100%  → 看起來可以？ANS：NO!!!</div>
+<div class="gantt"><div class="gbar"><span style="flex:25;background:#dbe8fb">P1</span><span style="flex:25;background:#d9f0e2">P2</span><span style="flex:25;background:#dbe8fb">P1</span><span style="flex:10;background:#d9f0e2">P2</span></div><div class="gt"><b style="left:0%">0</b><b style="left:29.412%">25</b><b style="left:58.824%">50</b><b style="left:88.235%">75</b><b style="left:100.000%">85</b></div></div>
+<div class="calc">t=0    P1 優先（period 50 &lt; 80），跑 0–25
+t=25   P2 跑 25–50（做了 25，還剩 10）
+t=50   P1 第二次到 → 搶走 CPU，跑 50–75
+t=75   P2 繼續 75–85 才做完，但 P2 的 deadline 是 80 → <b>miss！</b></div>
+<ul>
+<li>結論：RMS <b>may not maximize the CPU utilization</b>（不一定能把 CPU 用滿），使用率不到 100% 也可能排不完。</li>
+<li>RMS 有一些限制（some restrictions）。</li>
+</ul>
+
+<h4>Earliest Deadline First Scheduling（EDF，最早截止期限優先）</h4>
+<ul>
+<li>優先權依 <b>deadline</b> 決定：<b>deadline 越早，優先權越高</b>；越晚，優先權越低。</li>
+<li>優先權是<b>動態的</b>（dynamic）：每次有 process 到達，就重新比一次誰的 deadline 比較近。</li>
+</ul>
+<h4>例 2 改用 EDF（p1 = 50, t1 = 25；p2 = 80, t2 = 35）</h4>
+<div class="gantt"><div class="gbar"><span style="flex:25;background:#dbe8fb">P1</span><span style="flex:35;background:#d9f0e2">P2</span><span style="flex:25;background:#dbe8fb">P1</span><span style="flex:15;background:#d9f0e2">P2</span><span style="flex:25;background:#dbe8fb">P1</span><span style="flex:20;background:#d9f0e2">P2</span><span style="flex:15;background:#eceff4">idle</span></div><div class="gt"><b style="left:0%">0</b><b style="left:15.625%">25</b><b style="left:37.500%">60</b><b style="left:53.125%">85</b><b style="left:62.500%">100</b><b style="left:78.125%">125</b><b style="left:90.625%">145</b><b style="left:100.000%">160</b></div></div>
+<div class="calc">t=0    P1 deadline 50、P2 deadline 80 → P1 先，跑 0–25
+t=25   只剩 P2 → 跑 25–50
+t=50   P1 第二次到，deadline 100；P2 deadline 80 比較早
+       → <b>RMS 會選 P1，但 EDF 選 P2</b>，P2 繼續跑到 60 做完 ✓（≤ 80）
+t=60   P1 跑 60–85 ✓（≤ 100）
+t=80   P2 第二次到，deadline 160
+t=85   P2 跑 85–100（做了 15，剩 20）
+t=100  P1 第三次到，deadline 150 &lt; 160 → P1 搶走，跑 100–125 ✓
+t=125  P2 跑 125–145 做完 ✓（≤ 160）
+→ 全部 deadline 都趕上。同樣的題目 RMS 不行，EDF 可以。</div>
+<div class="box warn"><span class="lbl">RMS vs. EDF 一句話</span>RMS 看 <b>period</b>（固定，短的優先）；EDF 看 <b>deadline</b>（動態，近的優先）。投影片的關鍵：t=50 時 RMS 選 P1，EDF 選 P2。</div>
+
+<h4>Proportional Share Scheduling（比例分配排班）</h4>
+<ul>
+<li>系統總共有 <b>T 份（shares）</b>，分給所有 process。</li>
+<li>一個 application 拿到 <b>N 份</b>（N &lt; T）。</li>
+<li>保證它能得到 <b>N / T</b> 的總 CPU 時間。</li>
+</ul>
+<div class="calc">例：T = 100 份，三個 process A、B、C
+A 50 份 → 50% CPU；B 15 份 → 15%；C 20 份 → 20%
+已經分出去 50 + 15 + 20 = 85 份，只剩 15 份
+新的 process D 要 30 份 &gt; 15 → OS 會<b>拒絕</b>（reject）</div>
+<div class="box en"><span class="lbl">ANSWER TEMPLATE — RMS vs. EDF</span>Rate-monotonic scheduling assigns each periodic task a static priority based on the inverse of its period: shorter periods get higher priority. Earliest-deadline-first scheduling assigns priorities dynamically according to deadlines: the earlier the deadline, the higher the priority. Rate-monotonic scheduling may not maximize CPU utilization; for example, with p1 = 50, t1 = 25, p2 = 80, t2 = 35 the utilization is 94%, but P2 misses its deadline at 80 under RMS, while EDF meets all deadlines.<div class="zhtr"><span>中文</span>速率單調排班（RMS）依照 period 的倒數給每個週期性工作固定的優先權：period 越短越優先。最早截止期限優先（EDF）依照 deadline 動態決定優先權：deadline 越早越優先。RMS 不一定能把 CPU 用滿；例如 p1 = 50、t1 = 25、p2 = 80、t2 = 35，使用率 94%，但用 RMS 時 P2 會錯過 80 的 deadline，用 EDF 則全部趕得上。</div></div>
 <div class="quiz" data-quiz="ch3"></div></section>
 <section class="view" id="ch4" hidden><div class="vhead"><div class="pcb" data-pcb="ch4" role="img"></div><div class="eyebrow">Chapter 4</div><h1>Ch4 Multithreaded Programming</h1><p>Thread（執行緒） 好處、parallelism（平行）、Amdahl、四種 thread model。讀完後做最下面的選擇題。</p></div>
 

@@ -451,6 +451,22 @@ Search array for specific item and return index location.
 <tr><td>Quadratic（平方）</td><td>內外都跑 n 次</td><td>n²</td><td>O(n²)</td></tr>
 </table></div>
 <p>Logarithmic loop 怎麼數：n = 1000 時，i = 1, 2, 4, …, 512 共 10 次，約 log₂1000 ≈ 10。</p>
+<div class="box tip"><span class="lbl">數 loop 次數的三個步驟</span><ol>
+<li><b>看控制變數怎麼變</b>：<code>+1</code>、<code>+2</code>（加減）→ linear；<code>*2</code>、<code>/2</code>（乘除）→ logarithmic。</li>
+<li><b>乘除的 loop 列出來數</b>：<code>i = i * 2</code> 時 i 是 1, 2, 4, 8, …，找最大的 2ᵏ 還滿足條件，次數 = k + 1。例：i &lt; 1000 → 2⁹ = 512 是最後一個 → 10 次。<code>i = i / 2</code> 從 1000 往下：1000, 500, 250, 125, 62, 31, 15, 7, 3, 1 → 也是 10 次。</li>
+<li><b>巢狀 loop</b>：內層次數<b>固定</b>（不看外層變數）就直接相乘；內層上限是外層變數（如 <code>j &lt;= i</code>）就是 dependent，要把每一圈加起來。</li>
+</ol></div>
+<pre><span class="c">Linear logarithmic 的樣子：外層 n 次 × 內層 log₂n 次</span>
+1 i = 1
+2 loop (i &lt;= n)
+  1 j = 1
+  2 loop (j &lt;= n)
+    1 application code
+    2 j = j * 2
+  3 end loop
+  4 i = i + 1
+3 end loop                          <span class="c">f(n) = n log₂n</span></pre>
+<div class="box en"><span class="lbl">ANSWER TEMPLATE</span>The outer loop is a <i>linear</i> loop and runs <b>n</b> times. The inner loop is a <i>logarithmic</i> loop and runs <b>log₂n</b> times. The total is f(n) = n log₂n, so the efficiency is <b>O(n log n)</b>.<div class="zhtr"><span>中文</span>外層是線性迴圈，跑 n 次；內層是對數迴圈，跑 log₂n 次。總次數 f(n) = n log₂n，所以效率是 O(n log n)。數字換成題目的就能直接用。</div></div>
 
 <h4>Big-O Notation（大 O 表示法）推導兩步驟</h4>
 <ol>
@@ -480,6 +496,14 @@ f(n) = aⱼnᵏ + aⱼ₋₁nᵏ⁻¹ + … + a₁n + a₀  ⇒ O(nᵏ)</pre>
 <div class="box plain"><b>Add matrices（矩陣相加）</b>：兩層迴圈，每個 matrix1[r][c] + matrix2[r][c] → <b>O(n²)</b></div>
 <div class="box plain"><b>Multiply matrices（矩陣相乘）</b>：第一個矩陣的 row 乘第二個的 column，三層迴圈 → <b>O(n³)</b></div>
 </div>
+<pre><span class="c">為什麼相乘是三層：每個答案格子 [r][c] 都要把一整列乘一整行加起來</span>
+1 loop (r &lt; size)                       <span class="c">n 次</span>
+  1 loop (c &lt; size)                     <span class="c">n 次</span>
+    1 matrix3[r][c] = 0
+    2 loop (m &lt; size)                   <span class="c">n 次</span>
+      1 matrix3[r][c] = matrix3[r][c] + matrix1[r][m] * matrix2[m][c]
+                                        <span class="c">n × n × n = n³</span></pre>
+<p>相加只要把同位置的兩格加起來，<code>matrix3[r][c] = matrix1[r][c] + matrix2[r][c]</code>，沒有第三層，所以是 n × n = n²。</p>
 
 
 <div class="wpr"><h2>Ch1 手寫練習</h2><p class="small">先在紙上寫，再展開參考答案對照。考試的 Part III 就是這種題型。</p>
@@ -524,7 +548,6 @@ f(n) = aⱼnᵏ + aⱼ₋₁nᵏ⁻¹ + … + a₁n + a₀  ⇒ O(nᵏ)</pre>
   3 end loop
   4 i = i * 2
 3 end loop</pre><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>The inner loop runs i times, and i = 1, 2, 4, …, n. Total = 1 + 2 + 4 + … + n ≈ 2n − 1, so the efficiency is O(n). It is not O(n log n) because the inner loop does not run n times on every pass; it runs only i times.<div class="zhtr"><span>中文</span>內層跑 i 次，而 i 依序是 1, 2, 4, …, n。總共 1 + 2 + 4 + … + n ≈ 2n − 1，所以是 O(n)。不是 O(n log n)，因為內層不是每次都跑 n 次，只跑 i 次。</div></div></div></details></div>
-<div class="wq"><p class="q"><span class="pts">W7</span><span class="hard">鑑別題</span>Algorithm A needs f(n) = 100 n log₂n steps and algorithm B needs f(n) = n²/2 steps. Which is faster when n = 1,000? When n = 10,000? What does this tell you about Big-O?</p><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>n = 1,000: A ≈ 100 × 1000 × 10 = 1,000,000; B = 500,000 → B is faster.<br>n = 10,000: A ≈ 100 × 10,000 × 13.3 ≈ 13,300,000; B = 50,000,000 → A is faster.<br>Big-O describes growth for large n: O(n log n) eventually beats O(n²) no matter how large its coefficient is, but for small n the coefficient can matter.<div class="zhtr"><span>中文</span>n = 1,000 時 B 比較快；n = 10,000 時 A 比較快。Big-O 描述的是 n 很大時的成長速度：不管係數多大，O(n log n) 最後一定贏 O(n²)；n 小的時候係數才有影響。</div></div></div></details></div>
 </div>
 <div class="quiz" data-quiz="ch1"></div></section>
 
@@ -560,6 +583,22 @@ end seqSearch</pre>
 <tr><td><b>Probability search（機率搜尋）</b></td><td>最常被找的放前面；每次找到就<mark>和前一個元素交換</mark></td><td>適合 few elements are the targets for most of the searches。搜尋過程會重新排列元素</td></tr>
 <tr><td><b>Ordered list search（有序串列搜尋）</b></td><td>不用找到底，當 target ≤ current element 就停</td><td>小的有序 list 用這個可能比 binary search 還快</td></tr>
 </table></div>
+<pre><span class="c">Sentinel search 的核心（和 seqSearch 比：迴圈條件少了 looker &lt; last）</span>
+1 list[last + 1] = target           <span class="c">放哨兵：保證一定找得到</span>
+2 looker = 0
+3 loop (target not equal list[looker])
+  1 looker = looker + 1
+4 end loop
+5 if (looker &lt;= last)               <span class="c">停在真正的資料裡 → 找到</span>
+  1 found = true
+6 else                              <span class="c">停在哨兵 last + 1 → 原本的 list 裡沒有</span>
+  1 found = false
+7 end if
+8 locn = looker</pre>
+<div class="two">
+<div class="box plain"><b>Probability search 例子</b><br>[A, B, C, D, E] 找 D：找到後 D 和前一個 C 交換 → [A, B, <b>D</b>, C, E]。再找一次 D → 和 B 交換 → [A, <b>D</b>, B, C, E]。常被找的會一格一格往前移，下次比較快找到。</div>
+<div class="box plain"><b>Ordered list search 例子</b><br>[3, 8, 12, 20, 31] 找 10：比 3（10 &gt; 3）、比 8（10 &gt; 8）、比 12（10 ≤ 12）→ 停。12 不等於 10 → 找不到。只比了 3 次，不用比到 31。</div>
+</div>
 
 <h4>Binary search（二元搜尋） <span class="star">★★★</span></h4>
 <ul>
@@ -654,6 +693,15 @@ key 224562，list size 19：<br>
 <tr><td>Pseudorandom（double hashing）</td><td>用碰撞地址當 x 算 y = ax + c</td><td>限制：<mark>所有 key 走同一條 collision path</mark></td></tr>
 <tr><td>Key offset（double hashing）</td><td>offset = key / listSize（取商）<br>新地址 = (offset + 舊地址) MOD listSize</td><td>不同 key 走<mark>不同的 collision path</mark> → 減少 secondary clustering</td></tr>
 </table></div>
+<div class="box tip"><span class="lbl">四種 open addressing 的公式（考試直接套）</span>
+<div class="tbl"><table><tr><th>方法</th><th>第 i 次 probe 的地址</th></tr>
+<tr><td>Linear probe</td><td>(前一個地址 + 1) MOD listSize：超過最後一格就<b>繞回 0</b></td></tr>
+<tr><td>Quadratic probe</td><td>(前一個地址 + i²) MOD listSize：依序 +1、+4、+9、+16…</td></tr>
+<tr><td>Pseudorandom</td><td>(a × 前一個地址 + c) MOD listSize</td></tr>
+<tr><td>Key offset</td><td>(offset + 前一個地址) MOD listSize，offset = key ÷ listSize 取商</td></tr></table></div>
+例：list size 17，home 5，quadratic 連撞三次：5 → 6 (+1) → 10 (+4) → 19 MOD 17 = <b>2</b> (+9)。忘記 MOD 就會寫成 19。</div>
+<div class="box warn"><span class="lbl">碰撞次數怎麼算</span>每 probe 到一個<b>已經有人</b>的格子就算 1 次 collision。第一次算出 home address 就是空的 → 0 次。例：home 8 有人、9 有人、10 有人、11 空 → 這個 key 碰撞 <b>3 次</b>，最後放 11。題目問「總共幾次」就把每個 key 的次數加起來。</div>
+<div class="box warn"><span class="lbl">先摺疊再算 key offset</span>題目寫「fold boundary … then modulo division of the folded sum」時，後面的 key offset 也用<b>摺疊後的數字</b>去除。例：234554 摺疊後是 122，list size 19：home = 122 MOD 19 = 8，offset = 122 ÷ 19 = 6，probe 1 = (6 + 8) MOD 19 = 14。用原本的 6 位數 key 去除會被扣分。</div>
 <div class="box tip"><span class="lbl">Key offset 每年必考表格（list size = 307）</span>
 <div class="tbl"><table><tr><th>Key</th><th>Home address</th><th>Key offset</th><th>Probe 1</th><th>Probe 2</th></tr>
 <tr><td>1536</td><td>1536 MOD 307 = 1</td><td>1536 / 307 = 5</td><td>(5+1) MOD 307 = 6</td><td>(5+6) MOD 307 = 11</td></tr>
@@ -665,10 +713,13 @@ key 224562，list size 19：<br>
 <ul>
 <li>Open addressing 的缺點：每次碰撞處理都會提高之後碰撞的機率。</li>
 <li>用兩塊空間：<b>prime area</b> 和 <b>overflow area</b>，碰撞的資料串在 home address 後面。</li>
-<li>串的順序：最常用 <b>LIFO</b>（新的放 overflow list 最前面），或 key sequence。</li>
+<li>串的順序：最常用 <b>LIFO</b>（Last In, First Out，後進先出：新的放 overflow list 最前面），或 key sequence（依 key 排序）。</li>
+<li>這個方法也叫 <b>chaining</b>（串接）。它<b>不屬於 open addressing</b>，因為碰撞的資料放到 prime area 外面去了。考古題選項「linear probe, quadratic probe, double hashing, and chaining」就是錯在 chaining。</li>
 </ul>
+<div class="box plain"><b>例子</b>：list size 11，27 和 16 的 home address 都是 5。27 先放在 prime area 的 5；16 來了撞到，就放進 overflow area，5 號格子多一個 link 指向它：<code>[5] 27 → 16 → null</code>。之後再有 home 5 的 key，用 LIFO 就插在 27 後面的第一個位置。</div>
 <h4>Bucket hashing（桶雜湊）</h4>
 <p>每個地址是一個 bucket，可放多筆資料，<b>collision 延後到 bucket 滿</b>才發生。兩個問題：用更多空間；沒有完全解決碰撞。</p>
+<p>例：每個 bucket 放 3 筆，home 5 的 key 前三個都直接放進 bucket 5，第四個來才算碰撞，要再用其他方法（例如 linear probe 到 bucket 6）。</p>
 <h4>Combination approaches</h4>
 <p>大型系統會組合：先 hash 到 bucket，滿了做固定次數的 linear probe，再用 linked list overflow area。</p>
 
@@ -706,7 +757,7 @@ key 224562，list size 19：<br>
 <div class="tbl"><table>
 <tr><th>類型</th><th>說明</th></tr>
 <tr><td>General list（一般串列）</td><td>任何位置都能插入刪除。分 <b>random list</b>（無排序）和 <b>ordered list</b>（依 key 排序）</td></tr>
-<tr><td>Restricted list（受限串列）</td><td>只能在兩端加入刪除。<b>FIFO = queue（佇列）</b>，<b>LIFO = stack（堆疊）</b></td></tr>
+<tr><td>Restricted list（受限串列）</td><td>只能在兩端加入刪除。<b>FIFO（First In, First Out，先進先出）= queue（佇列）</b>，像排隊買票；<b>LIFO（Last In, First Out，後進先出）= stack（堆疊）</b>，像疊盤子，最後放上去的最先拿走</td></tr>
 </table></div>
 <p>四種操作：<b>Insertion、Deletion、Retrieval</b>（三種所有 list 都適用）、<b>Traversal</b>（<mark>restricted list 不適用</mark>）。</p>
 <ul>
@@ -782,6 +833,7 @@ end insertNode</pre>
 6 <mark>recycle (pLoc)</mark>
 end deleteNode</pre>
 <p>Recycle 放在 if 外面，因為兩邊都要做。刪除唯一節點時，pLoc-&gt;link 是 null，所以 head 自動變 null。</p>
+<p>白話：刪除只是「讓前一個節點跳過它」。跳過之後一定要 <code>recycle</code> 把記憶體還給系統，並把 <code>count</code> 減 1；少了任何一步，串列看起來對，但記憶體沒還、節點數也錯了。</p>
 
 <h4>searchList（Ordered list search） <span class="star">★★★</span></h4>
 <p>Linked list 只能用 sequential search。回傳兩個位置：找到時的位置，或找不到時「應該插入的位置」。</p>
@@ -912,6 +964,7 @@ end destroyList</pre>
 4 <mark>list1.count = list1.count + list2.count</mark>
 5 return
 end append</pre>
+<p>Append 要從 list1 的頭走到最後一個節點，list1 有 n 個節點就走 n 步 → O(n)。如果 head structure 有 <b>rear pointer</b>（指向最後一個節點），可以直接 <code>list1.rear-&gt;link = list2.head</code>，不用走。這就是投影片說「有 pointer to the last node，程式更有效率」的例子。</p>
 <h4>Array of lists</h4>
 <p>用 array 存多個 linked list 的 head。可表示 two-dimensional array：每個 linked list 是一個 row，節點是 columns。</p>
 
@@ -920,12 +973,33 @@ end append</pre>
 <ul>
 <li>最後一個節點的 link 指回第一個節點。插入或刪除最後一個節點時，要更新 head structure 的 rear pointer，並讓最後節點指向第一個。</li>
 <li>可以<b>從中間開始搜尋</b>。兩個問題：target 在目前節點之前 → 自動繞回開頭繼續找；target 不存在 → <mark>記住起始節點，繞一圈回到它就停</mark>。</li>
+<li>因為最後一個節點指回第一個，所以只要知道 rear，第一個節點就是 <code>rear-&gt;link</code>，頭尾都能一步拿到。</li>
 </ul>
+<pre><span class="c">例：rear → 40，40 → 10 → 20 → 30 → 40</span>
+<span class="c">插在最前面（新節點變第一個）</span>
+pNew-&gt;link = rear-&gt;link        <span class="c">新節點指向原本的第一個 10</span>
+rear-&gt;link = pNew              <span class="c">最後一個 40 指向新節點</span>
+<span class="c">插在最後面：前兩行一樣，再多一行</span>
+rear = pNew                    <span class="c">rear 移到新節點</span></pre>
+<h4>Dummy node（啞節點，2025 考過）</h4>
+<ul>
+<li>Dummy node 放在串列最前面，<b>不存資料</b>（an empty node），head pointer 永遠指向它。</li>
+<li>好處：真正的第一個資料節點前面一定有 dummy，所以 pPre 不會是 null，插入、刪除第一個資料節點的寫法就和中間節點一樣。</li>
+</ul>
+<pre><span class="c">2025 第 28 題：pList → [Dummy] → [ ] → [ ] → [ ] → null</span>
+1 temp = pList
+2 loop (temp-&gt;link not null)       <span class="c">temp 走到最後一個節點</span>
+  1 temp = temp-&gt;link
+3 end loop
+4 temp-&gt;link = pList               <span class="c">最後一個節點指回 dummy</span>
+<span class="c">結果：Dummy → ① → ② → ③ → Dummy，變成有 dummy 的環狀串列</span></pre>
+<div class="box en"><span class="lbl">ANSWER TEMPLATE</span>The loop moves <b>temp</b> to the last node (the node whose link is null). Statement 4 makes the last node point back to the dummy node, so the list becomes a <b>circularly linked list</b> with a dummy node.<div class="zhtr"><span>中文</span>迴圈讓 temp 走到最後一個節點（link 是 null 的那個）。第 4 行讓最後一個節點指回 dummy 節點，所以串列變成有 dummy 節點的環狀鏈結串列。畫圖時把原本的 null 拿掉，畫一條指回 Dummy 的箭頭。</div></div>
 <h4>Doubly linked list（雙向鏈結串列）</h4>
 <ul>
 <li>每個節點兩個指標：<b>backward pointer（back）</b>指向 predecessor、<b>forward pointer（fore）</b>指向 successor。</li>
 <li>Head structure 三個 metadata：count、head pointer、<b>rear pointer</b>（非必要，但讓某些演算法更有效率）。</li>
 <li>Doubly linked circularly linked list：最後一個的 fore 指向第一個，第一個的 back 指向最後一個。</li>
+<li>雙向只是多了往回走的 back 指標，節點在記憶體裡還是不連續，所以搜尋<b>仍然是 sequential search</b>，不能用 binary search；差別是可以從 rear 往回找。</li>
 </ul>
 <div class="two">
 <div class="box plain"><b>Insert 情況</b><br>• Null list：head、rear 都指向新節點；新節點 fore、back 設 null<br>• 兩節點之間：新節點指向前後兩個，前後兩個都指向新節點<br>• 尾端：新節點 back 指向 predecessor、fore 設 null、<mark>rear 指向新節點</mark></div>
@@ -1044,18 +1118,7 @@ end deleteNode</pre>
 
   <div class="wq"><p class="q"><span class="pts">W5</span>In the searchList result table, fill pPre and pLoc for: (a) target &lt; first node, (b) target &gt; last node, (c) first &lt; target &lt; last (target not in list).</p>
   <details class="qa"><summary>看參考答案</summary><div class="inner">(a) pPre = null，pLoc = first node，return false<br>(b) pPre = last node，pLoc = null，return false<br>(c) pPre = largest node &lt; target，pLoc = first node &gt; target，return false</div></details></div>
-<div class="wq"><p class="q"><span class="pts">W6</span><span class="hard">鑑別題</span>Finish the algorithm that <b>reverses</b> a singly linked list in place (no new nodes).</p><pre><b>Algorithm</b> reverseList (ref list &lt;metadata&gt;)
-1 pPre = null
-2 pLoc = list.head
-3 loop (pLoc not null)
-  1 ___(a)___          <span class="c">remember the next node</span>
-  2 ___(b)___          <span class="c">turn the link around</span>
-  3 ___(c)___
-  4 ___(d)___
-4 end loop
-5 ___(e)___
-end reverseList</pre><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>(a) pNext = pLoc-&gt;link　(b) pLoc-&gt;link = pPre　(c) pPre = pLoc　(d) pLoc = pNext　(e) list.head = pPre<div class="zhtr"><span>中文</span>(a) 先記住下一個節點，不然改完 link 就找不到了　(b) 把目前節點的箭頭改成指向前一個　(c) pPre 前進到目前節點　(d) pLoc 前進到剛剛記住的下一個　(e) 迴圈結束時 pPre 停在原本的最後一個節點，它變成新的開頭</div></div></div></details></div>
-<div class="wq"><p class="q"><span class="pts">W7</span><span class="hard">鑑別題</span>A doubly linked list is 10 ⇄ 20 ⇄ 30. Insert 25 with insertDbl: searchList returns pPred = node 20 and pSucc = node 30. Write the four pointer assignments in the correct order.</p><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>1. pNew-&gt;back = pPred (25 → back → 20)<br>2. pNew-&gt;fore = pPred-&gt;fore (25 → fore → 30)<br>3. pPred-&gt;fore = pNew (20 → fore → 25)<br>4. pSucc-&gt;back = pNew (30 → back → 25)<div class="zhtr"><span>中文</span>1. 新節點的 back 指向 20　2. 新節點的 fore 指向 30（要在 20 的 fore 被改掉之前讀）　3. 20 的 fore 改指向新節點　4. 30 的 back 改指向新節點。第 2 步一定要在第 3 步前面。</div></div></div></details></div>
+<div class="wq"><p class="q"><span class="pts">W6</span><span class="hard">鑑別題</span>A doubly linked list is 10 ⇄ 20 ⇄ 30. Insert 25 with insertDbl: searchList returns pPred = node 20 and pSucc = node 30. Write the four pointer assignments in the correct order.</p><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>1. pNew-&gt;back = pPred (25 → back → 20)<br>2. pNew-&gt;fore = pPred-&gt;fore (25 → fore → 30)<br>3. pPred-&gt;fore = pNew (20 → fore → 25)<br>4. pSucc-&gt;back = pNew (30 → back → 25)<div class="zhtr"><span>中文</span>1. 新節點的 back 指向 20　2. 新節點的 fore 指向 30（要在 20 的 fore 被改掉之前讀）　3. 20 的 fore 改指向新節點　4. 30 的 back 改指向新節點。第 2 步一定要在第 3 步前面。</div></div></div></details></div>
 </div>
 <div class="quiz" data-quiz="ch3"></div></section>
 <section class="view exam" id="y24" data-exam="y24" data-mins="110" hidden><div class="vhead"><div class="pcb" data-pcb="y24" role="img"></div><div class="eyebrow">2024 期中考</div><h1>2024 期中考古題</h1><p>Nov. 1, 2024　09:00–10:50。選擇題點了就對答案；手寫題在框裡作答，按「批改這題」或上方「批改全部手寫題」。題目照原卷打字。</p></div><div class="examtools"><span class="score"></span><span class="timer"></span><button class="btn tbtn" type="button">開始 110 分鐘計時</button><button class="btn primary gradeall" type="button">批改全部手寫題</button><button class="btn reset" type="button">清除作答</button><span class="gmsg"></span></div><p class="box tip nogradenote"><span class="lbl">批改方式</span>選擇題點了就對答案。手寫題用關鍵字比對自動批改：有寫到必要的英文術語或數字就給分。分數僅供參考，寫完一定要展開參考答案對照。</p>
@@ -1429,7 +1492,7 @@ ch1: [
  {"q":"A loop whose inner loop runs 1, 2, 3, …, n times (dependent quadratic) executes its body how many times?","o":["n","n log n","n(n+1)/2","n²"],"a":2,"e":"1+2+…+n = n(n+1)/2，仍是 O(n²)。"},
  {"q":"How many times does the inner statement run, and what is the Big-O?  for (i = 1; i <= n; i = i * 2)  for (j = 1; j <= i; j++)  statement;","o":["About log n times, O(log n)","About 2n times, O(n)","About n log n times, O(n log n)","About n²/2 times, O(n²)"],"a":1,"e":"內層次數是 1 + 2 + 4 + … + n ≈ 2n，不是「外層 log n × 內層 n」。這題專門抓直接相乘的人。","h":1},
  {"q":"What is the efficiency of: i = n; loop (i > 1) { for (j = 0; j < n; j++) statement; i = i / 2 }","o":["O(log n)","O(n)","O(n log n)","O(n²)"],"a":2,"e":"外層每次除 2 → log n 次；內層每次都跑滿 n 次 → n log n。","h":1},
- {"q":"What is the Big-O of f(n) = n log n + n√n + 500n?","o":["O(n log n)","O(n√n)","O(n)","O(n² )"],"a":1,"e":"n√n = n^1.5，比 n log n 長得快（√n 比 log n 大），所以留 n^1.5。","h":1},
+ {"q":"What is the Big-O of f(n) = 500n log n + n²/100 + 9999n?","o":["O(n log n)","O(n²)","O(n)","O(n²/100)"],"a":1,"e":"先把係數都設成 1：n log n + n² + n；再只留最大項 n²。係數再大（500、9999）也不影響 Big-O。","h":1},
  {"q":"For n = 1000, how many times does this loop body run?  for (i = 1; i < 1000; i = i * 2)","o":["9","10","11","500"],"a":1,"e":"i = 1, 2, 4, …, 512 共 10 次（2⁹ = 512 < 1000，2¹⁰ = 1024 停）。","h":1},
  {"q":"An algorithm has a parameter 'ref locn <index>' and returns a Boolean. Which header parts describe locn and the Boolean respectively?","o":["Precondition and Postcondition","Postcondition and Return condition","Return condition and Postcondition","Purpose and Return condition"],"a":1,"e":"ref 參數是 output parameter，執行後的狀態寫在 Postcondition；回傳值寫在 Return condition。","h":1},
  {"q":"Which statement best distinguishes a data structure from composite data?","o":["A data structure can only contain atomic data","A data structure is an aggregation of data with defined relationships among its elements","Composite data cannot be divided","A data structure must be stored contiguously"],"a":1,"e":"關鍵字是 defined relationships（定義好的關係）。Composite data 只是可拆，不一定有元素間的關係。","h":1},
@@ -1592,8 +1655,8 @@ try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(S,JSON.parse(raw)
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 
 const tabs=document.getElementById("tabs");
-function quizCount(k){const a=S.quiz[k]||{};return Object.keys(a).length;}
-function quizRight(k){const a=S.quiz[k]||{};return Object.keys(a).filter(x=>a[x]===QUIZ[k][x].a).length;}
+function quizCount(k){const a=S.quiz[k]||{};return Object.keys(a).filter(x=>QUIZ[k]&&QUIZ[k][x]).length;}
+function quizRight(k){const a=S.quiz[k]||{};return Object.keys(a).filter(x=>QUIZ[k]&&QUIZ[k][x]&&a[x]===QUIZ[k][x].a).length;}
 function quizDone(ch){return QUIZ[ch]&&quizCount(ch)>=QUIZ[ch].length;}
 const PID={home:0,ch1:1,ch2:2,ch3:3,y24:4,y25:5,"mock-a":6,"mock-b":7,review:8};
 function procState(id){

@@ -1891,6 +1891,10 @@ const KEY="os-midterm-v1";
 let S={quiz:{},exam:{}};
 try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(S,JSON.parse(raw));}catch(e){}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+/* 2026-10-26: some ch1/ch2/ch5 questions were removed (off-slide), so old answers no longer line up. Reset those chapters once. */
+(function(){const MIG=1793006400000;S.quizReset=S.quizReset||{};let ch=false;
+  ["ch1","ch2","ch5"].forEach(c=>{if((S.quizReset[c]||0)<MIG){delete S.quiz[c];S.quizReset[c]=MIG;ch=true;}});if(ch)save();})();
+function pruneQuiz(ch){const a=S.quiz[ch];if(!a||!QUIZ[ch])return;Object.keys(a).forEach(k=>{if(+k>=QUIZ[ch].length)delete a[k];});}
 
 const tabs=document.getElementById("tabs");
 function quizDone(ch){const a=S.quiz[ch]||{};return QUIZ[ch]&&Object.keys(a).length>=QUIZ[ch].length;}
@@ -1941,7 +1945,7 @@ window.addEventListener("hashchange",()=>{const h=location.hash.slice(1);if(h&&h
 function order(n,seed){const a=[...Array(n).keys()];let s=seed*9301+49297;for(let i=n-1;i>0;i--){s=(s*9301+49297)%233280;const j=Math.floor(s/233280*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function renderQuiz(ch){
   const box=document.querySelector('[data-quiz="'+ch+'"]');if(!box)return;
-  const qs=QUIZ[ch];const ans=S.quiz[ch]||{};
+  pruneQuiz(ch);const qs=QUIZ[ch];const ans=S.quiz[ch]||{};
   box.innerHTML="";
   const h=document.createElement("h2");h.textContent="章末選擇題（"+qs.length+" 題）";box.appendChild(h);
   const p=document.createElement("p");p.className="small";p.textContent="點一個選項就會馬上對答案並顯示解析。錯的題目回上面找對應的段落再讀一次。";box.appendChild(p);
@@ -2369,7 +2373,7 @@ function renderHome(){
   let html='<tr><th class="l">項目</th><th>狀態</th></tr>';
   let next=null;
   [["ch1","Ch1 選擇題"],["ch2","Ch2 選擇題"],["ch3","Ch3 選擇題"],["ch4","Ch4 選擇題"],["ch5","Ch5 選擇題"]].forEach(([c,n])=>{
-    const a=S.quiz[c]||{};const k=Object.keys(a).length;const r=Object.keys(a).filter(x=>a[x]===QUIZ[c][x].a).length;
+    const a=S.quiz[c]||{};const k=Object.keys(a).length;const r=Object.keys(a).filter(x=>QUIZ[c][x]&&a[x]===QUIZ[c][x].a).length;
     html+='<tr><td class="l"><button class="btn" data-go="'+c+'">'+n+'</button></td><td>'+(k?("答對 "+r+" / "+QUIZ[c].length+(k<QUIZ[c].length?"（未完成）":"")):"還沒做")+'</td></tr>';
     if(!next&&k<QUIZ[c].length)next=[c,n.replace(" 選擇題","")];
   });

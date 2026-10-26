@@ -696,15 +696,51 @@ waiting: P1=(10−1)=9, P2=0, P3=17−2=15, P4=5−3=2
 waiting: P1 = 10−4 = 6, P2 = 4, P3 = 7 → 平均 17/3 ≈ 5.67</div>
 
 <div class="widget" data-w="sched" data-algs="RR" data-name="Round Robin"></div>
-<h3>3.5 預測下一次 CPU burst（Exponential Averaging）<span class="star">★</span></h3>
-<div class="calc">τ(n+1) = α · t(n) + (1 − α) · τ(n)        0 ≤ α ≤ 1，通常 α = 1/2
-t(n) = 第 n 次實際 burst 長度；τ(n+1) = 下一次的預測值
+<h3>3.5 預測下一次 CPU burst（Exponential Averaging）<span class="star">★★</span></h3>
+<p><b>為什麼要預測？</b>SJF 要選「下一次 CPU burst 最短」的 process，但 OS 不可能事先知道下一次會跑多久。所以只能<b>用過去的 burst 來猜</b>。這裡的假設是：下一次應該跟前幾次差不多。</p>
 
-α = 0 → τ(n+1) = τ(n)       最近的實際值完全不算
-α = 1 → τ(n+1) = t(n)       只看最近一次實際值
+<h4>公式和符號</h4>
+<div class="calc">τ(n+1) = α · t(n) + (1 − α) · τ(n)
 
-例：α=1/2, τ0=10, t0=6 → τ1 = 0.5·6 + 0.5·10 = 8
-                    t1=4 → τ2 = 0.5·4 + 0.5·8  = 6</div>
+t(n)    = 第 n 次「實際」跑了多久（已經發生的事實）
+τ(n)    = 第 n 次的「預測值」（之前猜的）
+τ(n+1)  = 下一次的預測值（現在要算的）
+α       = 權重，0 ≤ α ≤ 1，通常取 1/2</div>
+<p>白話：<b>新的猜測 = 「剛發生的實際值」和「上一次的猜測」按比例混合</b>。α 越大，越相信最近一次的實際值；α 越小，越相信過去累積的猜測。</p>
+
+<h4>α 的兩個極端（考試愛考）</h4>
+<table><tr><th>α</th><th class="l">公式變成</th><th class="l">意思</th></tr>
+<tr><td>0</td><td class="l">τ(n+1) = τ(n)</td><td class="l">Recent history does not count：最近發生什麼都不管，永遠用舊的猜測</td></tr>
+<tr><td>1</td><td class="l">τ(n+1) = t(n)</td><td class="l">Only the actual last CPU burst counts：只看上一次實際跑多久</td></tr>
+<tr><td>1/2</td><td class="l">τ(n+1) = (t(n) + τ(n)) / 2</td><td class="l">最近的實際值和過去的歷史各占一半</td></tr></table>
+
+<h4>為什麼叫「指數」平均：把公式展開</h4>
+<div class="calc">第 1 步：原式            τ(n+1) = α·t(n) + (1−α)·τ(n)
+第 2 步：τ(n) 也用公式換掉  τ(n)   = α·t(n−1) + (1−α)·τ(n−1)
+         代進去         τ(n+1) = α·t(n) + (1−α)·α·t(n−1) + (1−α)²·τ(n−1)
+第 3 步：τ(n−1) 再換掉   τ(n+1) = α·t(n) + (1−α)·α·t(n−1) + (1−α)²·α·t(n−2) + (1−α)³·τ(n−2)
+第 4 步：一直換到 τ(0)，得到一般式：
+
+τ(n+1) = α·t(n) + (1−α)·α·t(n−1) + (1−α)²·α·t(n−2) + …
+         + (1−α)^j·α·t(n−j) + … + (1−α)^(n+1)·τ(0)</div>
+<p>例：α = ½ 時，權重依序是 ½、¼、⅛、1/16…，最後 τ(0) 剩 (½)^(n+1)。每往前一次，權重就多乘一個 (1−α)。因為 α 和 (1−α) 都 ≤ 1，<b>越舊的 burst 權重越小，而且是指數變小</b>。所以最近的 burst 影響最大，很久以前的幾乎不算。</p>
+
+<h4>課本例題：α = 1/2，τ0 = 10</h4>
+<table><tr><th>i</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th></tr>
+<tr><th>實際 CPU burst t(i)</th><td>6</td><td>4</td><td>6</td><td>4</td><td>13</td><td>13</td><td>13</td><td>…</td></tr>
+<tr><th>猜測 τ(i)</th><td>10</td><td>8</td><td>6</td><td>6</td><td>5</td><td>9</td><td>11</td><td>12</td></tr></table>
+<div class="calc">τ1 = ½·6  + ½·10 = 8
+τ2 = ½·4  + ½·8  = 6
+τ3 = ½·6  + ½·6  = 6
+τ4 = ½·4  + ½·6  = 5
+τ5 = ½·13 + ½·5  = 9
+τ6 = ½·13 + ½·9  = 11
+τ7 = ½·13 + ½·11 = 12</div>
+<p>看圖的重點：實際 burst 從 4 突然跳到 13 時，預測不會馬上跳上去，而是 9 → 11 → 12 慢慢追上。這就是「平滑」的效果。α 越大追得越快，α 越小越慢。</p>
+<div class="box tip"><span class="lbl">算題 SOP</span>每一步都是「½ × 這次實際值 ＋ ½ × 這次猜測」，算出來就是下一格的猜測。照表格一格一格往右填，不要跳步。</div>
+<div class="widget" data-w="expavg"></div>
+<div class="box en"><span class="lbl">ANSWER TEMPLATE — Exponential Averaging</span>The length of the next CPU burst can only be estimated, using the lengths of previous CPU bursts: τ(n+1) = α·t(n) + (1−α)·τ(n), where t(n) is the actual length of the nth CPU burst, τ(n+1) is the predicted value for the next burst, and 0 ≤ α ≤ 1 (commonly ½). If α = 0, recent history does not count; if α = 1, only the last actual burst counts. Expanding the formula, each older term has less weight than its predecessor.<div class="zhtr"><span>中文</span>下一次 CPU burst 只能用過去的 burst 來估計：τ(n+1) = α·t(n) + (1−α)·τ(n)。t(n) 是第 n 次實際長度，τ(n+1) 是下一次的預測值，0 ≤ α ≤ 1（常用 ½）。α = 0 表示最近的實際值完全不算；α = 1 表示只看上一次實際值。把公式展開後，越舊的項權重越小。</div></div>
+<p>補充：SJF 的可搶奪版本就是 <b>SRTF</b>（shortest-remaining-time-first），一樣要靠這個預測值來比誰比較短。</p>
 
 <h3>3.6 Multilevel Queue vs. Multilevel Feedback Queue <span class="star">★★★</span></h3>
 <div class="two">
@@ -2299,6 +2335,27 @@ W.banker=function(box){
   box.querySelector(".rs").onclick=reset;
   reset();
 };
+
+/* exponential averaging */
+W.expavg=function(box){
+  box.innerHTML='<div class="wtitle">Exponential averaging：拉 α，看預測怎麼追實際值</div><div class="wrow"><label>α = <b class="av2"></b><input class="a" type="range" min="0" max="100" value="50"></label><label>τ0（第一次猜測）<input class="t0" type="number" min="0" max="30" value="10"></label><label>實際 burst（用空白分開）<input class="ts" value="6 4 6 4 13 13 13"></label></div><svg class="wsvg amd" viewBox="0 0 640 230"></svg><div class="wres"></div><p class="wnote">黑線＝實際 burst t(i)，藍線＝預測 τ(i)。α=0 時藍線是一條水平線；α=1 時藍線就是黑線往右移一格。</p>';
+  const A=box.querySelector(".a"),T0=box.querySelector(".t0"),TS=box.querySelector(".ts");
+  const f=x=>Math.round(x*100)/100;
+  function run(){const a=A.value/100;box.querySelector(".av2").textContent=f(a);
+    const t=TS.value.trim().split(/[\s,]+/).map(Number).filter(x=>!isNaN(x)).slice(0,12);
+    const tau=[+T0.value||0];t.forEach((x,i)=>tau.push(a*x+(1-a)*tau[i]));
+    const n=tau.length,mx=Math.max(...t,...tau,1)*1.15,X=i=>50+i*(570/Math.max(n-1,1)),Y=v=>200-v/mx*180;
+    let h='';for(let k=0;k<=4;k++){const v=mx*k/4/1.15*1.15;h+='<line class="grid" x1="50" x2="620" y1="'+Y(mx*k/4)+'" y2="'+Y(mx*k/4)+'"/><text x="44" y="'+(Y(mx*k/4)+4)+'" text-anchor="end">'+Math.round(mx*k/4)+'</text>';}
+    h+='<line class="ax" x1="50" y1="200" x2="620" y2="200"/>';
+    let p='';t.forEach((x,i)=>{p+=(i?'L':'M')+X(i)+','+Y(x)+'L'+X(i+1)+','+Y(x);});h+='<path d="'+p+'" fill="none" stroke="var(--ink)" stroke-width="2.5"/>';
+    h+='<polyline class="curve" points="'+tau.map((v,i)=>X(i)+','+Y(v)).join(" ")+'"/>'+tau.map((v,i)=>'<circle class="dot" r="4" cx="'+X(i)+'" cy="'+Y(v)+'"/>').join("");
+    box.querySelector("svg").innerHTML=h;
+    let r='<table><tr><th>i</th>'+tau.map((_,i)=>'<th>'+i+'</th>').join("")+'</tr><tr><th>t(i)</th>'+tau.map((_,i)=>'<td>'+(i<t.length?t[i]:'…')+'</td>').join("")+'</tr><tr><th>τ(i)</th>'+tau.map(v=>'<td><b>'+f(v)+'</b></td>').join("")+'</tr></table>';
+    r+='<div class="wcalc">'+t.map((x,i)=>'τ'+(i+1)+' = '+f(a)+'·'+x+' + '+f(1-a)+'·'+f(tau[i])+' = '+f(tau[i+1])).join('<br>')+'</div>';
+    box.querySelector(".wres").innerHTML=r;}
+  A.oninput=run;T0.oninput=run;TS.oninput=run;run();
+};
+
 document.querySelectorAll(".widget[data-w]").forEach(b=>{try{W[b.dataset.w](b);}catch(e){b.textContent="互動圖載入失敗";}});
 
 /* ---------- home ---------- */

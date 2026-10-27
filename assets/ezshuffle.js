@@ -32,9 +32,10 @@
     const ta=it.querySelector("textarea");if(ta&&ta.value.trim())return true;
     const g=it.querySelector(".gres");return !!g&&!g.hidden;
   }
+  /* only write when the number really changes: every write is a DOM change, and DOM changes run this script again */
   function renumber(it,k){
-    const n=it.querySelector(".stem .num");if(n){n.textContent=(k+1)+".";return;}
-    const p=it.querySelector(".pts");if(p)p.textContent=p.textContent.replace(/^([A-Za-z]*)\d+/,(m,a)=>a+(k+1));
+    const n=it.querySelector(".stem .num");if(n){const t=(k+1)+".";if(n.textContent!==t)n.textContent=t;return;}
+    const p=it.querySelector(".pts");if(p){const t=p.textContent.replace(/^([A-Za-z]*)\d+/,(m,a)=>a+(k+1));if(p.textContent!==t)p.textContent=t;}
   }
   const ORDER=new WeakMap();   /* container → { run key → [original index per slot] } fixed for this visit */
   function arrange(r){

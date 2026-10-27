@@ -172,7 +172,7 @@
   function updateNote(){
     let n=document.getElementById("storeNote");
     if(!n)n=[...document.querySelectorAll("p.small")].find(p=>/只存在這台裝置/.test(p.textContent));
-    if(n)n.textContent=window.EZSync.connected()?"進度會自動同步到你的 GitHub（私人 Gist），手機和電腦打開都是同一份。":"目前只存在這台裝置。到 EZexams 首頁的「跨裝置同步」貼一次金鑰，所有裝置就會同步。";
+    if(n){const c=window.EZSync.connected();n.hidden=c;if(!c)n.textContent="目前只存在這台裝置。到 EZexams 首頁的「跨裝置同步」貼一次金鑰，所有裝置就會同步。";}
   }
   window.addEventListener("load",()=>setTimeout(()=>{
     let cur=null;try{cur=localStorage.getItem(autoKey);}catch(e){}

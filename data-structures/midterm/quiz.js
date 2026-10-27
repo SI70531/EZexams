@@ -188,3 +188,8 @@ const WRONG_RULES=[
  ["3-2",/linked list|head|node|link|self-referential|rear pointer|metadata/i],
  ["1-4",/O\(|efficien|logarithmic|quadratic|loop|Big-?O|n log n|matri|coefficient/i]
 ];
+
+/* Added later: chapter 1 brought up to 20 questions.
+   Appended AFTER the existing questions of each chapter, so answers saved for earlier questions keep their positions. */
+const QUIZ_MORE={"ch1": [{"q": "Which of the following is atomic data?", "o": ["The integer 4562", "A telephone number", "A student record with name, ID and GPA", "A date made of year, month and day"], "a": 0, "e": "Atomic data：只有單一值、不能再拆成有意義的部分（例如整數）。電話號碼、學生紀錄、日期都能拆開，是 composite data。"}]};
+for(const ch in QUIZ_MORE)QUIZ[ch].push(...QUIZ_MORE[ch]);

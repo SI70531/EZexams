@@ -30,6 +30,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;margin-left:10px;font-size
 .wcard pre{white-space:pre-wrap}
 .wcard .wbar{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
 .wgroup h3{margin-top:28px;scroll-margin-top:80px}
+.wnotes{display:block;margin-top:10px}
 .wback{display:block;margin-top:12px;border-color:var(--bad,#c62828)!important;color:var(--bad,#c62828)!important;font-weight:700}
 @keyframes wflash{0%,60%{box-shadow:0 0 0 4px var(--bad,#c62828)}100%{box-shadow:0 0 0 0 transparent}}
 .wflash{animation:wflash 2.2s ease-out;border-radius:10px}`;
@@ -182,8 +183,35 @@ h3 .missbadge{display:inline-block;white-space:nowrap;margin-left:10px;font-size
     flash(el,"center");
   }
   function btn(txt,fn){const b=document.createElement("button");b.className="btn";b.type="button";b.textContent=txt;b.addEventListener("click",fn);return b;}
+  /* under every wrong answer (chapter quiz, past exam, mock exam): a 「回講義這一段」 button.
+     Jumping to the notes leaves a 「← 回到剛才的題目」 button under that heading. */
+  function toNotes(w){
+    const s=w.m.s;
+    document.querySelectorAll(".wback").forEach(b=>b.remove());
+    if(s){show(s.ch);}else if(w.ch){show(w.ch);}else return;
+    const anchor=s?s.h:document.getElementById(w.ch).querySelector("h1,h2,h3");
+    if(anchor){
+      const b=document.createElement("button");b.type="button";b.className="btn wback";b.textContent="← 回到剛才的題目";
+      b.addEventListener("click",()=>{b.remove();show(w.go);const el=locate(w);if(el)flash(el,"center");});
+      anchor.after(b);
+      setTimeout(()=>{anchor.scrollIntoView({block:"start"});},30);
+    }
+  }
+  function notesButtons(list){
+    const keep=new Set();
+    list.forEach(w=>{
+      if(!w.m.s&&!w.ch)return;
+      const el=locate(w);if(!el)return;keep.add(el);
+      let b=el.querySelector(":scope > .wnotes");
+      if(!b){b=document.createElement("button");b.type="button";b.className="btn wnotes";el.appendChild(b);}
+      b.textContent=w.m.s?"回講義這一段："+w.m.s.title:"回 "+(NAME[w.ch]||w.ch)+" 講義";
+      b.onclick=()=>toNotes(w);
+    });
+    document.querySelectorAll(".wnotes").forEach(b=>{if(!keep.has(b.parentElement))b.remove();});
+  }
   function render(){
     let list;try{list=collect();}catch(e){return;}
+    try{notesButtons(list);}catch(e){}
     const by=new Map();list.forEach(w=>{const k=gkey(w);if(!by.has(k))by.set(k,[]);by.get(k).push(w);});
     SECS.forEach(s=>{
       const n=(by.get(s.key)||[]).length;s.h.classList.toggle("missed",n>0);

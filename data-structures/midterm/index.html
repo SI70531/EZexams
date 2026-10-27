@@ -266,6 +266,8 @@ h3 .missbadge{display:inline-block;white-space:nowrap;margin-left:10px;font-size
 .wcard .cbody .lab{display:none}
 .wcard pre{white-space:pre-wrap}
 .wgroup h3{margin-top:28px}
+@keyframes wflash{0%,60%{box-shadow:0 0 0 4px #c62828}100%{box-shadow:0 0 0 0 transparent}}
+.wflash{animation:wflash 2.2s ease-out;border-radius:10px}
 
 /* interactive labs */
 .lab{background:var(--paper);border:1.5px solid var(--ink);border-radius:10px;box-shadow:4px 4px 0 var(--hard);padding:14px 18px 16px;margin:20px 0}
@@ -1717,7 +1719,7 @@ function collectWrong(){
       const fb=CHAPTERS.includes(key)?{ch1:"1-1",ch2:"2-1",ch3:"3-2"}[key]:null;
       let sec=secOf(it.q,it.o.join(" ")+" "+it.e,fb);
       if(CHAPTERS.includes(key)&&sec[0]!==key[2])sec=fb;
-      out.push({sec,src:SRCNAME[view]+" 選擇第 "+(i+1)+" 題",go:view,q:it.q,yours:"("+"ABCD"[pk]+") "+it.o[pk],right:"("+"ABCD"[it.a]+") "+it.o[it.a],e:it.e});});
+      out.push({sec,src:SRCNAME[view]+" 選擇第 "+(i+1)+" 題",go:view,quiz:key,i,q:it.q,yours:"("+"ABCD"[pk]+") "+it.o[pk],right:"("+"ABCD"[it.a]+") "+it.o[it.a],e:it.e});});
   });
   document.querySelectorAll(".exam .exq").forEach(q=>{
     const id=q.closest(".exam").dataset.exam;const g=(S.ex2&&S.ex2[id]&&S.ex2[id].grade||{})[q.id];
@@ -1749,7 +1751,7 @@ function renderWrong(){
       const add=(cls,txt,tag)=>{const e=document.createElement(tag||"div");if(cls)e.className=cls;e.textContent=txt;c.appendChild(e);return e;};
       add("src",w.src);add("wq2",w.q);add("yours","你的答案："+w.yours);add("right","正確答案："+w.right);if(w.e)add("",w.e);
       const bar=document.createElement("div");bar.style.marginTop="8px";
-      const b1=document.createElement("button");b1.className="btn";b1.type="button";b1.textContent="回原題";b1.addEventListener("click",()=>{show(w.go);if(w.qid){const el=document.getElementById(w.qid);if(el)el.scrollIntoView({block:"start"});}});
+      const b1=document.createElement("button");b1.className="btn";b1.type="button";b1.textContent="回原題";b1.addEventListener("click",()=>{show(w.go);const el=w.qid?document.getElementById(w.qid):(document.querySelector('[data-quiz="'+w.quiz+'"]')||document).querySelectorAll(".qitem")[w.i];if(el)setTimeout(()=>{el.scrollIntoView({block:"center"});el.classList.remove("wflash");void el.offsetWidth;el.classList.add("wflash");},30);});
       const b2=document.createElement("button");b2.className="btn";b2.type="button";b2.textContent="回講義 "+k;b2.addEventListener("click",()=>{if(!h)return;show(h.closest(".view").id);h.scrollIntoView({block:"start"});});
       bar.append(b1,b2);c.appendChild(bar);
       if(h){const d=document.createElement("details");d.className="concept";const sm=document.createElement("summary");sm.textContent="相關觀念："+h.firstChild.textContent.trim();d.appendChild(sm);

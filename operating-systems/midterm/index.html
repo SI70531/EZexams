@@ -20,7 +20,7 @@
 <link rel="icon" href="../../assets/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../../assets/icon-180.png">
 <link rel="manifest" href="../../manifest.webmanifest">
-<script src="../../assets/ezcore.js?v=86f55522"></script>
+<script src="../../assets/ezcore.js?v=3c44e9c5"></script>
 <script src="../../assets/ezai.js?v=56aaaf71"></script>
 </head>
 <body>
@@ -2004,7 +2004,7 @@ function renderQuiz(ch){
     const ord=order(it.o.length,i+ch.charCodeAt(2)*7);
     const btns=[];
     ord.forEach((oi,k)=>{
-      const b=document.createElement("button");b.className="opt";b.type="button";
+      const b=EZopt();b.className="opt";b.type="button";
       b.innerHTML='<span class="ab">'+"ABCD"[k]+'</span>';const t=document.createElement("span");t.textContent=it.o[oi];b.appendChild(t);
       b.dataset.oi=oi;btns.push(b);
       b.addEventListener("click",()=>{if(S.quiz[ch]&&S.quiz[ch][i]!==undefined)return;S.quiz[ch]=S.quiz[ch]||{};S.quiz[ch][i]=oi;save();mark();renderScore();renderTabs(ch);});

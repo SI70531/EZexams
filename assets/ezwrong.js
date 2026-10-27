@@ -202,12 +202,12 @@ h3 .missbadge{display:inline-block;white-space:nowrap;margin-left:10px;font-size
     list.forEach(w=>{
       if(!w.m.s&&!w.ch)return;
       const el=locate(w);if(!el)return;keep.add(el);
-      let b=el.querySelector(":scope > .wnotes");
-      if(!b){b=document.createElement("button");b.type="button";b.className="btn wnotes";el.appendChild(b);}
+      let b=el.querySelector(".wnotes");
+      if(!b){b=document.createElement("button");b.type="button";b.className="btn wnotes";(window.EZrow?EZrow(el):el).prepend(b);}
       b.textContent=w.m.s?"回講義這一段："+w.m.s.title:"回 "+(NAME[w.ch]||w.ch)+" 講義";
       b.onclick=()=>toNotes(w);
     });
-    document.querySelectorAll(".wnotes").forEach(b=>{if(!keep.has(b.parentElement))b.remove();});
+    document.querySelectorAll(".wnotes").forEach(b=>{const el=b.closest(".qitem,.exq");if(!keep.has(el)){const r=b.parentElement;b.remove();if(r.classList.contains("qbtns")&&!r.children.length)r.remove();}});
   }
   function render(){
     let list;try{list=collect();}catch(e){return;}

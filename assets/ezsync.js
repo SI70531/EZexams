@@ -141,6 +141,31 @@
         ["ans","grade","self"].forEach(f=>{Rm[f]=Object.assign({},L[f]||{},Rm[f]||{});});
         Object.keys(L.ans||{}).forEach(q=>{if(!Rm.ans[q]&&L.ans[q])Rm.ans[q]=L.ans[q];});
       });}
+    /* per-question 清除作答 (ezquiz.js): answers and clears carry times; the later one wins, so a cleared answer
+       does not come back from another device, and an answer given after a clear is kept */
+    const mx=(a,b)=>{const o=JSON.parse(JSON.stringify(a||{}));Object.keys(b||{}).forEach(k=>{o[k]=o[k]||{};Object.keys(b[k]).forEach(i=>{o[k][i]=Math.max(o[k][i]||0,b[k][i]||0);});});return o;};
+    if(local.qat||local.qclr||out.qat||out.qclr){
+      out.qat=mx(out.qat,local.qat);out.qclr=mx(out.qclr,local.qclr);
+      Object.keys(out.qclr).forEach(ch=>Object.keys(out.qclr[ch]).forEach(i=>{
+        const c=out.qclr[ch][i],a=(out.qat[ch]||{})[i]||0;
+        if(c>=a){if(out.quiz[ch])delete out.quiz[ch][i];}
+        else if(local.quiz&&local.quiz[ch]&&local.quiz[ch][i]!==undefined&&(local.qat&&local.qat[ch]&&local.qat[ch][i])===a){out.quiz[ch]=out.quiz[ch]||{};out.quiz[ch][i]=local.quiz[ch][i];}
+      }));
+    }
+    if(local.ex2||out.ex2){
+      out.ex2=out.ex2||{};
+      Object.keys(Object.assign({},local.ex2||{},out.ex2)).forEach(id=>{
+        const L=(local.ex2||{})[id]||{},R=out.ex2[id];if(!R)return;
+        const at=Object.assign({},R.at||{}),clr=Object.assign({},R.clr||{});
+        Object.keys(L.at||{}).forEach(q=>at[q]=Math.max(at[q]||0,L.at[q]));Object.keys(L.clr||{}).forEach(q=>clr[q]=Math.max(clr[q]||0,L.clr[q]));
+        if(!Object.keys(at).length&&!Object.keys(clr).length)return;
+        R.at=at;R.clr=clr;
+        Object.keys(clr).forEach(q=>{
+          if(clr[q]>=(at[q]||0)){["ans","grade","self"].forEach(f=>{if(R[f])delete R[f][q];});}
+          else if((L.at||{})[q]===at[q]){["ans","grade","self"].forEach(f=>{if(L[f]&&L[f][q]!==undefined){R[f]=R[f]||{};R[f][q]=L[f][q];}else if(R[f])delete R[f][q];});}
+        });
+      });
+    }
     if("last" in local)out.last=local.last;
     return out;
   }

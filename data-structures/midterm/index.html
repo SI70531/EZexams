@@ -1261,7 +1261,7 @@ recycle (pDlt)</div></div>
 </section>
 
 </main>
-<script src="../../assets/ezsync.js?v=3ca4da5d" data-key="ds-midterm-v1"></script>
+<script src="../../assets/ezsync.js?v=0528b1c5" data-key="ds-midterm-v1"></script>
 <script src="quiz.js?v=dd9aede9"></script>
 <script>
 (function(){
@@ -1526,6 +1526,7 @@ document.querySelectorAll(".exam").forEach(ex=>{
   qs.forEach(q=>{
     const ta=q.querySelector("textarea");
     ta.value=st.ans[q.id]||"";
+    q._ezclear=()=>{ta.value="";delete st.ans[q.id];delete st.grade[q.id];if(st.self)delete st.self[q.id];const si=q.querySelector(".selfsc input");if(si)si.value="";const cb=q.querySelector(".self input");if(cb)cb.checked=false;const gs=q.querySelector(".gstat");if(gs)gs.textContent="";save();render(q);upd();}; /* 清除作答 (ezquiz.js) */
     let tmr=null;
     ta.addEventListener("input",()=>{clearTimeout(tmr);tmr=setTimeout(()=>{st.ans[q.id]=ta.value;save();render(q);},400);});
     const btn=q.querySelector(".grade"),stat=q.querySelector(".gstat");
@@ -1831,9 +1832,10 @@ document.querySelectorAll("[data-lab]").forEach(el=>{try{LABS[el.dataset.lab](el
 const start=(location.hash||"").slice(1)||S.last||"home";
 show(start);
 </script>
-<script src="../../assets/ezwrong.js?v=6e032927"></script>
+<script src="../../assets/ezquiz.js?v=985ad982"></script>
+<script src="../../assets/ezwrong.js?v=b2665627"></script>
 
 <script src="../../assets/ezsearch.js?v=21af1ad4"></script>
-<script src="../../assets/ezshuffle.js?v=6aa338f8"></script>
+<script src="../../assets/ezshuffle.js?v=f2aa6481"></script>
 </body>
 </html>

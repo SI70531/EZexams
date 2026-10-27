@@ -3,9 +3,10 @@
    Subject pages use it as a drop-in for the grader they already call:
      SAMPLE = EZAI.sampler();          // null when no key is set
      const out = await SAMPLE.json(prompt);   // parsed JSON, or throws {code}
-   Error codes: bad_key, region, rate_limited, invalid_json, empty_completion, network. */
+   Error codes: bad_key, region, rate_limited, timeout, blocked (no response reached the page), invalid_json, empty_completion, network.
+   Error messages carry Google's own reason, so errText() can show it. */
 (function(){
-  const LS_KEY="ezai-key",LS_MODEL="ezai-model";
+  const LS_KEY="ezai-key",LS_MODEL="ezai-model",LS_AUTH="ezai-auth";
   const MODELS=["gemini-flash-latest","gemini-2.5-flash","gemini-2.0-flash"];
   const API="https://generativelanguage.googleapis.com/v1beta/models/";
   const get=k=>{try{return localStorage.getItem(k);}catch(e){return null;}};
@@ -15,21 +16,23 @@
   async function fetchT(url,opt,ms){
     const ac=new AbortController(),t=setTimeout(()=>ac.abort(),ms);
     try{return await fetch(url,Object.assign({},opt,{signal:ac.signal}));}
-    catch(e){throw fail(e&&e.name==="AbortError"?"timeout":"network");}
+    catch(e){throw e&&e.name==="AbortError"?fail("timeout"):fail("blocked",String(e&&e.message||e));}
     finally{clearTimeout(t);}
   }
   function httpErr(r,body){
-    const m=(body&&body.error&&body.error.message)||"";
+    const er=body&&body.error||{};
+    const m=[er.status,er.message,(er.details||[]).map(d=>d&&d.reason).filter(Boolean).join(",")].filter(Boolean).join(" ")||("HTTP "+r.status);
     if(r.status===404)return fail("no_model",m);
     if(r.status===429)return fail("rate_limited",m);
     if(/location is not supported|not available in your country/i.test(m))return fail("region",m);
-    if(r.status===400&&/api key/i.test(m)||r.status===401||r.status===403)return fail("bad_key",m);
-    return fail("network",m||("http "+r.status));
+    if(r.status===400&&/api key/i.test(m)||r.status===401||r.status===403)return fail("bad_key","HTTP "+r.status+" "+m);
+    return fail("network","HTTP "+r.status+" "+m);
   }
 
   async function call(key,model,prompt,json){
-    const r=await fetchT(API+encodeURIComponent(model)+":generateContent",{method:"POST",
-        headers:{"Content-Type":"application/json","x-goog-api-key":key},
+    const q=get(LS_AUTH)==="query";
+    const r=await fetchT(API+encodeURIComponent(model)+":generateContent"+(q?"?key="+encodeURIComponent(key):""),{method:"POST",
+        headers:Object.assign({"Content-Type":"application/json"},q?{}:{"x-goog-api-key":key}),
         body:JSON.stringify({contents:[{role:"user",parts:[{text:prompt}]}],
           generationConfig:Object.assign({temperature:0.2},json?{responseMimeType:"application/json"}:{})})},120000);
     let body=null;try{body=await r.json();}catch(e){}
@@ -67,14 +70,16 @@
     /* check a key with a tiny request, and save it if it works */
     async connect(key){
       key=(key||"").trim();if(!key)throw fail("empty");
-      const r=await fetchT(API.replace(/models\/$/,"models")+"?pageSize=200",{headers:{"x-goog-api-key":key}},20000);
+      const LIST=API.replace(/models\/$/,"models")+"?pageSize=200";let r,mode="header";
+      try{r=await fetchT(LIST,{headers:{"x-goog-api-key":key}},20000);}
+      catch(e){if(e.code!=="blocked")throw e;mode="query";r=await fetchT(LIST+"&key="+encodeURIComponent(key),{},20000);}
       let body=null;try{body=await r.json();}catch(e){}
       if(!r.ok)throw httpErr(r,body);
       const have=new Set(((body&&body.models)||[]).filter(m=>(m.supportedGenerationMethods||[]).includes("generateContent")).map(m=>String(m.name).replace(/^models\//,"")));
       const pick=MODELS.find(m=>have.has(m))||[...have].find(m=>/^gemini-[\d.]+-flash$/.test(m))||MODELS[0];
-      set(LS_KEY,key);set(LS_MODEL,pick);return pick;
+      set(LS_KEY,key);set(LS_MODEL,pick);set(LS_AUTH,mode);return pick;
     },
-    disconnect(){set(LS_KEY,null);set(LS_MODEL,null);},
+    disconnect(){set(LS_KEY,null);set(LS_MODEL,null);set(LS_AUTH,null);},
     sampler(){
       const key=get(LS_KEY);if(!key)return null;
       const s={json:async(prompt)=>parse(await run(key,prompt,true)),text:(prompt)=>run(key,prompt,false)};
@@ -82,14 +87,15 @@
     },
     isOwn:s=>!!s&&OWN.has(s),
     errText(e){
-      const c=e&&e.code;
-      if(c==="bad_key")return "Gemini 金鑰無效或被停用，請到首頁重新設定。";
+      const c=e&&e.code,why=e&&e.message&&e.message!==c?"（"+e.message.slice(0,160)+"）":"";
+      if(c==="bad_key")return "Google 拒絕了這把金鑰"+why+"。請到首頁重新設定。";
       if(c==="region")return "Google 不提供這個地區使用 Gemini API。";
       if(c==="rate_limited")return "免費額度暫時用完（每分鐘約 10 次），過一兩分鐘再按。";
       if(c==="invalid_json"||c==="empty_completion")return "AI 回覆的格式讀不懂，再按一次通常就好。";
       if(c==="empty")return "請先貼上金鑰。";
       if(c==="timeout")return "連線逾時，Google 一直沒有回應。可能是網路不穩、VPN，或學校／公司網路、擋廣告外掛擋掉了 Google API。換個網路（例如手機熱點）再試一次。";
-      return "連不上 Gemini，請檢查網路。";
+      if(c==="blocked")return "瀏覽器沒有收到 Google 的回應，請求被擋下了"+why+"。如果有裝擋廣告／隱私外掛，先對這個網站關掉；也可以換一個瀏覽器試試。";
+      return "Gemini 回報錯誤"+why+"。";
     }
   };
 

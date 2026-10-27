@@ -1,4 +1,4 @@
-/* EZexams: questions come in a different order on every visit.
+/* EZexams: questions (and their options) come in a different order on every visit.
    - Shuffled: chapter multiple choice, mock-exam multiple choice, a chapter's 問答／填充 block, written practice (.wq).
    - Not shuffled: past exams (a tab whose name contains 考古), blocks marked .noshuf (statistics problems whose sub-questions build on each other), and any question you have already answered keeps its
      original number and place; only the unanswered ones move around the remaining places.
@@ -58,8 +58,39 @@
     }
     order.forEach((i,k)=>{const it=r.items.find(x=>+x.dataset.i===i);if(it)renumber(it,k);});
   }
+  /* options are shuffled too (every visit), except on past exams, on questions you already answered,
+     on "all of the above" style options, and when the explanation names an option letter like (A) */
+  const OPTS={};   /* "box key|question index" → order of data-oi for this visit */
+  /* once answered, a question keeps the option order you answered it in (also on later visits) */
+  const SK="ezopt:"+location.pathname;let SAVED={};try{SAVED=JSON.parse(localStorage.getItem(SK)||"{}")||{};}catch(e){}
+  function keep(id,ord){if(SAVED[id]&&SAVED[id].join()===ord.join())return;SAVED[id]=ord;try{localStorage.setItem(SK,JSON.stringify(SAVED));}catch(e){}}
+  const FIXED=/all of the above|none of the above|both [a-d] and|以上皆|以上都|皆非/i;
+  const LETTER=/\([A-D]\)|選 ?[A-D](?![A-Za-z])|答案(就變成|是)? ?\(?[A-D](?![A-Za-z])|[A-D] ?或 ?[A-D](?![A-Za-z])/;
+  function shuffleOpts(){
+    document.querySelectorAll(".quiz[data-quiz] .qitem, .exambody .qitem").forEach((it,n)=>{
+      const os=[...it.querySelectorAll(".opt[data-oi]")];if(os.length<3)return;
+      const wrap=os[0].parentElement;if(os.some(o=>o.parentElement!==wrap)||isPast(it))return;
+      const box=it.closest(".quiz[data-quiz], .exambody"),bk=box.dataset.quiz||box.dataset.exam||(box.closest(".view")||{}).id;
+      const qi=it.dataset.i!=null?+it.dataset.i:[...box.querySelectorAll(".qitem")].indexOf(it);
+      const id=bk+"|"+qi;let ord=OPTS[id];
+      if(!ord&&SAVED[id]&&SAVED[id].length===os.length)ord=OPTS[id]=SAVED[id].slice();
+      if(!ord){
+        if(answered(it)||os.some(o=>FIXED.test(o.textContent)))return;
+        const q=typeof QUIZ!=="undefined"&&QUIZ[bk]&&QUIZ[bk][qi];if(q&&LETTER.test(q.e||""))return;
+        ord=os.map(o=>o.dataset.oi);for(let j=ord.length-1;j>0;j--){const k=Math.floor(Math.random()*(j+1));[ord[j],ord[k]]=[ord[k],ord[j]];}
+        OPTS[id]=ord;
+      }
+      if(answered(it))keep(id,ord);
+      if(os.map(o=>o.dataset.oi).join()!==ord.join()){const by={};os.forEach(o=>by[o.dataset.oi]=o);ord.forEach(oi=>{if(by[oi])wrap.appendChild(by[oi]);});}
+      [...wrap.querySelectorAll(":scope > .opt .ab")].forEach((a,k)=>{const L="ABCDEFGH"[k];if(a.textContent!==L)a.textContent=L;});
+      /* the page writes "正確答案是 B" from the original order; point it at the letter shown now */
+      const r=wrap.querySelector(":scope > .opt.right .ab");if(!r)return;const L=r.textContent;
+      it.querySelectorAll(".expl .tag").forEach(t=>{const v=t.textContent.replace(/(正確答案是 \(?)[A-H]/,"$1"+L);if(v!==t.textContent)t.textContent=v;});
+      it.querySelectorAll(".expl .ansline b").forEach(b=>{const v=b.textContent.replace(/^Answer: \([a-h]\)/,"Answer: ("+L.toLowerCase()+")");if(v!==b.textContent)b.textContent=v;});
+    });
+  }
   let busy=false;
-  function all(){if(busy)return;busy=true;try{runs().forEach(arrange);}finally{busy=false;}}
+  function all(){if(busy)return;busy=true;try{runs().forEach(arrange);shuffleOpts();}finally{busy=false;}}
   all();
   /* a quiz that is drawn again (e.g. after 重做) gets the same order back */
   let t=null;new MutationObserver(()=>{if(busy)return;clearTimeout(t);t=setTimeout(all,0);})

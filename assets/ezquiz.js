@@ -1,5 +1,5 @@
 /* EZexams per-question tools (every subject):
-   - Chapter multiple choice is scored like the written part: a bar on top shows 得分 X / 50 分 (每題 50 ÷ 題數).
+   - Chapter multiple choice is scored like the written part: a bar on top shows 得分 X / 50 分 (每題 50 ÷ 題數; window.EZ_MC_PTS changes the 50).
      The old row under the questions (已作答…／重做這章) is gone.
    - Every answered question gets a 「清除作答」 button under it (multiple choice and written questions).
      A wrong answer therefore shows two buttons: 回講義這一段 (from ezwrong.js) and 清除作答.
@@ -71,8 +71,9 @@
     if(first&&bar.nextElementSibling!==first&&!bar.contains(first))box.insertBefore(bar,first);
     const qs=QUIZ[key],a=S.quiz&&S.quiz[key]||{};
     let n=0,r=0;Object.keys(a).forEach(k=>{if(qs[k]){n++;if(a[k]===qs[k].a)r++;}});
-    const sc=Math.round(r*50/qs.length*10)/10;
-    const t="得分 "+sc+" / 50 分（已作答 "+n+" / "+qs.length+" 題）";
+    const P=window.EZ_MC_PTS||50; /* a page can set its own total (data structures: 40, like Part I of its exam) */
+    const sc=Math.round(r*P/qs.length*10)/10;
+    const t="得分 "+sc+" / "+P+" 分（已作答 "+n+" / "+qs.length+" 題）";
     const s=bar.querySelector(".score");if(s.textContent!==t)s.textContent=t;
   }
   function ensureClear(el,on,fn){

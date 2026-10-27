@@ -1,7 +1,8 @@
 /* EZexams: AI explanation for multiple-choice questions (uses the Gemini key set on the home page, see ezai.js).
    - Answer a question and Gemini explains it: if you were wrong, what exactly went wrong in your pick,
      then why each of the four options is right or wrong, and the one point to remember.
-   - Questions answered on an earlier visit get a 「AI 分析四個選項」 button instead, so the free quota is not used up at once.
+   - Every answered question in the open tab is analysed automatically (also ones answered on an earlier visit),
+     one at a time and at most about 9 a minute; the one you just answered goes first.
    - Results are kept in this browser (localStorage "ezexp:<page>"), so each question is only asked once.
    - Without a key (or if Gemini fails), the original short explanation stays as it is.
    Option letters are taken from the page, so they match the shuffled order you see.
@@ -60,25 +61,52 @@ x.q.e?"TEACHER'S SHORT NOTE (use it as the ground truth): "+x.q.e:"",
     ].filter(Boolean).join("\n");
   }
 
-  let chain=Promise.resolve();   /* one request at a time: the free tier allows about 10 a minute */
-  function ask(it,x){
-    if(PEND[x.id]||CACHE[x.id])return;
-    const s=window.EZAI&&EZAI.sampler();if(!s)return;
-    PEND[x.id]=true;delete ERR[x.id];draw(it,x);
-    const optsOi=[...it.querySelectorAll(".opt[data-oi]")].map(o=>({oi:o.dataset.oi,L:o.querySelector(".ab").textContent.trim()}));
-    const p=prompt(it,x);
-    chain=chain.then(async()=>{
-      try{
-        const out=await s.json(p);
-        const arr=(out&&Array.isArray(out.options))?out.options:[];
-        /* keep each option's analysis by its original position, so it still fits after the options move */
-        const by={};arr.forEach(o=>{const m=optsOi.find(z=>z.L===String(o.letter||"").replace(/[()\s]/g,"").toUpperCase());if(m)by[m.oi]={ok:!!o.correct,why:String(o.why||"")};});
-        if(!Object.keys(by).length)throw Object.assign(new Error("invalid_json"),{code:"invalid_json"});
-        CACHE[x.id]={mistake:x.ok?"":String(out.mistake||""),opts:by,point:String(out.point||""),at:Date.now()};saveCache();
-      }catch(e){ERR[x.id]=window.EZAI?EZAI.errText(e):"AI 解析失敗。";}
-      finally{delete PEND[x.id];document.querySelectorAll(".quiz[data-quiz] > .qitem").forEach(el=>{const y=info(el);if(y&&y.id===x.id)draw(el,y);});}
-    });
+  /* one request at a time, at most about 9 a minute (the free tier allows about 10);
+     a question you just answered jumps to the front of the line */
+  const Q=[],QD=new Set();let running=false,lastStart=0;
+  function enqueue(it,x,front){
+    if(CACHE[x.id]||PEND[x.id]||ERR[x.id])return;
+    const i=Q.findIndex(j=>j.x.id===x.id);
+    if(i>=0){if(!front)return;Q.splice(i,1);}
+    else if(!connected())return;
+    const job={it,x,tries:0};if(front)Q.unshift(job);else Q.push(job);QD.add(x.id);draw(it,x);pump();
   }
+  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+  async function pump(){
+    if(running)return;running=true;
+    try{
+      while(Q.length){
+        const wait=lastStart+6800-Date.now();if(wait>0){await sleep(wait);if(!Q.length)break;}   /* pick the job only after waiting, so a fresh answer can still jump ahead */
+        const job=Q.shift(),x=job.x;
+        if(CACHE[x.id]){QD.delete(x.id);continue;}
+        const it=findItem(x.id)||job.it;if(!it||!it.isConnected){QD.delete(x.id);continue;}
+        const s=window.EZAI&&EZAI.sampler();if(!s){QD.delete(x.id);continue;}
+        lastStart=Date.now();QD.delete(x.id);PEND[x.id]=true;redraw(x.id);
+        const optsOi=[...it.querySelectorAll(".opt[data-oi]")].map(o=>({oi:o.dataset.oi,L:o.querySelector(".ab").textContent.trim()}));
+        try{
+          const out=await s.json(prompt(it,x));
+          const arr=(out&&Array.isArray(out.options))?out.options:[];
+          /* keep each option's analysis by its original position, so it still fits after the options move */
+          const by={};arr.forEach(o=>{const m=optsOi.find(z=>z.L===String(o.letter||"").replace(/[()\s]/g,"").toUpperCase());if(m)by[m.oi]={ok:!!o.correct,why:String(o.why||"")};});
+          if(!Object.keys(by).length)throw Object.assign(new Error("invalid_json"),{code:"invalid_json"});
+          CACHE[x.id]={mistake:x.ok?"":String(out.mistake||""),opts:by,point:String(out.point||""),at:Date.now()};saveCache();
+          delete PEND[x.id];redraw(x.id);
+        }catch(e){
+          delete PEND[x.id];
+          const c=e&&e.code;
+          /* quota or overload: wait a minute and carry on by itself */
+          if((c==="rate_limited"||c==="busy"||c==="invalid_json"||c==="empty_completion")&&job.tries<3){
+            job.tries++;Q.unshift(job);QD.add(x.id);WAITMSG=c==="rate_limited"?"免費額度暫時用完，一分鐘後自動繼續…":"Gemini 暫時很忙，稍後自動繼續…";redraw(x.id);
+            await sleep(c==="invalid_json"||c==="empty_completion"?3000:60000);WAITMSG="";continue;
+          }
+          ERR[x.id]=window.EZAI?EZAI.errText(e):"AI 解析失敗。";redraw(x.id);
+        }
+      }
+    }finally{running=false;}
+  }
+  let WAITMSG="";
+  function findItem(id){return [...document.querySelectorAll(".quiz[data-quiz] > .qitem")].find(el=>{const y=info(el);return y&&y.id===id;});}
+  function redraw(id){document.querySelectorAll(".quiz[data-quiz] > .qitem").forEach(el=>{const y=info(el);if(y&&y.id===id)draw(el,y);});}
 
   /* the page's own explanation text moves into .oexp, so it can step aside when the AI one is there */
   function wrapOrig(ex){
@@ -100,8 +128,8 @@ x.q.e?"TEACHER'S SHORT NOTE (use it as the ground truth): "+x.q.e:"",
           return '<li class="'+(a.ok?"ok":"no")+(o.dataset.oi===String(x.pick)?" mine":"")+'"><span class="ab">'+L+'</span><span>'+(a.ok?"<b>正確。</b>":"")+esc(a.why)+'</span></li>';}).join("")+'</ul>'+
         (c.point?'<p class="aipt">重點：'+esc(c.point)+'</p>':'');
     }else if(PEND[x.id]){sig="p:"+x.id;html='<div class="aih">AI 解析</div><span class="aimsg">AI 分析中…</span>';}
+    else if(QD.has(x.id)){const m=WAITMSG&&Q[0]&&Q[0].x.id===x.id?WAITMSG:"排隊中，前面的題目分析完就輪到這題…";sig="q:"+x.id+m;html='<div class="aih">AI 解析</div><span class="aimsg">'+m+'</span>';}
     else if(ERR[x.id]){sig="e:"+x.id+ERR[x.id];html='<div class="aih">AI 解析</div><span class="aimsg">'+esc(ERR[x.id])+'</span> <button class="btn aigo" type="button">再試一次</button>';}
-    else if(connected()){sig="b:"+x.id;html='<button class="btn aigo" type="button">AI 分析四個選項</button>';}
     else if(!x.ok){sig="h:"+x.id;html='<span class="aimsg">到<a href="../../#ai">首頁設定免費的 Gemini 金鑰</a>，這裡就會用 AI 分析你錯在哪、四個選項各自為什麼對或錯。</span>';}
     else{const old=ex.querySelector(":scope > .aiexp");if(old)old.remove();ex.classList.remove("hasai");return;}
     let box=ex.querySelector(":scope > .aiexp");
@@ -109,7 +137,7 @@ x.q.e?"TEACHER'S SHORT NOTE (use it as the ground truth): "+x.q.e:"",
     if(!box){box=document.createElement("div");box.className="aiexp";ex.appendChild(box);}
     box.dataset.sig=sig;box.innerHTML=html;
     ex.classList.toggle("hasai",!!c);
-    const b=box.querySelector(".aigo");if(b)b.onclick=()=>{delete ERR[x.id];ask(it,x);};
+    const b=box.querySelector(".aigo");if(b)b.onclick=()=>{delete ERR[x.id];enqueue(it,x,true);};
   }
   const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
@@ -117,7 +145,10 @@ x.q.e?"TEACHER'S SHORT NOTE (use it as the ground truth): "+x.q.e:"",
   function all(){
     if(busy)return;busy=true;
     try{document.querySelectorAll(".quiz[data-quiz] > .qitem").forEach(it=>{const x=info(it);if(!x)return;
-      if(FRESH.has(it)&&!CACHE[x.id]&&!PEND[x.id]&&!ERR[x.id]&&connected()){FRESH.delete(it);ask(it,x);}else draw(it,x);});}
+      /* every answered question in the tab you are looking at is analysed by itself, the one just answered first */
+      const v=it.closest(".view");const shown=!v||!v.hidden;
+      if(FRESH.has(it)){FRESH.delete(it);enqueue(it,x,true);}else if(shown)enqueue(it,x,false);
+      draw(it,x);});}
     finally{busy=false;}
   }
   /* an option clicked now: explain it right away */

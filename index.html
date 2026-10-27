@@ -18,7 +18,7 @@
 <link rel="apple-touch-icon" href="assets/icon-180.png">
 <link rel="manifest" href="manifest.webmanifest">
 <script src="assets/ezcore.js?v=86f55522"></script>
-<script src="assets/ezai.js?v=a07e8300"></script>
+<script src="assets/ezai.js?v=56aaaf71"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=LXGW+WenKai+TC:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
@@ -255,10 +255,6 @@ footer::before{content:"// ";}
         </form>
         <p class="small">金鑰只存在這台裝置的瀏覽器裡，而且只有建立和修改 Gist 的權限，看不到你的程式碼。</p>
       </div>
-      <div id="syncOn" hidden>
-        <p>進度會自動同步：作答後 2 秒內上傳，切回分頁或打開頁面時下載最新的。</p>
-        <div class="tokrow"><button class="btn primary" type="button" id="syncNow">立即同步</button><button class="btn" type="button" id="syncOut">這台裝置取消同步</button></div>
-      </div>
       <p class="msg" id="syncMsg" role="status"></p>
     </div>
   </section>
@@ -279,10 +275,6 @@ footer::before{content:"// ";}
           <button class="btn primary" type="submit" id="aiBtn">啟用</button>
         </form>
         <p class="small">金鑰只存在這台裝置的瀏覽器，不會同步到 Gist。免費額度大約每分鐘 10 次、每天上千次，一次「批改全部」只算 1 次。注意：免費版 Google 可能拿送出的內容改進模型，所以不要在答案裡寫個人資料。</p>
-      </div>
-      <div id="aiOn" hidden>
-        <p>手寫題按「批改這題」或「批改全部」就會用 Gemini 批改。如果額度用完或連不上，會自動先用關鍵字比對，不會卡住。</p>
-        <div class="tokrow"><button class="btn" type="button" id="aiOut">這台裝置停用 AI 批改</button></div>
       </div>
       <p class="msg" id="aiMsg" role="status"></p>
     </div>
@@ -308,9 +300,11 @@ footer::before{content:"// ";}
 (function(){
   const $=id=>document.getElementById(id);
   function fmt(t){if(!t)return "";const d=new Date(t);return "最後同步 "+d.toLocaleString("zh-TW",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"});}
+  let keepSync=false; /* just linked: keep the panel up so the success message can be read */
   function render(st){
     const on=EZSync.connected();
-    $("syncOff").hidden=on;$("syncOn").hidden=!on;
+    /* once linked the panel is not needed; it comes back for a sync error or when a page links to #sync */
+    $("sync").hidden=on&&!keepSync&&st.state!=="err"&&location.hash!=="#sync";
     $("syncLed").className="led "+(on?(st.state==="dirty"?"sync":st.state):"");
     $("syncTitle").textContent=on?("已連結 GitHub"+(EZSync.user()?" @"+EZSync.user():"")):"只存在這台裝置";
     $("syncSub").textContent=on?(st.state==="sync"?"同步中…":fmt(EZSync.lastSync())):"";
@@ -321,40 +315,33 @@ footer::before{content:"// ";}
   $("tokForm").addEventListener("submit",async e=>{
     e.preventDefault();const b=$("tokBtn"),m=$("syncMsg");
     b.disabled=true;m.className="msg";m.textContent="檢查金鑰中…";
-    try{const login=await EZSync.connect($("tokInput").value);$("tokInput").value="";m.className="msg ok";m.textContent="連結成功（@"+login+"）。打開任何一科，進度就會自動同步。";render(EZSync.status());}
+    try{const login=await EZSync.connect($("tokInput").value);$("tokInput").value="";keepSync=true;m.className="msg ok";m.textContent="連結成功（@"+login+"）。打開任何一科，進度就會自動同步。下次打開首頁這一區會自動收起。";render(EZSync.status());}
     catch(err){m.className="msg err";m.textContent=err.code==="empty"?"請先貼上金鑰。":err.code==="auth"?"金鑰不對，或沒有勾 gist 權限。請重新產生一把。":EZSync.errMsg(err);}
     finally{b.disabled=false;}
   });
-  $("syncNow").addEventListener("click",async()=>{const m=$("syncMsg");m.className="msg";m.textContent="";await EZSync.syncAll();if(EZSync.status().state==="ok"){m.className="msg ok";m.textContent="已同步。";}render(EZSync.status());});
-  $("syncOut").addEventListener("click",e=>{
-    const b=e.currentTarget;
-    if(b.dataset.armed!=="1"){b.dataset.armed="1";b.textContent="確定？雲端資料會保留";setTimeout(()=>{b.dataset.armed="";b.textContent="這台裝置取消同步";},4000);return;}
-    EZSync.disconnect();$("syncMsg").className="msg";$("syncMsg").textContent="這台裝置已取消同步，雲端的進度還在。";render(EZSync.status());
-  });
+  addEventListener("hashchange",()=>render(EZSync.status()));
   render(EZSync.status());
 })();
 </script>
 <script>
 (function(){
   const $=id=>document.getElementById(id);
+  let keepAi=false;
   function render(){
     const on=EZAI.connected();
-    $("aiOff").hidden=on;$("aiOn").hidden=!on;$("aiLed").className="led "+(on?"ok":"");
-    $("aiTitle").textContent=on?"已啟用 Gemini 批改":"用關鍵字比對批改";
+    /* once enabled the panel is not needed; it comes back if Google rejects the key or a page links to #ai */
+    $("ai").hidden=on&&!keepAi&&!EZAI.rejected()&&location.hash!=="#ai";$("aiLed").className="led "+(on&&!EZAI.rejected()?"ok":on?"err":"");
+    $("aiTitle").textContent=on?(EZAI.rejected()?"Google 不接受目前的金鑰，請貼一把新的":"已啟用 Gemini 批改"):"用關鍵字比對批改";
     $("aiSub").textContent=on?EZAI.model():"";
   }
   $("aiForm").addEventListener("submit",async e=>{
     e.preventDefault();const b=$("aiBtn"),m=$("aiMsg");
     b.disabled=true;m.className="msg";m.textContent="測試金鑰中…";
-    try{await EZAI.connect($("aiInput").value);$("aiInput").value="";m.className="msg ok";m.textContent="啟用成功。打開任何一科的考古題或模擬試題，批改就會用 AI。";render();}
+    try{await EZAI.connect($("aiInput").value);$("aiInput").value="";keepAi=true;m.className="msg ok";m.textContent="啟用成功。打開任何一科的考古題或模擬試題，批改就會用 AI。下次打開首頁這一區會自動收起。";render();}
     catch(err){m.className="msg err";m.textContent=EZAI.errText(err);}
     finally{b.disabled=false;}
   });
-  $("aiOut").addEventListener("click",e=>{
-    const b=e.currentTarget;
-    if(b.dataset.armed!=="1"){b.dataset.armed="1";b.textContent="確定？";setTimeout(()=>{b.dataset.armed="";b.textContent="這台裝置停用 AI 批改";},4000);return;}
-    EZAI.disconnect();$("aiMsg").className="msg";$("aiMsg").textContent="已停用，回到關鍵字比對。";render();
-  });
+  addEventListener("hashchange",render);
   render();
 })();
 </script>

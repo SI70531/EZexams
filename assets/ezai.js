@@ -6,7 +6,7 @@
    Error codes: bad_key, region, rate_limited, timeout, blocked (no response reached the page), invalid_json, empty_completion, network.
    Error messages carry Google's own reason, so errText() can show it. */
 (function(){
-  const LS_KEY="ezai-key",LS_MODEL="ezai-model",LS_AUTH="ezai-auth";
+  const LS_KEY="ezai-key",LS_MODEL="ezai-model",LS_AUTH="ezai-auth",LS_BAD="ezai-rejected";
   /* best first; when one is overloaded or its free quota is used up, the next one is tried */
   const MODELS=["gemini-flash-latest","gemini-2.5-flash","gemini-flash-lite-latest","gemini-2.5-flash-lite","gemini-2.0-flash"];
   const API="https://generativelanguage.googleapis.com/v1beta/models/";
@@ -60,6 +60,7 @@
           last=e;
           if(e.code==="no_model"){if(m===saved){saved=null;set(LS_MODEL,null);}continue;}
           if(e.code==="busy"||e.code==="rate_limited")continue;
+          if(e.code==="bad_key")set(LS_BAD,"1"); /* the home page shows the key panel again */
           throw e;
         }
       }
@@ -91,9 +92,10 @@
       if(!r.ok)throw httpErr(r,body);
       const have=new Set(((body&&body.models)||[]).filter(m=>(m.supportedGenerationMethods||[]).includes("generateContent")).map(m=>String(m.name).replace(/^models\//,"")));
       const pick=MODELS.find(m=>have.has(m))||[...have].find(m=>/^gemini-[\d.]+-flash$/.test(m))||MODELS[0];
-      set(LS_KEY,key);set(LS_MODEL,pick);set(LS_AUTH,mode);return pick;
+      set(LS_KEY,key);set(LS_MODEL,pick);set(LS_AUTH,mode);set(LS_BAD,null);return pick;
     },
-    disconnect(){set(LS_KEY,null);set(LS_MODEL,null);set(LS_AUTH,null);},
+    disconnect(){set(LS_KEY,null);set(LS_MODEL,null);set(LS_AUTH,null);set(LS_BAD,null);},
+    rejected:()=>!!get(LS_BAD),
     sampler(){
       const key=get(LS_KEY);if(!key)return null;
       const s={json:async(prompt)=>parse(await run(key,prompt,true)),text:(prompt)=>run(key,prompt,false)};

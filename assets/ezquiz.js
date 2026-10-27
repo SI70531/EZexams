@@ -82,7 +82,25 @@
     if(on){if(!b){b=document.createElement("button");b.type="button";b.className="btn qclear";b.textContent="清除作答";row(el).appendChild(b);}b.onclick=fn;}
     else if(b){b.remove();if(r&&!r.children.length)r.remove();}
   }
+  /* after grading (one question or 批改全部), open that question's reference answer by itself */
+  const WAIT=new Map();   /* .exq → {snap: grade box before grading, at} */
+  document.addEventListener("click",e=>{
+    const b=e.target.closest&&e.target.closest(".exq .grade, .examtools .gradeall");if(!b)return;
+    const list=b.classList.contains("gradeall")?[...(b.closest(".exam")||document).querySelectorAll(".exq")].filter(q=>{const t=q.querySelector("textarea");return t&&t.value.trim();}):[b.closest(".exq")];
+    list.forEach(q=>{if(!q)return;const g=q.querySelector(".gres");WAIT.set(q,{snap:g?g.innerHTML:"",at:Date.now(),btn:b});});
+  },true);
+  function openGraded(){
+    WAIT.forEach((w,q)=>{
+      if(Date.now()-w.at>180000){WAIT.delete(q);return;}
+      const g=q.querySelector(".gres"),d=q.querySelector("details.qa");if(!g||!d)return;
+      const st=(w.btn.classList.contains("gradeall")?(w.btn.closest(".examtools")||document).querySelector(".gmsg"):q.querySelector(".gstat"));
+      const finished=!w.btn.disabled&&st&&/完成/.test(st.textContent);
+      if(!g.hidden&&!g.classList.contains("stale")&&(g.innerHTML!==w.snap||finished)){d.open=true;WAIT.delete(q);}
+      else if(finished&&g.hidden)WAIT.delete(q);
+    });
+  }
   function update(){
+    openGraded();
     document.querySelectorAll(".quiz[data-quiz]").forEach(box=>{
       scoreBar(box);
       box.querySelectorAll(":scope > .qitem").forEach(it=>ensureClear(it,!!it.querySelector(".opt.right,.opt.wrong"),()=>clearMC(box,it)));

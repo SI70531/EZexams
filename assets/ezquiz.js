@@ -12,7 +12,7 @@
   st.textContent=`.quiz>.qscore{display:none!important}
 .qbtns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 .qbtns .wnotes{margin-top:0}
-.qclear{color:var(--muted)!important}
+.qclear{color:var(--muted)!important;margin-left:auto}   /* 清除作答 sits at the right end of the row, 回講義這一段 stays on the left */
 .mcscore{margin:6px 0 14px}`;
   document.head.appendChild(st);
 

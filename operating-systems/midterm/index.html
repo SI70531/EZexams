@@ -2711,7 +2711,7 @@ document.querySelectorAll(".widget[data-w]").forEach(b=>{try{W[b.dataset.w](b);}
       const rows=[];const first=[];for(let i=0;i<=ti;i++)slots[i].forEach(u=>{if(!first.includes(u))first.push(u);});
       rows.push({a:ti,z:ti,u:first});
       for(let i=ti+1;i<N;i++){const last=rows[rows.length-1];
-        const us=slots[i].filter(u=>!first.includes(u));if(rows.length>1&&last.u.join()===us.join())last.z=i;else rows.push({a:i,z:i,u:us});}
+        const us=slots[i].slice();if(rows.length>1&&last.u.join()===us.join())last.z=i;else rows.push({a:i,z:i,u:us});}
       if(title)title.textContent=N+" 天讀書計畫（考試 "+(EXAM.getMonth()+1)+"/"+EXAM.getDate()+"）";
       let h="";
       rows.forEach((r,k)=>{if(!r.u.length)return;

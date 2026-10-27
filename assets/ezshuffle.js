@@ -1,6 +1,6 @@
 /* EZexams: questions come in a different order on every visit.
    - Shuffled: chapter multiple choice, mock-exam multiple choice, a chapter's 問答／填充 block, written practice (.wq).
-   - Not shuffled: past exams (a tab whose name contains 考古), and any question you have already answered keeps its
+   - Not shuffled: past exams (a tab whose name contains 考古), blocks marked .noshuf (statistics problems whose sub-questions build on each other), and any question you have already answered keeps its
      original number and place; only the unanswered ones move around the remaining places.
    Every question keeps its original position in data-i, which is what answers are saved by, so progress is unaffected.
    Load after the page's main script (uses VIEWS). */
@@ -17,7 +17,7 @@
       const parents=new Set();
       document.querySelectorAll(itemSel).forEach(it=>{if(it.parentElement&&(boxSel==="*"||it.parentElement.matches(boxSel)))parents.add(it.parentElement);});
       parents.forEach(p=>{
-        if(isPast(p))return;
+        if(isPast(p)||p.closest(".noshuf"))return;   /* .noshuf: sub-questions that build on each other */
         let cur=null,idx=0;
         [...p.children].forEach(ch=>{
           if(ch.matches(itemSel)){if(!cur){cur={box:p,itemSel,key:idx++,items:[]};out.push(cur);}cur.items.push(ch);}

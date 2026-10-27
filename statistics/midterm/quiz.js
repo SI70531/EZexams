@@ -1,6 +1,8 @@
 /* 統計學期中衝刺 question bank (QUIZ).
    Progress is saved by chapter and question position, so keep existing questions in the same order:
-   add new ones at the END of a chapter, and fix typos in place. */
+   add new ones at the END of a chapter, and fix typos in place.
+   If the 錯題區 files a question under the wrong notes section, add sec:"<that section's data-sec>" to it,
+   e.g. {q:"...", o:[...], a:1, e:"...", sec:"3.2"}. */
 const QUIZ = {
 ch1: [
  {q:"In a data set about 10 tablets with columns Tablet name, Cost, OS, Display Size and Battery Life, how many variables are there?", o:["5","4","10","40"], a:1, e:"變數是元素的特徵（欄）。Tablet name 只是用來辨認元素的名稱，不算變數，所以是 Cost、OS、Display Size、Battery Life 共 4 個。"},

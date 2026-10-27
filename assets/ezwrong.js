@@ -14,7 +14,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;margin-left:10px;font-size
 .wcard .cbody{font-size:14px;overflow-x:auto}
 .wcard .cbody .lab,.wcard .cbody button,.wcard .cbody canvas,.wcard .cbody input,.wcard .cbody select{display:none}
 .wcard pre{white-space:pre-wrap}
-.wgroup h3{margin-top:28px}
+.wgroup h3{margin-top:28px;scroll-margin-top:80px}
 @keyframes wflash{0%,60%{box-shadow:0 0 0 4px var(--bad,#c62828)}100%{box-shadow:0 0 0 0 transparent}}
 .wflash{animation:wflash 2.2s ease-out;border-radius:10px}`;
   const stl=document.createElement("style");stl.textContent=css;document.head.appendChild(stl);
@@ -103,7 +103,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;margin-left:10px;font-size
     SECS.forEach(s=>{
       const n=(by.get(s.h.id)||[]).length;s.h.classList.toggle("missed",n>0);
       let b=s.h.querySelector(".missbadge");
-      if(n){if(!b){b=document.createElement("button");b.type="button";b.className="missbadge";b.dataset.go="wrong";s.h.appendChild(b);}b.textContent="✗ 錯 "+n+" 題 → 錯題區";}
+      if(n){if(!b){b=document.createElement("button");b.type="button";b.className="missbadge";b.dataset.go="wrong";b.dataset.wsec=s.h.id;s.h.appendChild(b);}b.textContent="✗ 錯 "+n+" 題 → 錯題區";}
       else if(b)b.remove();
     });
     const box=document.getElementById("wrongList");box.innerHTML="";
@@ -112,7 +112,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;margin-left:10px;font-size
     const order=SECS.map(s=>s.h.id).concat(["_"]);
     order.forEach(k=>{
       const arr=by.get(k);if(!arr)return;const s=SECS.find(x=>x.h.id===k);
-      const g=document.createElement("div");g.className="wgroup";
+      const g=document.createElement("div");g.className="wgroup";g.dataset.wsec=k;
       const t=document.createElement("h3");t.textContent=(s?(NAME[s.ch]||s.ch)+"｜"+s.title.replace(/✗ 錯.*$/,"").trim():"其他")+"（"+arr.length+" 題）";g.appendChild(t);
       arr.forEach(w=>{
         const c=document.createElement("div");c.className="wcard";
@@ -135,7 +135,13 @@ h3 .missbadge{display:inline-block;white-space:nowrap;margin-left:10px;font-size
       });
       box.appendChild(g);
     });
+    const sec=pendingSec;pendingSec=null;jumpTo(box,sec);
   }
+  /* a "✗ 錯 N 題 → 錯題區" badge jumps straight to that section's mistakes, not the top of the list */
+  let pendingSec=null;
+  const jumpTo=function(box,sec){if(!sec)return;const g=box.querySelector('.wgroup[data-wsec="'+CSS.escape(sec)+'"]');if(!g)return;
+    setTimeout(()=>{(g.querySelector("h3")||g).scrollIntoView({block:"start"});g.querySelectorAll(".wcard").forEach(c=>{c.classList.remove("wflash");void c.offsetWidth;c.classList.add("wflash");});},30);};
+  document.addEventListener("click",e=>{const b=e.target.closest(".missbadge");if(b)pendingSec=b.dataset.wsec||null;},true);
   let tm=null;const later=()=>{clearTimeout(tm);tm=setTimeout(render,120);};
   document.addEventListener("click",later);document.addEventListener("change",later);
   window.addEventListener("storage",later);

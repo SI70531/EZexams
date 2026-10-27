@@ -2686,7 +2686,7 @@ W.expavg=function(box){
 document.querySelectorAll(".widget[data-w]").forEach(b=>{try{W[b.dataset.w](b);}catch(e){b.textContent="互動圖載入失敗";}});
 
 /* EZexams study plan (a finished chapter, i.e. its tab shows data-state="terminated", gets its button marked; a day whose buttons are all finished gets marked too): <div class="plan" data-exam="YYYY-MM-DD"> with one .day per unit.
-   Re-splits the units over the days left before the exam (at least 5 days), shows dates, and redraws at midnight. */
+   Re-splits the units over the days left before the exam (default 14 days ending the day before the exam; past days fold into today), shows dates, and redraws at midnight. */
 (function(){
   function setup(box){
     const all=[...box.querySelectorAll(".day .t")].map(t=>t.innerHTML);
@@ -2699,18 +2699,23 @@ document.querySelectorAll(".widget[data-w]").forEach(b=>{try{W[b.dataset.w](b);}
     const title=box.previousElementSibling&&/H[2-4]/.test(box.previousElementSibling.tagName)?box.previousElementSibling:null;
     function render(){
       const now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
-      const left=Math.round((EXAM-today)/864e5);
-      const n=Math.max(5,left),U=units.length;
-      if(title)title.textContent=n+" 天讀書計畫（考試 "+(EXAM.getMonth()+1)+"/"+EXAM.getDate()+"）";
-      const lab=i=>{const off=left>=n?i:left>0?Math.floor(i*left/n):0;const dd=new Date(today);dd.setDate(dd.getDate()+off);return (dd.getMonth()+1)+"/"+dd.getDate();};
+      const N=+(box.dataset.days||14),U=units.length,DAY=864e5;
+      const start=new Date(EXAM);start.setDate(start.getDate()-N); /* plan runs from exam-N to exam-1 */
+      const lab=i=>{const dd=new Date(start);dd.setDate(dd.getDate()+i);return (dd.getMonth()+1)+"/"+dd.getDate();};
+      /* units for each of the N days */
+      const slots=[];for(let i=0;i<N;i++)slots.push([]);
+      if(N>=U){for(let u=0;u<U;u++){const x=Math.floor(u*N/U),z=Math.floor((u+1)*N/U)-1;for(let i=x;i<=z;i++)slots[i].push(u);}}
+      else{let k=0;for(let i=0;i<N;i++){const take=Math.floor(U/N)+(i<U%N?1:0);for(let j=0;j<take;j++)slots[i].push(k++);}}
+      /* days already past fold into today */
+      const ti=Math.max(0,Math.min(N-1,Math.round((today-start)/DAY)));
+      const rows=[];const first=[];for(let i=0;i<=ti;i++)slots[i].forEach(u=>{if(!first.includes(u))first.push(u);});
+      rows.push({a:ti,z:ti,u:first});
+      for(let i=ti+1;i<N;i++){const last=rows[rows.length-1];
+        const us=slots[i].filter(u=>!first.includes(u));if(rows.length>1&&last.u.join()===us.join())last.z=i;else rows.push({a:i,z:i,u:us});}
+      if(title)title.textContent=N+" 天讀書計畫（考試 "+(EXAM.getMonth()+1)+"/"+EXAM.getDate()+"）";
       let h="";
-      if(n>=U){ /* more days than units: each unit gets a run of days */
-        for(let u=0;u<U;u++){const a=Math.floor(u*n/U),z=Math.floor((u+1)*n/U)-1;
-          h+='<div class="day"><div class="d">Day '+(a+1)+(z>a?"–"+(z+1):"")+'<br><span class="small">'+lab(a)+(z>a&&lab(z)!==lab(a)?"–"+lab(z):"")+'</span></div><div class="t">'+units[u]+'</div></div>';}
-      }else{ /* fewer days than units: several units per day */
-        let k=0;for(let i=0;i<n;i++){const take=Math.floor(U/n)+(i<U%n?1:0),items=units.slice(k,k+take);k+=take;
-          h+='<div class="day"><div class="d">Day '+(i+1)+'<br><span class="small">'+lab(i)+'</span></div><div class="t">'+items.join('<hr class="plansep">')+'</div></div>';}
-      }
+      rows.forEach((r,k)=>{if(!r.u.length)return;
+        h+='<div class="day'+(k===0&&today>=start?' today':'')+'"><div class="d">Day '+(r.a+1)+(r.z>r.a?"–"+(r.z+1):"")+'<br><span class="small">'+lab(r.a)+(r.z>r.a?"–"+lab(r.z):"")+'</span></div><div class="t">'+r.u.map(u=>units[u]).join('<hr class="plansep">')+'</div></div>';});
       box.innerHTML=h;mark();schedule();
     }
     const isDone=g=>{const t=document.querySelector('[data-go="'+g+'"][data-state]');return !!t&&t.dataset.state==="terminated";};

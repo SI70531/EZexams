@@ -1,6 +1,7 @@
 /* EZexams 錯題區: collects wrong answers (chapter MC, mock MC, written questions below full marks),
    marks the matching notes section in red, and adds a 錯題區 tab after 總複習 (or at the end).
-   Load after the page's main script. Uses the page globals QUIZ, S, VIEWS, show, renderTabs (and MOCK if present). */
+   Load after the page's main script. Uses the page globals QUIZ, S, VIEWS, show, renderTabs (and MOCK if present).
+   QUIZ keys that are not chapter views (e.g. an exam's MC part rendered in <div data-quiz="key"> inside an exam view) are collected too. */
 (function(){
   if(typeof QUIZ==="undefined"||typeof S==="undefined"||typeof VIEWS==="undefined")return;
   const css=`h3.missed{color:var(--bad,#c62828)!important;border-left:5px solid var(--bad,#c62828);padding-left:10px}
@@ -61,6 +62,14 @@ h3 .missbadge{display:inline-block;white-space:nowrap;margin-left:10px;font-size
       const a=S.quiz&&S.quiz[ch]||{};
       QUIZ[ch].forEach((it,i)=>{const pk=a[i];if(pk===undefined||pk===it.a)return;
         out.push({sec:secOf(it.q+" "+it.q+" "+(it.o||[]).join(" ")+" "+(it.e||""),ch),src:(NAME[ch]||ch)+" 章末選擇第 "+(i+1)+" 題",go:ch,quiz:ch,i,q:it.q,yours:it.o[pk],right:it.o[it.a],e:it.e||""});});
+    });
+    /* MC parts embedded in other views (e.g. past/mock exams): answers live in S.quiz[key] like chapter quizzes */
+    Object.keys(QUIZ).forEach(key=>{
+      if(CH.includes(key))return;
+      const box=document.querySelector('[data-quiz="'+key+'"]');const view=box&&box.closest(".view");if(!view)return;
+      const a=S.quiz&&S.quiz[key]||{};
+      QUIZ[key].forEach((it,i)=>{const pk=a[i];if(pk===undefined||pk===it.a)return;
+        out.push({sec:secOf(it.q+" "+it.q+" "+(it.o||[]).join(" ")+" "+(it.e||""),null),src:(NAME[view.id]||view.id)+" 選擇第 "+(i+1)+" 題",go:view.id,quiz:key,i,q:it.q,yours:it.o[pk],right:it.o[it.a],e:it.e||""});});
     });
     if(typeof MOCK!=="undefined"){
       Object.keys(MOCK).forEach(id=>{

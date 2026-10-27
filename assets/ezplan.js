@@ -16,11 +16,10 @@
       const left=Math.round((EXAM-today)/864e5);
       units=all.filter((_,i)=>!done(i));sig=units.length+"";
       const skipped=all.length-units.length;
-      if(!units.length){if(title)title.textContent="讀書計畫（考試 "+(EXAM.getMonth()+1)+"/"+EXAM.getDate()+"）";note.textContent="計畫裡的章節都完成了。剩下的時間把錯題和英文答案再看一遍。";box.innerHTML="";schedule();return;}
+      if(!units.length){if(title)title.textContent="讀書計畫（考試 "+(EXAM.getMonth()+1)+"/"+EXAM.getDate()+"）";note.hidden=false;note.textContent="計畫裡的章節都完成了。剩下的時間把錯題和英文答案再看一遍。";box.innerHTML="";schedule();return;}
       const n=Math.max(3,left),U=units.length;
       if(title)title.textContent=n+" 天讀書計畫（考試 "+(EXAM.getMonth()+1)+"/"+EXAM.getDate()+"）";
-      note.textContent=left>0?("今天起到考試前還有 "+left+" 天。"+(left<3?"時間不夠，每天的份量要加重，最少照 3 天排。":"每天 0:00 會自動重排。")):left===0?"今天考試，照下面順序做最後複習。":"考試已經過了，下面是複習順序。";
-      if(skipped)note.textContent+=" 已完成的 "+skipped+" 項沒有排進去。";
+      note.textContent="";note.hidden=true;
       const lab=i=>{const dd=new Date(today);dd.setDate(dd.getDate()+i);return (dd.getMonth()+1)+"/"+dd.getDate();};
       let h="";
       if(n>=U){ /* more days than units: each unit gets a run of days */

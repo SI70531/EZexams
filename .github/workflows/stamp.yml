@@ -1,0 +1,22 @@
+# Keeps the ?v=<hash> on script/stylesheet links up to date, so visitors never get a stale cached file.
+name: Stamp asset versions
+on:
+  push:
+    branches: [main]
+    paths: ["**.html", "**.js", "**.css"]
+permissions:
+  contents: write
+jobs:
+  stamp:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tools/stamp.py
+      - name: Commit if anything changed
+        run: |
+          if ! git diff --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -am "Stamp asset versions"
+            git push
+          fi

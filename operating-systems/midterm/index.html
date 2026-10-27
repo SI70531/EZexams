@@ -5,28 +5,31 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <style>[hidden]{display:none!important}body{margin:0}</style>
 <title>作業系統期中衝刺｜EZexams</title>
+<style>.plansep{border:0;border-top:1px dashed var(--line);margin:10px 0}</style>
+<script src="../../assets/ezplan.js?v=c67a2ffd" defer></script>
+<meta name="description" content="作業系統期中考衝刺：Silberschatz 9th Ch1–Ch5 講義、84 題選擇題、去年考古題和模擬試題，寫完直接批改。">
+<meta name="theme-color" content="#dde1e0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#11212d" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="EZexams">
+<meta property="og:title" content="作業系統期中衝刺｜EZexams">
+<meta property="og:description" content="作業系統期中考衝刺：Silberschatz 9th Ch1–Ch5 講義、84 題選擇題、去年考古題和模擬試題，寫完直接批改。">
+<meta property="og:url" content="https://si70531.github.io/EZexams/operating-systems/midterm/">
+<meta property="og:image" content="https://si70531.github.io/EZexams/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="manifest" href="../../manifest.webmanifest">
+<script src="../../assets/ezcore.js?v=86f55522"></script>
+<script src="../../assets/ezai.js?v=1f6ac436"></script>
 </head>
 <body>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=LXGW+WenKai+TC:wght@400;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="../../assets/ezbase.css?v=9efbd24f">
 <style>
 /* Layout: the study guide as a running OS. Tabs are a Gantt chart of the course, each cover carries a PCB card whose state is your progress, headings are handwritten like the exam. */
-:root{
-  --bg:#dde1e0; --paper:#f3f5f5; --paper2:#e8ebeb;
-  --ink:#06141b; --ink70:rgba(6,20,27,.76); --muted:rgba(6,20,27,.56); --line:#c2c9ca; --line-strong:#9ba8ab;
-  --indigo:#253745; --indigo-soft:rgba(37,55,69,.08); --indigo-mid:rgba(37,55,69,.18);
-  --seal:#c4472a; --seal-soft:rgba(196,71,42,.06); --seal-line:rgba(196,71,42,.3);
-  --brass:#4a5c6a; --brass-soft:rgba(74,92,106,.08); --brass-line:rgba(74,92,106,.3);
-  --ok:#2d7a3e; --ok-soft:rgba(45,122,62,.08); --ok-line:rgba(45,122,62,.3);
-  --accent:#253745; --accent-ink:#ffffff; --accent-soft:rgba(37,55,69,.08);
-  --bad:#c4472a; --bad-soft:rgba(196,71,42,.06); --warn:#a26300; --warn-soft:rgba(196,128,20,.09); --warn-line:rgba(196,128,20,.32);
-  --code:#e3e7e7; --fig:#f3f5f5; --hard:#06141b; --shadow:0 6px 18px rgba(6,20,27,.12);
-  --f-display:"LXGW WenKai TC","Kaiti TC","STKaiti","Noto Sans TC",serif;
-  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
-  --f-en:"Source Serif 4","Georgia","Noto Serif TC",serif;
-  --f-mono:"JetBrains Mono","Menlo","Consolas","Noto Sans TC",monospace;
-}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#0d1117; --paper:#161b22; --paper2:#1c2330;
   --ink:#e6edf3; --ink70:#c9d1d9; --muted:#9da7b3; --line:#30363d; --line-strong:#484f58;
@@ -49,215 +52,17 @@
   --bad:#ff7d5a; --bad-soft:rgba(255,125,90,.08); --warn:#f5d27a; --warn-soft:rgba(245,210,122,.08); --warn-line:rgba(242,189,90,.32);
   --code:#010409; --fig:#161b22; --hard:#06141b; --shadow:0 6px 18px rgba(0,0,0,.4);
   color-scheme:dark}
-*{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.8;-webkit-font-smoothing:antialiased;transition:background .25s,color .25s}
-body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
-::selection{background:var(--brass-line)}
-
-/* top bar: pill tabs */
-.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:6;background:var(--bg);border-bottom:1px solid var(--line);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-.top .bar{max-width:1000px;margin:0 auto;display:flex;align-items:center;gap:12px;height:58px}
-.brand{flex:0 0 auto;display:flex;align-items:center;gap:8px;color:var(--ink);text-decoration:none;white-space:nowrap}
-.brand .mk{position:relative;display:grid;place-items:center;width:30px;height:30px;margin:0 3px;border-radius:5px;background:var(--ink);color:var(--bg);font-family:var(--f-mono);font-weight:600;font-size:11px;letter-spacing:-.02em}
-.brand .mk::before,.brand .mk::after{content:"";position:absolute;top:5px;bottom:5px;width:3px;background:repeating-linear-gradient(var(--ink) 0 2px,transparent 2px 5px)}
-.brand .mk::before{left:-4px}.brand .mk::after{right:-4px}
-.brand .nm{font-size:13px;color:var(--indigo);font-weight:500}
-a.brand:hover .nm{color:var(--seal)}
-nav.tabs{flex:1 1 auto;min-width:0}
-nav.tabs .row{display:flex;gap:0;overflow-x:auto;scrollbar-width:none;align-items:center;height:58px}
-nav.tabs .row::-webkit-scrollbar{display:none}
-nav.tabs button{position:relative;flex:0 0 auto;font:inherit;font-family:var(--f-mono);font-size:12.5px;font-weight:500;border:1.5px solid var(--ink);border-right-width:0;border-radius:0;padding:6px 12px 8px;background:var(--paper);color:var(--ink);cursor:pointer;white-space:nowrap;transition:background .15s,color .15s}
-nav.tabs button:first-child{border-radius:5px 0 0 5px}
-nav.tabs button:last-child{border-right-width:1.5px;border-radius:0 5px 5px 0}
-nav.tabs .sep+button{border-radius:5px 0 0 5px}
-nav.tabs button:has(+.sep){border-right-width:1.5px;border-radius:0 5px 5px 0}
-nav.tabs button::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:transparent}
-nav.tabs button[data-state="running"]::after{background:var(--warn)}
-nav.tabs button[data-state="terminated"]::after{background:var(--ok)}
-nav.tabs button:hover{background:var(--indigo-soft)}
-nav.tabs button[aria-current="true"]{background:var(--indigo);color:var(--accent-ink);font-weight:600}
-
-
-nav.tabs .sep{flex:0 0 10px;align-self:center;height:1.5px;background:var(--ink);margin:0 2px}
-.theme{position:relative;flex:0 0 auto}
-.themebtn{width:36px;height:36px;border-radius:8px;border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);cursor:pointer;display:grid;place-items:center;transition:background .15s}
-.themebtn:hover{background:var(--indigo-soft)}
-.themebtn svg{width:17px;height:17px;display:none}
-.themebtn[data-mode="system"] .i-system,.themebtn[data-mode="light"] .i-light,.themebtn[data-mode="dark"] .i-dark{display:block}
-.thmenu{position:absolute;right:0;top:44px;z-index:20;min-width:148px;background:var(--paper);border:1px solid var(--line);border-radius:8px;box-shadow:var(--shadow);padding:6px;display:grid;gap:2px}
-.thmenu button{font:inherit;font-size:14px;text-align:left;border:0;background:transparent;color:var(--ink);border-radius:6px;padding:7px 10px 7px 30px;cursor:pointer;position:relative}
-.thmenu button:hover{background:var(--indigo-soft)}
-.thmenu button[aria-checked="true"]{color:var(--seal);font-weight:700}
-.thmenu button[aria-checked="true"]::before{content:"✓";position:absolute;left:11px}
-.totop{position:fixed;right:calc(20px + env(safe-area-inset-right,0px));bottom:calc(22px + env(safe-area-inset-bottom,0px));width:auto;height:38px;padding:0 12px;border-radius:8px;border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);box-shadow:3px 3px 0 var(--hard);cursor:pointer;font-family:var(--f-mono);font-size:12.5px;display:grid;place-items:center;opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s,transform .2s,background .2s;z-index:7}
-.totop.show{opacity:1;visibility:visible}
-.totop:hover{transform:translate(1px,1px);box-shadow:2px 2px 0 var(--hard)}
-button:focus-visible,summary:focus-visible,input:focus-visible,.opt:focus-visible,a:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
-
-/* page */
-main{max-width:860px;margin:0 auto;padding-block:8px 96px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-.view{display:block;scroll-margin-top:72px}
-.vhead{position:relative;display:grid;grid-template-columns:1fr auto;gap:8px 28px;align-items:start;padding:40px 0 26px;margin:0 0 26px;border-bottom:1.5px solid var(--ink)}
-.vhead>:not(.pcb){grid-column:1}
-.vhead .pcb{grid-column:2;grid-row:1/span 3}
-.vhead .eyebrow{display:inline-flex;align-items:center;gap:2px;font-family:var(--f-mono);font-size:12.5px;color:var(--brass);font-weight:600;margin-bottom:6px}
-.vhead .eyebrow::before{content:"$ ";white-space:pre;color:var(--muted)}
-.vhead .eyebrow::after{content:"";display:inline-block;width:.6em;height:1.1em;margin-left:4px;background:var(--brass);animation:blink 1.1s steps(1) infinite}
-@keyframes blink{50%{opacity:0}}
-
-h1{font-family:var(--f-display);font-weight:700;font-size:36px;line-height:1.3;margin:0 0 8px;text-wrap:balance}
-.vhead p{color:var(--ink70);margin:0;max-width:60ch;font-size:15.5px}
-.pcb{width:184px;font-family:var(--f-mono);font-size:12px;line-height:1.5;border:1.5px solid var(--ink);border-radius:6px;background:var(--paper);box-shadow:4px 4px 0 var(--hard);overflow:hidden}
-.pcb .ph{display:flex;justify-content:space-between;background:var(--ink);color:var(--bg);padding:4px 10px;font-weight:600;letter-spacing:.04em}
-.pcb .pr{display:flex;justify-content:space-between;gap:10px;padding:5px 10px;border-top:1px dashed var(--line-strong)}
-.pcb .pr:first-of-type{border-top:0}
-.pcb .pr span{color:var(--muted)}
-.pcb .pr b{font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
-.pcb .st{display:inline-flex;align-items:center;gap:6px}
-.pcb .st::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--muted)}
-.pcb .st.running{color:var(--warn)}.pcb .st.running::before{background:var(--warn);animation:blink 1.4s steps(1) infinite}
-.pcb .st.terminated{color:var(--ok)}.pcb .st.terminated::before{background:var(--ok)}
-.pcb .st.ready{color:var(--indigo)}.pcb .st.ready::before{background:var(--indigo)}
-.pcb .bar{height:5px;margin:2px 10px 9px;border:1px solid var(--ink);border-radius:2px;overflow:hidden}
-.pcb .bar i{display:block;height:100%;background:var(--indigo)}
-h3{display:flex;align-items:baseline;gap:12px;font-family:var(--f-display);font-size:24px;font-weight:700;margin:44px 0 12px;color:var(--ink);line-height:1.4}
-h3::after{content:"";flex:1 1 40px;min-width:40px;border-bottom:2px dotted var(--line-strong);transform:translateY(-6px)}
-h4{font-size:16.5px;margin:22px 0 6px;color:var(--ink)}
-p{margin:6px 0 12px}
-ul,ol{padding-left:22px;margin:6px 0 14px}
-li{margin:3px 0}
-li::marker{color:var(--indigo)}
-b{font-weight:700}
-.star{color:var(--warn);letter-spacing:-.05em}
-.k{color:var(--seal);font-weight:700}
-.small{font-size:13.5px;color:var(--muted)}
-.mono{font-family:var(--f-mono);font-size:.9em}
-.box{border-radius:8px;overflow:hidden;padding:14px 18px;margin:14px 0;background:var(--paper);border:1px solid var(--line)}
-.box .lbl{display:table;font-family:var(--f-mono);font-size:11.5px;font-weight:600;margin:-14px 0 8px -18px;padding:3px 10px;border-radius:0 0 6px 0;letter-spacing:.02em}
-.box.en{background:var(--indigo-soft);border-color:var(--indigo-mid);font-family:var(--f-en);font-size:17px;line-height:1.7}
-.box.en .lbl{background:var(--indigo);color:var(--accent-ink)}
 .zhtr{font-family:var(--f-body);font-size:14.5px;line-height:1.75;color:var(--ink70);margin-top:10px;padding-top:9px;border-top:1px dashed var(--indigo-mid)}
 .zhtr span{display:inline-block;font-family:var(--f-mono);font-size:11px;font-weight:600;color:var(--indigo);border:1px solid var(--indigo-mid);border-radius:4px;padding:0 6px;margin-right:8px;vertical-align:1px}
-.box.zh{background:var(--brass-soft);border-color:var(--brass-line)}.box.zh .lbl{background:var(--brass);color:var(--paper)}
-.box.warn{background:var(--seal-soft);border-color:var(--seal-line)}.box.warn .lbl{background:var(--seal);color:var(--paper)}
-.box.tip{background:var(--warn-soft);border-color:var(--warn-line)}.box.tip .lbl{background:var(--warn);color:var(--paper)}
-.calc{font-family:var(--f-mono);font-size:13.5px;line-height:1.75;background:var(--code);border:1px solid var(--line);border-radius:6px;padding:12px 16px;margin:12px 0;white-space:pre;overflow-x:auto}
-table{border-collapse:collapse;margin:14px 0;font-size:14.5px;display:block;overflow-x:auto;max-width:100%;font-variant-numeric:tabular-nums}
-th,td{border:1px solid var(--line);padding:7px 11px;text-align:center;vertical-align:top;background:var(--paper)}
-th{background:var(--paper2);font-weight:700;font-size:13.5px;color:var(--indigo)}
-td.l,th.l{text-align:left}
-.two{display:flex;gap:16px;flex-wrap:wrap}
-.two>div{flex:1 1 260px;min-width:0}
-.fig{background:var(--fig);color:#16233b;border:1px solid var(--line);border-radius:8px;padding:14px;margin:16px 0;text-align:center;overflow-x:auto}
-.fig svg{max-width:100%;height:auto}
-.fig .cap{color:#5d6782;font-size:13px}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .fig svg{filter:invert(.88) hue-rotate(180deg)}:root:not([data-theme="light"]) .fig .cap{color:var(--muted)}}
 :root[data-theme="dark"] .fig svg{filter:invert(.88) hue-rotate(180deg)}
 :root[data-theme="dark"] .fig .cap{color:var(--muted)}
-.cap{font-size:13px;color:var(--muted);text-align:center}
-.gantt{margin:14px 12px 22px}
-.gbar{display:flex;border:1.5px solid var(--ink);height:32px;border-radius:3px;overflow:hidden}
-.gbar span{border-right:1.5px solid var(--ink);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#16233b;min-width:0}
-.gbar span:last-child{border-right:none}
-.gt{position:relative;height:18px;font-size:12px;font-family:var(--f-mono)}
-.gt b{position:absolute;transform:translateX(-50%);font-weight:400}
-.q{font-weight:700;margin-top:26px;font-size:16.5px}
-.pts{display:inline-block;font-family:var(--f-mono);font-size:12px;font-weight:600;color:var(--accent-ink);background:var(--seal);border-radius:4px;padding:1px 7px;margin-right:8px;vertical-align:2px}
-
-/* exam answers */
-.qa{border:1px solid var(--line);background:var(--paper);border-radius:8px;margin:8px 0 6px;overflow:hidden}
-.qa summary{cursor:pointer;padding:9px 16px;font-weight:700;font-size:14.5px;color:var(--indigo);list-style:none;display:flex;align-items:center;gap:8px}
-.qa summary:hover{background:var(--indigo-soft)}
-.qa summary::-webkit-details-marker{display:none}
-.qa summary::before{content:"";width:7px;height:7px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg);transition:transform .15s}
-.qa[open] summary::before{transform:rotate(45deg)}
-.qa[open] summary{border-bottom:1px solid var(--line)}
-.qa .inner{padding:8px 16px 10px}
-.self{display:none}
 .selfsc{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:10px;font-size:13px}
 .selfsc .lb{color:var(--brass);font-weight:700;letter-spacing:.1em}
 .selfsc input{width:64px;padding:5px 6px;font:inherit;border:1px solid var(--line,#999);border-radius:6px;background:transparent;color:inherit}
 .selfsc .btn{padding:4px 10px}
-.examtools{position:sticky;top:calc(env(safe-area-inset-top,0px) + 68px);z-index:4;background:var(--paper);border:1px solid var(--line);border-radius:8px;box-shadow:var(--shadow);padding:10px 12px 10px 16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 18px}
-.examtools .score{font-family:var(--f-display);font-weight:700;font-variant-numeric:tabular-nums;margin-right:auto;color:var(--ink)}
-.examtools .timer{font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-weight:600;color:var(--seal);border:1px solid var(--seal-line);border-radius:20px;padding:2px 11px}
-.btn{font:inherit;font-size:14px;font-weight:500;border:1px solid var(--line);background:var(--paper);color:var(--indigo);border-radius:6px;padding:6px 14px;cursor:pointer;transition:border-color .15s,background .15s,color .15s}
-.btn:hover:not([disabled]){border-color:var(--brass);color:var(--seal)}
-.btn.primary{background:var(--indigo);border-color:var(--indigo);color:var(--accent-ink);font-weight:700}
-.btn.primary:hover:not([disabled]){background:var(--seal);border-color:var(--seal);color:var(--accent-ink)}
-.btn[disabled]{opacity:.55;cursor:default}
-
-/* answer boxes + grading */
-.exq{margin:0 0 10px;scroll-margin-top:80px}
-.exq>label:not(.self){display:block;font-size:12px;letter-spacing:.18em;color:var(--brass);font-weight:700;margin-top:10px}
-.exq textarea{width:100%;min-height:110px;font:inherit;font-size:15.5px;line-height:1.75;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:10px 14px;resize:vertical;display:block;margin:6px 0 0;transition:border-color .15s,box-shadow .15s}
-.exq textarea::placeholder{color:var(--muted)}
-.exq textarea:focus{outline:none;border-color:var(--indigo);box-shadow:0 0 0 3px var(--indigo-soft)}
-.exq[data-verdict="correct"] textarea{border-color:var(--ok)}
-.exq[data-verdict="partial"] textarea{border-color:var(--warn)}
-.exq[data-verdict="wrong"] textarea{border-color:var(--seal)}
-.gradebar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0}
-.gstat,.gmsg{font-size:13.5px;color:var(--muted)}
-.gres{border-radius:8px;padding:10px 14px;margin:6px 0 10px;font-size:14.5px;background:var(--paper2);border:1px solid var(--line)}
-.gres .ghead{font-family:var(--f-display);font-weight:700;margin-bottom:2px;font-variant-numeric:tabular-nums}
-.gres.correct{background:var(--ok-soft);border-color:var(--ok-line)}.gres.correct .ghead{color:var(--ok)}
-.gres.partial{background:var(--warn-soft);border-color:var(--warn-line)}.gres.partial .ghead{color:var(--warn)}
-.gres.wrong{background:var(--seal-soft);border-color:var(--seal-line)}.gres.wrong .ghead{color:var(--seal)}
-.gres.stale{opacity:.7}
-.gres .miss{font-size:13px;color:var(--muted);margin-top:4px}
-.nogradenote{display:none}
-body.nograde .nogradenote{display:block}
-
-/* quiz */
-.quiz{margin-top:48px;padding-top:6px}
-.quiz h2{font-family:var(--f-display);font-size:26px;font-weight:700;margin:0 0 4px;padding-bottom:8px;border-bottom:1px solid var(--line)}
-.qitem{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin:14px 0;scroll-margin-top:80px}
 .qitem .hard{display:inline-block;font-family:var(--f-mono);font-size:11px;font-weight:600;color:var(--accent-ink);background:var(--seal);border-radius:4px;padding:1px 7px;margin-right:8px;vertical-align:2px}
-.qitem .stem{font-weight:700;margin-bottom:10px;line-height:1.65}
-.qitem .num{font-family:var(--f-mono);font-weight:600;color:var(--seal);margin-right:6px}
-.opts{display:grid;gap:8px}
-.opt{text-align:left;font:inherit;font-size:15px;line-height:1.55;border:1px solid var(--line);background:var(--paper2);color:var(--ink);border-radius:8px;padding:9px 12px;cursor:pointer;display:flex;gap:10px;align-items:flex-start;transition:border-color .15s,background .15s}
-.opt .ab{flex:0 0 auto;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;border:1px solid var(--line-strong);font-family:var(--f-display);font-weight:700;font-size:12px;color:var(--indigo);margin-top:-1px}
-.opt:hover:not([disabled]){border-color:var(--brass)}
-.opt[disabled]{cursor:default}
-.opt.right{background:var(--ok-soft);border-color:var(--ok)}.opt.right .ab{background:var(--ok);border-color:var(--ok);color:var(--paper)}
-.opt.wrong{background:var(--seal-soft);border-color:var(--seal)}.opt.wrong .ab{background:var(--seal);border-color:var(--seal);color:var(--paper)}
-.expl{margin-top:10px;font-size:14.5px;padding:10px 14px;border-radius:8px;background:var(--indigo-soft);border:1px solid var(--indigo-mid);color:var(--ink70)}
-.expl .tag{font-weight:700;margin-right:6px}
-.expl .tag.ok{color:var(--ok)}.expl .tag.no{color:var(--seal)}
-.qscore{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:18px 0;font-family:var(--f-display);font-weight:700;padding:14px 18px;border-radius:8px;background:var(--paper);border:1px solid var(--line)}
-
-/* home */
-.plan{display:grid;gap:10px;margin:16px 0}
-.day{position:relative;display:grid;grid-template-columns:60px 1fr;gap:14px;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:14px 18px}
-.day .d{font-family:var(--f-mono);font-weight:600;font-size:13px;color:var(--indigo);padding-top:2px}
-.day .t{min-width:0;color:var(--ink70)}
-.day .t button{margin:6px 6px 0 0;font-size:12.5px;padding:2px 12px;border-radius:99px;background:var(--indigo-soft);border-color:transparent}
-.prog{width:100%;display:table}
-.prog td.l{width:55%}
-.next{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--paper);border:1.5px solid var(--ink);box-shadow:4px 4px 0 var(--hard);border-radius:8px;padding:14px 18px;margin:0 0 6px}
-.next b{font-family:var(--f-display);font-size:18px}
-.next::before{content:"next >";font-family:var(--f-mono);font-size:12px;color:var(--muted)}
-.next .btn.primary{margin-left:auto!important}
-.cheat .two>div{border:1px solid var(--line);border-radius:8px;padding:6px 14px;background:var(--paper)}
-
-@media (max-width:640px){
-  .vhead{grid-template-columns:1fr;padding:26px 0 20px}
-  .vhead .pcb{order:9;grid-column:1;grid-row:auto;width:100%;max-width:260px;margin-top:8px}
-  h1{font-size:29px}
-  h3{font-size:21px}
-  .day{grid-template-columns:1fr;gap:2px}
-  .box.en{font-size:16px}
-  .brand .nm{display:none}
-  .top .bar{gap:8px}
-  .themebtn{width:32px;height:32px}
-  .thmenu{top:40px}
-  .examtools{position:static}
-  .qitem{padding:14px 14px}
-}
-@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 .full{display:block;font-size:.82em;color:var(--muted);line-height:1.35;margin-top:2px}
-/* interactive widgets */
 .widget select,.widget input:not([type=range]){background:var(--paper2);color:var(--ink);border:1px solid var(--line-strong);border-radius:6px;padding:4px 8px;font:inherit;font-family:var(--f-mono)}
 .wedge.on path{fill:var(--seal)}
 .widget{background:var(--paper);border:1.5px solid var(--line-strong);border-radius:12px;box-shadow:4px 4px 0 var(--hard);padding:16px;margin:22px 0;overflow-x:auto}
@@ -281,7 +86,8 @@ body.nograde .nogradenote{display:block}
 .wnote,.wcalc,.wavg{font-size:.95rem;color:var(--ink70);margin-top:8px}
 .wcalc{font-family:var(--f-mono)}
 .wtable{border-collapse:collapse;font-size:.9rem;margin:8px 0}
-.wres table{border-collapse:collapse;font-size:.9rem}.wres th,.wres td,.wtable th,.wtable td{border:1px solid var(--line);padding:4px 8px;text-align:center}
+.wres table{border-collapse:collapse;font-size:.9rem}
+.wres th,.wres td,.wtable th,.wtable td{border:1px solid var(--line);padding:4px 8px;text-align:center}
 .wtable th{background:var(--indigo-soft)}
 .wtable input{width:4.2em;background:var(--paper2);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:2px 4px;font-family:var(--f-mono)}
 .wtable tr.hl td{background:var(--warn-soft)}
@@ -289,7 +95,12 @@ body.nograde .nogradenote{display:block}
 .wgantt{margin:12px 0 4px;min-width:420px}
 .wgantt .gb{display:flex;height:34px;border:1.5px solid var(--hard);border-radius:6px;overflow:hidden}
 .wgantt .gb span{display:flex;align-items:center;justify-content:center;font-family:var(--f-mono);font-size:.82rem;font-weight:700;color:#fff;border-right:1px solid rgba(0,0,0,.25)}
-.gb .c0{background:#17616a}.gb .c1{background:#c4472a}.gb .c2{background:#64489c}.gb .c3{background:#a26300}.gb .c4{background:#2d7a3e}.gb .c5{background:#3a5f9e}
+.gb .c0{background:#17616a}
+.gb .c1{background:#c4472a}
+.gb .c2{background:#64489c}
+.gb .c3{background:#a26300}
+.gb .c4{background:#2d7a3e}
+.gb .c5{background:#3a5f9e}
 .gb .idle{background:repeating-linear-gradient(45deg,var(--paper2),var(--paper2) 4px,var(--line) 4px,var(--line) 8px);color:var(--muted)!important}
 .wgantt .gtk{position:relative;height:18px;font-family:var(--f-mono);font-size:.75rem;color:var(--muted)}
 .wgantt .gtk b{position:absolute;transform:translateX(-50%);font-weight:400}
@@ -301,15 +112,18 @@ body.nograde .nogradenote{display:block}
 .amd .curve{fill:none;stroke:var(--indigo);stroke-width:3}
 .amd .dot{fill:var(--seal);stroke:var(--paper);stroke-width:2}
 .wlog{font-family:var(--f-mono);font-size:.85rem;max-height:220px;overflow:auto;background:var(--code);border-radius:8px;padding:8px 12px;margin-top:8px}
-.wlog p{margin:3px 0}.wlog p.ok{color:var(--ok)}.wlog p.no{color:var(--muted)}.wlog p.bad{color:var(--bad);font-weight:700}
+.wlog p{margin:3px 0}
+.wlog p.ok{color:var(--ok)}
+.wlog p.no{color:var(--muted)}
+.wlog p.bad{color:var(--bad);font-weight:700}
 .plansep{border:0;border-top:1px dashed var(--line);margin:10px 0}
 </style>
 
-<header class="top"><div class="bar"><a class="brand" href="../../" title="回到所有科目"><span class="mk">OS</span><span class="nm">← 所有科目</span></a><nav class="tabs" aria-label="章節"><div class="row" id="tabs"></div></nav><div class="theme"><button class="themebtn" id="themeBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="themeMenu" title="外觀：跟隨裝置"><svg class="i-system" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><svg class="i-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2 12h2.2M19.8 12H22M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg><svg class="i-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button><div class="thmenu" id="themeMenu" role="menu" hidden><button type="button" role="menuitemradio" data-t="system">跟隨裝置</button><button type="button" role="menuitemradio" data-t="light">淺色</button><button type="button" role="menuitemradio" data-t="dark">深色</button></div></div></div></header>
+<header class="top"><div class="bar"><a class="brand" href="../../" title="回到所有科目"><span class="mk">OS</span><span class="nm">← 所有科目</span></a><nav class="tabs" aria-label="章節"><div class="row" id="tabs" role="tablist"></div></nav><div class="theme"><button class="themebtn" id="themeBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="themeMenu" title="外觀：跟隨裝置"><svg class="i-system" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><svg class="i-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2 12h2.2M19.8 12H22M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg><svg class="i-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button><div class="thmenu" id="themeMenu" role="menu" hidden><button type="button" role="menuitemradio" data-t="system">跟隨裝置</button><button type="button" role="menuitemradio" data-t="light">淺色</button><button type="button" role="menuitemradio" data-t="dark">深色</button></div></div></div></header>
 <button class="totop" id="toTop" type="button" aria-label="回到頂端">↑</button>
 <main>
 
-<section class="view" id="home">
+<section role="tabpanel" class="view" id="home">
   <div class="vhead"><div class="pcb" data-pcb="home" role="img"></div><div class="eyebrow">Operating Systems · Midterm</div><h1>作業系統期中衝刺</h1>
   <p>考試是手寫英文作答，沒有選擇題。這裡的選擇題只是用來快速檢查觀念，真正要練的是後面的考古題和模擬試題。</p></div>
   <div class="next" id="nextStep"></div>
@@ -326,7 +140,7 @@ body.nograde .nogradenote{display:block}
   <li>畫圖題每條箭頭都要標英文名稱。不會的題目也寫關鍵字，空白一定 0 分。</li></ul></div>
 </section>
 
-<section class="view" id="ch1" hidden><div class="vhead"><div class="pcb" data-pcb="ch1" role="img"></div><div class="eyebrow">Chapter 1</div><h1>Ch1 Introduction</h1><p>operating system（作業系統）是什麼、interrupt（中斷）、DMA（Direct Memory Access，直接記憶體存取）、儲存階層、dual mode。讀完後做最下面的選擇題。</p></div>
+<section role="tabpanel" class="view" id="ch1" hidden><div class="vhead"><div class="pcb" data-pcb="ch1" role="img"></div><div class="eyebrow">Chapter 1</div><h1>Ch1 Introduction</h1><p>operating system（作業系統）是什麼、interrupt（中斷）、DMA（Direct Memory Access，直接記憶體存取）、儲存階層、dual mode。讀完後做最下面的選擇題。</p></div>
 
 
 <h3>1.1 OS 是什麼</h3>
@@ -507,7 +321,7 @@ A timer is used to prevent an infinite loop / a process hogging resources: it ge
 <li>Kernel data structures：很多跟一般程式的資料結構一樣，有 linked list（單向、雙向、環狀）、binary search tree（左 ≤ 右，一般 O(n)，平衡樹 O(lg n)）、hash map、bitmap（n 個 bits 代表 n 個項目的狀態）。Linux 定義在 include files：<span class="mono">&lt;linux/list.h&gt;</span>、<span class="mono">&lt;linux/kfifo.h&gt;</span>、<span class="mono">&lt;linux/rbtree.h&gt;</span>。</li>
 </ul><div class="fig"><svg viewBox="0 0 600 250" width="560" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="13"><defs><marker id="mch112" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#1d2433"/></marker><marker id="mch112r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#b3261e"/></marker></defs><text x="10" y="22" text-anchor="start" font-size="12" fill="#1d2433" font-weight="bold">Singly linked list</text><rect x="160" y="8" width="70" height="26" rx="4" fill="#f2f4f8" stroke="#1d2433" stroke-width="1.5"/><text x="195.0" y="24.85" text-anchor="middle" font-size="11" fill="#1d2433">data</text><line x1="230" y1="21" x2="268" y2="21" stroke="#1d2433" stroke-width="1.6" marker-end="url(#mch112)"/><rect x="270" y="8" width="70" height="26" rx="4" fill="#f2f4f8" stroke="#1d2433" stroke-width="1.5"/><text x="305.0" y="24.85" text-anchor="middle" font-size="11" fill="#1d2433">data</text><line x1="340" y1="21" x2="378" y2="21" stroke="#1d2433" stroke-width="1.6" marker-end="url(#mch112)"/><rect x="380" y="8" width="70" height="26" rx="4" fill="#f2f4f8" stroke="#1d2433" stroke-width="1.5"/><text x="415.0" y="24.85" text-anchor="middle" font-size="11" fill="#1d2433">data</text><line x1="450" y1="21" x2="488" y2="21" stroke="#1d2433" stroke-width="1.6" marker-end="url(#mch112)"/><rect x="490" y="8" width="70" height="26" rx="4" fill="#f2f4f8" stroke="#1d2433" stroke-width="1.5"/><text x="525.0" y="24.85" text-anchor="middle" font-size="11" fill="#1d2433">data</text><text x="580" y="26" text-anchor="middle" font-size="11" fill="#1d2433">null</text><text x="10" y="82" text-anchor="start" font-size="12" fill="#1d2433" font-weight="bold">Doubly linked list</text><rect x="160" y="68" width="70" height="26" rx="4" fill="#f2f4f8" stroke="#1d2433" stroke-width="1.5"/><text x="195.0" y="84.85" text-anchor="middle" font-size="11" fill="#1d2433">data</text><line x1="230" y1="76" x2="268" y2="76" stroke="#1d2433" stroke-width="1.6" marker-end="url(#mch112)"/><line x1="268" y1="88" x2="230" y2="88" stroke="#1d2433" stroke-width="1.6" marker-end="url(#mch112)"/><rect x="270" y="68" width="70" height="26" rx="4" fill="#f2f4f8" stroke="#1d2433" stroke-width="1.5"/><text x="305.0" y="84.85" text-anchor="middle" font-size="11" fill="#1d2433">data</text><line x1="340" y1="76" x2="378" y2="76" stroke="#1d2433" stroke-width="1.6" marker-end="url(#mch112)"/><line x1="378" y1="88" x2="340" y2="88" stroke="#1d2433" stroke-width="1.6" marker-end="url(#mch112)"/><rect x="380" y="68" width="70" height="26" rx="4" fill="#f2f4f8" stroke="#1d2433" stroke-width="1.5"/><text x="415.0" y="84.85" text-anchor="middle" font-size="11" fill="#1d2433">data</text><line x1="450" y1="76" x2="488" y2="76" stroke="#1d2433" stroke-width="1.6" marker-end="url(#mch112)"/><line x1="488" y1="88" x2="450" y2="88" stroke="#1d2433" stroke-width="1.6" marker-end="url(#mch112)"/><rect x="490" y="68" width="70" height="26" rx="4" fill="#f2f4f8" stroke="#1d2433" stroke-width="1.5"/><text x="525.0" y="84.85" text-anchor="middle" font-size="11" fill="#1d2433">data</text><text x="10" y="142" text-anchor="start" font-size="12" fill="#1d2433" font-weight="bold">Circular linked list</text><rect x="160" y="128" width="70" height="26" rx="4" fill="#f2f4f8" stroke="#1d2433" stroke-width="1.5"/><text x="195.0" y="144.85" text-anchor="middle" font-size="11" fill="#1d2433">data</text><line x1="230" y1="141" x2="268" y2="141" stroke="#1d2433" stroke-width="1.6" marker-end="url(#mch112)"/><rect x="270" y="128" width="70" height="26" rx="4" fill="#f2f4f8" stroke="#1d2433" stroke-width="1.5"/><text x="305.0" y="144.85" text-anchor="middle" font-size="11" fill="#1d2433">data</text><line x1="340" y1="141" x2="378" y2="141" stroke="#1d2433" stroke-width="1.6" marker-end="url(#mch112)"/><rect x="380" y="128" width="70" height="26" rx="4" fill="#f2f4f8" stroke="#1d2433" stroke-width="1.5"/><text x="415.0" y="144.85" text-anchor="middle" font-size="11" fill="#1d2433">data</text><line x1="450" y1="141" x2="488" y2="141" stroke="#1d2433" stroke-width="1.6" marker-end="url(#mch112)"/><rect x="490" y="128" width="70" height="26" rx="4" fill="#f2f4f8" stroke="#1d2433" stroke-width="1.5"/><text x="525.0" y="144.85" text-anchor="middle" font-size="11" fill="#1d2433">data</text><path d="M530,141 L560,141 L560,170 L195,170 L195,156" fill="none" stroke="#1d2433" stroke-width="1.6" marker-end="url(#mch112)"/><text x="10" y="215" text-anchor="start" font-size="12" fill="#1d2433" font-weight="bold">Bitmap</text><text x="160" y="215" text-anchor="start" font-size="12" fill="#1d2433">001011101 → 第 i 個 bit 代表第 i 個項目的狀態（例：0＝可用，1＝已用）</text></svg><div class="cap">Kernel Data Structures：linked list（單向、雙向、環狀）和 bitmap。</div></div><div class="fig"><svg viewBox="0 0 560 200" width="540" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="13"><defs><marker id="mch113" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#1d2433"/></marker><marker id="mch113r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#b3261e"/></marker></defs><rect x="130" y="10" width="50" height="30" rx="4" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.5"/><text x="155.0" y="29.55" text-anchor="middle" font-size="13" fill="#1d2433" font-weight="bold">17</text><rect x="60" y="70" width="50" height="30" rx="4" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.5"/><text x="85.0" y="89.55" text-anchor="middle" font-size="13" fill="#1d2433" font-weight="bold">12</text><rect x="200" y="70" width="50" height="30" rx="4" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.5"/><text x="225.0" y="89.55" text-anchor="middle" font-size="13" fill="#1d2433" font-weight="bold">35</text><rect x="20" y="130" width="50" height="30" rx="4" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.5"/><text x="45.0" y="149.55" text-anchor="middle" font-size="13" fill="#1d2433" font-weight="bold">6</text><rect x="100" y="130" width="50" height="30" rx="4" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.5"/><text x="125.0" y="149.55" text-anchor="middle" font-size="13" fill="#1d2433" font-weight="bold">14</text><rect x="170" y="130" width="50" height="30" rx="4" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.5"/><text x="195.0" y="149.55" text-anchor="middle" font-size="13" fill="#1d2433" font-weight="bold">25</text><rect x="240" y="130" width="50" height="30" rx="4" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.5"/><text x="265.0" y="149.55" text-anchor="middle" font-size="13" fill="#1d2433" font-weight="bold">42</text><line x1="150" y1="40" x2="85" y2="70" stroke="#1d2433" stroke-width="1.5"/><line x1="160" y1="40" x2="225" y2="70" stroke="#1d2433" stroke-width="1.5"/><line x1="80" y1="100" x2="45" y2="130" stroke="#1d2433" stroke-width="1.5"/><line x1="90" y1="100" x2="125" y2="130" stroke="#1d2433" stroke-width="1.5"/><line x1="220" y1="100" x2="195" y2="130" stroke="#1d2433" stroke-width="1.5"/><line x1="230" y1="100" x2="265" y2="130" stroke="#1d2433" stroke-width="1.5"/><rect x="350" y="40" width="90" height="30" rx="4" fill="#f2f4f8" stroke="#1d2433" stroke-width="1.5"/><text x="395.0" y="59.2" text-anchor="middle" font-size="12" fill="#1d2433" font-weight="bold">value</text><line x1="440" y1="55" x2="468" y2="55" stroke="#1d2433" stroke-width="1.6" marker-end="url(#mch113)"/><rect x="470" y="40" width="80" height="30" rx="4" fill="#fff0c9" stroke="#1d2433" stroke-width="1.5"/><text x="510.0" y="59.2" text-anchor="middle" font-size="12" fill="#1d2433" font-weight="bold">hash()</text><line x1="510" y1="70" x2="510" y2="98" stroke="#1d2433" stroke-width="1.6" marker-end="url(#mch113)"/><rect x="470" y="100" width="80" height="22" rx="4" fill="#f2f4f8" stroke="#1d2433" stroke-width="1.5"/><text x="510.0" y="114.85" text-anchor="middle" font-size="11" fill="#1d2433"></text><rect x="470" y="122" width="80" height="22" rx="4" fill="#f2f4f8" stroke="#1d2433" stroke-width="1.5"/><text x="510.0" y="136.85" text-anchor="middle" font-size="11" fill="#1d2433"></text><rect x="470" y="144" width="80" height="22" rx="4" fill="#f2f4f8" stroke="#1d2433" stroke-width="1.5"/><text x="510.0" y="158.85" text-anchor="middle" font-size="11" fill="#1d2433">index</text><rect x="470" y="166" width="80" height="22" rx="4" fill="#f2f4f8" stroke="#1d2433" stroke-width="1.5"/><text x="510.0" y="180.85" text-anchor="middle" font-size="11" fill="#1d2433"></text><text x="400" y="140" text-anchor="middle" font-size="12" fill="#1d2433" font-weight="bold">hash map</text></svg><div class="cap">Binary search tree（左 ≤ 右；一般搜尋 O(n)，平衡樹 O(lg n)）和 hash map（hash function 算出放在表格哪一格）。</div></div>
 <div class="quiz" data-quiz="ch1"></div></section>
-<section class="view" id="ch2" hidden><div class="vhead"><div class="pcb" data-pcb="ch2" role="img"></div><div class="eyebrow">Chapter 2</div><h1>Ch2 Process（行程） Concept</h1><p>Process state diagram（狀態圖）、PCB（Process Control Block，行程控制區塊）、三種 scheduler（排程器）、IPC（Interprocess Communication，行程間通訊）。讀完後做最下面的選擇題。</p></div>
+<section role="tabpanel" class="view" id="ch2" hidden><div class="vhead"><div class="pcb" data-pcb="ch2" role="img"></div><div class="eyebrow">Chapter 2</div><h1>Ch2 Process（行程） Concept</h1><p>Process state diagram（狀態圖）、PCB（Process Control Block，行程控制區塊）、三種 scheduler（排程器）、IPC（Interprocess Communication，行程間通訊）。讀完後做最下面的選擇題。</p></div>
 
 
 <h3>2.1 Process 是什麼、memory（記憶體）長怎樣</h3>
@@ -768,7 +582,7 @@ while (true) {                         while (true) {
   send(next_produced);                   /* consume the item */
 }                                      }</div>
 <div class="quiz" data-quiz="ch2"></div></section>
-<section class="view" id="ch3" hidden><div class="vhead"><div class="pcb" data-pcb="ch3" role="img"></div><div class="eyebrow">Chapter 3</div><h1>Ch3 Process（行程） Scheduling（排班）</h1><p>scheduling 標準、五種 algorithm（演算法）、Gantt chart 計算、MLQ（Multilevel Queue，多層佇列）／MLFQ（Multilevel Feedback Queue，多層回饋佇列）、real-time。讀完後做最下面的選擇題。</p></div>
+<section role="tabpanel" class="view" id="ch3" hidden><div class="vhead"><div class="pcb" data-pcb="ch3" role="img"></div><div class="eyebrow">Chapter 3</div><h1>Ch3 Process（行程） Scheduling（排班）</h1><p>scheduling 標準、五種 algorithm（演算法）、Gantt chart 計算、MLQ（Multilevel Queue，多層佇列）／MLFQ（Multilevel Feedback Queue，多層回饋佇列）、real-time。讀完後做最下面的選擇題。</p></div>
 
 
 <h3>3.1 基本概念</h3>
@@ -1071,7 +885,7 @@ A 50 份 → 50% CPU；B 15 份 → 15%；C 20 份 → 20%
 新的 process D 要 30 份 &gt; 15 → OS 會<b>拒絕</b>（reject）</div>
 <div class="box en"><span class="lbl">ANSWER TEMPLATE — RMS vs. EDF</span>Rate-monotonic scheduling assigns each periodic task a static priority based on the inverse of its period: shorter periods get higher priority. Earliest-deadline-first scheduling assigns priorities dynamically according to deadlines: the earlier the deadline, the higher the priority. Rate-monotonic scheduling may not maximize CPU utilization; for example, with p1 = 50, t1 = 25, p2 = 80, t2 = 35 the utilization is 94%, but P2 misses its deadline at 80 under RMS, while EDF meets all deadlines.<div class="zhtr"><span>中文</span>速率單調排班（RMS）依照 period 的倒數給每個週期性工作固定的優先權：period 越短越優先。最早截止期限優先（EDF）依照 deadline 動態決定優先權：deadline 越早越優先。RMS 不一定能把 CPU 用滿；例如 p1 = 50、t1 = 25、p2 = 80、t2 = 35，使用率 94%，但用 RMS 時 P2 會錯過 80 的 deadline，用 EDF 則全部趕得上。</div></div>
 <div class="quiz" data-quiz="ch3"></div></section>
-<section class="view" id="ch4" hidden><div class="vhead"><div class="pcb" data-pcb="ch4" role="img"></div><div class="eyebrow">Chapter 4</div><h1>Ch4 Multithreaded Programming</h1><p>Thread（執行緒） 好處、parallelism（平行）、Amdahl、四種 thread model。讀完後做最下面的選擇題。</p></div>
+<section role="tabpanel" class="view" id="ch4" hidden><div class="vhead"><div class="pcb" data-pcb="ch4" role="img"></div><div class="eyebrow">Chapter 4</div><h1>Ch4 Multithreaded Programming</h1><p>Thread（執行緒） 好處、parallelism（平行）、Amdahl、四種 thread model。讀完後做最下面的選擇題。</p></div>
 
 
 <h3>4.1 Thread 是什麼、為什麼要用</h3>
@@ -1200,7 +1014,7 @@ void *runner(void *param) {
 <tr><td>Grand Central Dispatch (GCD)</td><td class="l">Apple (Mac OS X, iOS)。C/C++ 的語言擴充＋API＋run-time library，幫你處理大部分 threading 細節。Block 寫成 <span class="mono">^{ }</span>，放進 dispatch queue；從 queue 取出時交給 thread pool 裡空閒的 thread。兩種 queue：<b>serial</b>（FIFO 一次一個，每個 process 一條，叫 main queue；程式也可以自己多建 serial queue）、<b>concurrent</b>（FIFO 但一次可取多個；系統有 low/default/high 三條）。</td></tr>
 </table>
 <div class="quiz" data-quiz="ch4"></div></section>
-<section class="view" id="ch5" hidden><div class="vhead"><div class="pcb" data-pcb="ch5" role="img"></div><div class="eyebrow">Chapter 5</div><h1>Ch5 Deadlocks（死結）</h1><p>四個必要條件、RAG（Resource-Allocation Graph，資源配置圖）、prevention（預防）、safe state（安全狀態）、Banker's、detection（偵測）。讀完後做最下面的選擇題。</p></div>
+<section role="tabpanel" class="view" id="ch5" hidden><div class="vhead"><div class="pcb" data-pcb="ch5" role="img"></div><div class="eyebrow">Chapter 5</div><h1>Ch5 Deadlocks（死結）</h1><p>四個必要條件、RAG（Resource-Allocation Graph，資源配置圖）、prevention（預防）、safe state（安全狀態）、Banker's、detection（偵測）。讀完後做最下面的選擇題。</p></div>
 
 
 <h3>5.1 Deadlock 是什麼</h3>
@@ -1428,7 +1242,7 @@ P1 need 2 ≤ 2 → 4；P0 need 5 > 4、P2 need 6 > 4 → 卡住 → unsafe</div
 </div>
 </div>
 <div class="quiz" data-quiz="ch5"></div></section>
-<section class="view exam" id="past" data-exam="past" hidden><div class="vhead"><div class="pcb" data-pcb="past" role="img"></div><div class="eyebrow">去年期中考</div><h1>去年考古題</h1><p>每題直接在框裡作答（中英文都可以），按「批改這題」或上方「批改全部」，網站會給分數和評語。參考答案和老師公布的一致，有些多補一句讓答案更完整。</p></div><div class="examtools"><span class="score"></span><span class="timer"></span><button class="btn tbtn" type="button">開始 60 分鐘計時</button><button class="btn primary gradeall" type="button">批改全部</button><button class="btn reset" type="button">清除作答</button><span class="gmsg"></span></div><p class="box tip nogradenote">這裡用關鍵字比對自動批改：有寫到必要的英文術語、中文關鍵字或數字就給分。分數僅供參考，寫完一定要展開參考答案對照。</p>
+<section role="tabpanel" class="view exam" id="past" data-exam="past" hidden><div class="vhead"><div class="pcb" data-pcb="past" role="img"></div><div class="eyebrow">去年期中考</div><h1>去年考古題</h1><p>每題直接在框裡作答（中英文都可以），按「批改這題」或上方「批改全部」，網站會自動給分；在首頁設定免費的 Gemini 金鑰後，還會有 AI 評語。參考答案和老師公布的一致，有些多補一句讓答案更完整。</p></div><div class="examtools"><span class="score"></span><span class="timer"></span><button class="btn tbtn" type="button">開始 60 分鐘計時</button><button class="btn primary gradeall" type="button">批改全部</button><button class="btn reset" type="button">清除作答</button><span class="gmsg"></span></div><p class="box tip nogradenote">這裡用關鍵字比對自動批改：有寫到必要的英文術語、中文關鍵字或數字就給分。分數僅供參考，寫完一定要展開參考答案對照。</p>
 
 
 <h3>去年考卷結構</h3>
@@ -1635,7 +1449,7 @@ speedup = 1 / ( 0.4 + 0.6/4 )
 </div>
 
 </div></details><label class="self" for="past-14-c"><input type="checkbox" id="past-14-c"> 我答對了（15 分）</label></div></section>
-<section class="view exam" id="mock-a" data-exam="mock-a" hidden><div class="vhead"><div class="pcb" data-pcb="mock-a" role="img"></div><div class="eyebrow">Mock Exam · 100 分</div><h1>模擬試題 A</h1><p>格式照去年：簡答 35%（7 題）＋申論 65%。建議開計時器 60 分鐘，全部寫完再按「批改全部」。</p></div><div class="examtools"><span class="score"></span><span class="timer"></span><button class="btn tbtn" type="button">開始 60 分鐘計時</button><button class="btn primary gradeall" type="button">批改全部</button><button class="btn reset" type="button">清除作答</button><span class="gmsg"></span></div><p class="box tip nogradenote">這裡用關鍵字比對自動批改：有寫到必要的英文術語、中文關鍵字或數字就給分。分數僅供參考，寫完一定要展開參考答案對照。</p>
+<section role="tabpanel" class="view exam" id="mock-a" data-exam="mock-a" hidden><div class="vhead"><div class="pcb" data-pcb="mock-a" role="img"></div><div class="eyebrow">Mock Exam · 100 分</div><h1>模擬試題 A</h1><p>格式照去年：簡答 35%（7 題）＋申論 65%。建議開計時器 60 分鐘，全部寫完再按「批改全部」。</p></div><div class="examtools"><span class="score"></span><span class="timer"></span><button class="btn tbtn" type="button">開始 60 分鐘計時</button><button class="btn primary gradeall" type="button">批改全部</button><button class="btn reset" type="button">清除作答</button><span class="gmsg"></span></div><p class="box tip nogradenote">這裡用關鍵字比對自動批改：有寫到必要的英文術語、中文關鍵字或數字就給分。分數僅供參考，寫完一定要展開參考答案對照。</p>
 <h3>I. Short Answer（35%，每題 5%）</h3>
 
 <div class="exq" id="mock-a-1" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q1</span>Please list three advantages of multiprocessor systems.</p></div><label class="small" for="mock-a-1-a">你的答案</label><textarea id="mock-a-1-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
@@ -1775,7 +1589,7 @@ N→∞：1 / S = 1 / 0.3 ≈ 3.33</div>
 </div>
 
 </div></details><label class="self" for="mock-a-15-c"><input type="checkbox" id="mock-a-15-c"> 我答對了（15 分）</label></div></section>
-<section class="view exam" id="mock-b" data-exam="mock-b" hidden><div class="vhead"><div class="pcb" data-pcb="mock-b" role="img"></div><div class="eyebrow">Mock Exam · 100 分</div><h1>模擬試題 B</h1><p>格式照去年：簡答 35%（7 題）＋申論 65%。建議開計時器 60 分鐘，全部寫完再按「批改全部」。</p></div><div class="examtools"><span class="score"></span><span class="timer"></span><button class="btn tbtn" type="button">開始 60 分鐘計時</button><button class="btn primary gradeall" type="button">批改全部</button><button class="btn reset" type="button">清除作答</button><span class="gmsg"></span></div><p class="box tip nogradenote">這裡用關鍵字比對自動批改：有寫到必要的英文術語、中文關鍵字或數字就給分。分數僅供參考，寫完一定要展開參考答案對照。</p>
+<section role="tabpanel" class="view exam" id="mock-b" data-exam="mock-b" hidden><div class="vhead"><div class="pcb" data-pcb="mock-b" role="img"></div><div class="eyebrow">Mock Exam · 100 分</div><h1>模擬試題 B</h1><p>格式照去年：簡答 35%（7 題）＋申論 65%。建議開計時器 60 分鐘，全部寫完再按「批改全部」。</p></div><div class="examtools"><span class="score"></span><span class="timer"></span><button class="btn tbtn" type="button">開始 60 分鐘計時</button><button class="btn primary gradeall" type="button">批改全部</button><button class="btn reset" type="button">清除作答</button><span class="gmsg"></span></div><p class="box tip nogradenote">這裡用關鍵字比對自動批改：有寫到必要的英文術語、中文關鍵字或數字就給分。分數僅供參考，寫完一定要展開參考答案對照。</p>
 <h3>I. Short Answer（35%，每題 5%）</h3>
 
 <div class="exq" id="mock-b-1" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q1</span>Please list the five states of a process.</p></div><label class="small" for="mock-b-1-a">你的答案</label><textarea id="mock-b-1-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
@@ -1912,7 +1726,7 @@ RMS：period 越短越優先 → P1 (50) 優先於 P2 (80)
     Unsafe → No, P1 must wait.</div>
 </div>
 </div></details><label class="self" for="mock-b-15-c"><input type="checkbox" id="mock-b-15-c"> 我答對了（15 分）</label></div></section>
-<section class="view" id="review" hidden><div class="vhead"><div class="pcb" data-pcb="review" role="img"></div><div class="eyebrow">考前一天</div><h1>總複習</h1><p>速記頁、必畫的 8 張圖、額外的預測題。</p></div><h3>考前 10 分鐘速記</h3><div class="cheat">
+<section role="tabpanel" class="view" id="review" hidden><div class="vhead"><div class="pcb" data-pcb="review" role="img"></div><div class="eyebrow">考前一天</div><h1>總複習</h1><p>速記頁、必畫的 8 張圖、額外的預測題。</p></div><h3>考前 10 分鐘速記</h3><div class="cheat">
 
 <div class="two">
 <div>
@@ -2073,102 +1887,14 @@ RMS：period 越短越優先 → P1 (50) 優先於 P2 (80)
 
 </main>
 
-<script src="../../assets/ezsync.js?v=2" data-key="os-midterm-v1"></script>
+<script src="../../assets/ezsync.js?v=0fb0ba45" data-key="os-midterm-v1"></script>
+<script src="quiz.js?v=3310c0d9"></script>
 <script>
-/* ---------- theme: system / light / dark ---------- */
-(function(){
-  const TK="ezexams-theme",root=document.documentElement,host=root.getAttribute("data-theme");
-  const btn=document.getElementById("themeBtn"),menu=document.getElementById("themeMenu");
-  const NAME={system:"跟隨裝置",light:"淺色",dark:"深色"};
-  function apply(m){
-    if(m==="light"||m==="dark")root.setAttribute("data-theme",m);
-    else if(host)root.setAttribute("data-theme",host);else root.removeAttribute("data-theme");
-    btn.dataset.mode=m;btn.title="外觀："+NAME[m];const lab=btn.querySelector(".lab");if(lab)lab.textContent=NAME[m];
-    menu.querySelectorAll("[data-t]").forEach(b=>b.setAttribute("aria-checked",String(b.dataset.t===m)));
-  }
-  let mode="system";try{const t=localStorage.getItem(TK);if(t==="light"||t==="dark")mode=t;}catch(e){}
-  apply(mode);
-  function close(){menu.hidden=true;btn.setAttribute("aria-expanded","false");}
-  btn.addEventListener("click",e=>{e.stopPropagation();menu.hidden=!menu.hidden;btn.setAttribute("aria-expanded",String(!menu.hidden));});
-  menu.addEventListener("click",e=>{const b=e.target.closest("[data-t]");if(!b)return;mode=b.dataset.t;apply(mode);try{mode==="system"?localStorage.removeItem(TK):localStorage.setItem(TK,mode);}catch(err){}close();btn.focus();});
-  document.addEventListener("click",e=>{if(!menu.hidden&&!e.target.closest(".theme"))close();});
-  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!menu.hidden){close();btn.focus();}});
-})();
 (function(){
   const tt=document.getElementById("toTop");
   addEventListener("scroll",()=>tt.classList.toggle("show",scrollY>500),{passive:true});
   tt.addEventListener("click",()=>scrollTo({top:0,behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"}));
 })();
-const QUIZ = {
-ch1: [
- {q:"Which of the following is NOT one of the three main components of the CPU?", o:["Control Unit (CU)","Arithmetic and Logic Unit (ALU)","Registers","DMA controller"], a:3, e:"CPU = CU + ALU + Registers（控制、運算、暫存）。DMA controller（直接記憶體存取控制器）在 I/O device 那一側，不在 CPU 裡。"},
- {q:"What is the main benefit of DMA (direct memory access)?", o:["Main memory keeps its data when power is lost","The device controller transfers a whole block directly to main memory without CPU intervention, generating only one interrupt per block","User mode can execute privileged instructions","It replaces the cache"], a:1, e:"關鍵字：high-speed I/O、directly to main memory、without CPU intervention、one interrupt per block（每個 block 只產生一次 interrupt）。"},
- {q:"What is a trap (exception)?", o:["A hardware interrupt generated by the timer","A software-generated interrupt caused by an error or a user request","A notification that a DMA transfer has finished","The program executed at power-up"], a:1, e:"Trap = software-generated interrupt（軟體產生的中斷），例如 division by zero（除以 0）或 system call（系統呼叫）。"},
- {q:"Where is the bootstrap program typically stored?", o:["RAM","Cache","ROM / EPROM (firmware)","The swap area on disk"], a:2, e:"Bootstrap program（開機程式）存在 ROM／EPROM，稱為 firmware（韌體）；它初始化系統並把 kernel（核心）載入 memory。"},
- {q:"What is the only large storage medium that the CPU can access directly?", o:["Main memory","Magnetic disk","Solid-state disk","Magnetic tape"], a:0, e:"Main memory（主記憶體）：CPU 唯一能直接存取的大型儲存，random access（隨機存取），通常 volatile（斷電資料消失）。"},
- {q:"Which of the following is NOT an advantage of multiprocessor systems?", o:["Increased throughput","Economy of scale","Increased reliability","Guaranteed freedom from deadlock"], a:3, e:"三大優點：increased throughput（吞吐量）、economy of scale（規模經濟）、increased reliability（可靠度，graceful degradation／fault tolerance）。跟 deadlock 無關。"},
- {q:"What is the main difference between timesharing and multiprogramming?", o:["Timesharing can run only one program","In timesharing the CPU switches jobs so frequently that users can interact with each job (response time < 1 second)","Multiprogramming does not need memory","There is no difference"], a:1, e:"Multiprogramming（多元程式）讓 CPU 不閒著，目的是 efficiency（效率）；timesharing（分時）切換快到 user 可以 interact（互動）。"},
- {q:"What is the mode bit used for?", o:["Recording the CPU temperature","Distinguishing whether the system is running user code or kernel code","Deciding the cache size","Counting the number of processes"], a:1, e:"Dual-mode operation（雙模式）：user mode（使用者模式）／kernel mode（核心模式），用 hardware 提供的 mode bit 區分。Privileged instructions（特權指令）只能在 kernel mode 執行。"},
- {q:"What is the purpose of a timer?", o:["To display the correct clock time","To prevent an infinite loop or a process hogging resources by generating an interrupt after a specific period","To speed up DMA","To clear the cache"], a:1, e:"Timer（計時器）時間到就產生 interrupt，讓 OS 拿回 CPU 的控制權。"},
- {q:"Which statement about programs and processes is correct?", o:["A program is an active entity","A process is an executable file stored on disk","A process is a program in execution and is an active entity","One program can become only one process"], a:2, e:"Program（程式）是 passive entity（被動）；process（行程）是 active entity（主動）。一個 program 可以變成多個 process。"},
- {q:"Moving up the storage hierarchy (toward registers and cache), storage becomes:", o:["Slower, cheaper, and larger","Faster, more expensive, and smaller","Faster, cheaper, and larger","Slower, more expensive, and smaller"], a:1, e:"Storage hierarchy（儲存階層）依 speed、cost、volatility 排列：越上層越快、越貴、容量越小。"}
-],
-ch2: [
- {q:"What does it mean when a process is in the ready state?", o:["It is using the CPU","It is waiting for an I/O operation to complete","It is waiting to be assigned to a processor","It has finished execution"], a:2, e:"Ready（就緒）：等 CPU。等 I/O 是 waiting（等待）。"},
- {q:"When the I/O of a waiting process completes, which state does it enter?", o:["running","ready","new","terminated"], a:1, e:"I/O or event completion → ready（重新排隊），不是直接回 running。"},
- {q:"In the process state diagram, what is the transition from running to ready called?", o:["admitted","scheduler dispatch","interrupt","exit"], a:2, e:"running → ready 是 interrupt（中斷）；ready → running 才是 scheduler dispatch（排程器派送）。"},
- {q:"In which section of a process's memory are local variables stored?", o:["text","data","heap","stack"], a:3, e:"Stack（堆疊）：function parameters、return address、local variables。Global variables 在 data section。"},
- {q:"Memory allocated by malloc() at run time is in the:", o:["stack","heap","text section","data section"], a:1, e:"Heap（堆積）= memory dynamically allocated during run time（執行時動態配置）。"},
- {q:"Which of the following is NOT stored in a PCB?", o:["Program counter","CPU registers","Memory-management information","The source code of other processes"], a:3, e:"PCB（Process Control Block，行程控制區塊）：process state、program counter、CPU registers、CPU-scheduling info、memory-management info、accounting info、I/O status info。"},
- {q:"Which scheduler decreases the degree of multiprogramming by swapping processes out to disk?", o:["Long-term scheduler","Short-term scheduler","Mid-term scheduler","Dispatcher"], a:2, e:"Mid-term scheduler（中期排程器）：swap out／swap in（換出／換入），降低 degree of multiprogramming（多元程式程度）。Long-term scheduler 控制它。"},
- {q:"Which statement about the short-term scheduler is correct?", o:["It is invoked only every few minutes","It is invoked very frequently (milliseconds), so it must be fast","It selects which processes enter the ready queue","It performs swapping"], a:1, e:"Short-term scheduler（短期排程器，CPU scheduler）毫秒級頻繁執行，所以必須快。"},
- {q:"What are the two models of interprocess communication (IPC)?", o:["Direct and indirect","Shared memory and message passing","Blocking and non-blocking","fork() and exec()"], a:1, e:"Two models of IPC（Interprocess Communication，行程間通訊）：shared memory（共享記憶體）與 message passing（訊息傳遞）。"},
- {q:"With BUFFER_SIZE = 10, how many items can the in/out bounded-buffer solution hold at most?", o:["10","9","11","5"], a:1, e:"Bounded buffer（有限緩衝區）最多 BUFFER_SIZE − 1 個。Full：(in+1) % SIZE == out；empty：in == out。"},
- {q:"In message passing, when both send and receive are blocking, it is called a:", o:["mailbox","rendezvous","zero buffer","context switch"], a:1, e:"Both blocking → rendezvous（會合）。Blocking 也叫 synchronous（同步）。"},
- {q:"What does the UNIX fork() system call do?", o:["Replaces the process's memory space with a new program","Creates a new child process that is a duplicate of the parent","Terminates a process","Sends a message to another process"], a:1, e:"fork() 建立 child process（子行程）；exec() 在 fork 之後用新 program 取代 memory space。"}
-],
-ch3: [
- {q:"Under which two circumstances is CPU scheduling nonpreemptive?", o:["Running → waiting, and termination","Running → ready, and waiting → ready","Only waiting → ready","All scheduling is preemptive"], a:0, e:"Process 自己放棄 CPU（去等 I/O 或結束）= nonpreemptive（不可搶奪）；其他都是 preemptive（可搶奪）。"},
- {q:"\"Short processes wait behind a long process\" is called ___, and it occurs in ___.", o:["starvation; SJF","convoy effect; FCFS","aging; Priority","thrashing; RR"], a:1, e:"Convoy effect（護航效應）：short process behind long process → FCFS（First-Come, First-Served，先到先服務）。"},
- {q:"Which algorithm gives the minimum average waiting time (it is optimal)?", o:["FCFS","RR","SJF","Priority"], a:2, e:"SJF（Shortest-Job-First，最短工作優先）is optimal；difficulty（困難）是無法得知下一次 CPU burst 的長度。"},
- {q:"Which scheduling algorithms may suffer from starvation?", o:["FCFS and RR","SJF and Priority","Only RR","Only FCFS"], a:1, e:"SJF（含 SRTF）一直挑短的，Priority 一直挑高 priority 的 → 長的或低 priority 的 process 可能永遠等（starvation 飢餓）。"},
- {q:"What is the solution to starvation?", o:["Aging: increase the priority of a process as it waits longer","Use a smaller time quantum","Always switch to FCFS","Add more memory"], a:0, e:"Aging（老化）：as time progresses, increase the priority of the process。"},
- {q:"If the time quantum in Round Robin is very large, RR becomes:", o:["SJF","FCFS","Priority","MLFQ"], a:1, e:"q large → FCFS；q small → context switch（內容切換）overhead 太高。"},
- {q:"What is the main difference between multilevel queue and multilevel feedback queue scheduling?", o:["The number of queues","Whether a process can move between queues","Whether RR is used","Whether priorities are used"], a:1, e:"MLQ（Multilevel Queue，多層佇列）：process 永久在同一條 queue；MLFQ（Multilevel Feedback Queue，多層回饋佇列）：可以在 queues 之間移動（可實作 aging）。"},
- {q:"How is waiting time computed?", o:["Completion time − arrival time","Completion time − arrival time − burst time","First run time − arrival time","Burst time − arrival time"], a:1, e:"Turnaround time（周轉時間）= completion − arrival；waiting time（等待時間）= turnaround − burst。"},
- {q:"FCFS with P1 = 24, P2 = 3, P3 = 3 arriving at time 0 in the order P1, P2, P3. What is the average waiting time?", o:["3","15","17","27"], a:2, e:"Waiting：P1 = 0、P2 = 24、P3 = 27 → 51 / 3 = 17。"},
- {q:"In rate-monotonic scheduling, how is priority assigned?", o:["Earlier deadline, higher priority","Shorter period, higher priority","Longer burst, higher priority","Earlier arrival, higher priority"], a:1, e:"RMS（Rate-Monotonic Scheduling，速率單調排程）：priority = 1/period（固定）。看 deadline（截止期限）的是 EDF。"},
- {q:"Exponential averaging with α = 1/2, τn = 10, tn = 6. What is τn+1?", o:["6","8","10","16"], a:1, e:"τn+1 = α·tn + (1−α)·τn = 0.5×6 + 0.5×10 = 8。"},
- {q:"What is dispatch latency?", o:["Time from the arrival of an interrupt to the start of its service routine","Time for the dispatcher to stop one process and start another running","Time a process waits in the ready queue","The length of a CPU burst"], a:1, e:"Interrupt latency（中斷延遲）是中斷到開始處理；dispatch latency（派送延遲）是換 process 的時間。"}
-],
-ch4: [
- {q:"What are the two types of parallelism?", o:["User and kernel parallelism","Data parallelism and task parallelism","Concurrency and parallelism","Hardware and software parallelism"], a:1, e:"Data parallelism（資料平行）：同一種操作做在不同的資料子集；task parallelism（工作平行）：不同 thread 做不同的事。"},
- {q:"An application is 75% parallel and 25% serial. By Amdahl's law, what is the speedup from 1 core to 2 cores?", o:["1.33","1.6","2","2.28"], a:1, e:"1 / (0.25 + 0.75/2) = 1 / 0.625 = 1.6。"},
- {q:"By Amdahl's law, as the number of cores N approaches infinity, the speedup approaches:", o:["N","1/S, where S is the serial portion","Infinity","1"], a:1, e:"Serial portion（序列部分）決定上限：speedup → 1/S。"},
- {q:"What is a disadvantage of the many-to-one model?", o:["It creates too many kernel threads","One blocking thread blocks all threads, and threads cannot run in parallel on multicore systems","Thread creation is too expensive","It has no user threads"], a:1, e:"Many-to-one（多對一）：one thread blocking causes all to block；一次只有一個 thread 能進 kernel。"},
- {q:"What is the two-level model?", o:["Many-to-one plus one-to-one","Many-to-many, but also allows a user thread to be bound to a kernel thread","A process with exactly two threads","Two processes sharing one thread"], a:1, e:"Two-level model（兩層模型）：similar to M:M, except that it allows a user thread to be bound（綁定）to a kernel thread。"},
- {q:"Which multithreading model do Linux and Windows use?", o:["Many-to-one","One-to-one","Many-to-many","Two-level"], a:1, e:"One-to-one（一對一）：Windows、Linux、Solaris 9 and later。"},
- {q:"Which of the following does each thread of the same process have on its own?", o:["Code","Data","Open files","Registers and stack"], a:3, e:"Threads（執行緒）共享 code、data、files；各自有 registers（暫存器）、stack、program counter。"},
- {q:"Which statement about concurrency and parallelism is correct?", o:["A single-core system can provide concurrency but not true parallelism","A single-core system can provide parallelism","They mean exactly the same thing","Parallelism does not require multiple cores"], a:0, e:"Concurrency（並行）：多個 task 都有進度，可以輪流；parallelism（平行）：真的同時執行，需要 multiple cores。"},
- {q:"Which of the following is NOT one of the four benefits of multithreading?", o:["Responsiveness","Resource sharing","Economy","Security isolation"], a:3, e:"四個 benefits：responsiveness（回應性）、resource sharing（資源共享）、economy（經濟）、scalability（可擴展性）。"},
- {q:"What is Pthreads?", o:["Linux-only kernel threads","A POSIX standard API for thread creation and synchronization: a specification, not an implementation","The Java Thread class","Apple's Grand Central Dispatch"], a:1, e:"Pthreads：POSIX standard（IEEE 1003.1c），只規定行為（specification 規格），實作由 library 決定。"},
- {q:"Which of the following is NOT a method of implicit threading?", o:["Thread pools","OpenMP","Grand Central Dispatch","fork()"], a:3, e:"Implicit threading（隱式執行緒）三種：thread pools（執行緒池）、OpenMP、GCD。fork() 是建立 process 的 system call。"}
-],
-ch5: [
- {q:"Which of the following is NOT a necessary condition for deadlock?", o:["Mutual exclusion","Hold and wait","No preemption","Starvation"], a:3, e:"四個 necessary conditions（必要條件）：mutual exclusion（互斥）、hold and wait（持有並等待）、no preemption（不可搶奪）、circular wait（循環等待）。"},
- {q:"A resource-allocation graph contains a cycle, and each resource type has only one instance. Then:", o:["There is definitely a deadlock","There may be a deadlock","There is definitely no deadlock","The system is in a safe state"], a:0, e:"Single instance（單一實例）+ cycle（環）→ deadlock。"},
- {q:"A resource-allocation graph contains a cycle, and resource types have several instances. Then:", o:["There is definitely a deadlock","There is a possibility of deadlock","There is definitely no deadlock","The graph is invalid"], a:1, e:"Several instances（多個實例）+ cycle → possibility of deadlock（可能死結）。"},
- {q:"What is the relationship between safe states and deadlock?", o:["Safe state → possible deadlock","Unsafe state → definitely deadlock","Safe state → no deadlock; unsafe state → possibility of deadlock","They are unrelated"], a:2, e:"Deadlock ⊂ unsafe state（不安全狀態）。Avoidance（避免）就是確保系統永遠不進入 unsafe state。"},
- {q:"In the banker's algorithm, how is Need computed?", o:["Max + Allocation","Max − Allocation","Available − Allocation","Allocation − Max"], a:1, e:"Need[i,j] = Max[i,j] − Allocation[i,j]（還需要 = 最大需求 − 已分配）。"},
- {q:"In the safety algorithm, when a process can finish, Work is increased by its:", o:["Need","Max","Allocation","Request"], a:2, e:"它做完會把手上持有的 Allocation（已分配資源）還回來：Work = Work + Allocation。最常錯！"},
- {q:"Which algorithm is used for deadlock avoidance when resource types have multiple instances?", o:["Wait-for graph","Banker's algorithm","Resource-allocation graph with claim edges","Aging"], a:1, e:"Single instance → resource-allocation graph（資源配置圖，claim edge 宣告邊）；multiple instances → banker's algorithm（銀行家演算法）。"},
- {q:"Numbering all resource types and requiring requests in increasing order prevents which condition?", o:["Mutual exclusion","Hold and wait","No preemption","Circular wait"], a:3, e:"Impose a total ordering（全序）of all resource types → 不可能形成 circular wait（循環等待）。"},
- {q:"In the resource-request algorithm, if Request > Available, then:", o:["Raise an error because the process exceeded its maximum claim","The process must wait","Allocate immediately","Reboot the system"], a:1, e:"Request > Need → error（超過宣告的最大需求）；Request > Available → must wait（必須等待）。"},
- {q:"Which method detects deadlock when every resource type has a single instance?", o:["Banker's algorithm","Wait-for graph","Gantt chart","Exponential averaging"], a:1, e:"Wait-for graph（等待圖）：只有 process 節點，定期找 cycle，需要 O(n²)。"},
- {q:"How do most operating systems actually handle deadlocks?", o:["Prevention","Avoidance","They ignore the problem and pretend deadlocks never occur","They run detection every second"], a:2, e:"Ignore the problem（忽略問題）and pretend that deadlocks never occur; used by most operating systems。"},
- {q:"Work = (3,3,2). P1 has Need = (1,2,2) and Allocation = (2,0,0). After P1 finishes, Work = ?", o:["(4,5,4)","(5,3,2)","(2,1,0)","(1,2,2)"], a:1, e:"Need (1,2,2) ≤ (3,3,2) ✓ → Work + Allocation = (3,3,2) + (2,0,0) = (5,3,2)。"}
-]
-};
 const HARD={
 ch1:[
  {q:"A device controller moves a 4 KB block to main memory using DMA. How many interrupts does the CPU receive for this block?", o:["0","1","512","4096"], a:1, e:"DMA 的重點：one interrupt per block（每個 block 一次）。如果是一般 interrupt-driven I/O，才會每個 byte 中斷一次（4096 次）。"},
@@ -2242,8 +1968,8 @@ document.addEventListener("click",e=>{if(e.target.closest(".opt"))setTimeout(()=
 function renderTabs(cur){
   tabs.innerHTML="";
   VIEWS.forEach(v=>{
-    if(v[0]==="|"){const s=document.createElement("span");s.className="sep";tabs.appendChild(s);return;}
-    const b=document.createElement("button");b.textContent=v[1];b.dataset.go=v[0];
+    if(v[0]==="|"){const s=document.createElement("span");s.className="sep";s.setAttribute("role","presentation");tabs.appendChild(s);return;}
+    const b=document.createElement("button");b.type="button";b.textContent=v[1];b.dataset.go=v[0];b.setAttribute("role","tab");b.setAttribute("aria-selected",String(v[0]===cur));b.setAttribute("aria-controls",v[0]);
     if(v[0]===cur)b.setAttribute("aria-current","true");
     const ps=procState(v[0]);b.dataset.state=ps.state;b.title=v[1]+"："+ps.state;
     tabs.appendChild(b);
@@ -2469,7 +2195,7 @@ document.querySelectorAll(".exam").forEach(ex=>{
       });
       save();upd();
       stat.textContent=n?"批改完成。":"批改結果讀取失敗，請再按一次。";
-    }catch(e){const c=e&&e.code;if(["not_granted","sampling_disabled","not_declared","capability_disabled","capability_removed"].includes(c)){SAMPLE=null;setGradingMode();kwGrade(list);stat.textContent="批改完成（關鍵字比對）。";}else stat.textContent=errCopy(e);}
+    }catch(e){if(window.EZAI&&EZAI.isOwn(SAMPLE)){kwGrade(list);stat.textContent=EZAI.errText(e)+"這次先用關鍵字比對。";return;}const c=e&&e.code;if(["not_granted","sampling_disabled","not_declared","capability_disabled","capability_removed"].includes(c)){SAMPLE=null;setGradingMode();kwGrade(list);stat.textContent="批改完成（關鍵字比對）。";}else stat.textContent=errCopy(e);}
     finally{btns.forEach(b=>b.disabled=false);}
   }
   qs.forEach(q=>{
@@ -2526,7 +2252,7 @@ function setGradingMode(){
   if(S.last==="home")renderHome();
 }
 setGradingMode();
-(async()=>{try{SAMPLE=window.claude&&await window.claude.use("sample");}catch(e){SAMPLE=null;}setGradingMode();})();
+(async()=>{try{SAMPLE=window.claude&&await window.claude.use("sample");}catch(e){SAMPLE=null;}if(!SAMPLE&&window.EZAI)SAMPLE=EZAI.sampler();setGradingMode();})();
 
 /* ---------- interactive figures ---------- */
 const W={};
@@ -2706,53 +2432,7 @@ W.expavg=function(box){
 
 document.querySelectorAll(".widget[data-w]").forEach(b=>{try{W[b.dataset.w](b);}catch(e){b.textContent="互動圖載入失敗";}});
 
-/* EZexams study plan (a finished chapter, i.e. its tab shows data-state="terminated", gets its button marked; a day whose buttons are all finished gets marked too): <div class="plan" data-exam="YYYY-MM-DD"> with one .day per unit.
-   Re-splits the units over the days left before the exam (fixed plan, default 7 days ending the day before the exam; never reshuffled), shows dates, and redraws at midnight. */
-(function(){
-  function setup(box){
-    const all=[...box.querySelectorAll(".day .t")].map(t=>t.innerHTML);
-    if(!all.length)return;
-    const goals=all.map(h=>[...h.matchAll(/data-go="([^"]+)"/g)].map(m=>m[1]));
-    const done=i=>{const st=goals[i].map(g=>{const t=document.querySelector('[data-go="'+g+'"][data-state]');return t?t.dataset.state:null;}).filter(x=>x);
-      return st.length>0&&st.every(x=>x==="terminated");};
-    let units=all,sig="";
-    const [y,m,d]=box.dataset.exam.split("-").map(Number),EXAM=new Date(y,m-1,d);
-    const title=box.previousElementSibling&&/H[2-4]/.test(box.previousElementSibling.tagName)?box.previousElementSibling:null;
-    function render(){
-      const now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
-      const N=+(box.dataset.days||7),U=units.length,DAY=864e5;
-      const start=new Date(EXAM);start.setDate(start.getDate()-N); /* plan runs from exam-N to exam-1 */
-      const lab=i=>{const dd=new Date(start);dd.setDate(dd.getDate()+i);return (dd.getMonth()+1)+"/"+dd.getDate();};
-      /* units for each of the N days */
-      const slots=[];for(let i=0;i<N;i++)slots.push([]);
-      if(N>=U){for(let u=0;u<U;u++){const x=Math.floor(u*N/U),z=Math.floor((u+1)*N/U)-1;for(let i=x;i<=z;i++)slots[i].push(u);}}
-      else{let k=0;for(let i=0;i<N;i++){const take=Math.floor(U/N)+(i<U%N?1:0);for(let j=0;j<take;j++)slots[i].push(k++);}}
-      /* fixed plan: never reshuffled; today's box is outlined */
-      const ti=Math.round((today-start)/DAY);
-      const rows=[];for(let i=0;i<N;i++){const last=rows[rows.length-1];
-        if(last&&last.u.join()===slots[i].join())last.z=i;else rows.push({a:i,z:i,u:slots[i].slice()});}
-      if(title)title.textContent=N+" 天讀書計畫（考試 "+(EXAM.getMonth()+1)+"/"+EXAM.getDate()+"）";
-      let h="";
-      rows.forEach((r,k)=>{if(!r.u.length)return;
-        h+='<div class="day'+(ti>=r.a&&ti<=r.z?' today':'')+'"><div class="d">Day '+(r.a+1)+(r.z>r.a?"–"+(r.z+1):"")+'<br><span class="small">'+lab(r.a)+(r.z>r.a?"–"+lab(r.z):"")+'</span></div><div class="t">'+r.u.map(u=>units[u]).join('<hr class="plansep">')+'</div></div>';});
-      box.innerHTML=h;mark();schedule();
-    }
-    const isDone=g=>{const t=document.querySelector('[data-go="'+g+'"][data-state]');return !!t&&t.dataset.state==="terminated";};
-    function mark(){box.querySelectorAll(".day").forEach(day=>{const bs=[...day.querySelectorAll("[data-go]")];let all=bs.length>0;
-      bs.forEach(b=>{const ok=isDone(b.dataset.go);b.classList.toggle("ezdone",ok);if(!ok)all=false;});day.classList.toggle("ezdone",all);});}
-    let timer;function schedule(){clearTimeout(timer);const now=new Date(),nx=new Date(now.getFullYear(),now.getMonth(),now.getDate()+1);timer=setTimeout(render,nx-now+1000);}
-    /* redraw when a chapter's state changes */
-    let q;new MutationObserver(()=>{clearTimeout(q);q=setTimeout(mark,200);})
-      .observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:["data-state"]});
-    render();
-  }
-  function css(){if(document.getElementById("ezplan-css"))return;const st=document.createElement("style");st.id="ezplan-css";
-    st.textContent='.plan [data-go].ezdone{background:var(--ok-soft,rgba(46,160,90,.14))!important;border:1px solid var(--ok,#2e8b57)!important;color:var(--ok,#2e8b57)!important}'+
-    '.plan [data-go].ezdone::before{content:"✓ "}'+
-    '.plan .day.today{box-shadow:0 0 0 2px var(--accent,#2b5c9e)}.plan .day.ezdone{background:var(--ok-soft,rgba(46,160,90,.12));border-color:var(--ok-line,var(--ok,#2e8b57))}';document.head.appendChild(st);}
-  function init(){css();document.querySelectorAll(".plan[data-exam]").forEach(setup);}
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init();
-})();
+
 
 
 
@@ -2784,6 +2464,6 @@ show(start);
 
 </script>
 
-<script src="../../assets/ezwrong.js?v=2"></script>
+<script src="../../assets/ezwrong.js?v=96879da8"></script>
 </body>
 </html>

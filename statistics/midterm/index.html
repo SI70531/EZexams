@@ -5,30 +5,31 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <style>[hidden]{display:none!important}body{margin:0}</style>
 <title>統計學期中衝刺｜EZexams</title>
+<meta name="description" content="統計學期中考衝刺：Anderson 14e Ch1–Ch4 白話講義、55 題選擇題、互動圖和期中作業，寫完直接批改。">
+<meta name="theme-color" content="#dde1e0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#11212d" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="EZexams">
+<meta property="og:title" content="統計學期中衝刺｜EZexams">
+<meta property="og:description" content="統計學期中考衝刺：Anderson 14e Ch1–Ch4 白話講義、55 題選擇題、互動圖和期中作業，寫完直接批改。">
+<meta property="og:url" content="https://si70531.github.io/EZexams/statistics/midterm/">
+<meta property="og:image" content="https://si70531.github.io/EZexams/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="manifest" href="../../manifest.webmanifest">
+<script src="../../assets/ezcore.js?v=86f55522"></script>
+<script src="../../assets/ezai.js?v=1f6ac436"></script>
 <style>.plansep{border:0;border-top:1px dashed var(--line);margin:10px 0}</style>
-<script src="../../assets/ezplan.js" defer></script>
+<script src="../../assets/ezplan.js?v=c67a2ffd" defer></script>
 </head>
 <body>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=LXGW+WenKai+TC:wght@400;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="../../assets/ezbase.css?v=9efbd24f">
 <style>
 /* Same design system as operating-systems/midterm: pill tabs, progress card on each cover, handwritten headings. */
-:root{
-  --bg:#dde1e0; --paper:#f3f5f5; --paper2:#e8ebeb;
-  --ink:#06141b; --ink70:rgba(6,20,27,.76); --muted:rgba(6,20,27,.56); --line:#c2c9ca; --line-strong:#9ba8ab;
-  --indigo:#253745; --indigo-soft:rgba(37,55,69,.08); --indigo-mid:rgba(37,55,69,.18);
-  --seal:#c4472a; --seal-soft:rgba(196,71,42,.06); --seal-line:rgba(196,71,42,.3);
-  --brass:#4a5c6a; --brass-soft:rgba(74,92,106,.08); --brass-line:rgba(74,92,106,.3);
-  --ok:#2d7a3e; --ok-soft:rgba(45,122,62,.08); --ok-line:rgba(45,122,62,.3);
-  --accent:#253745; --accent-ink:#ffffff; --accent-soft:rgba(37,55,69,.08);
-  --bad:#c4472a; --bad-soft:rgba(196,71,42,.06); --warn:#a26300; --warn-soft:rgba(196,128,20,.09); --warn-line:rgba(196,128,20,.32);
-  --code:#e3e7e7; --fig:#f3f5f5; --hard:#06141b; --shadow:0 6px 18px rgba(6,20,27,.12);
-  --f-display:"LXGW WenKai TC","Kaiti TC","STKaiti","Noto Sans TC",serif;
-  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
-  --f-en:"Source Serif 4","Georgia","Noto Serif TC",serif;
-  --f-mono:"JetBrains Mono","Menlo","Consolas","Noto Sans TC",monospace;
-}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#11212d; --paper:#1c2e3b; --paper2:#172835;
   --ink:#ccd0cf; --ink70:rgba(204,208,207,.82); --muted:rgba(204,208,207,.56); --line:#2f4352; --line-strong:#4a5c6a;
@@ -51,211 +52,13 @@
   --bad:#ff7d5a; --bad-soft:rgba(255,125,90,.08); --warn:#f2bd5a; --warn-soft:rgba(242,189,90,.09); --warn-line:rgba(242,189,90,.32);
   --code:#0d1b25; --fig:#ccd0cf; --hard:#06141b; --shadow:0 6px 18px rgba(0,0,0,.4);
   color-scheme:dark}
-*{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.8;-webkit-font-smoothing:antialiased;transition:background .25s,color .25s}
-body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
-::selection{background:var(--brass-line)}
-
-/* top bar: pill tabs */
-.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:6;background:var(--bg);border-bottom:1px solid var(--line);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-.top .bar{max-width:1000px;margin:0 auto;display:flex;align-items:center;gap:12px;height:58px}
-.brand{flex:0 0 auto;display:flex;align-items:center;gap:8px;color:var(--ink);text-decoration:none;white-space:nowrap}
-.brand .mk{position:relative;display:grid;place-items:center;width:30px;height:30px;margin:0 3px;border-radius:5px;background:var(--ink);color:var(--bg);font-family:var(--f-mono);font-weight:600;font-size:11px;letter-spacing:-.02em}
-.brand .mk::before,.brand .mk::after{content:"";position:absolute;top:5px;bottom:5px;width:3px;background:repeating-linear-gradient(var(--ink) 0 2px,transparent 2px 5px)}
-.brand .mk::before{left:-4px}.brand .mk::after{right:-4px}
-.brand .nm{font-size:13px;color:var(--indigo);font-weight:500}
-a.brand:hover .nm{color:var(--seal)}
-nav.tabs{flex:1 1 auto;min-width:0}
-nav.tabs .row{display:flex;gap:0;overflow-x:auto;scrollbar-width:none;align-items:center;height:58px}
-nav.tabs .row::-webkit-scrollbar{display:none}
-nav.tabs button{position:relative;flex:0 0 auto;font:inherit;font-family:var(--f-mono);font-size:12.5px;font-weight:500;border:1.5px solid var(--ink);border-right-width:0;border-radius:0;padding:6px 12px 8px;background:var(--paper);color:var(--ink);cursor:pointer;white-space:nowrap;transition:background .15s,color .15s}
-nav.tabs button:first-child{border-radius:5px 0 0 5px}
-nav.tabs button:last-child{border-right-width:1.5px;border-radius:0 5px 5px 0}
-nav.tabs .sep+button{border-radius:5px 0 0 5px}
-nav.tabs button:has(+.sep){border-right-width:1.5px;border-radius:0 5px 5px 0}
-nav.tabs button::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:transparent}
-nav.tabs button[data-state="running"]::after{background:var(--warn)}
-nav.tabs button[data-state="terminated"]::after{background:var(--ok)}
-nav.tabs button:hover{background:var(--indigo-soft)}
-nav.tabs button[aria-current="true"]{background:var(--indigo);color:var(--accent-ink);font-weight:600}
-
-
-nav.tabs .sep{flex:0 0 10px;align-self:center;height:1.5px;background:var(--ink);margin:0 2px}
-.theme{position:relative;flex:0 0 auto}
-.themebtn{width:36px;height:36px;border-radius:8px;border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);cursor:pointer;display:grid;place-items:center;transition:background .15s}
-.themebtn:hover{background:var(--indigo-soft)}
-.themebtn svg{width:17px;height:17px;display:none}
-.themebtn[data-mode="system"] .i-system,.themebtn[data-mode="light"] .i-light,.themebtn[data-mode="dark"] .i-dark{display:block}
-.thmenu{position:absolute;right:0;top:44px;z-index:20;min-width:148px;background:var(--paper);border:1px solid var(--line);border-radius:8px;box-shadow:var(--shadow);padding:6px;display:grid;gap:2px}
-.thmenu button{font:inherit;font-size:14px;text-align:left;border:0;background:transparent;color:var(--ink);border-radius:6px;padding:7px 10px 7px 30px;cursor:pointer;position:relative}
-.thmenu button:hover{background:var(--indigo-soft)}
-.thmenu button[aria-checked="true"]{color:var(--seal);font-weight:700}
-.thmenu button[aria-checked="true"]::before{content:"✓";position:absolute;left:11px}
-.totop{position:fixed;right:calc(20px + env(safe-area-inset-right,0px));bottom:calc(22px + env(safe-area-inset-bottom,0px));width:auto;height:38px;padding:0 12px;border-radius:8px;border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);box-shadow:3px 3px 0 var(--hard);cursor:pointer;font-family:var(--f-mono);font-size:12.5px;display:grid;place-items:center;opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s,transform .2s,background .2s;z-index:7}
-.totop.show{opacity:1;visibility:visible}
-.totop:hover{transform:translate(1px,1px);box-shadow:2px 2px 0 var(--hard)}
-button:focus-visible,summary:focus-visible,input:focus-visible,.opt:focus-visible,a:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
-
-/* page */
-main{max-width:860px;margin:0 auto;padding-block:8px 96px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-.view{display:block;scroll-margin-top:72px}
-.vhead{position:relative;display:grid;grid-template-columns:1fr auto;gap:8px 28px;align-items:start;padding:40px 0 26px;margin:0 0 26px;border-bottom:1.5px solid var(--ink)}
-.vhead>:not(.pcb){grid-column:1}
-.vhead .pcb{grid-column:2;grid-row:1/span 3}
-.vhead .eyebrow{display:inline-flex;align-items:center;gap:2px;font-family:var(--f-mono);font-size:12.5px;color:var(--brass);font-weight:600;margin-bottom:6px}
-.vhead .eyebrow::before{content:"$ ";white-space:pre;color:var(--muted)}
-.vhead .eyebrow::after{content:"";display:inline-block;width:.6em;height:1.1em;margin-left:4px;background:var(--brass);animation:blink 1.1s steps(1) infinite}
-@keyframes blink{50%{opacity:0}}
-
-h1{font-family:var(--f-display);font-weight:700;font-size:36px;line-height:1.3;margin:0 0 8px;text-wrap:balance}
-.vhead p{color:var(--ink70);margin:0;max-width:60ch;font-size:15.5px}
-.pcb{width:184px;font-family:var(--f-mono);font-size:12px;line-height:1.5;border:1.5px solid var(--ink);border-radius:6px;background:var(--paper);box-shadow:4px 4px 0 var(--hard);overflow:hidden}
-.pcb .ph{display:flex;justify-content:space-between;background:var(--ink);color:var(--bg);padding:4px 10px;font-weight:600;letter-spacing:.04em}
-.pcb .pr{display:flex;justify-content:space-between;gap:10px;padding:5px 10px;border-top:1px dashed var(--line-strong)}
-.pcb .pr:first-of-type{border-top:0}
-.pcb .pr span{color:var(--muted)}
-.pcb .pr b{font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
-.pcb .st{display:inline-flex;align-items:center;gap:6px}
-.pcb .st::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--muted)}
-.pcb .st.running{color:var(--warn)}.pcb .st.running::before{background:var(--warn);animation:blink 1.4s steps(1) infinite}
-.pcb .st.terminated{color:var(--ok)}.pcb .st.terminated::before{background:var(--ok)}
-.pcb .st.ready{color:var(--indigo)}.pcb .st.ready::before{background:var(--indigo)}
-.pcb .bar{height:5px;margin:2px 10px 9px;border:1px solid var(--ink);border-radius:2px;overflow:hidden}
-.pcb .bar i{display:block;height:100%;background:var(--indigo)}
-h3{display:flex;align-items:baseline;gap:12px;font-family:var(--f-display);font-size:24px;font-weight:700;margin:44px 0 12px;color:var(--ink);line-height:1.4}
-h3::after{content:"";flex:1 1 40px;min-width:40px;border-bottom:2px dotted var(--line-strong);transform:translateY(-6px)}
-h4{font-size:16.5px;margin:22px 0 6px;color:var(--ink)}
-p{margin:6px 0 12px}
-ul,ol{padding-left:22px;margin:6px 0 14px}
-li{margin:3px 0}
-li::marker{color:var(--indigo)}
-b{font-weight:700}
-.star{color:var(--warn);letter-spacing:-.05em}
-.k{color:var(--seal);font-weight:700}
-.small{font-size:13.5px;color:var(--muted)}
-.mono{font-family:var(--f-mono);font-size:.9em}
-.box{border-radius:8px;overflow:hidden;padding:14px 18px;margin:14px 0;background:var(--paper);border:1px solid var(--line)}
-.box .lbl{display:table;font-family:var(--f-mono);font-size:11.5px;font-weight:600;margin:-14px 0 8px -18px;padding:3px 10px;border-radius:0 0 6px 0;letter-spacing:.02em}
-.box.en{background:var(--indigo-soft);border-color:var(--indigo-mid);font-family:var(--f-en);font-size:17px;line-height:1.7}
-.box.en .lbl{background:var(--indigo);color:var(--accent-ink)}
 .zhtr{font-family:var(--f-body);font-size:14.5px;line-height:1.75;color:var(--ink70);margin-top:10px;padding-top:9px;border-top:1px dashed var(--indigo-mid)}
 .zhtr span{display:inline-block;font-family:var(--f-mono);font-size:11px;font-weight:600;color:var(--indigo);border:1px solid var(--indigo-mid);border-radius:4px;padding:0 6px;margin-right:8px;vertical-align:1px}
-.box.zh{background:var(--brass-soft);border-color:var(--brass-line)}.box.zh .lbl{background:var(--brass);color:var(--paper)}
-.box.warn{background:var(--seal-soft);border-color:var(--seal-line)}.box.warn .lbl{background:var(--seal);color:var(--paper)}
-.box.tip{background:var(--warn-soft);border-color:var(--warn-line)}.box.tip .lbl{background:var(--warn);color:var(--paper)}
-.calc{font-family:var(--f-mono);font-size:13.5px;line-height:1.75;background:var(--code);border:1px solid var(--line);border-radius:6px;padding:12px 16px;margin:12px 0;white-space:pre;overflow-x:auto}
-table{border-collapse:collapse;margin:14px 0;font-size:14.5px;display:block;overflow-x:auto;max-width:100%;font-variant-numeric:tabular-nums}
-th,td{border:1px solid var(--line);padding:7px 11px;text-align:center;vertical-align:top;background:var(--paper)}
-th{background:var(--paper2);font-weight:700;font-size:13.5px;color:var(--indigo)}
-td.l,th.l{text-align:left}
-.two{display:flex;gap:16px;flex-wrap:wrap}
-.two>div{flex:1 1 260px;min-width:0}
-.fig{background:var(--fig);color:#16233b;border:1px solid var(--line);border-radius:8px;padding:14px;margin:16px 0;text-align:center;overflow-x:auto}
-.fig svg{max-width:100%;height:auto}
-.fig .cap{color:#5d6782;font-size:13px}
-.cap{font-size:13px;color:var(--muted);text-align:center}
-.gantt{margin:14px 12px 22px}
-.gbar{display:flex;border:1.5px solid var(--ink);height:32px;border-radius:3px;overflow:hidden}
-.gbar span{border-right:1.5px solid var(--ink);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#16233b;min-width:0}
-.gbar span:last-child{border-right:none}
-.gt{position:relative;height:18px;font-size:12px;font-family:var(--f-mono)}
-.gt b{position:absolute;transform:translateX(-50%);font-weight:400}
-.q{font-weight:700;margin-top:26px;font-size:16.5px}
-.pts{display:inline-block;font-family:var(--f-mono);font-size:12px;font-weight:600;color:var(--accent-ink);background:var(--seal);border-radius:4px;padding:1px 7px;margin-right:8px;vertical-align:2px}
-
-/* exam answers */
-.qa{border:1px solid var(--line);background:var(--paper);border-radius:8px;margin:8px 0 6px;overflow:hidden}
-.qa summary{cursor:pointer;padding:9px 16px;font-weight:700;font-size:14.5px;color:var(--indigo);list-style:none;display:flex;align-items:center;gap:8px}
-.qa summary:hover{background:var(--indigo-soft)}
-.qa summary::-webkit-details-marker{display:none}
-.qa summary::before{content:"";width:7px;height:7px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg);transition:transform .15s}
-.qa[open] summary::before{transform:rotate(45deg)}
-.qa[open] summary{border-bottom:1px solid var(--line)}
-.qa .inner{padding:8px 16px 10px}
-.self{display:none}
-.examtools{position:sticky;top:calc(env(safe-area-inset-top,0px) + 68px);z-index:4;background:var(--paper);border:1px solid var(--line);border-radius:8px;box-shadow:var(--shadow);padding:10px 12px 10px 16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 18px}
-.examtools .score{font-family:var(--f-display);font-weight:700;font-variant-numeric:tabular-nums;margin-right:auto;color:var(--ink)}
-.examtools .timer{font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-weight:600;color:var(--seal);border:1px solid var(--seal-line);border-radius:20px;padding:2px 11px}
-.btn{font:inherit;font-size:14px;font-weight:500;border:1px solid var(--line);background:var(--paper);color:var(--indigo);border-radius:6px;padding:6px 14px;cursor:pointer;transition:border-color .15s,background .15s,color .15s}
-.btn:hover:not([disabled]){border-color:var(--brass);color:var(--seal)}
-.btn.primary{background:var(--indigo);border-color:var(--indigo);color:var(--accent-ink);font-weight:700}
-.btn.primary:hover:not([disabled]){background:var(--seal);border-color:var(--seal);color:var(--accent-ink)}
-.btn[disabled]{opacity:.55;cursor:default}
-
-/* answer boxes + grading */
-.exq{margin:0 0 10px;scroll-margin-top:80px}
-.exq>label:not(.self){display:block;font-size:12px;letter-spacing:.18em;color:var(--brass);font-weight:700;margin-top:10px}
-.exq textarea{width:100%;min-height:110px;font:inherit;font-size:15.5px;line-height:1.75;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:10px 14px;resize:vertical;display:block;margin:6px 0 0;transition:border-color .15s,box-shadow .15s}
-.exq textarea::placeholder{color:var(--muted)}
-.exq textarea:focus{outline:none;border-color:var(--indigo);box-shadow:0 0 0 3px var(--indigo-soft)}
-.exq[data-verdict="correct"] textarea{border-color:var(--ok)}
-.exq[data-verdict="partial"] textarea{border-color:var(--warn)}
-.exq[data-verdict="wrong"] textarea{border-color:var(--seal)}
-.gradebar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0}
-.gstat,.gmsg{font-size:13.5px;color:var(--muted)}
-.gres{border-radius:8px;padding:10px 14px;margin:6px 0 10px;font-size:14.5px;background:var(--paper2);border:1px solid var(--line)}
-.gres .ghead{font-family:var(--f-display);font-weight:700;margin-bottom:2px;font-variant-numeric:tabular-nums}
-.gres.correct{background:var(--ok-soft);border-color:var(--ok-line)}.gres.correct .ghead{color:var(--ok)}
-.gres.partial{background:var(--warn-soft);border-color:var(--warn-line)}.gres.partial .ghead{color:var(--warn)}
-.gres.wrong{background:var(--seal-soft);border-color:var(--seal-line)}.gres.wrong .ghead{color:var(--seal)}
-.gres.stale{opacity:.7}
-.gres .miss{font-size:13px;color:var(--muted);margin-top:4px}
-.nogradenote{display:none}
-body.nograde .nogradenote{display:block}
-
-/* quiz */
-.quiz{margin-top:48px;padding-top:6px}
-.quiz h2{font-family:var(--f-display);font-size:26px;font-weight:700;margin:0 0 4px;padding-bottom:8px;border-bottom:1px solid var(--line)}
-.qitem{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin:14px 0;scroll-margin-top:80px}
 .qitem .hard{display:inline-block;font-family:var(--f-mono);font-size:11px;font-weight:600;color:var(--accent-ink);background:var(--seal);border-radius:4px;padding:1px 7px;margin-right:8px;vertical-align:2px}
-.qitem .stem{font-weight:700;margin-bottom:10px;line-height:1.65}
-.qitem .num{font-family:var(--f-mono);font-weight:600;color:var(--seal);margin-right:6px}
-.opts{display:grid;gap:8px}
-.opt{text-align:left;font:inherit;font-size:15px;line-height:1.55;border:1px solid var(--line);background:var(--paper2);color:var(--ink);border-radius:8px;padding:9px 12px;cursor:pointer;display:flex;gap:10px;align-items:flex-start;transition:border-color .15s,background .15s}
-.opt .ab{flex:0 0 auto;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;border:1px solid var(--line-strong);font-family:var(--f-display);font-weight:700;font-size:12px;color:var(--indigo);margin-top:-1px}
-.opt:hover:not([disabled]){border-color:var(--brass)}
-.opt[disabled]{cursor:default}
-.opt.right{background:var(--ok-soft);border-color:var(--ok)}.opt.right .ab{background:var(--ok);border-color:var(--ok);color:var(--paper)}
-.opt.wrong{background:var(--seal-soft);border-color:var(--seal)}.opt.wrong .ab{background:var(--seal);border-color:var(--seal);color:var(--paper)}
-.expl{margin-top:10px;font-size:14.5px;padding:10px 14px;border-radius:8px;background:var(--indigo-soft);border:1px solid var(--indigo-mid);color:var(--ink70)}
-.expl .tag{font-weight:700;margin-right:6px}
-.expl .tag.ok{color:var(--ok)}.expl .tag.no{color:var(--seal)}
-.qscore{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:18px 0;font-family:var(--f-display);font-weight:700;padding:14px 18px;border-radius:8px;background:var(--paper);border:1px solid var(--line)}
-
-/* home */
-.plan{display:grid;gap:10px;margin:16px 0}
-.day{position:relative;display:grid;grid-template-columns:60px 1fr;gap:14px;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:14px 18px}
-.day .d{font-family:var(--f-mono);font-weight:600;font-size:13px;color:var(--indigo);padding-top:2px}
-.day .t{min-width:0;color:var(--ink70)}
-.day .t button{margin:6px 6px 0 0;font-size:12.5px;padding:2px 12px;border-radius:99px;background:var(--indigo-soft);border-color:transparent}
-.prog{width:100%;display:table}
-.prog td.l{width:55%}
-.next{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--paper);border:1.5px solid var(--ink);box-shadow:4px 4px 0 var(--hard);border-radius:8px;padding:14px 18px;margin:0 0 6px}
-.next b{font-family:var(--f-display);font-size:18px}
-.next::before{content:"next >";font-family:var(--f-mono);font-size:12px;color:var(--muted)}
-.next .btn.primary{margin-left:auto!important}
-.cheat .two>div{border:1px solid var(--line);border-radius:8px;padding:6px 14px;background:var(--paper)}
-
-@media (max-width:640px){
-  .vhead{grid-template-columns:1fr;padding:26px 0 20px}
-  .vhead .pcb{order:9;grid-column:1;grid-row:auto;width:100%;max-width:260px;margin-top:8px}
-  h1{font-size:29px}
-  h3{font-size:21px}
-  .day{grid-template-columns:1fr;gap:2px}
-  .box.en{font-size:16px}
-  .brand .nm{display:none}
-  .top .bar{gap:8px}
-  .themebtn{width:32px;height:32px}
-  .thmenu{top:40px}
-  .examtools{position:static}
-  .qitem{padding:14px 14px}
-}
-@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 h4.cfq{font-family:var(--f-display);font-size:19px;margin:30px 0 8px;padding-left:10px;border-left:4px solid var(--seal)}
-.box p:first-of-type{margin-top:0}.box p:last-child,.box ul:last-child{margin-bottom:0}
+.box p:first-of-type{margin-top:0}
+.box p:last-child,.box ul:last-child{margin-bottom:0}
 table td{text-align:left}
-
-/* interactive labs */
 .ilab{position:relative;background:var(--paper);border:1.5px solid var(--ink);border-radius:8px;box-shadow:4px 4px 0 var(--hard);padding:14px 18px 16px;margin:22px 0}
 .ilab>.lbl{display:table;font-family:var(--f-mono);font-size:11.5px;font-weight:600;margin:-14px 0 8px -18px;padding:3px 10px;border-radius:0 0 6px 0;background:var(--ink);color:var(--bg)}
 .lab-row{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center;margin:8px 0}
@@ -275,7 +78,9 @@ table td{text-align:left}
 .ilab svg .mk-mean{stroke:var(--seal);stroke-width:2.2}
 .ilab svg .mk-med{stroke:var(--brass);stroke-width:2.2;stroke-dasharray:5 3}
 .ilab svg .line{fill:none;stroke:var(--ink);stroke-width:1.6}
-.ilab svg .t-seal{fill:var(--seal)}.ilab svg .t-brass{fill:var(--brass)}.ilab svg .t-ink{fill:var(--ink)}
+.ilab svg .t-seal{fill:var(--seal)}
+.ilab svg .t-brass{fill:var(--brass)}
+.ilab svg .t-ink{fill:var(--ink)}
 .ilab .calc{margin:8px 0 0}
 .sc-list{display:grid;gap:6px}
 .sc-item{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:var(--paper2)}
@@ -289,11 +94,11 @@ table td{text-align:left}
 .p-sorted span i{font-style:normal;color:var(--muted);font-size:10px;margin-right:3px}
 .p-sorted span.lo,.p-sorted span.hi{border-color:var(--seal);background:var(--seal-soft);color:var(--seal);font-weight:600}
 </style>
-<header class="top"><div class="bar"><a class="brand" href="../../" title="回到所有科目"><span class="mk">ST</span><span class="nm">← 所有科目</span></a><nav class="tabs" aria-label="章節"><div class="row" id="tabs"></div></nav><div class="theme"><button class="themebtn" id="themeBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="themeMenu" title="外觀：跟隨裝置"><svg class="i-system" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><svg class="i-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2 12h2.2M19.8 12H22M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg><svg class="i-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button><div class="thmenu" id="themeMenu" role="menu" hidden><button type="button" role="menuitemradio" data-t="system">跟隨裝置</button><button type="button" role="menuitemradio" data-t="light">淺色</button><button type="button" role="menuitemradio" data-t="dark">深色</button></div></div></div></header>
+<header class="top"><div class="bar"><a class="brand" href="../../" title="回到所有科目"><span class="mk">ST</span><span class="nm">← 所有科目</span></a><nav class="tabs" aria-label="章節"><div class="row" id="tabs" role="tablist"></div></nav><div class="theme"><button class="themebtn" id="themeBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="themeMenu" title="外觀：跟隨裝置"><svg class="i-system" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><svg class="i-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2 12h2.2M19.8 12H22M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg><svg class="i-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button><div class="thmenu" id="themeMenu" role="menu" hidden><button type="button" role="menuitemradio" data-t="system">跟隨裝置</button><button type="button" role="menuitemradio" data-t="light">淺色</button><button type="button" role="menuitemradio" data-t="dark">深色</button></div></div></div></header>
 <button class="totop" id="toTop" type="button" aria-label="回到頂端">↑</button>
 <main>
 
-<section class="view" id="home">
+<section role="tabpanel" class="view" id="home">
   <div class="vhead"><div class="pcb" data-pcb="home" role="img"></div><div class="eyebrow">Statistics · Midterm · 10/21</div><h1>統計學期中衝刺</h1>
   <p>範圍是 Anderson《Statistics for Business and Economics》14e 的 Ch1 到 Ch4。考試格式和期中作業差不多：計算題要寫過程，解釋題要用英文寫。這裡的選擇題用來快速檢查觀念，真正要練的是期中作業那 9 題。</p></div>
   <div class="next" id="nextStep"></div>
@@ -319,7 +124,7 @@ table td{text-align:left}
   <li>「explain／interpret／why」題用英文寫完整句子，每個結論都附一句理由。</li></ul></div>
 </section>
 
-<section class="view" id="ch1" hidden><div class="vhead"><div class="pcb" data-pcb="ch1" role="img"></div><div class="eyebrow">Chapter 1</div><h1>Ch1 Data and Statistics</h1><p>資料的基本名詞、四種衡量尺度、類別與數量資料、資料來源、敘述與推論統計。讀完做最下面的選擇題。</p></div>
+<section role="tabpanel" class="view" id="ch1" hidden><div class="vhead"><div class="pcb" data-pcb="ch1" role="img"></div><div class="eyebrow">Chapter 1</div><h1>Ch1 Data and Statistics</h1><p>資料的基本名詞、四種衡量尺度、類別與數量資料、資料來源、敘述與推論統計。讀完做最下面的選擇題。</p></div>
 <h3>1.1 什麼是統計</h3>
 <ul>
 <li><b>統計數據（numerical facts）</b>：平均數、中位數、百分比、最大值等。</li>
@@ -496,7 +301,7 @@ table td{text-align:left}
 
 
 <div class="quiz" data-quiz="ch1"></div></section>
-<section class="view" id="ch2" hidden><div class="vhead"><div class="pcb" data-pcb="ch2" role="img"></div><div class="eyebrow">Chapter 2</div><h1>Ch2 表格與圖形</h1><p>次數分配、長條圖與直方圖、偏態、累積分配、莖葉圖、交叉表與散佈圖。</p></div>
+<section role="tabpanel" class="view" id="ch2" hidden><div class="vhead"><div class="pcb" data-pcb="ch2" role="img"></div><div class="eyebrow">Chapter 2</div><h1>Ch2 表格與圖形</h1><p>次數分配、長條圖與直方圖、偏態、累積分配、莖葉圖、交叉表與散佈圖。</p></div>
 <h3>2.1 類別資料的整理</h3>
 <ul>
 <li><b>次數分配（frequency distribution）</b>：每一類別有幾個。</li>
@@ -640,7 +445,7 @@ table td{text-align:left}
 
 
 <div class="quiz" data-quiz="ch2"></div></section>
-<section class="view" id="ch3" hidden><div class="vhead"><div class="pcb" data-pcb="ch3" role="img"></div><div class="eyebrow">Chapter 3</div><h1>Ch3 數值量數</h1><p>平均數、中位數、眾數、幾何平均、百分位數、變異數與標準差、z 分數、柴比雪夫、盒鬚圖、相關係數。</p></div>
+<section role="tabpanel" class="view" id="ch3" hidden><div class="vhead"><div class="pcb" data-pcb="ch3" role="img"></div><div class="eyebrow">Chapter 3</div><h1>Ch3 數值量數</h1><p>平均數、中位數、眾數、幾何平均、百分位數、變異數與標準差、z 分數、柴比雪夫、盒鬚圖、相關係數。</p></div>
 <ul>
 <li>由<b>樣本</b>算出 → <b>統計量（statistic）</b>，例如 x̄、s；由<b>母體</b>算出 → <b>參數（parameter）</b>，例如 μ、σ。</li>
 <li>樣本統計量是母體參數的<b>點估計量</b>。</li>
@@ -848,7 +653,7 @@ table td{text-align:left}
 
 
 <div class="quiz" data-quiz="ch3"></div></section>
-<section class="view" id="ch4" hidden><div class="vhead"><div class="pcb" data-pcb="ch4" role="img"></div><div class="eyebrow">Chapter 4</div><h1>Ch4 機率導論</h1><p>樣本空間、計數法則、指派機率、加法律與乘法律、條件機率、獨立、貝氏定理。</p></div>
+<section role="tabpanel" class="view" id="ch4" hidden><div class="vhead"><div class="pcb" data-pcb="ch4" role="img"></div><div class="eyebrow">Chapter 4</div><h1>Ch4 機率導論</h1><p>樣本空間、計數法則、指派機率、加法律與乘法律、條件機率、獨立、貝氏定理。</p></div>
 <h3>4.1 隨機實驗、樣本空間、計數法則</h3>
 <ul>
 <li><b>機率</b>：0 到 1 之間，越接近 1 越可能發生。</li>
@@ -1015,7 +820,7 @@ table td{text-align:left}
 <div class="calc b-out"></div>
 </div>
 <div class="quiz" data-quiz="ch4"></div></section>
-<section class="view" id="confuse" hidden><div class="vhead"><div class="pcb" data-pcb="confuse" role="img"></div><div class="eyebrow">Easily confused</div><h1>易混淆觀念 32 組</h1><p>每一組都附判斷方法。考試看到題目，先套判斷方法再作答。</p></div>
+<section role="tabpanel" class="view" id="confuse" hidden><div class="vhead"><div class="pcb" data-pcb="confuse" role="img"></div><div class="eyebrow">Easily confused</div><h1>易混淆觀念 32 組</h1><p>每一組都附判斷方法。考試看到題目，先套判斷方法再作答。</p></div>
 
 <h3>一、第 1 章：資料分類</h3>
 <h4 class="cfq">1. 元素 vs 變數 vs 觀測值</h4>
@@ -1352,7 +1157,7 @@ table td{text-align:left}
 </ul>
 
 </section>
-<section class="view exam" id="hw" data-exam="hw" hidden><div class="vhead"><div class="pcb" data-pcb="hw" role="img"></div><div class="eyebrow">Midterm Assignment · 100 分</div><h1>期中作業逐題詳解</h1><p>9 大題、共 100 分，格式和期中考相同。先在框裡作答，再按「批改這題」或上方「批改全部」，最後展開參考答案對照。需要文字說明的小題都附英文答案，作業要用英文繳交。</p></div>
+<section role="tabpanel" class="view exam" id="hw" data-exam="hw" hidden><div class="vhead"><div class="pcb" data-pcb="hw" role="img"></div><div class="eyebrow">Midterm Assignment · 100 分</div><h1>期中作業逐題詳解</h1><p>9 大題、共 100 分，格式和期中考相同。先在框裡作答，再按「批改這題」或上方「批改全部」，最後展開參考答案對照。需要文字說明的小題都附英文答案，作業要用英文繳交。</p></div>
 <div class="examtools"><span class="score"></span><span class="timer"></span><button class="btn tbtn" type="button">開始 60 分鐘計時</button><button class="btn primary gradeall" type="button">批改全部</button><button class="btn reset" type="button">清除作答</button><span class="gmsg"></span></div><p class="box tip nogradenote">這裡用關鍵字比對自動批改：有寫到必要的數字或術語就給分。分數僅供參考，寫完一定要展開參考答案對照。</p>
 <div class="box en"><span class="lbl">ENGLISH ANSWER — 可直接寫在作業上</span><p>需要文字說明（comment／explain／interpret／why）的小題，都附有「English answer」英文作答範例。</p>
 <p>上傳的作業檔在轉檔時遺失了三份資料：第 1 題的平板比較表、第 5 題 40 位跑者的年齡、第 7 題 Cooper Realty 的交叉表。 這三題都出自課本（Anderson 14e）的習題，以下使用課本原始資料作答。<b>請對照你手上的紙本作業</b>，若數字不同，計算方法完全相同，換數字即可。</p></div>
@@ -2316,97 +2121,14 @@ table td{text-align:left}
 </section>
 
 </main>
-<script src="../../assets/ezsync.js?v=2" data-key="stats-midterm-v1"></script>
+<script src="../../assets/ezsync.js?v=0fb0ba45" data-key="stats-midterm-v1"></script>
+<script src="quiz.js?v=40420186"></script>
 <script>
-/* ---------- theme: system / light / dark ---------- */
-(function(){
-  const TK="ezexams-theme",root=document.documentElement,host=root.getAttribute("data-theme");
-  const btn=document.getElementById("themeBtn"),menu=document.getElementById("themeMenu");
-  const NAME={system:"跟隨裝置",light:"淺色",dark:"深色"};
-  function apply(m){
-    if(m==="light"||m==="dark")root.setAttribute("data-theme",m);
-    else if(host)root.setAttribute("data-theme",host);else root.removeAttribute("data-theme");
-    btn.dataset.mode=m;btn.title="外觀："+NAME[m];const lab=btn.querySelector(".lab");if(lab)lab.textContent=NAME[m];
-    menu.querySelectorAll("[data-t]").forEach(b=>b.setAttribute("aria-checked",String(b.dataset.t===m)));
-  }
-  let mode="system";try{const t=localStorage.getItem(TK);if(t==="light"||t==="dark")mode=t;}catch(e){}
-  apply(mode);
-  function close(){menu.hidden=true;btn.setAttribute("aria-expanded","false");}
-  btn.addEventListener("click",e=>{e.stopPropagation();menu.hidden=!menu.hidden;btn.setAttribute("aria-expanded",String(!menu.hidden));});
-  menu.addEventListener("click",e=>{const b=e.target.closest("[data-t]");if(!b)return;mode=b.dataset.t;apply(mode);try{mode==="system"?localStorage.removeItem(TK):localStorage.setItem(TK,mode);}catch(err){}close();btn.focus();});
-  document.addEventListener("click",e=>{if(!menu.hidden&&!e.target.closest(".theme"))close();});
-  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!menu.hidden){close();btn.focus();}});
-})();
 (function(){
   const tt=document.getElementById("toTop");
   addEventListener("scroll",()=>tt.classList.toggle("show",scrollY>500),{passive:true});
   tt.addEventListener("click",()=>scrollTo({top:0,behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"}));
 })();
-const QUIZ = {
-ch1: [
- {q:"In a data set about 10 tablets with columns Tablet name, Cost, OS, Display Size and Battery Life, how many variables are there?", o:["5","4","10","40"], a:1, e:"變數是元素的特徵（欄）。Tablet name 只是用來辨認元素的名稱，不算變數，所以是 Cost、OS、Display Size、Battery Life 共 4 個。"},
- {q:"Temperature measured in degrees Celsius is measured on which scale?", o:["Nominal","Ordinal","Interval","Ratio"], a:2, e:"0°C 不代表「沒有溫度」，沒有真正的 0，20°C 也不是 10°C 的兩倍熱，所以是區間尺度（interval）。"},
- {q:"Students are coded 1 = Management, 2 = Engineering, 3 = Medicine. This variable is:", o:["Quantitative, ratio scale","Categorical, nominal scale","Categorical, ordinal scale","Quantitative, interval scale"], a:1, e:"數字只是代碼，沒有大小順序，加減平均沒意義 → 類別資料、名目尺度。類別資料可以是數字。"},
- {q:"Which scale has a true zero, so that ratios of values are meaningful?", o:["Ratio","Interval","Ordinal","Nominal"], a:0, e:"比率尺度（ratio）有真正的 0，例如價格 200 元是 100 元的兩倍。"},
- {q:"The number of building permits issued in Taipei in each of the last 36 months is an example of:", o:["Cross-sectional data","Time series data","Experimental data","Categorical data"], a:1, e:"同一個對象（台北市）、多個時間點 → 時間序列。同一時間、多個對象才是橫斷面。"},
- {q:"A study compares lung health of smokers and nonsmokers without assigning who smokes. This is:", o:["An experimental study","A randomized controlled trial","An observational study","A census"], a:2, e:"研究者沒有控制誰抽菸，只是觀察 → 觀察研究（observational study）。"},
- {q:"Using data from a sample to estimate a characteristic of the population is called:", o:["Descriptive statistics","Statistical inference","A census","Prescriptive analytics"], a:1, e:"用樣本推論母體＝統計推論（statistical inference）。只摘要手上資料是敘述統計。"},
- {q:"A data set has 25 elements and 6 variables. How many data values does it contain?", o:["31","25","6","150"], a:3, e:"資料值總數＝元素數 × 變數數 = 25 × 6 = 150。"},
- {h:1,q:"Customers rate satisfaction from 1 = very dissatisfied to 5 = very satisfied, and a report states the average rating is 3.7. Which statement is most accurate?", o:["The data are ratio, so the mean is fully meaningful","The data are ordinal; the mean assumes equal gaps between ratings, so the median or mode is safer","The data are nominal because the ratings are codes","The data are interval because they are numbers"], a:1, e:"滿意度有順序但間距不一定相等 → 順序尺度（ordinal）。平均數假設「1 到 2」和「4 到 5」距離一樣，嚴格來說不適合，用中位數或眾數比較安全。是數字不代表就是區間或比率。"},
- {h:1,q:"Which variable is measured on an interval scale rather than a ratio scale?", o:["Years of work experience","Calendar year of birth (e.g., 2004)","Monthly income","Number of absences"], a:1, e:"西元年份的 0 年不代表「沒有時間」，2004 年也不是 1002 年的兩倍 → 區間尺度。工作年資 0 年＝完全沒有經驗，是比率尺度。"},
- {h:1,q:"A data set records the ZIP code, age and GPA of 200 students. How many of these variables are quantitative?", o:["3","2","1","0"], a:1, e:"郵遞區號雖然是數字，但加減平均沒有意義，是類別資料。數量變數只有年齡和 GPA，共 2 個。"},
- {h:1,q:"A company records the daily sales of 30 stores for 12 months. Which description is correct?", o:["Pure cross-sectional data","Pure time series data","Both: each day across the 30 stores is cross-sectional, and each store over time is a time series","Experimental data"], a:2, e:"固定某一天看 30 家店＝橫斷面；固定某一家店看 12 個月＝時間序列。這種同時有兩個面向的資料兩者都包含。"},
- {h:1,q:"Researchers randomly assign 100 volunteers to take a drug or a placebo and compare blood pressure. Which pair is correct?", o:["Observational study; only descriptive statistics are needed","Experimental study; conclusions about all patients require statistical inference","Census; no inference is needed","Observational study; cause and effect is proven"], a:1, e:"研究者控制誰吃藥 → 實驗研究。100 人只是樣本，要推論到所有病人就需要統計推論。"},
-],
-ch2: [
- {q:"A frequency distribution has a class with frequency 8 out of n = 40. What is its percent frequency?", o:["8%","20%","0.2%","32%"], a:1, e:"相對次數 = 8/40 = 0.20，百分比次數 = 0.20 × 100 = 20%。"},
- {q:"Which graph is used for categorical data and has bars separated by gaps?", o:["Histogram","Bar chart","Stem-and-leaf display","Scatter diagram"], a:1, e:"長條圖（bar chart）用於類別資料，長條分開；直方圖（histogram）用於數量資料，長條相連。"},
- {q:"A histogram has a long tail on the right. The distribution is:", o:["Skewed left, mean < median","Symmetric, mean = median","Skewed right, mean > median","Skewed right, mean < median"], a:2, e:"偏態方向看尾巴：長尾在右＝右偏（正偏），平均數被大值拉高，通常 mean > median。"},
- {q:"In a stretched stem-and-leaf display, where does the value 47 go?", o:["The first 4 stem (leaves 0–4)","The second 4 stem (leaves 5–9)","Stem 7","Stem 47"], a:1, e:"伸展莖葉圖每個莖寫兩次，第一行放葉 0～4，第二行放葉 5～9。47 的葉是 7 → 第二個 4。"},
- {q:"Data range from 52 to 109 and you want 6 classes. The approximate class width is:", o:["6","9.5, so use 10","57","19"], a:1, e:"組距 ≈（最大 − 最小）÷ 組數 = (109 − 52)/6 = 9.5，取方便的整數 10。"},
- {q:"What does a cumulative frequency distribution show?", o:["The number of items in each class only","The number of items less than or equal to the upper limit of each class","The percentage of items above each class","The class midpoints"], a:1, e:"累積次數＝到該組上限為止共有幾個（≤ upper limit）。最後一組的累積次數一定等於 n。"},
- {q:"Conclusions from an aggregated crosstabulation reverse when the data are split into groups. This is called:", o:["Simpson's paradox","Chebyshev's theorem","Bayes' theorem","The empirical rule"], a:0, e:"辛普森悖論：合併資料與分組資料的結論相反，通常因為隱藏變數或各組樣本數差很多。"},
- {q:"Which display shows the relationship between two quantitative variables?", o:["Pie chart","Stacked bar chart","Scatter diagram","Bar chart"], a:2, e:"散佈圖（scatter diagram）＋趨勢線：兩個數量變數之間的關係。"},
- {h:1,q:"A frequency distribution has classes 10–19: 4, 20–29: 9, 30–39: 7 (n = 20). What is the cumulative relative frequency for values ≤ 29?", o:[".45",".65",".35",".90"], a:1, e:"累積次數 ≤ 29 = 4 + 9 = 13，累積相對次數 = 13/20 = .65。.45 只是 20–29 這一組自己的相對次數。"},
- {h:1,q:"A sector of a pie chart measures 72°. What percentage of the data does that class represent?", o:["72%","20%","25%","7.2%"], a:1, e:"相對次數 = 72 / 360 = 0.20 → 20%。"},
- {h:1,q:"Alan completes 9 of 10 tasks in Project 1 and 50 of 100 in Project 2. John completes 80 of 100 in Project 1 and 4 of 10 in Project 2. Which conclusion is correct?", o:["Alan is better in both projects and overall","John is better in both projects and overall","Alan has the higher completion rate in each project, but John is higher overall","They are equal overall"], a:2, e:"分開看：Alan 90% > 80%、50% > 40%。合併：Alan 59/110 = 53.6%，John 84/110 = 76.4%。結論反轉，這就是辛普森悖論，原因是兩人在各專案的工作量差很多。"},
- {h:1,q:"Values such as 8.6, 9.4 and 11.7 are shown in a stem-and-leaf display with leaf unit 0.1. How is 11.7 displayed?", o:["Stem 1, leaf 1","Stem 11, leaf 7","Stem 117, leaf 0","Stem 1, leaf 7"], a:1, e:"葉單位 0.1 → 葉代表小數第一位。11.7 的莖是 11、葉是 7。"},
- {h:1,q:"A histogram of 50 values is drawn with only 2 very wide classes. What is the main problem?", o:["The bars will not touch","The shape of the distribution is hidden because the data are over-summarized","The histogram becomes a bar chart","The total frequency will not be 50"], a:1, e:"組數太少，資料被壓縮成兩根長條，看不出偏態或集中位置。課本建議通常用 5～20 組。"},
-],
-ch3: [
- {q:"Returns over three years are +20%, −10%, +10%. What is the geometric mean annual return?", o:["6.67%","5.91%","10%","3.33%"], a:1, e:"成長因子 1.2 × 0.9 × 1.1 = 1.188，開 3 次方根 = 1.0591，減 1 → 5.91%。6.67% 是算術平均，會高估。"},
- {q:"Using L = (p/100)(n + 1), what is the location of the 25th percentile when n = 21?", o:["5.25","5.5","6","5"], a:1, e:"L₂₅ = 0.25 × 22 = 5.5 → 第 5 個值加上 0.5 ×（第 6 個 − 第 5 個）。"},
- {q:"Why does the sample variance divide by n − 1 instead of n?", o:["To make the variance larger than the standard deviation","Because deviations from x̄ tend to be smaller than deviations from μ, so dividing by n would underestimate σ²","Because one value is always an outlier","It is only a convention with no reason"], a:1, e:"貝塞爾修正：樣本資料離 x̄ 比離真正的 μ 近，用 n 會低估母體變異數，所以除以 n − 1。"},
- {q:"Data set A: mean 100, s = 10. Data set B: mean 1000, s = 50. Which has more relative variability?", o:["A (CV = 10%)","B (CV = 5%)","They are equal","Cannot be determined"], a:0, e:"變異係數 CV = s / x̄ × 100%。A = 10%、B = 5%，A 的相對變異較大，雖然 B 的標準差較大。"},
- {q:"The distribution is unknown. At least what percent of values lie within 2 standard deviations of the mean?", o:["95%","68%","75%","89%"], a:2, e:"分布未知 → 用柴比雪夫：1 − 1/2² = 75%。95% 是經驗法則，只適用鐘形分布。"},
- {q:"Mean = 40, s = 5. What is the z-score of 50?", o:["10","2","−2","0.5"], a:1, e:"z = (50 − 40)/5 = 2，代表比平均高 2 個標準差。"},
- {q:"Q1 = 545 and Q3 = 625. What is the upper limit for detecting outliers on a box plot?", o:["745","705","665","625"], a:0, e:"IQR = 80，上限 = Q3 + 1.5 × IQR = 625 + 120 = 745。"},
- {q:"A correlation coefficient of −0.96 indicates:", o:["A strong positive linear relationship","A strong negative linear relationship","No relationship","That X causes Y to decrease"], a:1, e:"r 接近 −1 → 強烈負線性關係。相關不等於因果，所以不能說 X 造成 Y。"},
- {h:1,q:"Five values have a mean of 10. A sixth value, 22, is added. What is the new mean?", o:["12","16","11","10"], a:0, e:"原本總和 = 5 × 10 = 50，加入 22 後總和 72，新平均 = 72 / 6 = 12。不能直接把 10 和 22 平均成 16。"},
- {h:1,q:"Adding 10 to every value in a data set changes which measures?", o:["The mean and median only; the range, variance and standard deviation stay the same","The mean, median and standard deviation","The standard deviation only","Nothing changes"], a:0, e:"每個值都加 10，整組資料只是平移：位置量數（平均數、中位數）都加 10，離散量數（全距、變異數、標準差）不變。"},
- {h:1,q:"For the sample 2, 4, 6, 8, what is the sample variance?", o:["5","6.67","20","2.58"], a:1, e:"x̄ = 5，離差平方和 = 9 + 1 + 1 + 9 = 20。樣本變異數 = 20 / (4 − 1) = 6.67。除以 4 得 5 是母體公式，2.58 是標準差。"},
- {h:1,q:"By Chebyshev's theorem, at least what percentage of values lie within 1.5 standard deviations of the mean?", o:["55.6%","33.3%","75%","86.6%"], a:0, e:"1 − 1/1.5² = 1 − 1/2.25 = 0.556 → 至少 55.6%。z 不必是整數，只要 z > 1。"},
- {h:1,q:"Household income is skewed to the right and the mean is $62,000. The median is most likely:", o:["Above $62,000","Below $62,000","Exactly $62,000","Equal to the maximum"], a:1, e:"右偏時少數高所得把平均數往上拉，所以平均數 > 中位數，中位數會低於 62,000。"},
- {h:1,q:"The sample covariance of X (in meters) and Y is 4. If X is converted to centimeters, what happens?", o:["The covariance becomes 400 and the correlation is unchanged","Both stay the same","The covariance becomes 400 and the correlation becomes 100 times larger","The covariance becomes 0.04 and the correlation is unchanged"], a:0, e:"共變異數受單位影響：X 乘 100，共變異數也乘 100。相關係數沒有單位，永遠在 −1 到 +1，不會改變。"},
- {h:1,q:"A student earns A (4 points) in a 3-credit course, B (3 points) in a 4-credit course and C (2 points) in a 1-credit course. What is the GPA?", o:["3.00","3.25","3.33","3.50"], a:1, e:"加權平均 = (4×3 + 3×4 + 2×1) / (3 + 4 + 1) = 26 / 8 = 3.25。三科直接平均 = 3.00 是錯的，因為學分不同。"},
-],
-ch4: [
- {q:"How many ways can a team leader and an assistant leader be chosen from 5 people?", o:["10","20","25","120"], a:1, e:"順序重要（隊長≠副隊長）→ 排列 P(5,2) = 5!/3! = 20。若順序不重要是組合 C(5,2) = 10。"},
- {q:"Assigning probabilities using historical data, such as 18 of 40 days, is the:", o:["Classical method","Relative frequency method","Subjective method","Bayesian method"], a:1, e:"用實驗或歷史資料算比例＝相對次數法。等可能＝古典法；專家判斷＝主觀法。"},
- {q:"P(A) = 0.70, P(B) = 0.48, P(A ∩ B) = 0.36. What is P(A ∪ B)?", o:["1.18","0.82","0.34","0.36"], a:1, e:"加法律：P(A ∪ B) = 0.70 + 0.48 − 0.36 = 0.82。記得減掉交集。"},
- {q:"Two events with nonzero probabilities are mutually exclusive. Then they are:", o:["Always independent","Never independent","Independent only if P(A) = P(B)","Complements"], a:1, e:"互斥時一個發生，另一個機率變 0，機率改變了 → 一定不獨立。"},
- {q:"In a crosstab of 800 homes, 100 are priced below $150,000 and 10 of those took over 90 days. P(over 90 days | below $150,000) is:", o:["10/800","100/800","10/100","200/800"], a:2, e:"條件機率的分母縮小到條件那一群：10/100 = 0.10。"},
- {q:"Events A and B are independent if:", o:["P(A ∩ B) = 0","P(A | B) = P(A)","P(A ∪ B) = 1","P(A) + P(B) = 1"], a:1, e:"獨立：P(A | B) = P(A)，等價於 P(A ∩ B) = P(A)P(B)。P(A ∩ B) = 0 是互斥。"},
- {q:"In the Bayes tabular method, column 4 (prior × conditional) gives:", o:["Posterior probabilities","Joint probabilities P(Aᵢ ∩ B)","Marginal probabilities P(Aᵢ)","Complements"], a:1, e:"第 (4) 欄是聯合機率 P(Aᵢ ∩ B) = P(Aᵢ)P(B | Aᵢ)，加總得 P(B)；第 (5) 欄才是事後機率。"},
- {q:"A test has a false-positive rate of 0.75. This means:", o:["P(positive | disease) = 0.75","P(positive | no disease) = 0.75","P(disease | positive) = 0.75","P(negative | disease) = 0.75"], a:1, e:"偽陽性＝沒病卻驗出陽性，所以是 P(+ | 沒病) = 0.75。P(有病 | 陽性) 要用貝氏定理算。"},
- {h:1,q:"P(A) = 0.3 and P(B) = 0.4, and A and B are independent. What is P(A ∪ B)?", o:["0.70","0.58","0.12","0.88"], a:1, e:"獨立 → P(A ∩ B) = 0.3 × 0.4 = 0.12。加法律：0.3 + 0.4 − 0.12 = 0.58。0.70 是忘記減交集。"},
- {h:1,q:"P(A) = 0.5, P(B) = 0.4 and P(A ∪ B) = 0.7. Are A and B independent?", o:["Yes, because P(A ∩ B) = 0.2 = P(A)P(B)","No, because the events overlap","No, because P(A ∪ B) ≠ 1","There is not enough information"], a:0, e:"先用加法律反推：P(A ∩ B) = 0.5 + 0.4 − 0.7 = 0.2。P(A)P(B) = 0.2，相等 → 獨立。有交集不代表不獨立。"},
- {h:1,q:"Three of 10 applicants will be hired for three identical positions. How many different groups are possible?", o:["720","120","30","1000"], a:1, e:"職位相同 → 順序不重要 → 組合 C(10,3) = 120。720 是排列，用在三個不同職位。"},
- {h:1,q:"A disease affects 1% of people. A test is correct 99% of the time for both sick and healthy people. Given a positive result, the probability of being sick is closest to:", o:["99%","50%","1%","90%"], a:1, e:"P(病且陽) = 0.01 × 0.99 = 0.0099；P(沒病且陽) = 0.99 × 0.01 = 0.0099。P(病 | 陽) = 0.0099 / 0.0198 = 50%。事前機率很低時，陽性結果的可信度比想像中低。"},
- {h:1,q:"P(A) = 0.6 and P(B) = 0.5. Which of the following is impossible?", o:["A and B are independent","A and B are mutually exclusive","P(A ∩ B) = 0.3","P(A | B) = 0.6"], a:1, e:"若互斥，P(A ∪ B) = 0.6 + 0.5 = 1.1 > 1，不可能。其他三個選項在 A、B 獨立時都成立。"},
- {h:1,q:"In a Bayes table, the conditional probabilities P(B | Aᵢ) in column (3) add up to 1.1. What does this mean?", o:["There must be a calculation error","Nothing is wrong: P(B | A₁) and P(B | A₂) are conditioned on different events, so they need not add to 1","The posterior probabilities will add up to 1.1","The prior probabilities are wrong"], a:1, e:"第 (3) 欄的條件不同（一個在 A₁ 之下、一個在 A₂ 之下），加總沒有必須等於 1 的道理。必須等於 1 的是第 (2) 欄事前機率和第 (5) 欄事後機率。"},
-]
-};
 
 const VIEWS=[["home","首頁"],["ch1","Ch1 資料"],["ch2","Ch2 圖表"],["ch3","Ch3 數值量數"],["ch4","Ch4 機率"],["|"],["confuse","易混淆"],["hw","期中作業"]];
 const KEY="stats-midterm-v1";
@@ -2438,8 +2160,8 @@ document.addEventListener("click",e=>{if(e.target.closest(".opt"))setTimeout(()=
 function renderTabs(cur){
   tabs.innerHTML="";
   VIEWS.forEach(v=>{
-    if(v[0]==="|"){const s=document.createElement("span");s.className="sep";tabs.appendChild(s);return;}
-    const b=document.createElement("button");b.textContent=v[1];b.dataset.go=v[0];
+    if(v[0]==="|"){const s=document.createElement("span");s.className="sep";s.setAttribute("role","presentation");tabs.appendChild(s);return;}
+    const b=document.createElement("button");b.type="button";b.textContent=v[1];b.dataset.go=v[0];b.setAttribute("role","tab");b.setAttribute("aria-selected",String(v[0]===cur));b.setAttribute("aria-controls",v[0]);
     if(v[0]===cur)b.setAttribute("aria-current","true");
     const ps=procState(v[0]);b.dataset.state=ps.state;b.title=v[1]+"："+ps.state;
     tabs.appendChild(b);
@@ -2639,7 +2361,7 @@ document.querySelectorAll(".exam").forEach(ex=>{
       });
       save();upd();
       stat.textContent=n?"批改完成。":"批改結果讀取失敗，請再按一次。";
-    }catch(e){const c=e&&e.code;if(["not_granted","sampling_disabled","not_declared","capability_disabled","capability_removed"].includes(c)){SAMPLE=null;setGradingMode();kwGrade(list);stat.textContent="批改完成（關鍵字比對）。";}else stat.textContent=errCopy(e);}
+    }catch(e){if(window.EZAI&&EZAI.isOwn(SAMPLE)){kwGrade(list);stat.textContent=EZAI.errText(e)+"這次先用關鍵字比對。";return;}const c=e&&e.code;if(["not_granted","sampling_disabled","not_declared","capability_disabled","capability_removed"].includes(c)){SAMPLE=null;setGradingMode();kwGrade(list);stat.textContent="批改完成（關鍵字比對）。";}else stat.textContent=errCopy(e);}
     finally{btns.forEach(b=>b.disabled=false);}
   }
   qs.forEach(q=>{
@@ -2686,7 +2408,7 @@ function setGradingMode(){
   if(S.last==="home")renderHome();
 }
 setGradingMode();
-(async()=>{try{SAMPLE=window.claude&&await window.claude.use("sample");}catch(e){SAMPLE=null;}setGradingMode();})();
+(async()=>{try{SAMPLE=window.claude&&await window.claude.use("sample");}catch(e){SAMPLE=null;}if(!SAMPLE&&window.EZAI)SAMPLE=EZAI.sampler();setGradingMode();})();
 
 /* ---------- home ---------- */
 function renderHome(){
@@ -2862,6 +2584,6 @@ const svg=(w,h,inner)=>'<svg viewBox="0 0 '+w+' '+h+'" role="img">'+inner+'</svg
 })();
 </script>
 
-<script src="../../assets/ezwrong.js?v=2"></script>
+<script src="../../assets/ezwrong.js?v=96879da8"></script>
 </body>
 </html>

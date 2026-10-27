@@ -3,19 +3,19 @@
    Load after the page's main script. Uses the page globals QUIZ, S, VIEWS, show, renderTabs (and MOCK if present). */
 (function(){
   if(typeof QUIZ==="undefined"||typeof S==="undefined"||typeof VIEWS==="undefined")return;
-  const css=`h3.missed{color:#c62828!important;border-left:5px solid #c62828;padding-left:10px}
-h3 .missbadge{display:inline-block;white-space:nowrap;margin-left:10px;font-size:12px;font-weight:700;color:#fff;background:#c62828;border-radius:999px;padding:2px 10px;cursor:pointer;vertical-align:3px;border:0;font-family:inherit}
-.wcard{border:1px solid var(--line);border-left:5px solid #c62828;border-radius:10px;padding:14px 18px;margin:14px 0;background:var(--paper)}
-.wcard .src{font-size:12px;color:#c62828;font-weight:700;letter-spacing:.08em}
+  const css=`h3.missed{color:var(--bad,#c62828)!important;border-left:5px solid var(--bad,#c62828);padding-left:10px}
+h3 .missbadge{display:inline-block;white-space:nowrap;margin-left:10px;font-size:12px;font-weight:700;color:var(--paper,#fff);background:var(--bad,#c62828);border-radius:999px;padding:2px 10px;cursor:pointer;vertical-align:3px;border:0;font-family:inherit}
+.wcard{border:1px solid var(--line);border-left:5px solid var(--bad,#c62828);border-radius:10px;padding:14px 18px;margin:14px 0;background:var(--paper)}
+.wcard .src{font-size:12px;color:var(--bad,#c62828);font-weight:700;letter-spacing:.08em}
 .wcard .wq2{font-weight:600;margin:6px 0;white-space:pre-wrap}
-.wcard .yours{color:#c62828}.wcard .right{color:#2e7d32}
+.wcard .yours{color:var(--bad,#c62828)}.wcard .right{color:var(--ok,#2e7d32)}
 .wcard details.concept{margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
 .wcard details.concept summary{cursor:pointer;font-weight:700;color:var(--brass)}
 .wcard .cbody{font-size:14px;overflow-x:auto}
 .wcard .cbody .lab,.wcard .cbody button,.wcard .cbody canvas,.wcard .cbody input,.wcard .cbody select{display:none}
 .wcard pre{white-space:pre-wrap}
 .wgroup h3{margin-top:28px}
-@keyframes wflash{0%,60%{box-shadow:0 0 0 4px #c62828}100%{box-shadow:0 0 0 0 transparent}}
+@keyframes wflash{0%,60%{box-shadow:0 0 0 4px var(--bad,#c62828)}100%{box-shadow:0 0 0 0 transparent}}
 .wflash{animation:wflash 2.2s ease-out;border-radius:10px}`;
   const stl=document.createElement("style");stl.textContent=css;document.head.appendChild(stl);
 

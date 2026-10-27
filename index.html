@@ -4,6 +4,21 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>EZexams 考試衝刺</title>
+<meta name="description" content="EZexams 考前衝刺：白話講義、章末選擇題、考古題和模擬試題，寫完直接批改，進度可跨裝置同步。">
+<meta name="theme-color" content="#dde1e0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#11212d" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="EZexams">
+<meta property="og:title" content="EZexams 考前衝刺">
+<meta property="og:description" content="EZexams 考前衝刺：白話講義、章末選擇題、考古題和模擬試題，寫完直接批改，進度可跨裝置同步。">
+<meta property="og:url" content="https://si70531.github.io/EZexams/">
+<meta property="og:image" content="https://si70531.github.io/EZexams/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<script src="assets/ezcore.js?v=86f55522"></script>
+<script src="assets/ezai.js?v=1f6ac436"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=LXGW+WenKai+TC:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
@@ -247,6 +262,31 @@ footer::before{content:"// ";}
       <p class="msg" id="syncMsg" role="status"></p>
     </div>
   </section>
+  <section class="sync" id="ai">
+    <div class="subj"><h2>AI 批改（免費）</h2><span class="en">grading/</span></div>
+    <div class="syncbox">
+      <div class="syncstate"><span class="led" id="aiLed"></span><b id="aiTitle">用關鍵字比對批改</b><span class="small" id="aiSub"></span></div>
+      <div id="aiOff">
+        <p>手寫題現在是用關鍵字比對給分，只能抓有沒有寫到術語。設定一把免費的 Google Gemini 金鑰後，統計、作業系統、資料結構的手寫題會改成 AI 批改，有分數也有中文評語。不用綁信用卡。</p>
+        <ol class="steps">
+          <li>用 Google 帳號打開 <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio 的 API 金鑰頁</a>。</li>
+          <li>按 <b>Create API key</b>（第一次會請你同意條款、選一個專案，選預設的就好）。</li>
+          <li>複製那串 <code>AIza</code> 開頭的金鑰，貼到下面按「啟用」。每台裝置要各貼一次。</li>
+        </ol>
+        <form class="tokrow" id="aiForm" autocomplete="off">
+          <label for="aiInput" class="sr">Gemini 金鑰</label>
+          <input id="aiInput" type="password" placeholder="AIza…" spellcheck="false">
+          <button class="btn primary" type="submit" id="aiBtn">啟用</button>
+        </form>
+        <p class="small">金鑰只存在這台裝置的瀏覽器，不會同步到 Gist。免費額度大約每分鐘 10 次、每天上千次，一次「批改全部」只算 1 次。注意：免費版 Google 可能拿送出的內容改進模型，所以不要在答案裡寫個人資料。</p>
+      </div>
+      <div id="aiOn" hidden>
+        <p>手寫題按「批改這題」或「批改全部」就會用 Gemini 批改。如果額度用完或連不上，會自動先用關鍵字比對，不會卡住。</p>
+        <div class="tokrow"><button class="btn" type="button" id="aiOut">這台裝置停用 AI 批改</button></div>
+      </div>
+      <p class="msg" id="aiMsg" role="status"></p>
+    </div>
+  </section>
   <footer id="foot">作答和分數只存在你這台裝置的瀏覽器裡</footer>
 </main>
 <script>
@@ -262,27 +302,8 @@ footer::before{content:"// ";}
     if(all.length&&all.every(el=>el.classList.contains("past")))done.push(t);});
   done.forEach(t=>terms.appendChild(t));
 })();
-/* ---------- theme: system / light / dark ---------- */
-(function(){
-  const TK="ezexams-theme",root=document.documentElement,host=root.getAttribute("data-theme");
-  const btn=document.getElementById("themeBtn"),menu=document.getElementById("themeMenu");
-  const NAME={system:"跟隨裝置",light:"淺色",dark:"深色"};
-  function apply(m){
-    if(m==="light"||m==="dark")root.setAttribute("data-theme",m);
-    else if(host)root.setAttribute("data-theme",host);else root.removeAttribute("data-theme");
-    btn.dataset.mode=m;btn.title="外觀："+NAME[m];const lab=btn.querySelector(".lab");if(lab)lab.textContent=NAME[m];
-    menu.querySelectorAll("[data-t]").forEach(b=>b.setAttribute("aria-checked",String(b.dataset.t===m)));
-  }
-  let mode="system";try{const t=localStorage.getItem(TK);if(t==="light"||t==="dark")mode=t;}catch(e){}
-  apply(mode);
-  function close(){menu.hidden=true;btn.setAttribute("aria-expanded","false");}
-  btn.addEventListener("click",e=>{e.stopPropagation();menu.hidden=!menu.hidden;btn.setAttribute("aria-expanded",String(!menu.hidden));});
-  menu.addEventListener("click",e=>{const b=e.target.closest("[data-t]");if(!b)return;mode=b.dataset.t;apply(mode);try{mode==="system"?localStorage.removeItem(TK):localStorage.setItem(TK,mode);}catch(err){}close();btn.focus();});
-  document.addEventListener("click",e=>{if(!menu.hidden&&!e.target.closest(".theme"))close();});
-  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!menu.hidden){close();btn.focus();}});
-})();
 </script>
-<script src="assets/ezsync.js?v=2"></script>
+<script src="assets/ezsync.js?v=0fb0ba45"></script>
 <script>
 (function(){
   const $=id=>document.getElementById(id);
@@ -311,6 +332,30 @@ footer::before{content:"// ";}
     EZSync.disconnect();$("syncMsg").className="msg";$("syncMsg").textContent="這台裝置已取消同步，雲端的進度還在。";render(EZSync.status());
   });
   render(EZSync.status());
+})();
+</script>
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  function render(){
+    const on=EZAI.connected();
+    $("aiOff").hidden=on;$("aiOn").hidden=!on;$("aiLed").className="led "+(on?"ok":"");
+    $("aiTitle").textContent=on?"已啟用 Gemini 批改":"用關鍵字比對批改";
+    $("aiSub").textContent=on?EZAI.model():"";
+  }
+  $("aiForm").addEventListener("submit",async e=>{
+    e.preventDefault();const b=$("aiBtn"),m=$("aiMsg");
+    b.disabled=true;m.className="msg";m.textContent="測試金鑰中…";
+    try{await EZAI.connect($("aiInput").value);$("aiInput").value="";m.className="msg ok";m.textContent="啟用成功。打開任何一科的考古題或模擬試題，批改就會用 AI。";render();}
+    catch(err){m.className="msg err";m.textContent=EZAI.errText(err);}
+    finally{b.disabled=false;}
+  });
+  $("aiOut").addEventListener("click",e=>{
+    const b=e.currentTarget;
+    if(b.dataset.armed!=="1"){b.dataset.armed="1";b.textContent="確定？";setTimeout(()=>{b.dataset.armed="";b.textContent="這台裝置停用 AI 批改";},4000);return;}
+    EZAI.disconnect();$("aiMsg").className="msg";$("aiMsg").textContent="已停用，回到關鍵字比對。";render();
+  });
+  render();
 })();
 </script>
 </body>

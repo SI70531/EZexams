@@ -93,7 +93,7 @@
   }
 
   /* ---------- jump ---------- */
-  let marks=[];
+  let marks=[],shownAt=0;
   function clearMarks(){
     if(window.CSS&&CSS.highlights)CSS.highlights.delete("ezsearch");
     marks.forEach(m=>{const p=m.parentNode;if(!p)return;p.replaceChild(document.createTextNode(m.textContent),m);p.normalize();});marks=[];
@@ -104,6 +104,7 @@
     while((n=walker.nextNode())){const low=n.nodeValue.toLowerCase();
       terms.forEach(t=>{let i=0;while((i=low.indexOf(t,i))>=0){const r=document.createRange();r.setStart(n,i);r.setEnd(n,i+t.length);ranges.push(r);i+=t.length;}});}
     if(!ranges.length)return;
+    shownAt=Date.now();
     if(window.CSS&&CSS.highlights&&typeof Highlight!=="undefined"){CSS.highlights.set("ezsearch",new Highlight(...ranges));return;}
     /* older browsers: wrap the words in <mark> (last range first so offsets stay valid) */
     ranges.reverse().forEach(r=>{try{const m=document.createElement("mark");m.className="ezs-hit";r.surroundContents(m);marks.push(m);}catch(e){}});
@@ -139,6 +140,12 @@
     else if(e.key==="/"&&!typing&&panel.hidden){e.preventDefault();open();}
     else if(e.key==="Escape"&&!panel.hidden){close();}
   });
-  /* leaving the highlighted spot: the next tab switch clears the highlight */
-  document.addEventListener("click",e=>{if(e.target.closest("[data-go]"))clearMarks();},true);
+  /* the yellow highlight goes away at the next click, tap or key press anywhere (the jump itself does not count) */
+  const dismiss=e=>{
+    if(!shownAt||Date.now()-shownAt<300)return;
+    if(e.target.closest&&e.target.closest(".ezs-panel"))return;
+    shownAt=0;clearMarks();
+  };
+  document.addEventListener("pointerdown",dismiss,true);
+  document.addEventListener("keydown",dismiss,true);
 })();

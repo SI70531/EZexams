@@ -116,7 +116,7 @@ table td{text-align:left}
   <table class="prog" id="progTable"></table>
   <p class="small" id="storeNote">分數只存在這台裝置的瀏覽器裡。換裝置或清除瀏覽資料就會歸零。</p>
   <h3>怎麼讀這份講義</h3>
-  <div class="box zh"><span class="lbl">四種框</span><b>藍框</b>是作業上可以直接抄的英文答案（下方附中文），最優先背；<b>黑框「互動」</b>可以拖曳數字自己玩；選擇題標「鑑別題」的是容易錯的進階題；<b>黃框</b>是提醒和作答技巧；<b>紅框</b>是要先注意的地方；<b>紫框</b>是白話說明。</div>
+  <div class="box zh"><span class="lbl">四種框</span><b>藍框</b>是作業上可以直接抄的英文答案（下方附中文），最優先背；<b>黑框「互動」</b>可以拖曳數字自己玩；<b>黃框</b>是提醒和作答技巧；<b>紅框</b>是要先注意的地方；<b>紫框</b>是白話說明。</div>
   <div class="box tip"><span class="lbl">作答技巧</span><ul>
   <li>計算題一定寫過程：公式 → 代數字 → 答案。答案錯了，過程還有部分分。</li>
   <li>樣本變異數除以 n − 1；百分位數位置用 L = (p/100)(n + 1)，有小數就內插。</li>
@@ -2191,7 +2191,7 @@ function renderQuiz(ch){
   const p=document.createElement("p");p.className="small";p.textContent="點一個選項就會馬上對答案並顯示解析。錯的題目回上面找對應的段落再讀一次。";box.appendChild(p);
   qs.forEach((it,i)=>{
     const d=document.createElement("div");d.className="qitem";
-    const st=document.createElement("div");st.className="stem";st.innerHTML='<span class="num">'+(i+1)+'.</span>'+(it.h?'<span class="hard">鑑別題</span>':'');st.appendChild(document.createTextNode(it.q));d.appendChild(st);
+    const st=document.createElement("div");st.className="stem";st.innerHTML='<span class="num">'+(i+1)+'.</span>';st.appendChild(document.createTextNode(it.q));d.appendChild(st);
     const os=document.createElement("div");os.className="opts";
     const ord=order(it.o.length,i+ch.charCodeAt(2)*7);
     const btns=[];

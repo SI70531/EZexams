@@ -99,7 +99,7 @@ x.q.e?"TEACHER'S SHORT NOTE (use it as the ground truth): "+x.q.e:"",
         '<ul>'+os.map(o=>{const a=c.opts[o.dataset.oi];if(!a)return "";const L=o.querySelector(".ab").textContent.trim();
           return '<li class="'+(a.ok?"ok":"no")+(o.dataset.oi===String(x.pick)?" mine":"")+'"><span class="ab">'+L+'</span><span>'+(a.ok?"<b>正確。</b>":"")+esc(a.why)+'</span></li>';}).join("")+'</ul>'+
         (c.point?'<p class="aipt">重點：'+esc(c.point)+'</p>':'');
-    }else if(PEND[x.id]){sig="p:"+x.id;html='<div class="aih">AI 解析</div><span class="aimsg">AI 分析中…（約 5～20 秒）</span>';}
+    }else if(PEND[x.id]){sig="p:"+x.id;html='<div class="aih">AI 解析</div><span class="aimsg">AI 分析中…</span>';}
     else if(ERR[x.id]){sig="e:"+x.id+ERR[x.id];html='<div class="aih">AI 解析</div><span class="aimsg">'+esc(ERR[x.id])+'</span> <button class="btn aigo" type="button">再試一次</button>';}
     else if(connected()){sig="b:"+x.id;html='<button class="btn aigo" type="button">AI 分析四個選項</button>';}
     else if(!x.ok){sig="h:"+x.id;html='<span class="aimsg">到<a href="../../#ai">首頁設定免費的 Gemini 金鑰</a>，這裡就會用 AI 分析你錯在哪、四個選項各自為什麼對或錯。</span>';}

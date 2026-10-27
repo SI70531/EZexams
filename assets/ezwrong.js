@@ -166,7 +166,8 @@ h3 .missbadge{display:inline-block;white-space:nowrap;margin-left:10px;font-size
     if(w.qid)return document.getElementById(w.qid);
     if(w.i==null)return null;
     const root=w.quiz?document.querySelector('[data-quiz="'+w.quiz+'"]'):document.querySelector("#"+CSS.escape(w.go)+" .exambody");
-    return root?root.querySelectorAll(".qitem")[w.i]||null:null;
+    if(!root)return null;
+    return root.querySelector('.qitem[data-i="'+w.i+'"]')||root.querySelectorAll(".qitem")[w.i]||null; /* data-i: original position (questions may be shuffled) */
   }
   const wid=w=>w.go+"|"+(w.quiz||"")+"|"+(w.qid||w.i);
   function flash(el,block){setTimeout(()=>{el.scrollIntoView({block});el.classList.remove("wflash");void el.offsetWidth;el.classList.add("wflash");},30);}

@@ -13,7 +13,7 @@
   const set=(k,v)=>{internal=true;try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v);}catch(e){}internal=false;};
   const listeners=new Set();
   let status={state:get(LS.tok)?"idle":"off",msg:""};
-  function emit(state,msg){status={state,msg:msg||""};listeners.forEach(f=>{try{f(status);}catch(e){}});}
+  function emit(state,msg,code){status={state,msg:msg||"",code:code||""};listeners.forEach(f=>{try{f(status);}catch(e){}});}
 
   async function gh(path,opt={}){
     const tok=get(LS.tok);if(!tok)throw Object.assign(new Error("no token"),{code:"off"});
@@ -77,7 +77,7 @@
         sessionStorage.removeItem("ezsync-reload");
       }else if(localAt>(remote.updatedAt||0)){await push(key);}
       else{set(LS.last,String(Date.now()));emit("ok","已同步");sessionStorage.removeItem("ezsync-reload");}
-    }catch(e){emit(e.code==="off"?"off":"err",errMsg(e));}
+    }catch(e){emit(e.code==="off"?"off":"err",errMsg(e),e.code);}
   }
   async function push(key,{keepalive=false}={}){
     if(!get(LS.tok))return;
@@ -88,7 +88,7 @@
       const id=await gistId();
       await gh("/gists/"+id,{method:"PATCH",keepalive,body:JSON.stringify({files:{[key+".json"]:{content:JSON.stringify({updatedAt:at,data:JSON.parse(data)})}}})});
       set(LS.last,String(Date.now()));emit("ok","已同步");
-    }catch(e){emit(e.code==="off"?"off":"err",errMsg(e));}
+    }catch(e){emit(e.code==="off"?"off":"err",errMsg(e),e.code);}
   }
 
   window.EZSync={
@@ -112,6 +112,10 @@
       catch(e){set(LS.tok,old);throw e;}
     },
     disconnect(){[LS.tok,LS.gist,LS.user,LS.last].forEach(k=>set(k,null));emit("off","");},
+    /* sync this page's subject right now: upload pending answers, then download (reloads if another device changed something) */
+    async syncNow(){
+      for(const k of Object.keys(subjects)){const sub=subjects[k];if(sub.timer){clearTimeout(sub.timer);sub.timer=null;}await pull(k);}
+    },
     async syncAll(){const ks=Object.keys(subjects);for(const k of ks)await pull(k,{reloadOnChange:false});if(!ks.length){emit("sync","同步中…");try{await readGist();set(LS.last,String(Date.now()));emit("ok","已同步");}catch(e){emit("err",errMsg(e));}}},
     connected:()=>!!get(LS.tok),
     user:()=>get(LS.user),
@@ -159,14 +163,22 @@
     const st=document.createElement("style");
     st.textContent='.syncchip{flex:0 0 auto;display:flex;align-items:center;gap:6px;height:36px;padding:0 10px;border:1.5px solid var(--ink);border-radius:8px;background:var(--paper);color:var(--muted);font-family:var(--f-mono,monospace);font-size:12px;text-decoration:none;white-space:nowrap}.syncchip svg{width:16px;height:16px}.syncchip::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--muted)}.syncchip[data-state="ok"]{color:var(--ok)}.syncchip[data-state="ok"]::before{background:var(--ok)}.syncchip[data-state="sync"],.syncchip[data-state="dirty"]{color:var(--warn)}.syncchip[data-state="sync"]::before,.syncchip[data-state="dirty"]::before{background:var(--warn)}.syncchip[data-state="err"]{color:var(--seal)}.syncchip[data-state="err"]::before{background:var(--seal)}.syncchip:hover{background:var(--indigo-soft)}@media (max-width:1200px){.syncchip .synclab{display:none}}@media (max-width:640px){.syncchip{height:32px;padding:0 8px}}';
     document.head.appendChild(st);
-    const a=document.createElement("a");a.className="syncchip";a.id="syncChip";a.href="../../#sync";a.dataset.state="off";
+    const a=document.createElement("a");a.className="syncchip";a.id="syncChip";a.href="../../#sync";a.dataset.state="off";a.setAttribute("role","button");
     a.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 9a4 4 0 0 1 .5 8"/><path d="M12 12v7M9 16l3 3 3-3"/></svg><span class="synclab">未同步</span>';
     theme.parentNode.insertBefore(a,theme);
+    a.addEventListener("click",e=>{
+      const s=window.EZSync.status();
+      if(!window.EZSync.connected()||(s.state==="err"&&s.code==="auth"))return; /* go to the home page to set up / re-link */
+      e.preventDefault();
+      if(s.state==="sync")return;
+      window.EZSync.syncNow();
+    });
     window.EZSync.onStatus(s=>{
       const on=window.EZSync.connected();
       a.dataset.state=on?s.state:"off";
       a.querySelector(".synclab").textContent=!on?"未同步":s.state==="sync"?"同步中":s.state==="dirty"?"待同步":s.state==="err"?"同步失敗":"已同步";
-      a.title=!on?"只存在這台裝置。點這裡到首頁設定跨裝置同步。":(s.msg||"已同步到 GitHub")+(window.EZSync.user()?"（@"+window.EZSync.user()+"）":"");
+      const needKey=s.state==="err"&&s.code==="auth";
+      a.title=!on?"只存在這台裝置。點這裡到首頁設定跨裝置同步。":needKey?"GitHub 金鑰失效了，點這裡到首頁重新連結。":(s.msg&&s.state==="err"?s.msg+" 點一下再同步一次。":"已同步到 GitHub"+(window.EZSync.user()?"（@"+window.EZSync.user()+"）":"")+"。點一下立即同步。");
     });
   }
   function updateNote(){

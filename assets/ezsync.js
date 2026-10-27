@@ -72,7 +72,10 @@
   }
   const okNow=()=>{retryN=0;clearTimeout(retryT);retryT=null;};
   const metaKey=k=>"ezsync-at:"+k;
-  const lastPush={};
+  /* GitHub allows about 500 uploads (gist revisions) an hour, so uploads are spread evenly: at most one every
+     7.2 s (3600 s / 500), counted across every subject and every open tab in this browser */
+  const GAP=7200,LASTK="ezsync-lastpush";
+  const lastAny=()=>+get(LASTK)||0;
 
   async function pull(key,{reloadOnChange=true}={}){
     const sub=subjects[key];if(!sub||!get(LS.tok))return;
@@ -109,10 +112,11 @@
     emit("sync","同步中…");
     try{
       const id=await gistId();
+      set(LASTK,String(Date.now()));   /* claim the slot before sending, so another tab waits its turn */
       const body=JSON.stringify({files:{[key+".json"]:{content:JSON.stringify({updatedAt:at,data:JSON.parse(data)})}}});
       /* the browser refuses a keepalive request over 64 KB, so a big progress file is sent normally */
       await gh("/gists/"+id,{method:"PATCH",keepalive:keepalive&&body.length<60000,body});
-      lastPush[key]=Date.now();
+
       set(LS.last,String(Date.now()));emit("ok","已同步");okNow();
     }catch(e){emit(e.code==="off"?"off":"err",errMsg(e),e.code);try{console.warn("[EZSync] push",key,e);}catch(_){}retryLater(key,e);}
   }
@@ -129,11 +133,11 @@
       set(metaKey(key),String(Date.now()));
       const sub=subjects[key];if(!sub||!get(LS.tok))return;
       clearTimeout(sub.timer);emit("dirty","有變更，準備同步…");
-      /* every upload is a new gist revision and GitHub limits those per hour, so wait until you pause
-         (8 s without changes) and upload at most about twice a minute; leaving the page uploads right away */
-      if(!sub.dirtyAt)sub.dirtyAt=Date.now();
-      const gap=Math.min(Math.max(8000,(lastPush[key]||0)+30000-Date.now()),Math.max(0,sub.dirtyAt+45000-Date.now()));   /* never wait more than 45 s */
-      sub.timer=setTimeout(()=>{sub.timer=null;sub.dirtyAt=0;push(key);},gap);
+      /* every upload is a new gist revision and GitHub limits those to about 500 an hour: upload soon,
+         but never sooner than 7.2 s after the last upload from this browser; leaving the page uploads right away */
+      const wait=()=>Math.max(1500,lastAny()+GAP-Date.now());   /* 1.5 s gathers a burst of clicks into one upload */
+      const go=()=>{const w=lastAny()+GAP-Date.now();if(w>0){sub.timer=setTimeout(go,w+Math.random()*500);return;}sub.timer=null;push(key);};   /* another tab may have uploaded meanwhile */
+      sub.timer=setTimeout(go,wait()+Math.random()*500);   /* a little jitter so two tabs do not wake at the same moment */
     },
     async connect(token){
       token=(token||"").trim();if(!token)throw Object.assign(new Error("empty"),{code:"empty"});

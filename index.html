@@ -134,8 +134,6 @@ code{font-family:var(--f-mono);font-size:.9em;background:var(--indigo-soft);padd
 .small{font-size:13px;color:var(--muted)}
 .msg{font-size:14px;min-height:1.2em}.msg.err{color:var(--seal)}.msg.ok{color:var(--ok)}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-footer{margin-top:52px;font-size:13px;color:var(--muted);font-family:var(--f-mono)}
-footer::before{content:"// ";}
 .theme{position:relative;flex:0 0 auto}
 .themebtn{width:36px;height:36px;border-radius:8px;border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);cursor:pointer;display:grid;place-items:center;transition:background .15s}
 .themebtn:hover{background:var(--indigo-soft)}
@@ -279,7 +277,6 @@ footer::before{content:"// ";}
       <p class="msg" id="aiMsg" role="status"></p>
     </div>
   </section>
-  <footer id="foot">作答和分數只存在你這台裝置的瀏覽器裡</footer>
 </main>
 <script>
 /* ---------- subjects ordered by exam date (data-date, earliest first) ---------- */
@@ -308,7 +305,6 @@ footer::before{content:"// ";}
     $("syncLed").className="led "+(on?(st.state==="dirty"?"sync":st.state):"");
     $("syncTitle").textContent=on?("已連結 GitHub"+(EZSync.user()?" @"+EZSync.user():"")):"只存在這台裝置";
     $("syncSub").textContent=on?(st.state==="sync"?"同步中…":fmt(EZSync.lastSync())):"";
-    $("foot").textContent=on?"進度同步在你的私人 Gist，各裝置共用":"作答和分數只存在你這台裝置的瀏覽器裡";
     if(st.state==="err"){$("syncMsg").textContent=st.msg;$("syncMsg").className="msg err";}
   }
   EZSync.onStatus(render);

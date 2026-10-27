@@ -27,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=LXGW+WenKai+TC:wght@400;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
-<link rel="stylesheet" href="../../assets/ezbase.css?v=9efbd24f">
+<link rel="stylesheet" href="../../assets/ezbase.css?v=db375213">
 <style>
 /* Same design system as operating-systems/midterm: pill tabs, progress card on each cover, handwritten headings. */
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
@@ -2322,6 +2322,7 @@ document.querySelectorAll(".exam").forEach(ex=>{
   function render(q){
     const g=st.grade[q.id];const box=q.querySelector(".gres");const ta=q.querySelector("textarea");
     const stale=g&&g.ans!==ta.value.trim();
+    q.classList.toggle("aigraded",!!(g&&g.ai&&!stale)); /* AI graded: no self-grading controls */
     if(!g){box.hidden=true;q.dataset.verdict="";return;}
     box.hidden=false;q.dataset.verdict=stale?"":g.verdict;
     box.className="gres "+(stale?"stale":g.verdict);
@@ -2356,7 +2357,7 @@ document.querySelectorAll(".exam").forEach(ex=>{
         const r=arr.find(x=>x&&String(x.id)===it.id);if(!r)return;
         let sc=Math.max(0,Math.min(it.pts,Number(r.score)||0));sc=Math.round(sc*2)/2;
         const v=sc>=it.pts?"correct":sc>0?"partial":"wrong";
-        st.grade[it.id]={score:sc,verdict:v,feedback:String(r.feedback||""),missing:Array.isArray(r.missing)?r.missing.map(String).slice(0,8):[],ans:it.ans};n++;
+        st.grade[it.id]={score:sc,verdict:v,feedback:String(r.feedback||""),missing:Array.isArray(r.missing)?r.missing.map(String).slice(0,8):[],ans:it.ans,ai:true};n++;
         render(document.getElementById(it.id));
       });
       save();upd();

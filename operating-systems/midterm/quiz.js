@@ -1,6 +1,8 @@
 /* 作業系統期中衝刺 question bank (QUIZ).
    Progress is saved by chapter and question position, so keep existing questions in the same order:
-   add new ones at the END of a chapter, and fix typos in place. */
+   add new ones at the END of a chapter, and fix typos in place.
+   If the 錯題區 files a question under the wrong notes section, add sec:"<that section's data-sec>" to it,
+   e.g. {q:"...", o:[...], a:1, e:"...", sec:"3.2"}. */
 const QUIZ = {
 ch1: [
  {q:"Which of the following is NOT one of the three main components of the CPU?", o:["Control Unit (CU)","Arithmetic and Logic Unit (ALU)","Registers","DMA controller"], a:3, e:"CPU = CU + ALU + Registers（控制、運算、暫存）。DMA controller（直接記憶體存取控制器）在 I/O device 那一側，不在 CPU 裡。"},

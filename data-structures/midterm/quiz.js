@@ -1,6 +1,8 @@
 /* 資料結構期中衝刺 question bank (QUIZ).
    Progress is saved by chapter and question position, so keep existing questions in the same order:
-   add new ones at the END of a chapter, and fix typos in place. */
+   add new ones at the END of a chapter, and fix typos in place.
+   If the 錯題區 files a question under the wrong notes section, add sec:"<that section's data-sec>" to it,
+   e.g. {q:"...", o:[...], a:1, e:"...", sec:"3.2"}. */
 const QUIZ = {
 ch1: [
  {"q":"Any algorithm could be written with only three programming constructs. Which are they?","o":["Sequence, selection, and loop","Sequence, recursion, and goto","Selection, loop, and function call","Input, process, and output"],"a":0,"e":"課本原文：sequence、selection、loop。"},
@@ -101,7 +103,7 @@ y24mc: [
  {"q":"Which of the following is NOT one of the three steps for inserting a node in a linked list?","o":["Allocate memory for the new node and insert data","Point the new node to its successor","Point the new node’s predecessor to the new node","Update the rear pointer before inserting the new node"],"a":3,"e":"三步驟是 (A)(B)(C)。"}
 ],
 y25mc: [
- {"q":"What is a precondition for using a binary search?","o":["The list must be sorted in order.","The list can only have positive numbers.","The search must give the last element’s position.","The result must be passed by value."],"a":0,"e":"Binary search 要求有序。"},
+ {"q":"What is a precondition for using a binary search?","sec":"2-1","o":["The list must be sorted in order.","The list can only have positive numbers.","The search must give the last element’s position.","The result must be passed by value."],"a":0,"e":"Binary search 要求有序。"},
  {"q":"Which statement is NOT correct?","o":["A sequence does not change how the algorithm runs.","Selection statements check different choices.","The loop in pseudocode is like a while loop.","All of the above are wrong."],"a":3,"e":"(A)(B)(C) 都正確，所以「都錯」這句才是錯的。和 2024 的差別只在 (A) 多了 not。"},
  {"q":"Which cannot be defined as the atomic data type?","o":["Integer","Floating point","Character","Statement"],"a":3,"e":"同 2024。"},
  {"q":"When a user interacts with an ADT, what is visible to them?","o":["The internal data structure","The entire operation process","Only the operation name and its parameters","The underlying implementation details"],"a":2,"e":"同 2024。"},
@@ -167,3 +169,22 @@ m2: [
  {"q":"In the multilinked list of presidents, how many link fields does each node have?","o":["One","Two","Three","It depends on the number of presidents"],"a":1,"e":"一個依 president 排序，一個依 spouse 排序。"}
 ],
 };
+
+/* Which notes section a question belongs to (used by the 錯題區, assets/ezwrong.js).
+   First matching rule wins; the question text is tried before its options and explanation.
+   Rules only apply within the question's own chapter when that is known. Questions no rule matches fall back to keyword matching. */
+const WRONG_RULES=[
+ ["1-1",/pseudocode|precondition|postcondition|return condition|algorithm header|programming constructs|statement 3\.1|data name|Algorithm 1-1/i],
+ ["1-3",/ADT model|user.s scope|private|public interface/i],
+ ["1-2",/\bADT\b|abstract data|encapsulat|atomic|composite data/i],
+ ["3-6",/circular|doubly|multilink|insertDbl|deleteDbl|\bfore\b|president|spouse/i],
+ ["3-5",/append|array of lists|two-dimensional/i],
+ ["3-4",/addNode|removeNode|printList|test case/i],
+ ["2-3",/collision|prob(e|ing)|cluster|key offset|chaining|bucket|overflow area|prime area|load factor|open addressing|synonym/i],
+ ["2-2",/hash|fold|modulo|division method|digit extraction|midsquare|rotation|pseudorandom|home address|subtraction method/i],
+ ["3-3",/searchList|insertNode|deleteNode|destroyList|traverse|getNext|createList|emptyList|fullList|listCount|retrieveNode|pPre|pLoc|pNew|dummy|recycle|inserting a node|deleting a node/i],
+ ["3-1",/linear list|restricted|FIFO|LIFO|first in.first out|queue|stack|general list/i],
+ ["2-1",/search|sentinel|binary|sequential|probability|Knuth/i],
+ ["3-2",/linked list|head|node|link|self-referential|rear pointer|metadata/i],
+ ["1-4",/O\(|efficien|logarithmic|quadratic|loop|Big-?O|n log n|matri|coefficient/i]
+];

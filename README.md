@@ -39,6 +39,15 @@ The home page automatically sorts subjects chronologically based on `data-date`.
 
 Answers are saved by chapter and question position. In a `quiz.js`, fix typos in place and add new questions at the **end** of a chapter; inserting or deleting in the middle shifts every answer after it.
 
+### Wrong-answer area (錯題區)
+
+`assets/ezwrong.js` is the same for every subject. It files each wrong answer under a notes section (`<h3 data-sec="...">`), checking in this order:
+1. a `sec:"..."` field on the question in `quiz.js` (use this to correct a question that lands in the wrong section);
+2. the subject's hand-written `WRONG_RULES` in `quiz.js`, if it has any (data structures does);
+3. keyword matching against the notes (only within the question's own chapter when that is known).
+
+A weak match is shown under "未對到特定段落" instead of a wrong section. In the browser console, `EZWrong.report()` lists where every question goes.
+
 ### Cache versions
 
 Script and stylesheet links carry `?v=<content hash>` so browsers pick up changes right away. A GitHub Action (`.github/workflows/stamp.yml`) refreshes these on every push; to do it by hand, run `python3 tools/stamp.py`.

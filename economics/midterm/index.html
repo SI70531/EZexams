@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=LXGW+WenKai+TC:wght@400;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
-<link rel="stylesheet" href="../../assets/ezbase.css?v=3d0c0e7c">
+<link rel="stylesheet" href="../../assets/ezbase.css?v=aca7e489">
 <style>
 /* Same design system as operating-systems/midterm: pill tabs, progress card on each cover, handwritten headings. */
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
@@ -1007,7 +1007,7 @@ function renderQuiz(ch){
   const box=document.querySelector('[data-quiz="'+ch+'"]');if(!box)return;
   const qs=QUIZ[ch];
   const nh=qs.filter(q=>q.h).length;
-  box.innerHTML='<h2>Multiple-choice question（'+qs.length+' 題，共 50 分）</h2><p class="small">題目和考試一樣是英文，下面灰字是中文翻譯。點選項就會對答案並顯示中文解析。標「作業」的是你們作業原題。</p><p><button class="btn zhbtn" type="button"></button></p>';
+  box.innerHTML='<h2>Multiple-choice question（'+qs.length+' 題，共 100 分）</h2><p class="small">題目和考試一樣是英文，下面灰字是中文翻譯。點選項就會對答案並顯示中文解析。標「作業」的是你們作業原題。</p><p><button class="btn zhbtn" type="button"></button></p>';
   qs.forEach((it,i)=>{
     const d=document.createElement("div");d.className="qitem";d.innerHTML=stemHTML(it,i);
     const os=document.createElement("div");os.className="opts";const btns=[];
@@ -1094,12 +1094,16 @@ function renderExam(id){
 Object.keys(MOCK).forEach(renderExam);
 
 /* ---------- home ---------- */
+/* 章末練習 in the progress table: jump straight to the chapter's multiple choice */
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-goend]");if(!b)return;const c=b.dataset.goend;
+  setTimeout(()=>{const t=document.querySelector("#"+c+" .quiz");if(t){t.scrollIntoView({block:"start"});scrollBy(0,-76);}},80);});
 function renderHome(){
   const t=document.getElementById("progTable");
   let html='<tr><th class="l">項目</th><th>狀態</th></tr>';let next=null;
   Object.keys(QUIZ).forEach(c=>{const s=quizStat(c);
-    html+='<tr><td class="l"><button class="btn" data-go="'+c+'">'+CHN[c]+'</button></td><td>'+(s.k?("答對 "+s.r+" / "+s.n+(s.k<s.n?"（未完成）":"")):"還沒做")+'</td></tr>';
-    if(!next&&s.k<s.n)next=[c,"讀 "+CHN[c]+"，再做章末選擇題"];});
+    const sc=Math.round(s.r*100/s.n*10)/10; /* a chapter is 25 multiple-choice questions, 100 分 */
+    html+='<tr><td class="l"><button class="btn" data-go="'+c+'" data-goend="'+c+'">'+c.replace("ch","Ch")+' 章末練習</button></td><td>'+(s.k?('<b class="pscore">得分 '+sc+' / 100 分</b><span class="psub"><span>選擇 '+s.k+'/'+s.n+'</span>'+(s.k>=s.n?'<span class="pok">✓ 完成</span>':'<span class="ptodo">未完成</span>')+'</span>'):"還沒做")+'</td></tr>';
+    if(!next&&s.k<s.n)next=[c,"讀 "+CHN[c]+"，再做章末練習"];});
   Object.keys(MOCK).forEach((id,j)=>{const e=examStat(id);
     html+='<tr><td class="l"><button class="btn" data-go="'+id+'">模擬考 '+(j+1)+'</button></td><td>'+(e.done?("得分 "+Math.round(e.r/e.n*100)+" 分"):e.k?("作答中 "+e.k+" / "+e.n):"還沒寫")+'</td></tr>';
     if(!next&&!e.done)next=[id,"限時 60 分鐘寫模擬考 "+(j+1)+"，寫完按「交卷」"];});
@@ -1296,6 +1300,7 @@ document.querySelectorAll(".ilab input[type=range]").forEach(r=>{const b=r.paren
 })();
 
 </script>
+<script>window.EZ_MC_PTS=100; /* economics chapters are multiple choice only */</script>
 <script src="../../assets/ezquiz.js?v=a794826c"></script>
 <script src="../../assets/ezwrong.js?v=cec64b0b"></script>
 <script src="../../assets/ezsearch.js?v=e46ca0fc"></script>

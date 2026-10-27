@@ -213,6 +213,5 @@ body.nograde .nogradenote{display:block}
 .quiz>h2,.chw>h2{overflow-wrap:anywhere}
 pre{max-width:100%;overflow-x:auto}
 /* home progress table: score on the first line, details below */
-.pscore{font-weight:700;white-space:nowrap}.psub{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 10px;margin-top:3px;font-size:.86em;color:var(--muted)}.psub>span{white-space:nowrap}
-td.l .psub{justify-content:flex-start}
+.pscore{font-weight:700;white-space:nowrap}.psub{display:block;margin:3px -5px 0;font-size:.86em;line-height:1.7;color:var(--muted)}.psub>span{white-space:nowrap;display:inline-block;margin:0 5px}
 .ptodo{color:var(--bad,#c62828);font-weight:600}.pok{color:var(--ok,#2e7d32);font-weight:600}

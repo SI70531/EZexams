@@ -1,7 +1,7 @@
 /* EZexams: questions (and their options) come in a different order every time you open a tab
    (reload, or switch to another tab and come back).
-   - Questions you have already answered go to the top, numbered 1, 2, 3 … in the order you answered them,
-     so their numbers stay put; only the unanswered ones below are shuffled.
+   - Questions you have already answered go to the top and keep, for good, the number and the option order
+     they had when you answered them; only the unanswered ones below are shuffled, using the numbers that are left.
    - Shuffled: chapter multiple choice, mock-exam multiple choice, a chapter's written part, written practice (.wq).
    - Not shuffled: past exams (a tab whose name contains 考古) and blocks marked .noshuf (statistics problems
      whose sub-questions build on each other).
@@ -48,26 +48,46 @@
     }catch(e){return 0;}
   }
   const ORDER=new WeakMap();   /* container → { run key → [original index per slot] } fixed for this visit */
+  /* the number a question had when you answered it, kept for good (localStorage "eznum:<page>") */
+  const NK="eznum:"+location.pathname;let NUMS={};try{NUMS=JSON.parse(localStorage.getItem(NK)||"{}")||{};}catch(e){}
+  const saveNums=()=>{try{localStorage.setItem(NK,JSON.stringify(NUMS));}catch(e){}};
+  function nid(r,it){
+    if(it.classList.contains("exq")&&it.id)return it.id;
+    const q=r.box.closest("[data-quiz]")||r.box;const k=q.dataset.quiz||(r.box.closest(".exam")||{}).dataset&&r.box.closest(".exam").dataset.exam||(r.box.closest(".view")||{}).id;
+    return k+"|"+r.key+"|"+it.dataset.i;
+  }
   function arrange(r){
     r.items.forEach((it,k)=>{if(it.dataset.i==null)it.dataset.i=k;});
     let byKey=ORDER.get(r.box);if(!byKey){byKey={};ORDER.set(r.box,byKey);}
     let order=byKey[r.key];
-    if(!order||order.length!==r.items.length){
-      const n=r.items.length,byI={};r.items.forEach(it=>byI[it.dataset.i]=it);
-      const done=[],loose=[];
-      for(let i=0;i<n;i++){const it=byI[i];if(it&&answered(it))done.push(i);else loose.push(i);}
-      done.sort((a,b)=>(when(byI[a])-when(byI[b]))||(a-b));   /* answered: in the order you answered them */
+    const n=r.items.length,byI={};r.items.forEach(it=>byI[it.dataset.i]=it);
+    if(!order||order.length!==n){
+      /* answered questions: on top, each with the number it had when answered (never changes again);
+         unanswered: shuffled below, numbered with the numbers that are left */
+      const done=[],loose=[];let dirty=false;
+      for(let i=0;i<n;i++){const it=byI[i];if(it&&answered(it))done.push(i);else{loose.push(i);if(it&&NUMS[nid(r,it)]!=null){delete NUMS[nid(r,it)];dirty=true;}}}
+      const used=new Set();
+      done.sort((a,b)=>(when(byI[a])-when(byI[b]))||(a-b));
+      done.forEach(i=>{const id=nid(r,byI[i]);const v=NUMS[id];if(v!=null&&v>=1&&v<=n&&!used.has(v))used.add(v);else if(v!=null){delete NUMS[id];dirty=true;}});
+      let f=1;const free=()=>{while(used.has(f))f++;used.add(f);return f;};
+      done.forEach(i=>{const id=nid(r,byI[i]);if(NUMS[id]==null){NUMS[id]=free();dirty=true;}});   /* answered before numbers were kept */
+      done.sort((a,b)=>NUMS[nid(r,byI[a])]-NUMS[nid(r,byI[b])]);
       for(let j=loose.length-1;j>0;j--){const k=Math.floor(Math.random()*(j+1));[loose[j],loose[k]]=[loose[k],loose[j]];}
+      const rest=[];for(let v=1;v<=n;v++)if(!used.has(v))rest.push(v);
       order=done.concat(loose);
-      byKey[r.key]=order;
+      byKey[r.key]=order;byKey[r.key+"#n"]=order.map((i,k)=>k<done.length?NUMS[nid(r,byI[i])]:rest[k-done.length]);
+      if(dirty)saveNums();
     }
     const cur=r.items.map(it=>+it.dataset.i);
     if(cur.join()!==order.join()){
-      const byI={};r.items.forEach(it=>byI[it.dataset.i]=it);
       const marks=r.items.map(it=>{const m=document.createComment("q");it.before(m);return m;});
       marks.forEach((m,k)=>m.replaceWith(byI[order[k]]));
     }
-    order.forEach((i,k)=>{const it=r.items.find(x=>+x.dataset.i===i);if(it)renumber(it,k);});
+    const nums=byKey[r.key+"#n"]||order.map((_,k)=>k+1);
+    order.forEach((i,k)=>{const it=byI[i];if(!it)return;
+      /* answered during this visit: remember the number it has now */
+      if(answered(it)){const id=nid(r,it);if(NUMS[id]==null){NUMS[id]=nums[k];saveNums();}}
+      renumber(it,nums[k]-1);});
   }
   /* options are shuffled too (every visit), except on past exams, on questions you already answered,
      on "all of the above" style options, and when the explanation names an option letter like (A) */

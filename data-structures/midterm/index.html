@@ -1518,7 +1518,7 @@ document.querySelectorAll(".exam").forEach(ex=>{
     list=list.filter(it=>it.ans);
     if(!list.length){stat.textContent="還沒有作答。";return;}
     if(!SAMPLE){kwGrade(list);stat.textContent="批改完成（關鍵字比對）。";return;}
-    btns.forEach(b=>b.disabled=true);stat.textContent="批改中…（約 10～60 秒）";
+    btns.forEach(b=>b.disabled=true);stat.textContent="批改中…";
     try{
       const out=await SAMPLE.json(rubricPrompt(list),{modelTier:"default"});
       const arr=Array.isArray(out)?out:(out&&Array.isArray(out.items)?out.items:[]);
@@ -1858,7 +1858,7 @@ show(start);
 <script src="../../assets/ezwrong.js?v=b119300d"></script>
 
 <script src="../../assets/ezsearch.js?v=e46ca0fc"></script>
-<script src="../../assets/ezshuffle.js?v=48458425"></script>
-<script src="../../assets/ezexplain.js?v=6492342c"></script>
+<script src="../../assets/ezshuffle.js?v=65b50214"></script>
+<script src="../../assets/ezexplain.js?v=77ffd9bc"></script>
 </body>
 </html>

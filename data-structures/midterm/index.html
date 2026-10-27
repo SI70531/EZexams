@@ -68,7 +68,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;margin-left:10px;font-size
 .wcard .cbody{font-size:14px;overflow-x:auto}
 .wcard .cbody .lab{display:none}
 .wcard pre{white-space:pre-wrap}
-.wgroup h3{margin-top:28px}
+.wgroup h3{margin-top:28px;scroll-margin-top:80px}
 @keyframes wflash{0%,60%{box-shadow:0 0 0 4px #c62828}100%{box-shadow:0 0 0 0 transparent}}
 .wflash{animation:wflash 2.2s ease-out;border-radius:10px}
 .lab{background:var(--paper);border:1.5px solid var(--ink);border-radius:10px;box-shadow:4px 4px 0 var(--hard);padding:14px 18px 16px;margin:20px 0}
@@ -1353,7 +1353,7 @@ function renderWrong(){
   document.querySelectorAll("h3[data-sec]").forEach(h=>{
     const n=(by[h.dataset.sec]||[]).length;h.classList.toggle("missed",n>0);
     let b=h.querySelector(".missbadge");
-    if(n){if(!b){b=document.createElement("button");b.type="button";b.className="missbadge";b.dataset.go="wrong";h.appendChild(b);}b.textContent="✗ 錯 "+n+" 題 → 錯題區";}
+    if(n){if(!b){b=document.createElement("button");b.type="button";b.className="missbadge";b.dataset.go="wrong";b.dataset.wsec=h.dataset.sec;h.appendChild(b);}b.textContent="✗ 錯 "+n+" 題 → 錯題區";}
     else if(b)b.remove();
   });
   const box=document.getElementById("wrongList");if(!box)return;
@@ -1361,7 +1361,7 @@ function renderWrong(){
   if(!list.length){box.innerHTML='<p class="box tip"><span class="lbl">目前沒有錯題</span>去做章末選擇題、考古題或模擬試題，答錯的會自動出現在這裡。</p>';return;}
   const p=document.createElement("p");p.className="small";p.textContent="共 "+list.length+" 題錯題。章節標題變紅色的段落就是要回去補的地方。";box.appendChild(p);
   Object.keys(by).sort().forEach(k=>{
-    const h=document.getElementById("s"+k);const g=document.createElement("div");g.className="wgroup";
+    const h=document.getElementById("s"+k);const g=document.createElement("div");g.className="wgroup";g.dataset.wsec=k;
     const t=document.createElement("h3");t.textContent=(h?h.firstChild.textContent.trim():k)+"（"+by[k].length+" 題）";g.appendChild(t);
     by[k].forEach(w=>{
       const c=document.createElement("div");c.className="wcard";
@@ -1380,7 +1380,13 @@ function renderWrong(){
     });
     box.appendChild(g);
   });
+  const sec=WPENDING;WPENDING=null;wJump(box,sec);
 }
+/* a "✗ 錯 N 題 → 錯題區" badge jumps straight to that section's mistakes, not the top of the list */
+var WPENDING=null;
+function wJump(box,sec){if(!sec)return;const g=box.querySelector('.wgroup[data-wsec="'+CSS.escape(sec)+'"]');if(!g)return;
+    setTimeout(()=>{(g.querySelector("h3")||g).scrollIntoView({block:"start"});g.querySelectorAll(".wcard").forEach(c=>{c.classList.remove("wflash");void c.offsetWidth;c.classList.add("wflash");});},30);};
+document.addEventListener("click",e=>{const b=e.target.closest(".missbadge");if(b)WPENDING=b.dataset.wsec||null;},true);
 function refreshPCB(){
   try{renderWrong();}catch(e){}
   document.querySelectorAll(".pcb[data-pcb]").forEach(el=>{

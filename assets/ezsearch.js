@@ -10,7 +10,8 @@
 .ezs-panel{position:fixed;z-index:50;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 64px);width:min(720px,calc(100vw - 24px));max-height:calc(100vh - 90px);display:flex;flex-direction:column;background:var(--paper);border:1.5px solid var(--ink);border-radius:12px;box-shadow:6px 6px 0 var(--hard,#06141b);overflow:hidden}
 .ezs-top{display:flex;gap:8px;align-items:center;padding:12px}
 .ezs-info{border-top:1px solid var(--line)}
-.ezs-top input{flex:1;min-width:0;font:inherit;font-size:16px;padding:9px 12px;border:1.5px solid var(--line-strong,var(--line));border-radius:8px;background:var(--paper2,var(--bg));color:var(--ink)}
+.ezs-top{position:relative}.ezs-ico{position:absolute;left:24px;top:50%;width:18px;height:18px;transform:translateY(-50%);color:var(--muted,#888);pointer-events:none}
+.ezs-top input{flex:1;min-width:0;font:inherit;font-size:16px;padding:9px 12px 9px 38px;border:1.5px solid var(--line-strong,var(--line));border-radius:8px;background:var(--paper2,var(--bg));color:var(--ink)}
 .ezs-top input:focus{outline:none;border-color:var(--indigo,var(--ink));box-shadow:0 0 0 3px var(--indigo-soft,transparent)}
 .ezs-info{padding:8px 14px;font-size:13px;color:var(--muted)}
 .ezs-list{overflow-y:auto;padding:0 8px 10px}
@@ -35,7 +36,7 @@
   new MutationObserver(()=>{const c=bar.querySelector(".syncchip");if(c&&c.nextElementSibling!==btn&&btn.nextElementSibling!==c)bar.insertBefore(btn,c);}).observe(bar,{childList:true});
 
   const panel=document.createElement("div");panel.className="ezs-panel";panel.hidden=true;panel.setAttribute("role","dialog");panel.setAttribute("aria-label","搜尋");
-  panel.innerHTML='<div class="ezs-top"><input type="search" placeholder="搜尋講義和題目" aria-label="搜尋關鍵字" autocomplete="off" spellcheck="false"></div><div class="ezs-info"></div><div class="ezs-list" role="listbox"></div>';
+  panel.innerHTML='<div class="ezs-top"><svg class="ezs-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg><input type="search" placeholder="搜尋講義和題目" aria-label="搜尋關鍵字" autocomplete="off" spellcheck="false"></div><div class="ezs-info"></div><div class="ezs-list" role="listbox"></div>';
   document.body.appendChild(panel);
   const input=panel.querySelector("input"),info=panel.querySelector(".ezs-info"),list=panel.querySelector(".ezs-list");
 

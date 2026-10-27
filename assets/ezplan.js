@@ -1,5 +1,5 @@
 /* EZexams study plan (a finished chapter, i.e. its tab shows data-state="terminated", gets its button marked; a day whose buttons are all finished gets marked too): <div class="plan" data-exam="YYYY-MM-DD"> with one .day per unit.
-   Re-splits the units over the days left before the exam (at least 3 days), shows dates, and redraws at midnight. */
+   Re-splits the units over the days left before the exam (at least 5 days), shows dates, and redraws at midnight. */
 (function(){
   function setup(box){
     const all=[...box.querySelectorAll(".day .t")].map(t=>t.innerHTML);
@@ -13,7 +13,7 @@
     function render(){
       const now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
       const left=Math.round((EXAM-today)/864e5);
-      const n=Math.max(3,left),U=units.length;
+      const n=Math.max(5,left),U=units.length;
       if(title)title.textContent=n+" 天讀書計畫（考試 "+(EXAM.getMonth()+1)+"/"+EXAM.getDate()+"）";
       const lab=i=>{const dd=new Date(today);dd.setDate(dd.getDate()+i);return (dd.getMonth()+1)+"/"+dd.getDate();};
       let h="";

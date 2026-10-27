@@ -73,3 +73,196 @@ ch5: [
  {q:"Work = (3,3,2). P1 has Need = (1,2,2) and Allocation = (2,0,0). After P1 finishes, Work = ?", o:["(4,5,4)","(5,3,2)","(2,1,0)","(1,2,2)"], a:1, e:"Need (1,2,2) ≤ (3,3,2) ✓ → Work + Allocation = (3,3,2) + (2,0,0) = (5,3,2)。"}
 ]
 };
+
+/* Added later: appended AFTER the 鑑別題 (HARD) in each chapter, so answers saved for earlier questions keep their positions. */
+const QUIZ_MORE={
+"ch1": [
+{
+"q": "Which program is described as \"the one program running at all times on the computer\"?",
+"o": [
+"The kernel",
+"The bootstrap program",
+"A system program",
+"An application program"
+],
+"a": 0,
+"e": "Kernel（核心）＝一直在執行的那一個程式；其他東西不是 system program 就是 application program。Bootstrap program 只在開機時執行。"
+},
+{
+"q": "The CPU looks for a piece of data in the cache and does not find it. What happens next?",
+"o": [
+"The data is copied from the slower storage into the cache, then used from the cache",
+"The CPU waits for a timer interrupt",
+"The data is used directly from the disk and never copied",
+"The whole cache is cleared and the program restarts"
+],
+"a": 0,
+"e": "Caching：先查 cache；有就直接用，沒有就先把資料從較慢的那一層複製進 cache，再從 cache 使用。"
+},
+{
+"q": "In a multiprocessor system where every CPU has its own cache, what must the hardware provide so that all caches hold the most recent value of a variable?",
+"o": [
+"Cache coherency",
+"Graceful degradation",
+"Dual-mode operation",
+"Direct memory access"
+],
+"a": 0,
+"e": "Multiprocessor 環境每顆 CPU 都有自己的 cache，硬體必須提供 cache coherency（快取一致性），讓每顆 CPU 的 cache 都是最新值。"
+},
+{
+"q": "Which statement describes asymmetric clustering?",
+"o": [
+"One machine stays in hot-standby mode and takes over only if another fails",
+"All nodes run applications and monitor each other",
+"Several cores on one chip share the same memory",
+"Each processor performs all tasks; no processor is the boss"
+],
+"a": 0,
+"e": "Asymmetric clustering：一台 hot-standby 待命，別台壞了才接手。Symmetric clustering：多個節點都在跑應用程式並互相監控。最後一個選項描述的是 SMP。"
+}
+],
+"ch2": [
+{
+"q": "Which queue holds the processes that reside in main memory and are ready and waiting to execute?",
+"o": [
+"Ready queue",
+"Job queue",
+"Device queue",
+"Message queue"
+],
+"a": 0,
+"e": "Job queue＝系統中所有 process；Ready queue＝在主記憶體、準備好等著執行；Device queue＝在等某個 I/O 裝置。"
+},
+{
+"q": "A process that spends most of its time doing computation and has a few very long CPU bursts is called:",
+"o": [
+"CPU-bound",
+"I/O-bound",
+"Cooperating",
+"Independent"
+],
+"a": 0,
+"e": "CPU-bound：大多時間在計算，少數很長的 CPU burst。I/O-bound：大多時間在做 I/O，很多短的 CPU burst。Long-term scheduler 要挑兩者的好組合（good process mix）。"
+},
+{
+"q": "Which is a property of indirect communication (mailboxes)?",
+"o": [
+"A link may be associated with many processes, and a pair of processes may share several links",
+"Each process must explicitly name the other process in send and receive",
+"Exactly one link exists between each pair of processes",
+"Messages never pass through the kernel"
+],
+"a": 0,
+"e": "Indirect communication 透過 mailbox（port）：一條 link 可以連很多 process，每對 process 可以有多條 link。要指名對方、每對恰好一條 link 是 direct communication。"
+},
+{
+"q": "With a zero-capacity message queue, what must the sender do?",
+"o": [
+"Wait until the receiver receives the message (rendezvous)",
+"Never wait",
+"Wait only when n messages are already in the queue",
+"Keep resending until the message is acknowledged"
+],
+"a": 0,
+"e": "Zero capacity：sender 一定要等 receiver（rendezvous）。Bounded capacity：最多 n 個，滿了才等。Unbounded capacity：sender 永遠不用等。"
+}
+],
+"ch3": [
+{
+"q": "Which scheduling criterion should be MAXIMIZED?",
+"o": [
+"Throughput",
+"Turnaround time",
+"Waiting time",
+"Response time"
+],
+"a": 0,
+"e": "要最大：CPU utilization、throughput。要最小：turnaround time、waiting time、response time。口訣「前兩個要大，後三個要小」。"
+},
+{
+"q": "How does earliest-deadline-first (EDF) scheduling assign priorities?",
+"o": [
+"Dynamically: the earlier the deadline, the higher the priority",
+"Statically: the shorter the period, the higher the priority",
+"By the predicted length of the next CPU burst",
+"By the number of shares each process owns"
+],
+"a": 0,
+"e": "EDF：依 deadline 動態決定，deadline 越早越優先。依 period 給固定優先權的是 RMS；依 shares 分配的是 proportional share scheduling。"
+}
+],
+"ch4": [
+{
+"q": "Which is an advantage of using a thread pool?",
+"o": [
+"Servicing a request with an existing thread is usually faster than creating a new thread",
+"Every request gets its own brand-new kernel thread",
+"It removes the need for any thread library",
+"It lets a single-core CPU run threads truly in parallel"
+],
+"a": 0,
+"e": "Thread pool 的好處：(1) 用現成的 thread 比新建快；(2) thread 數量被 pool 大小限制；(3) 把要做的工作和建立工作的機制分開。"
+},
+{
+"q": "In OpenMP, what does #pragma omp parallel do?",
+"o": [
+"Creates as many threads as there are processing cores",
+"Creates exactly one extra thread",
+"Moves the block to a dispatch queue",
+"Turns the block into a separate process"
+],
+"a": 0,
+"e": "#pragma omp parallel 建立跟核心數一樣多的 thread 平行執行那一段；#pragma omp parallel for 讓 for 迴圈平行。Dispatch queue 是 Grand Central Dispatch 的東西。"
+},
+{
+"q": "Which of the following is NOT one of the challenges of multicore programming?",
+"o": [
+"Choosing the time quantum",
+"Dividing activities",
+"Data dependency",
+"Testing and debugging"
+],
+"a": 0,
+"e": "五個挑戰：dividing activities、balance、data splitting、data dependency、testing and debugging。Time quantum 是 Round Robin 排班的參數。"
+}
+],
+"ch5": [
+{
+"q": "How is a wait-for graph obtained from a resource-allocation graph?",
+"o": [
+"Remove the resource nodes and draw Pi → Pj when Pi is waiting for a resource held by Pj",
+"Remove the process nodes and keep only the resource nodes",
+"Turn every claim edge into an assignment edge",
+"Add a dashed edge for every future request"
+],
+"a": 0,
+"e": "Wait-for graph：拿掉 resource 節點，「Pi 等的 resource 在 Pj 手上」就畫 Pi → Pj。每種 resource 只有一個 instance 時，有 cycle 就有 deadlock。"
+},
+{
+"q": "How does the deadlock-detection algorithm (several instances per resource type) differ from the Banker's safety algorithm?",
+"o": [
+"It uses Request instead of Need, and a process with zero Allocation starts with Finish = true",
+"It uses Max instead of Allocation",
+"It only works when each resource type has one instance",
+"It never adds anything to Work"
+],
+"a": 0,
+"e": "Detection 跟 safety algorithm 幾乎一樣，差別：用 Request（目前的請求）取代 Need；Allocation 全為 0 的 process 一開始就 Finish = true；最後 Finish = false 的就是 deadlocked。"
+},
+{
+"q": "What is a drawback of preventing hold-and-wait by requiring each process to request all its resources before it starts?",
+"o": [
+"Low resource utilization and possible starvation",
+"Circular wait becomes more likely",
+"All resource types must be numbered",
+"Deadlocks can no longer be detected"
+],
+"a": 0,
+"e": "破壞 hold and wait 的缺點：resource 使用率低、可能 starvation。替 resource 編號、依遞增順序申請是破壞 circular wait 的做法。"
+}
+]
+};
+
+/* Keyword rules for each chapter's 第二大題 (used when Gemini grading is not available). */
+const KEYS_MORE={"ch1w-1": [{"w": 2, "re": "trap|陷阱", "k": "trap"}], "ch1w-2": [{"w": 1, "re": "bootstrap|開機程式", "k": "bootstrap"}, {"w": 1, "re": "firmware|韌體|bios", "k": "firmware"}], "ch1w-3": [{"w": 2, "re": "interrupt vector|vector|中斷向量", "k": "interrupt vector"}], "ch1w-4": [{"w": 1, "re": "mode|模式", "k": "mode bit"}, {"w": 1, "re": "privileged|特權", "k": "privileged"}], "ch1w-5": [{"w": 2, "re": "driver|驅動", "k": "device driver"}], "ch1w-6": [{"w": 2, "re": "intermediary|between.{0,30}(user|hardware)|中間人|介於|之間", "k": "intermediary between user and hardware"}, {"w": 1, "re": "execute|run|執行", "k": "execute user programs"}, {"w": 1, "re": "convenien|easy to use|方便", "k": "convenient to use"}, {"w": 1, "re": "efficien|有效率|效率", "k": "use hardware efficiently"}], "ch1w-7": [{"w": 1, "re": "high.?speed|高速", "k": "high-speed I/O"}, {"w": 1.5, "re": "direct|直接", "k": "directly to main memory"}, {"w": 1.5, "re": "without.{0,8}cpu|cpu.{0,8}(不|沒|免)|(不|沒|免).{0,8}cpu|cpu intervention|不經過", "k": "without CPU intervention"}, {"w": 1, "re": "one interrupt|per block|一次中斷|每.{0,2}(塊|block)", "k": "one interrupt per block"}], "ch1w-8": [{"w": 1, "re": "graceful|降級", "k": "graceful degradation"}, {"w": 1.5, "re": "proportional|surviv|slower|變慢|效能下降|剩下", "k": "service proportional to surviving hardware"}, {"w": 1, "re": "fault.?toleran|容錯", "k": "fault tolerance"}, {"w": 1.5, "re": "redundan|duplicat|single component|備援|不受影響|照常|detect|偵測", "k": "continues despite any single failure (redundancy)"}], "ch1w-9": [{"w": 1, "re": "multiprogram|多元程式", "k": "multiprogramming"}, {"w": 1.5, "re": "always.{0,20}(execute|busy|one)|wait.{0,30}switch|等.{0,10}(換|切)|永遠有事|cpu.{0,6}忙", "k": "switches when a job waits; CPU always busy"}, {"w": 1, "re": "timeshar|multitask|分時", "k": "timesharing"}, {"w": 1.5, "re": "interact|response|1 ?second|1 ?秒|互動|回應", "k": "users interact; response time < 1 s"}], "ch1w-10": [{"w": 1, "re": "protect|保護", "k": "protect the OS"}, {"w": 1, "re": "privileged|mode bit|kernel mode|特權|核心模式", "k": "mode bit / privileged instructions"}, {"w": 1, "re": "infinite|hog|霸佔|無窮", "k": "prevents infinite loop / hogging"}, {"w": 1, "re": "counter|decrement|遞減|倒數", "k": "counter decremented"}, {"w": 1, "re": "interrupt|regain|control|中斷|拿回", "k": "interrupt gives control back to OS"}], "ch1w-11": [{"w": 1.5, "re": "cop|複製|暫時", "k": "copy into faster storage"}, {"w": 1.5, "re": "check.{0,15}first|first.{0,10}check|先查|先看|not.{0,10}(there|found)|沒有", "k": "check cache first; copy on miss"}, {"w": 1, "re": "size|大小", "k": "cache size"}, {"w": 1, "re": "replace|取代|丟|替換", "k": "replacement policy"}], "ch1w-12": [{"w": 1.25, "re": "creat|delet|建立|刪除", "k": "create/delete processes"}, {"w": 1.25, "re": "suspend|resum|暫停|恢復", "k": "suspend/resume"}, {"w": 1.25, "re": "synchron|同步", "k": "synchronization"}, {"w": 1.25, "re": "communicat|deadlock|通訊|死結", "k": "communication / deadlock handling"}], "ch1w-13": [{"w": 1.25, "re": "boss|master|specific task|主從|分派", "k": "AMP: boss/specific tasks"}, {"w": 1.25, "re": "all tasks|peer|equal|地位相同|都做", "k": "SMP: all processors peers"}, {"w": 1.25, "re": "hot.?standby|standby|待命|接手", "k": "asymmetric clustering: hot standby"}, {"w": 1.25, "re": "monitor|each other|互相監控|都在跑", "k": "symmetric clustering: all run & monitor"}], "ch2w-1": [{"w": 1, "re": "context.?switch|內容切換|上下文", "k": "context switch"}, {"w": 1, "re": "pcb|process control block|task control block|行程控制", "k": "PCB"}], "ch2w-2": [{"w": 1, "re": "long|長期|job", "k": "long-term"}, {"w": 1, "re": "mid|medium|中期", "k": "mid-term"}], "ch2w-3": [{"w": 1, "re": "fork", "k": "fork()"}, {"w": 1, "re": "exec", "k": "exec()"}], "ch2w-4": [{"w": 1, "re": "in\\s*={1,2}\\s*out", "k": "in == out"}, {"w": 1, "re": "\\(?\\s*in\\s*\\+\\s*1\\s*\\)?\\s*(%|mod)", "k": "(in+1) % BUFFER_SIZE == out"}], "ch2w-5": [{"w": 2, "re": "mailbox|信箱|port", "k": "mailbox"}], "ch2w-6": [{"w": 0.5, "re": "\\bnew\\b|新建", "k": "new"}, {"w": 0.5, "re": "ready|就緒", "k": "ready"}, {"w": 0.5, "re": "running|執行", "k": "running"}, {"w": 0.5, "re": "waiting|等待", "k": "waiting"}, {"w": 0.5, "re": "terminat|結束|終止", "k": "terminated"}, {"w": 0.5, "re": "admit", "k": "admitted"}, {"w": 1, "re": "dispatch|派送|分派", "k": "scheduler dispatch"}, {"w": 0.5, "re": "interrupt|中斷", "k": "interrupt"}, {"w": 0.5, "re": "event wait|i/o.{0,6}wait|等.{0,3}i/o", "k": "I/O or event wait"}, {"w": 0.5, "re": "complet|完成", "k": "I/O or event completion"}, {"w": 0.5, "re": "exit|離開", "k": "exit"}], "ch2w-7": [{"w": 0.7, "re": "state|狀態", "k": "process state"}, {"w": 0.7, "re": "program counter|\\bpc\\b|程式計數", "k": "program counter"}, {"w": 0.7, "re": "register|暫存", "k": "CPU registers"}, {"w": 0.7, "re": "schedul|priority|排班|優先", "k": "CPU-scheduling info"}, {"w": 0.7, "re": "memory|記憶體", "k": "memory-management info"}, {"w": 0.75, "re": "account|帳", "k": "accounting info"}, {"w": 0.75, "re": "i/o|輸入|輸出", "k": "I/O status info"}], "ch2w-8": [{"w": 1, "re": "long|長期", "k": "long-term"}, {"w": 1, "re": "ready queue|degree|就緒|程度", "k": "into ready queue / degree of multiprogramming"}, {"w": 1, "re": "short|cpu scheduler|短期", "k": "short-term"}, {"w": 1, "re": "millisecond|frequent|fast|毫秒|頻繁|快", "k": "very frequent, must be fast"}, {"w": 1, "re": "mid|medium|中期", "k": "mid-term"}, {"w": 1, "re": "swap|置換|換出|disk|硬碟", "k": "swapping"}], "ch2w-9": [{"w": 0.75, "re": "information|資訊", "k": "information sharing"}, {"w": 0.75, "re": "speed|加速|加快", "k": "computation speedup"}, {"w": 0.75, "re": "modular|模組", "k": "modularity"}, {"w": 0.75, "re": "convenien|方便", "k": "convenience"}, {"w": 1, "re": "shared memory|共享記憶體|共用記憶體", "k": "shared memory"}, {"w": 1, "re": "message|訊息", "k": "message passing"}], "ch2w-10": [{"w": 1, "re": "shar|共享|共用", "k": "shared region"}, {"w": 1, "re": "kernel|核心", "k": "message passing goes through kernel"}, {"w": 1, "re": "fast|faster|快", "k": "shared memory faster"}, {"w": 1, "re": "large|大量", "k": "large data → shared memory"}, {"w": 1, "re": "small|distribut|easier|少量|分散|容易", "k": "small data / distributed → message passing"}], "ch2w-11": [{"w": 1.5, "re": "in\\s*={1,2}\\s*out|empty|空", "k": "in == out means empty"}, {"w": 2, "re": "distinguish|tell.{0,10}apart|same|wrap|分不出|分辨|一樣|繞", "k": "full would look the same as empty"}, {"w": 1.5, "re": "\\+\\s*1|one slot|空一格|留一格|empty slot", "k": "one slot left empty"}], "ch2w-12": [{"w": 1.5, "re": "zero|零", "k": "zero capacity: sender waits"}, {"w": 1.5, "re": "bounded|finite|有限", "k": "bounded: wait when full"}, {"w": 1, "re": "unbounded|infinite|無限|never wait|不用等", "k": "unbounded: never waits"}], "ch2w-13": [{"w": 1, "re": "text|code|程式碼", "k": "text = code"}, {"w": 1, "re": "global|全域", "k": "data = globals"}, {"w": 1, "re": "heap|dynamic|動態|malloc", "k": "heap = dynamic"}, {"w": 1, "re": "stack|local|區域|parameter|參數", "k": "stack = locals/params"}], "ch3w-1": [{"w": 1, "re": "complet.{0,25}arriv|完成.{0,10}到達|finish.{0,25}arriv", "k": "completion − arrival"}, {"w": 1, "re": "burst|執行時間", "k": "burst time"}], "ch3w-2": [{"w": 2, "re": "convoy|護航", "k": "convoy"}], "ch3w-3": [{"w": 1, "re": "\\(?\\s*n\\s*[-−]\\s*1\\s*\\)?\\s*[*×·]?\\s*q", "k": "(n−1)q"}, {"w": 1, "re": "fcfs|fifo|first.?come|先到先", "k": "FCFS"}], "ch3w-4": [{"w": 1, "re": "dispatcher|分派器", "k": "dispatcher"}, {"w": 1, "re": "latency|延遲", "k": "dispatch latency"}], "ch3w-5": [{"w": 1, "re": "1\\s*/\\s*(p|period)|inverse|倒數", "k": "1/period"}, {"w": 1, "re": "deadline|截止", "k": "deadline"}], "ch3w-6": [{"w": 1, "re": "running.{0,10}waiting|執行.{0,6}等待", "k": "running → waiting"}, {"w": 0.5, "re": "running.{0,10}ready", "k": "running → ready"}, {"w": 0.5, "re": "waiting.{0,10}ready", "k": "waiting → ready"}, {"w": 1, "re": "terminat|結束", "k": "terminates"}, {"w": 1, "re": "1.{0,6}4|nonpreempt|不可搶", "k": "1 and 4 nonpreemptive"}], "ch3w-7": [{"w": 1, "re": "utiliz|使用率", "k": "CPU utilization (max)"}, {"w": 1, "re": "throughput|吞吐", "k": "throughput (max)"}, {"w": 1, "re": "turnaround|周轉", "k": "turnaround (min)"}, {"w": 1, "re": "waiting|等待", "k": "waiting (min)"}, {"w": 1, "re": "response|回應", "k": "response (min)"}], "ch3w-8": [{"w": 2, "re": "p1.{0,6}0.{0,4}7.{0,20}p3|0\\s*[-–~]\\s*7.{0,10}7\\s*[-–~]\\s*8", "k": "SJF order P1, P3, P2, P4"}, {"w": 3, "re": "(average|avg|平均)?[^\\d]{0,12}(?<![\\d.])4(?![\\d.])|16\\s*/\\s*4", "k": "SJF average = 4"}, {"w": 2, "re": "2\\s*[-–~]\\s*4.{0,30}4\\s*[-–~]\\s*5|p2.{0,10}preempt|搶", "k": "SRTF: P2 preempts P1 at 2"}, {"w": 3, "re": "(?<![\\d.])3(?![\\d.])|12\\s*/\\s*4", "k": "SRTF average = 3"}], "ch3w-9": [{"w": 2, "re": "0\\s*[-–~]\\s*2.{0,15}2\\s*[-–~]\\s*4.{0,15}4\\s*[-–~]\\s*5|p1.{0,4}p2.{0,4}p3.{0,4}p1.{0,4}p2.{0,4}p1", "k": "Gantt chart"}, {"w": 1, "re": "=\\s*4(?![\\d.]).{0,40}=\\s*5(?![\\d.])|p1\\D{0,4}4\\D{0,6}p2\\D{0,4}5|4\\s*,\\s*5\\s*,\\s*4", "k": "waiting 4, 5, 4"}, {"w": 3, "re": "4\\.3|13\\s*/\\s*3", "k": "average ≈ 4.33"}], "ch3w-10": [{"w": 1.5, "re": "(?<![\\d.])8(?![\\d.])", "k": "τ1 = 8"}, {"w": 1.5, "re": "(?<![\\d.])6(?![\\d.])", "k": "τ2 = 6"}, {"w": 1, "re": "recent.{0,20}not|不算|不管|舊", "k": "α = 0: history ignored"}, {"w": 1, "re": "last|only.{0,20}actual|上一次|最近一次|只看", "k": "α = 1: only last burst"}], "ch3w-11": [{"w": 1.5, "re": "permanent|fixed|stay|固定|永久", "k": "MLQ: permanent queue"}, {"w": 1.5, "re": "move|移動|升|降", "k": "MLFQ: can move"}, {"w": 2, "re": "(?<![\\d.])6(?![\\d.])|8.{0,20}16.{0,30}q2", "k": "30 ms: 8 in Q0, 16 in Q1, 6 in Q2"}], "ch3w-12": [{"w": 1.5, "re": "never|indefinite|永遠|一直輪不到|無限", "k": "low priority may never run"}, {"w": 1.5, "re": "sjf|srtf|priority|shortest|優先", "k": "SJF / priority"}, {"w": 2, "re": "aging|老化", "k": "aging"}], "ch4w-1": [{"w": 0.7, "re": "register|暫存", "k": "registers"}, {"w": 0.7, "re": "stack|堆疊", "k": "stack"}, {"w": 0.6, "re": "program counter|\\bpc\\b|程式計數", "k": "program counter"}], "ch4w-2": [{"w": 1, "re": "1\\s*/\\s*\\(\\s*s\\s*\\+", "k": "1/(S + (1−S)/N)"}, {"w": 1, "re": "1\\s*/\\s*s(?![\\s]*\\+)", "k": "1/S"}], "ch4w-3": [{"w": 1, "re": "data|資料", "k": "data"}, {"w": 1, "re": "task|工作|任務", "k": "task"}], "ch4w-4": [{"w": 1, "re": "many.?to.?one|m\\s*:\\s*1|多對一", "k": "many-to-one"}, {"w": 1, "re": "one.?to.?one|1\\s*:\\s*1|一對一", "k": "one-to-one"}], "ch4w-5": [{"w": 1, "re": "specification|規格|規範", "k": "specification"}, {"w": 1, "re": "implementation|實作", "k": "implementation"}], "ch4w-6": [{"w": 1.25, "re": "respons|反應|回應", "k": "responsiveness"}, {"w": 1.25, "re": "shar|共享|共用", "k": "resource sharing"}, {"w": 1.25, "re": "econom|cheap|經濟|便宜|省", "k": "economy"}, {"w": 1.25, "re": "scal|multiprocessor|擴充|擴展|多處理器", "k": "scalability"}], "ch4w-7": [{"w": 1.5, "re": "simultaneous|same time|同時|真的", "k": "parallelism: simultaneously"}, {"w": 1.5, "re": "progress|interleav|輪流|進展", "k": "concurrency: making progress / interleaved"}, {"w": 2, "re": "single.?core|one core|單核|yes|可以", "k": "yes, on a single core"}], "ch4w-8": [{"w": 1, "re": "0\\.1(?!\\d)|10\\s*%", "k": "S = 0.1"}, {"w": 1, "re": "0\\.325|0\\.1\\s*\\+\\s*0\\.225", "k": "1/(0.1 + 0.225)"}, {"w": 2, "re": "3\\.0[78]|40\\s*/\\s*13", "k": "≈ 3.08"}, {"w": 2, "re": "(?<![\\d.])10(?!\\d|\\.\\d|%)", "k": "limit = 10"}], "ch4w-9": [{"w": 1, "re": "many.?to.?one|m\\s*:\\s*1|多對一", "k": "many-to-one"}, {"w": 1, "re": "block|parallel|卡|平行", "k": "M:1 blocks all / no parallelism"}, {"w": 1, "re": "one.?to.?one|1\\s*:\\s*1|一對一", "k": "one-to-one"}, {"w": 1, "re": "overhead|restrict|limit|負擔|限制", "k": "1:1 overhead / limited number"}, {"w": 1, "re": "many.?to.?many|m\\s*:\\s*[mn]|多對多", "k": "many-to-many"}, {"w": 1, "re": "sufficient|enough|足夠", "k": "M:M sufficient kernel threads"}, {"w": 1, "re": "two.?level|兩層|二層", "k": "two-level"}, {"w": 1, "re": "bound|bind|綁", "k": "two-level allows binding"}], "ch4w-10": [{"w": 1, "re": "dividing|activit|切分工作|分工", "k": "dividing activities"}, {"w": 1, "re": "balanc|平衡", "k": "balance"}, {"w": 1, "re": "split|切分資料|分割", "k": "data splitting"}, {"w": 1, "re": "dependen|相依", "k": "data dependency"}, {"w": 1, "re": "test|debug|測試|除錯", "k": "testing and debugging"}], "ch4w-11": [{"w": 1, "re": "compiler|run.?time|library|編譯器|函式庫", "k": "done by compilers / run-time libraries"}, {"w": 1, "re": "pool|執行緒池", "k": "thread pools"}, {"w": 0.5, "re": "openmp", "k": "OpenMP"}, {"w": 0.5, "re": "grand central|gcd", "k": "GCD"}, {"w": 1, "re": "faster|existing|現成|較快|比較快", "k": "existing thread is faster"}, {"w": 1, "re": "bound|limit|number|數量|限制", "k": "number of threads bounded"}], "ch4w-12": [{"w": 1, "re": "default|attribute|屬性|預設", "k": "attr_init: default attributes"}, {"w": 1, "re": "creat|建立|runner", "k": "create runs runner"}, {"w": 1.5, "re": "wait|等", "k": "join waits"}, {"w": 1, "re": "exit|end|terminat|結束", "k": "exit ends thread"}, {"w": 1.5, "re": "global|shar|全域|共用|共享", "k": "sum is global / shared data"}], "ch5w-1": [{"w": 0.7, "re": "request|申請|請求", "k": "request"}, {"w": 0.6, "re": "\\buse|使用", "k": "use"}, {"w": 0.7, "re": "release|釋放", "k": "release"}], "ch5w-2": [{"w": 0.7, "re": "request|請求", "k": "request"}, {"w": 0.7, "re": "assign|分配", "k": "assignment"}, {"w": 0.6, "re": "claim|宣告", "k": "claim"}], "ch5w-3": [{"w": 1, "re": "no deadlock|不會.{0,4}死結|沒有.{0,4}死結", "k": "safe → no deadlock"}, {"w": 1, "re": "possib|\\bmay\\b|might|可能", "k": "unsafe → possibility"}], "ch5w-4": [{"w": 1, "re": "max\\s*[-−]\\s*alloc", "k": "Max − Allocation"}, {"w": 1, "re": "\\+\\s*alloc|allocation$|^\\s*alloc|alloc[a-z]*\\s*$|work.{0,15}alloc|allocation|分配", "k": "Allocation"}], "ch5w-5": [{"w": 1, "re": "wait.?for|等待圖", "k": "wait-for graph"}, {"w": 1, "re": "n\\s*(\\^|\\*\\*)?\\s*2|n²|n\\s*平方", "k": "n²"}], "ch5w-6": [{"w": 1.5, "re": "mutual.?exclusion|互斥", "k": "mutual exclusion"}, {"w": 1.5, "re": "hold.{0,6}wait|持有.{0,3}等待|佔有.{0,3}等待", "k": "hold and wait"}, {"w": 1.5, "re": "no.?preempt|non.?preempt|不可(搶|剝)|不能搶", "k": "no preemption"}, {"w": 1.5, "re": "circular|循環|環狀", "k": "circular wait"}], "ch5w-7": [{"w": 1, "re": "prevent|avoid|預防|避免", "k": "prevention / avoidance"}, {"w": 1, "re": "detect|recover|偵測|恢復|回復", "k": "detection and recovery"}, {"w": 1, "re": "ignore|pretend|不理|忽略|假裝", "k": "ignore"}, {"w": 1, "re": "most.{0,60}(ignore|third|3)|(ignore|third|第三).{0,40}most|大部分|多數", "k": "most OSes ignore"}], "ch5w-8": [{"w": 1.5, "re": "all.{0,20}(before|start|begin)|一次.{0,6}(要齊|全部|拿)|開始前|holds? none|沒有.{0,6}才", "k": "hold & wait: all at once / only when holding none"}, {"w": 1, "re": "utiliz|starv|使用率|飢餓", "k": "drawback: low utilization / starvation"}, {"w": 1.5, "re": "release.{0,20}(all|hold)|放掉|釋放.{0,6}(全部|所有)", "k": "no preemption: release all held"}, {"w": 2, "re": "order|number|編號|順序|遞增", "k": "circular wait: total ordering (most practical)"}], "ch5w-9": [{"w": 1.5, "re": "2\\s*[, ]\\s*1\\s*[, ]\\s*3", "k": "Available = (2,1,3)"}, {"w": 0.5, "re": "3\\s*[, ]\\s*2\\s*[, ]\\s*2", "k": "Need P0 (3,2,2)"}, {"w": 0.5, "re": "1\\s*[, ]\\s*2\\s*[, ]\\s*1", "k": "Need P1 (1,2,1)"}, {"w": 0.5, "re": "4\\s*[, ]\\s*1\\s*[, ]\\s*2", "k": "Need P2 (4,1,2)"}, {"w": 0.5, "re": "2\\s*[, ]\\s*1\\s*[, ]\\s*1", "k": "Need P3 (2,1,1)"}, {"w": 0.5, "re": "2\\s*[, ]\\s*1\\s*[, ]\\s*2", "k": "Need P4 (2,1,2)"}, {"w": 1, "re": "safe|安全", "k": "safe"}, {"w": 3, "re": "p[34](?:\\s*(?:,|→|->|>|-|、|\\s)\\s*p\\d){4}", "k": "a valid safe sequence"}, {"w": 1, "re": "1\\s*[, ]\\s*1\\s*[, ]\\s*2", "k": "new Available (1,1,2)"}, {"w": 3, "re": "unsafe|cannot|can't|not.{0,6}grant|wait|不安全|不能|不可|要等|等待", "k": "(c) unsafe → must wait"}], "ch5w-10": [{"w": 1, "re": "p3(?:\\s*(?:,|→|->|>|-|、|\\s)\\s*p\\d){3}", "k": "sequence starting with P3"}, {"w": 2, "re": "no deadlock|not deadlock|沒有.{0,4}死結|不會.{0,4}死結|無死結", "k": "(a) no deadlock"}, {"w": 1, "re": "2\\s*[, ]\\s*2\\s*[, ]\\s*2", "k": "Work ends at (2,2,2)"}, {"w": 3, "re": "all|p0.{0,10}p1.{0,10}p2.{0,10}p3|全部|都", "k": "(b) P0–P3 all deadlocked"}], "ch5w-11": [{"w": 1, "re": "abort|terminat|kill|終止", "k": "process termination"}, {"w": 1, "re": "one at a time|一次.{0,4}一個|逐一|all|全部", "k": "abort all / one at a time"}, {"w": 1, "re": "victim|犧牲", "k": "selecting a victim"}, {"w": 1, "re": "rollback|roll back|回滾|回復", "k": "rollback"}, {"w": 1, "re": "starv|飢餓", "k": "starvation"}]};

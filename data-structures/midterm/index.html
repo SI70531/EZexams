@@ -1520,7 +1520,7 @@ document.querySelectorAll(".exam").forEach(ex=>{
       });
       save();upd();
       stat.textContent=n?"批改完成。":"批改結果讀取失敗，請再按一次。";
-    }catch(e){if(window.EZAI&&EZAI.isOwn(SAMPLE)){kwGrade(list);stat.textContent=EZAI.errText(e)+"這次先用關鍵字比對。";return;}SAMPLE=null;setGradingMode();kwGrade(list);stat.textContent="批改完成（關鍵字比對）。";}
+    }catch(e){if(window.EZAI&&EZAI.isOwn(SAMPLE)){/* keep grades Gemini already gave for unchanged answers */kwGrade(list.filter(it=>!(st.grade[it.id]&&st.grade[it.id].ai&&st.grade[it.id].ans===it.ans)));stat.textContent=EZAI.errText(e)+"這次先用關鍵字比對。";return;}SAMPLE=null;setGradingMode();kwGrade(list);stat.textContent="批改完成（關鍵字比對）。";}
     finally{btns.forEach(b=>b.disabled=false);}
   }
   qs.forEach(q=>{
@@ -1547,9 +1547,9 @@ document.querySelectorAll(".exam").forEach(ex=>{
   });
   gAll.addEventListener("click",()=>{
     const list=qs.map(q=>{st.ans[q.id]=q.querySelector("textarea").value;return qInfo(q);})
-      .filter(it=>it.ans&&!(st.grade[it.id]&&st.grade[it.id].ans===it.ans));
+      .filter(it=>it.ans); /* re-grade everything answered, including questions graded before */
     save();
-    if(!list.length){gMsg.textContent="沒有需要批改的新答案。";return;}
+    if(!list.length){gMsg.textContent="還沒有作答。";return;}
     grade(list,[gAll,...qs.map(q=>q.querySelector(".grade"))],gMsg);
   });
   EX[id]={upd};

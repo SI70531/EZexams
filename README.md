@@ -21,6 +21,7 @@ assets/
   ezai.js       free AI grading with a Gemini API key
   ezplan.js     N-day study plan
   ezwrong.js    wrong-answer area
+  ezsearch.js   keyword search in the top bar of every subject page (/ or Ctrl+K)
   icon*, og.png favicon and link-preview image
 <subject>/<exam>/
   index.html    notes, exams, page-specific styles and code

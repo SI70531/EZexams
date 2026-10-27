@@ -17,12 +17,20 @@
 
   async function gh(path,opt={}){
     const tok=get(LS.tok);if(!tok)throw Object.assign(new Error("no token"),{code:"off"});
-    const r=await fetch(API+path,Object.assign({},opt,{headers:Object.assign({"Authorization":"Bearer "+tok,"Accept":"application/vnd.github+json","Content-Type":"application/json"},opt.headers||{})}));
-    if(r.status===401)throw Object.assign(new Error("bad token"),{code:"auth"});
-    if(r.status===403||r.status===429)throw Object.assign(new Error("rate"),{code:"rate"});
-    if(r.status===404)throw Object.assign(new Error("not found"),{code:"404"});
-    if(!r.ok)throw Object.assign(new Error("http "+r.status),{code:"http"});
-    return r.status===204?null:r.json();
+    let r;
+    try{r=await fetch(API+path,Object.assign({},opt,{headers:Object.assign({"Authorization":"Bearer "+tok,"Accept":"application/vnd.github+json","Content-Type":"application/json"},opt.headers||{})}));}
+    catch(e){throw Object.assign(new Error(String(e&&e.message||e)),{code:"net"});}
+    if(r.ok)return r.status===204?null:r.json();
+    /* keep GitHub's own reason so the chip can say what went wrong */
+    let why="";try{const b=await r.json();why=b&&b.message||"";}catch(e){}
+    const wait=+r.headers.get("retry-after")||0,left=r.headers.get("x-ratelimit-remaining"),reset=+r.headers.get("x-ratelimit-reset")||0;
+    const err=(code)=>Object.assign(new Error(why||("HTTP "+r.status)),{code,status:r.status,why,wait:wait?wait*1000:(left==="0"&&reset?Math.max(0,reset*1000-Date.now()):0)});
+    if(r.status===401)throw err("auth");
+    if(r.status===429||(r.status===403&&(/rate limit|abuse/i.test(why)||left==="0")))throw err("rate");
+    if(r.status===403)throw err("scope");   /* the token works but may not use gists */
+    if(r.status===404)throw err("404");
+    if(r.status===422&&/too large|size/i.test(why))throw err("big");
+    throw err("http");
   }
   async function gistId(){
     let id=get(LS.gist);if(id)return id;
@@ -45,11 +53,26 @@
     return f.content;
   }
   function errMsg(e){
-    return e&&e.code==="auth"?"金鑰無效或過期，請到首頁重新連結。":e&&e.code==="rate"?"GitHub 暫時拒絕（次數太多），稍後會再試。":"連不上 GitHub，等有網路會再同步。";
+    const c=e&&e.code,why=e&&e.why?"（GitHub："+e.why+"）":"";
+    if(c==="auth")return "金鑰無效或過期，請到首頁重新連結。";
+    if(c==="scope")return "這把金鑰沒有 gist 權限"+why+"。請到首頁換一把有勾 gist 的金鑰。";
+    if(c==="rate")return "GitHub 暫時限制次數"+why+"，會自動再試。";
+    if(c==="big")return "進度資料太大，GitHub 拒收"+why+"。";
+    if(c==="net")return "連不上 GitHub（"+(e.message||"網路中斷")+"），等有網路會自動再試。";
+    return "同步失敗"+(e&&e.status?"（HTTP "+e.status+"）":"")+why+"，會自動再試。";
   }
 
   const subjects={};// key -> {merge, timer}
+  /* after a failure (offline, GitHub busy or rate-limited) try again by itself: 30 s, 1, 2, 4 … up to 15 minutes */
+  let retryT=null,retryN=0;
+  function retryLater(key,e){
+    if(!e||e.code==="auth"||e.code==="scope"||e.code==="off")return;
+    clearTimeout(retryT);const ms=Math.max(e.wait||0,Math.min(15*60000,30000*Math.pow(2,retryN++)));
+    retryT=setTimeout(()=>{retryT=null;pull(key,{reloadOnChange:false});},ms);
+  }
+  const okNow=()=>{retryN=0;clearTimeout(retryT);retryT=null;};
   const metaKey=k=>"ezsync-at:"+k;
+  const lastPush={};
 
   async function pull(key,{reloadOnChange=true}={}){
     const sub=subjects[key];if(!sub||!get(LS.tok))return;
@@ -69,15 +92,15 @@
         const changedFromRemote=sub.sig(merged)!==sub.sig(remote.data);
         if(changedFromRemote){set(metaKey(key),String(Date.now()));await push(key);}
         set(LS.last,String(Date.now()));
-        emit("ok","已同步");
+        emit("ok","已同步");okNow();
         if(reloadOnChange&&(!localStr||sub.sig(merged)!==sub.sig(JSON.parse(localStr)))){
           const n=+(sessionStorage.getItem("ezsync-reload")||0);
           if(n<2){sessionStorage.setItem("ezsync-reload",String(n+1));location.reload();return;}
         }
         sessionStorage.removeItem("ezsync-reload");
       }else if(localAt>(remote.updatedAt||0)){await push(key);}
-      else{set(LS.last,String(Date.now()));emit("ok","已同步");sessionStorage.removeItem("ezsync-reload");}
-    }catch(e){emit(e.code==="off"?"off":"err",errMsg(e),e.code);}
+      else{set(LS.last,String(Date.now()));emit("ok","已同步");okNow();sessionStorage.removeItem("ezsync-reload");}
+    }catch(e){emit(e.code==="off"?"off":"err",errMsg(e),e.code);try{console.warn("[EZSync] pull",key,e);}catch(_){}retryLater(key,e);}
   }
   async function push(key,{keepalive=false}={}){
     if(!get(LS.tok))return;
@@ -86,9 +109,12 @@
     emit("sync","同步中…");
     try{
       const id=await gistId();
-      await gh("/gists/"+id,{method:"PATCH",keepalive,body:JSON.stringify({files:{[key+".json"]:{content:JSON.stringify({updatedAt:at,data:JSON.parse(data)})}}})});
-      set(LS.last,String(Date.now()));emit("ok","已同步");
-    }catch(e){emit(e.code==="off"?"off":"err",errMsg(e),e.code);}
+      const body=JSON.stringify({files:{[key+".json"]:{content:JSON.stringify({updatedAt:at,data:JSON.parse(data)})}}});
+      /* the browser refuses a keepalive request over 64 KB, so a big progress file is sent normally */
+      await gh("/gists/"+id,{method:"PATCH",keepalive:keepalive&&body.length<60000,body});
+      lastPush[key]=Date.now();
+      set(LS.last,String(Date.now()));emit("ok","已同步");okNow();
+    }catch(e){emit(e.code==="off"?"off":"err",errMsg(e),e.code);try{console.warn("[EZSync] push",key,e);}catch(_){}retryLater(key,e);}
   }
 
   window.EZSync={
@@ -103,7 +129,11 @@
       set(metaKey(key),String(Date.now()));
       const sub=subjects[key];if(!sub||!get(LS.tok))return;
       clearTimeout(sub.timer);emit("dirty","有變更，準備同步…");
-      sub.timer=setTimeout(()=>{sub.timer=null;push(key);},2000);
+      /* every upload is a new gist revision and GitHub limits those per hour, so wait until you pause
+         (8 s without changes) and upload at most about twice a minute; leaving the page uploads right away */
+      if(!sub.dirtyAt)sub.dirtyAt=Date.now();
+      const gap=Math.min(Math.max(8000,(lastPush[key]||0)+30000-Date.now()),Math.max(0,sub.dirtyAt+45000-Date.now()));   /* never wait more than 45 s */
+      sub.timer=setTimeout(()=>{sub.timer=null;sub.dirtyAt=0;push(key);},gap);
     },
     async connect(token){
       token=(token||"").trim();if(!token)throw Object.assign(new Error("empty"),{code:"empty"});

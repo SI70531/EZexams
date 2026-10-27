@@ -1096,7 +1096,7 @@ Object.keys(MOCK).forEach(renderExam);
 /* ---------- home ---------- */
 /* 章末練習 in the progress table: jump straight to the chapter's multiple choice */
 document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-goend]");if(!b)return;const c=b.dataset.goend;
-  setTimeout(()=>{const t=document.querySelector("#"+c+" .quiz");if(t){t.scrollIntoView({block:"start"});scrollBy(0,-76);}},80);});
+  setTimeout(()=>{const todo=window.EZtodo&&EZtodo(c);if(todo){EZglow(todo);return;}const t=document.querySelector("#"+c+" .quiz");if(t){t.scrollIntoView({block:"start"});scrollBy(0,-76);}},80);});
 function renderHome(){
   const t=document.getElementById("progTable");
   let html='<tr><th class="l">項目</th><th>狀態</th></tr>';let next=null;
@@ -1301,7 +1301,7 @@ document.querySelectorAll(".ilab input[type=range]").forEach(r=>{const b=r.paren
 
 </script>
 <script>window.EZ_MC_PTS=100; /* economics chapters are multiple choice only */</script>
-<script src="../../assets/ezquiz.js?v=a794826c"></script>
+<script src="../../assets/ezquiz.js?v=65630241"></script>
 <script src="../../assets/ezwrong.js?v=cec64b0b"></script>
 <script src="../../assets/ezsearch.js?v=e46ca0fc"></script>
 <script src="../../assets/ezshuffle.js?v=dec6cd37"></script>

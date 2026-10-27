@@ -144,7 +144,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;margin-left:10px;font-size
       const pts=q.querySelector(".pts");
       /* written questions can also sit inside a chapter tab (a chapter's 問答／填充 block) */
       const vw=q.closest(".view"),vid=vw?vw.id:id,ch=CH.includes(vid)?vid:null;
-      const where=NAME[id]||(ch?(NAME[ch]||ch)+" 問答／填充":id);
+      const where=NAME[id]||(ch?(NAME[ch]||ch)+" 問答":id);
       out.push({m:match({q:qt,e:ref?ref.textContent:"",sec:q.dataset.sec},ch),ch,src:where+" "+(pts?pts.textContent:q.id),go:vid,qid:q.id,q:qt.slice(0,700),yours:"得 "+g.score+" / "+q.dataset.pts+" 分",right:"看原題的參考答案",e:g.feedback||""});
     });
     return out;

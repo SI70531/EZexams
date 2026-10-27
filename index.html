@@ -271,11 +271,11 @@ footer::before{content:"// ";}
         <ol class="steps">
           <li>用 Google 帳號打開 <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio 的 API 金鑰頁</a>。</li>
           <li>按 <b>Create API key</b>（第一次會請你同意條款、選一個專案，選預設的就好）。</li>
-          <li>複製那串 <code>AIza</code> 開頭的金鑰，貼到下面按「啟用」。每台裝置要各貼一次。</li>
+          <li>按 <b>Copy key</b> 複製金鑰（<code>AQ.</code> 或 <code>AIza</code> 開頭都可以），貼到下面按「啟用」。每台裝置要各貼一次。</li>
         </ol>
         <form class="tokrow" id="aiForm" autocomplete="off">
           <label for="aiInput" class="sr">Gemini 金鑰</label>
-          <input id="aiInput" type="password" placeholder="AIza…" spellcheck="false">
+          <input id="aiInput" type="password" placeholder="AQ.… 或 AIza…" spellcheck="false">
           <button class="btn primary" type="submit" id="aiBtn">啟用</button>
         </form>
         <p class="small">金鑰只存在這台裝置的瀏覽器，不會同步到 Gist。免費額度大約每分鐘 10 次、每天上千次，一次「批改全部」只算 1 次。注意：免費版 Google 可能拿送出的內容改進模型，所以不要在答案裡寫個人資料。</p>

@@ -2686,14 +2686,20 @@ document.querySelectorAll(".widget[data-w]").forEach(b=>{try{W[b.dataset.w](b);}
 
 
 /* ---------- home ---------- */
+function chScore(c){ /* chapter = multiple choice + written part (100 分) */
+  const qs=QUIZ[c],a=S.quiz[c]||{},P=window.EZ_MC_PTS||50;let k=0,r=0;Object.keys(a).forEach(x=>{if(qs[x]){k++;if(a[x]===qs[x].a)r++;}});
+  let got=r*P/qs.length,tot=P,g=0,m=0;const w=document.querySelector("#"+c+" .chw");
+  if(w){const x=(S.ex2||{})[w.dataset.exam]||{},gr=x.grade||{},sf=x.self||{};w.querySelectorAll(".exq").forEach(q=>{m++;tot+=+q.dataset.pts;if(gr[q.id]){g++;got+=+gr[q.id].score||0;}else if(sf[q.id]){g++;got+=+q.dataset.pts;}});}
+  return {k,n:qs.length,g,m,got:Math.round(got*10)/10,tot,done:k>=qs.length&&g>=m};
+}
+function chRow(c,n){const s=chScore(c);return '<tr><td class="l"><button class="btn" data-go="'+c+'">'+n+'</button></td><td >'+((s.k||s.g)?("得分 "+s.got+" / "+s.tot+" 分（選擇 "+s.k+"/"+s.n+(s.m?"，手寫 "+s.g+"/"+s.m:"")+"）"+(s.done?"":"（未完成）")):"還沒做")+'</td></tr>';}
 function renderHome(){
   const t=document.getElementById("progTable");
   let html='<tr><th class="l">項目</th><th>狀態</th></tr>';
   let next=null;
-  [["ch1","Ch1 選擇題"],["ch2","Ch2 選擇題"],["ch3","Ch3 選擇題"],["ch4","Ch4 選擇題"],["ch5","Ch5 選擇題"]].forEach(([c,n])=>{
-    const a=S.quiz[c]||{};const k=Object.keys(a).length;const r=Object.keys(a).filter(x=>QUIZ[c][x]&&a[x]===QUIZ[c][x].a).length;
-    html+='<tr><td class="l"><button class="btn" data-go="'+c+'">'+n+'</button></td><td>'+(k?("答對 "+r+" / "+QUIZ[c].length+(k<QUIZ[c].length?"（未完成）":"")):"還沒做")+'</td></tr>';
-    if(!next&&k<QUIZ[c].length)next=[c,n.replace(" 選擇題","")];
+  [["ch1","Ch1 章末練習"],["ch2","Ch2 章末練習"],["ch3","Ch3 章末練習"],["ch4","Ch4 章末練習"],["ch5","Ch5 章末練習"]].forEach(([c,n])=>{
+    html+=chRow(c,n);
+    if(!next&&!chScore(c).done)next=[c,n.replace(" 章末練習","")];
   });
   [["past","去年考古題"],["mock-a","模擬試題 A"],["mock-b","模擬試題 B"]].forEach(([id,n])=>{
     const e=EX[id]||{graded:0,total:100,got:0};
@@ -2703,7 +2709,7 @@ function renderHome(){
   t.innerHTML=html;
   const ns=document.getElementById("nextStep");
   ns.innerHTML="";const p=document.createElement("b");
-  if(next){p.textContent="下一步："+(next[0].startsWith("ch")?"讀 "+next[1]+" 再做章末選擇題":"寫"+next[1]+"（限時 60 分鐘，寫完按「批改全部」）");ns.appendChild(p);const b=document.createElement("button");b.className="btn primary";b.style.marginLeft="10px";b.textContent="開始";b.dataset.go=next[0];ns.appendChild(b);}
+  if(next){p.textContent="下一步："+(next[0].startsWith("ch")?"讀 "+next[1]+" 再做章末的選擇題和問答":"寫"+next[1]+"（限時 60 分鐘，寫完按「批改全部」）");ns.appendChild(p);const b=document.createElement("button");b.className="btn primary";b.style.marginLeft="10px";b.textContent="開始";b.dataset.go=next[0];ns.appendChild(b);}
   else{p.textContent="全部完成了。考前一天看「總複習」的速記和必畫圖，然後早點睡。";ns.appendChild(p);}
 }
 

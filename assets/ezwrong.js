@@ -272,6 +272,10 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
   let tm=null;const later=()=>{clearTimeout(tm);tm=setTimeout(render,120);};
   document.addEventListener("click",later);document.addEventListener("change",later);
   window.addEventListener("storage",later);
+  /* a grade can arrive later (Gemini answers after a few seconds): refresh as soon as a grade box changes,
+     so 回講義這一段 shows up under a wrong answer right after grading */
+  new MutationObserver(ms=>{if(ms.some(m=>{const t=m.target.nodeType===1?m.target:m.target.parentElement;return t&&t.closest&&t.closest(".gres");}))later();})
+    .observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:["hidden","class"]});
   render();
   try{renderTabs(S.last);}catch(e){}
   if(location.hash==="#wrong")try{show("wrong");}catch(e){}

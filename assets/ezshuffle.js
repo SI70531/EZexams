@@ -2,15 +2,15 @@
    (reload, or switch to another tab and come back).
    - Questions you have already answered go to the top and keep, for good, the number and the option order
      they had when you answered them; only the unanswered ones below are shuffled, using the numbers that are left.
-   - Shuffled: chapter multiple choice, mock-exam multiple choice, a chapter's written part, written practice (.wq).
-   - Not shuffled: past exams (a tab whose name contains 考古) and blocks marked .noshuf (statistics problems
-     whose sub-questions build on each other).
+   - Shuffled: only the exercises at the end of each chapter (tab id ch1, ch2, …): multiple choice and the written part.
+   - Not shuffled: past exams, mock exams, and blocks marked .noshuf (statistics problems whose sub-questions
+     build on each other).
    Every question keeps its original position in data-i, which is what answers are saved by, so progress is unaffected.
    Load after the page's main script (uses VIEWS). */
 (function(){
   if(typeof VIEWS==="undefined")return;
-  const NAME={};VIEWS.forEach(v=>{if(v[1])NAME[v[0]]=v[1];});
-  const isPast=el=>{const v=el.closest(".view");return !!v&&/考古/.test(NAME[v.id]||"");};
+  /* only a chapter's exercises are shuffled; past exams and mock exams always keep the original order */
+  const notCh=el=>{const v=el.closest(".view");return !v||!/^ch\d+$/.test(v.id);};
 
   /* a "run" = consecutive sibling questions of one kind inside one container */
   const KINDS=[[".quiz[data-quiz], .exambody",".qitem"],[".chw",".exq"],["*",".wq"]];
@@ -20,7 +20,7 @@
       const parents=new Set();
       document.querySelectorAll(itemSel).forEach(it=>{if(it.parentElement&&(boxSel==="*"||it.parentElement.matches(boxSel)))parents.add(it.parentElement);});
       parents.forEach(p=>{
-        if(isPast(p)||p.closest(".noshuf"))return;   /* .noshuf: sub-questions that build on each other */
+        if(notCh(p)||p.closest(".noshuf"))return;   /* .noshuf: sub-questions that build on each other */
         let cur=null,idx=0;
         [...p.children].forEach(ch=>{
           if(ch.matches(itemSel)){if(!cur){cur={box:p,itemSel,key:idx++,items:[]};out.push(cur);}cur.items.push(ch);}
@@ -102,7 +102,7 @@
   function shuffleOpts(){
     document.querySelectorAll(".quiz[data-quiz] .qitem, .exambody .qitem").forEach((it,n)=>{
       const os=[...it.querySelectorAll(".opt[data-oi]")];if(os.length<3)return;
-      const wrap=os[0].parentElement;if(os.some(o=>o.parentElement!==wrap)||isPast(it))return;
+      const wrap=os[0].parentElement;if(os.some(o=>o.parentElement!==wrap)||notCh(it))return;
       const box=it.closest(".quiz[data-quiz], .exambody"),bk=box.dataset.quiz||box.dataset.exam||(box.closest(".view")||{}).id;
       const qi=it.dataset.i!=null?+it.dataset.i:[...box.querySelectorAll(".qitem")].indexOf(it);
       const id=optId(it);let ord=OPTS[id];

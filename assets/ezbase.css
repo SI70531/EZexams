@@ -215,3 +215,5 @@ pre{max-width:100%;overflow-x:auto}
 /* home progress table: score on the first line, details below */
 .pscore{font-weight:700;white-space:nowrap}.psub{display:block;margin:3px -5px 0;font-size:.86em;line-height:1.7;color:var(--muted)}.psub>span{white-space:nowrap;display:inline-block;margin:0 5px}
 .ptodo{color:var(--bad,#c62828);font-weight:600}.pok{color:var(--ok,#2e7d32);font-weight:600}
+/* 自己給分 shows only when the question was graded by keywords (no AI), so you can correct the score */
+.exq:not(.kwgraded) .selfsc{display:none}

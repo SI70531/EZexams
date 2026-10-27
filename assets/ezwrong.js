@@ -135,9 +135,11 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
     });
     if(typeof MOCK!=="undefined"){
       Object.keys(MOCK).forEach(id=>{
-        const st=S.exam&&S.exam[id];if(!st||!st.done)return;const a=st.ans||{};
+        /* economics mocks keep their answers in S.quiz[<box key>] and are checked as you go */
+        const box=document.querySelector("#"+id+" .quiz[data-quiz]"),key=box&&box.dataset.quiz;
+        const st=S.exam&&S.exam[id];const a=key?(S.quiz&&S.quiz[key]||{}):(st&&st.done&&st.ans||{});
         MOCK[id].forEach((it,i)=>{const pk=a[i];if(pk===undefined||pk===it.a)return;
-          mc(out,it,i,pk,chOf(it),(NAME[id]||id)+" 第 "+(i+1)+" 題",id,null);});
+          mc(out,it,i,pk,chOf(it),(NAME[id]||id)+" 第 "+(i+1)+" 題",id,key||null);});
       });
     }
     document.querySelectorAll(".exam .exq").forEach(q=>{

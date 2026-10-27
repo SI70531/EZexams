@@ -2338,7 +2338,7 @@ const KEYS={
 "mock-a-7":[G(1,"concurren|並行","concurrency"),G(1,"parallel|平行","parallelism"),G(1.5,"single.?core|interleav|輪流|單核|progress|進度","concurrency: tasks make progress (single core)"),G(1.5,"simultaneous|same time|同時|multi.?core|多核","parallelism: simultaneously on multiple cores")],
 "mock-a-8":[G(1,"user mode|使用者模式|user","user mode"),G(1,"kernel mode|核心模式|kernel|monitor|system mode","kernel mode"),G(1,"mode bit|模式位元|bit","mode bit"),G(1,"privileged|特權","privileged instructions"),G(1,"protect|保護","protect the OS")],
 "mock-a-9":[G(5/7,"state|狀態","process state"),G(5/7,"program counter|\\bpc\\b|程式計數器","program counter"),G(5/7,"register|暫存器","CPU registers"),G(5/7,"schedul|priority|排班|優先","CPU-scheduling info"),G(5/7,"memory|記憶體","memory-management info"),G(5/7,"account|帳|cpu used|time limit|使用時間","accounting info"),G(5/7,"i/?o|open file|檔案","I/O status info")],
-"mock-a-10":[G(4,"16\\s*/\\s*4|(sjf|平均|avg|average)[^0-9]{0,20}4(\\.0+)?(?![\\d.])","SJF average waiting time = 4"),G(4,"12\\s*/\\s*4|(srtf|平均|avg|average)[^0-9]{0,20}3(\\.0+)?(?![\\d.])","SRTF average waiting time = 3"),G(1,"p1.{0,8}p3.{0,8}p2.{0,8}p4","SJF order P1, P3, P2, P4"),G(1,"p2.{0,8}p3.{0,8}p2.{0,8}p4.{0,8}p1","SRTF order P1, P2, P3, P2, P4, P1")],
+"mock-a-10":[G(4,"16\\s*/\\s*4|/\\s*4\\s*=\\s*4(\\.0+)?(?![\\d.])|(sjf|平均|avg|average)[^\\n]{0,40}?=\\s*4(\\.0+)?(?![\\d.])|(sjf|平均|avg|average)[^0-9\\n]{0,20}4(\\.0+)?(?![\\d.])","SJF average waiting time = 4"),G(4,"12\\s*/\\s*4|/\\s*4\\s*=\\s*3(\\.0+)?(?![\\d.])|(srtf|平均|avg|average)[^\\n]{0,40}?=\\s*3(\\.0+)?(?![\\d.])|(srtf|平均|avg|average)[^0-9\\n]{0,20}3(\\.0+)?(?![\\d.])","SRTF average waiting time = 3"),G(1,"p1[^p]{0,20}p3[^p]{0,20}p2[^p]{0,20}p4","SJF order P1, P3, P2, P4"),G(1,"p2[^p]{0,20}p3[^p]{0,20}p2[^p]{0,20}p4[^p]{0,20}p1","SRTF order P1, P2, P3, P2, P4, P1")],
 "mock-a-11":[G(2,"1\\.5[34]|20\\s*/\\s*13|1\\s*/\\s*0\\.65","2 cores ≈ 1.54"),G(2,"2\\.5[78]|1\\s*/\\s*0\\.3875","8 cores ≈ 2.58"),G(1,"3\\.33|10\\s*/\\s*3|1\\s*/\\s*0\\.3(?!\\d)","maximum ≈ 3.33")],
 "mock-a-12":[G(2,"many.?to.?one|m\\s*:\\s*1|多對一","many-to-one"),G(2,"one.?to.?one|1\\s*:\\s*1|一對一","one-to-one"),G(2,"many.?to.?many|m\\s*:\\s*[mn]|多對多","many-to-many"),G(2,"block|阻塞|卡住","one thread blocking blocks all"),G(2,"parallel|平行|multi.?core|多核|only one.{0,20}kernel|一次只有一個","cannot run in parallel on multicore")],
 "mock-a-13":[G(2.5,"shar|read.?only|共享|共用|唯讀","mutual exclusion: sharable resources"),G(2.5,"all.{0,20}(resource|before)|request.{0,20}none|一次.{0,10}全部|全部.{0,10}(之前|先)|沒有.{0,6}資源|手上沒有","hold and wait: request all at once or only when holding none"),G(2.5,"releas|釋放|放掉|preempt|搶","no preemption: release held resources"),G(2.5,"order|順序|編號|increas|遞增","circular wait: total ordering, increasing order")],
@@ -2432,6 +2432,13 @@ document.querySelectorAll(".exam").forEach(ex=>{
     box.appendChild(h);
     const f=document.createElement("div");f.textContent=g.feedback||"";box.appendChild(f);
     if(g.missing&&g.missing.length){const m=document.createElement("div");m.className="miss";m.textContent="缺少的關鍵字："+g.missing.join("、");box.appendChild(m);}
+    if(!stale){const P=+q.dataset.pts,row=document.createElement("div");row.style.cssText="margin-top:8px;display:flex;gap:6px;align-items:center;flex-wrap:wrap";
+      row.innerHTML='<span class="small">自己給分：</span>';const inp=document.createElement("input");inp.type="number";inp.min=0;inp.max=P;inp.step=0.5;inp.value=g.score;inp.style.cssText="width:70px;padding:3px 6px";
+      const ok=document.createElement("button");ok.type="button";ok.className="btn chip";ok.textContent="改分";
+      const full=document.createElement("button");full.type="button";full.className="btn chip";full.textContent="滿分";
+      const setS=v=>{v=Math.round(Math.max(0,Math.min(P,Number(v)||0))*2)/2;st.grade[q.id]=Object.assign({},g,{score:v,verdict:v>=P?"correct":v>0?"partial":"wrong",feedback:"你自己改的分數。",missing:[],manual:true});save();render(q);upd();};
+      ok.addEventListener("click",()=>setS(inp.value));full.addEventListener("click",()=>setS(P));
+      row.append(inp,document.createTextNode("/ "+P),ok,full);box.appendChild(row);}
   }
   function upd(){
     let got=0,graded=0;

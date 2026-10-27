@@ -2233,10 +2233,17 @@ document.querySelectorAll(".exam").forEach(ex=>{
   let left=60*60,h=null;
   function fmt(){const m=Math.floor(left/60),s=left%60;tEl.textContent=String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");}
   fmt();
+  const FULL=left,startLabel=tBtn.textContent;
+  /* paused: 「繼續計時」 + 「結束」; 結束 puts the clock back to the full time */
+  const tEnd=document.createElement("button");tEnd.type="button";tEnd.className=tBtn.className.replace(/\btbtn\b/,"").trim()+" tend";tEnd.textContent="結束";tEnd.hidden=true;
+  tBtn.after(tEnd);
+  function stopTimer(){clearInterval(h);h=null;}
   tBtn.addEventListener("click",()=>{
-    if(h){clearInterval(h);h=null;tBtn.textContent="繼續計時";return;}
-    tBtn.textContent="暫停";h=setInterval(()=>{left--;fmt();if(left<=0){clearInterval(h);h=null;tEl.textContent="時間到";tBtn.textContent="重新計時";left=3600;}},1000);
+    if(h){stopTimer();tBtn.textContent="繼續計時";tEnd.hidden=false;return;}
+    tEnd.hidden=true;tBtn.textContent="暫停";
+    h=setInterval(()=>{left--;fmt();if(left<=0){stopTimer();tEl.textContent="時間到";tBtn.textContent="重新計時";left=FULL;}},1000);
   });
+  tEnd.addEventListener("click",()=>{stopTimer();left=FULL;fmt();tBtn.textContent=startLabel;tEnd.hidden=true;});
   tools.querySelector(".reset").addEventListener("click",e=>{
     const b=e.currentTarget;
     if(b.dataset.armed!=="1"){b.dataset.armed="1";b.textContent="確定清除作答與分數？";setTimeout(()=>{b.dataset.armed="";b.textContent="清除作答";},4000);return;}

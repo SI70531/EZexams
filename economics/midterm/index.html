@@ -1076,10 +1076,18 @@ function renderExam(id){
   }
   tools.querySelector(".gradeall").onclick=()=>{const s=st();const e=examStat(id);if(e.k<e.n&&!confirm("還有 "+(e.n-e.k)+" 題沒作答，確定要交卷嗎？"))return;s.done=true;save();stopT();paint();sec.querySelector(".report").scrollIntoView({block:"start"});};
   tools.querySelector(".reset").onclick=()=>{if(!confirm("清除這份模擬考的作答？"))return;S.exam[id]={ans:{},resetAt:Date.now()};save();stopT();tools.querySelector(".timer").textContent="";paint();window.scrollTo(0,0);};
-  const tb=tools.querySelector(".tbtn");
-  function stopT(){if(timers[id]){clearInterval(timers[id]);timers[id]=null;}tb.textContent="開始 60 分鐘計時";}
-  tb.onclick=()=>{if(timers[id]){stopT();return;}let left=3600;const tt=tools.querySelector(".timer");tb.textContent="停止計時";
-    const tick=()=>{tt.textContent=String(Math.floor(left/60)).padStart(2,"0")+":"+String(left%60).padStart(2,"0");if(left--<=0){stopT();tt.textContent="時間到";}};tick();timers[id]=setInterval(tick,1000);};
+  /* timer: start → 暫停 → 繼續計時 / 結束 (結束 puts it back to 60 minutes), same as the other subjects */
+  const tb=tools.querySelector(".tbtn"),tt=tools.querySelector(".timer");
+  const tEnd=document.createElement("button");tEnd.type="button";tEnd.className="btn tend";tEnd.textContent="結束";tEnd.hidden=true;tb.after(tEnd);
+  let left=3600;
+  const draw=()=>{tt.textContent=String(Math.floor(left/60)).padStart(2,"0")+":"+String(left%60).padStart(2,"0");};
+  function stopT(){if(timers[id]){clearInterval(timers[id]);timers[id]=null;}left=3600;tb.textContent="開始 60 分鐘計時";tEnd.hidden=true;}
+  tb.onclick=()=>{
+    if(timers[id]){clearInterval(timers[id]);timers[id]=null;tb.textContent="繼續計時";tEnd.hidden=false;return;}
+    tb.textContent="暫停";tEnd.hidden=true;draw();
+    timers[id]=setInterval(()=>{left--;if(left<=0){stopT();tt.textContent="時間到";return;}draw();},1000);
+  };
+  tEnd.onclick=()=>{stopT();tt.textContent="";};
   paint();
 }
 Object.keys(MOCK).forEach(renderExam);

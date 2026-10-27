@@ -64,11 +64,15 @@ header.wrap{padding-block:max(20px,env(safe-area-inset-top,0px)) 0}
 .hero p.tag{margin-top:20px}@media (min-width:761px){.hero p.tag{white-space:nowrap;max-width:none}}
 .hero p{margin:0;color:var(--ink70);max-width:46ch;font-size:16.5px}
 main{padding-block:36px 72px}
-#subjects{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:44px 24px;align-items:start}
-#subjects .tickets{grid-template-columns:1fr}
-.subj.ghost{visibility:hidden}
+.subjgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:44px 24px;align-items:start}
+.subjgrid .tickets{grid-template-columns:1fr}
+.term{margin:0 0 56px}
+.termh{font-family:var(--f-display);font-size:clamp(26px,4vw,34px);margin:0 0 24px;padding-bottom:10px;border-bottom:2px solid var(--ink)}
+.subjgrid .empty{color:var(--muted);margin:0}
+.exam-subj.past{opacity:.6}
+.exam-subj.past .subj h2::after{content:"（已考完）";font-size:.55em;color:var(--muted);margin-left:6px}
 #subjects .slot{min-height:258px}
-@media (max-width:760px){#subjects{grid-template-columns:1fr;gap:36px}}
+@media (max-width:760px){.subjgrid{grid-template-columns:1fr;gap:36px}}
 .subj{display:flex;align-items:baseline;gap:12px;margin:0 0 16px}
 .subj h2{font-family:var(--f-display);font-size:26px;font-weight:700;margin:0}
 .subj .en{font-family:var(--f-mono);font-size:12.5px;color:var(--muted)}
@@ -141,12 +145,15 @@ footer::before{content:"// ";}
   </div>
   <div class="hero">
     <div class="prompt">ls ~/exams</div>
-    <h1>期中考考前衝刺</h1>
+    <h1>考前衝刺</h1>
     <p class="tag">白話講義、章末選擇題、考古題和模擬試題。寫完直接批改，看哪裡還要補。</p>
   </div>
 </header>
 <main class="wrap">
-  <div id="subjects">
+  <div id="terms">
+  <section class="term" data-term="mid">
+  <h2 class="termh">期中考考前衝刺</h2>
+  <div id="subjects" class="subjgrid">
   <section class="exam-subj" data-date="2026-10-21">
     <div class="subj"><h2>統計學</h2><span class="en">statistics/</span></div>
     <div class="tickets">
@@ -207,9 +214,12 @@ footer::before{content:"// ";}
       </a>
     </div>
   </section>
-  <section class="exam-subj" data-date="9999-12-31">
-    <div class="subj ghost" aria-hidden="true"><h2>下一科</h2><span class="en">next/</span></div>
-    <div class="tickets"><div class="slot">新科目<br>之後加入</div></div>
+  </div>
+  </div>
+  </section>
+  <section class="term" data-term="final">
+  <h2 class="termh">期末考考前衝刺</h2>
+  <div class="subjgrid"><p class="empty">還沒有科目。</p></div>
   </section>
   </div>
   <section class="sync" id="sync">
@@ -242,8 +252,15 @@ footer::before{content:"// ";}
 <script>
 /* ---------- subjects ordered by exam date (data-date, earliest first) ---------- */
 (function(){
-  const box=document.getElementById("subjects");if(!box)return;
-  [...box.querySelectorAll(":scope>.exam-subj")].sort((a,b)=>a.dataset.date.localeCompare(b.dataset.date)).forEach(el=>box.appendChild(el));
+  /* upcoming exams first by date, finished exams at the bottom; a term whose exams are all over drops below the other term */
+  const now=new Date(),today=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0")+"-"+String(now.getDate()).padStart(2,"0");
+  const terms=document.getElementById("terms");if(!terms)return;
+  const done=[];
+  terms.querySelectorAll(".term").forEach(t=>{const g=t.querySelector(".subjgrid");const all=[...g.querySelectorAll(":scope>.exam-subj")];
+    all.forEach(el=>el.classList.toggle("past",el.dataset.date<today));
+    all.sort((a,b)=>(a.classList.contains("past")-b.classList.contains("past"))||(a.classList.contains("past")?b.dataset.date.localeCompare(a.dataset.date):a.dataset.date.localeCompare(b.dataset.date))).forEach(el=>g.appendChild(el));
+    if(all.length&&all.every(el=>el.classList.contains("past")))done.push(t);});
+  done.forEach(t=>terms.appendChild(t));
 })();
 /* ---------- theme: system / light / dark ---------- */
 (function(){

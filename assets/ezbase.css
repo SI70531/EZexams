@@ -217,3 +217,5 @@ pre{max-width:100%;overflow-x:auto}
 .ptodo{color:var(--bad,#c62828);font-weight:600}.pok{color:var(--ok,#2e7d32);font-weight:600}
 /* 自己給分 shows only when the question was graded by keywords (no AI), so you can correct the score */
 .exq:not(.kwgraded) .selfsc{display:none}
+/* a finished row in the home progress table turns green */
+#progTable tr:has(.pok)>td{background:rgba(45,122,62,.14)}

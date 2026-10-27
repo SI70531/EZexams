@@ -2224,7 +2224,7 @@ function renderQuiz(ch){
   const p=document.createElement("p");p.className="small";p.textContent="點一個選項就會馬上對答案並顯示解析。錯的題目回上面找對應的段落再讀一次。";box.appendChild(p);
   qs.forEach((it,i)=>{
     const d=document.createElement("div");d.className="qitem";
-    const st=document.createElement("div");st.className="stem";st.innerHTML='<span class="num">'+(i+1)+'.</span>'+(it.h?'<span class="hard">鑑別題</span>':'');st.appendChild(document.createTextNode(it.q));d.appendChild(st);
+    const st=document.createElement("div");st.className="stem";st.innerHTML='<span class="num">'+(i+1)+'.</span>';st.appendChild(document.createTextNode(it.q));d.appendChild(st);
     const os=document.createElement("div");os.className="opts";
     const ord=order(it.o.length,i+ch.charCodeAt(2)*7);
     const btns=[];

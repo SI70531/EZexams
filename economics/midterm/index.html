@@ -18,7 +18,7 @@
 <link rel="icon" href="../../assets/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../../assets/icon-180.png">
 <link rel="manifest" href="../../manifest.webmanifest">
-<script src="../../assets/ezcore.js?v=86f55522"></script>
+<script src="../../assets/ezcore.js?v=3c44e9c5"></script>
 <style>.plansep{border:0;border-top:1px dashed var(--line);margin:10px 0}</style>
 <script src="../../assets/ezplan.js?v=c67a2ffd" defer></script>
 </head>
@@ -1012,7 +1012,7 @@ function renderQuiz(ch){
     const d=document.createElement("div");d.className="qitem";d.innerHTML=stemHTML(it,i);
     const os=document.createElement("div");os.className="opts";const btns=[];
     it.o.forEach((_,oi)=>{
-      const b=document.createElement("button");b.className="opt";b.type="button";b.innerHTML=optHTML(it,oi,oi);b.dataset.oi=oi;btns.push(b);
+      const b=EZopt();b.className="opt";b.type="button";b.innerHTML=optHTML(it,oi,oi);b.dataset.oi=oi;btns.push(b);
       b.addEventListener("click",()=>{if(S.quiz[ch]&&S.quiz[ch][i]!==undefined)return;S.quiz[ch]=S.quiz[ch]||{};S.quiz[ch][i]=oi;save();mark();renderScore();renderTabs(ch);refreshPCB();});
       os.appendChild(b);
     });
@@ -1048,7 +1048,7 @@ function renderExam(id){
   qs.forEach((it,i)=>{
     const d=document.createElement("div");d.className="qitem";d.id=id+"-q"+(i+1);d.innerHTML=stemHTML(it,i);
     const os=document.createElement("div");os.className="opts";
-    it.o.forEach((_,oi)=>{const b=document.createElement("button");b.className="opt";b.type="button";b.innerHTML=optHTML(it,oi,oi);b.dataset.oi=oi;
+    it.o.forEach((_,oi)=>{const b=EZopt();b.className="opt";b.type="button";b.innerHTML=optHTML(it,oi,oi);b.dataset.oi=oi;
       b.addEventListener("click",()=>{const s=st();if(s.done)return;s.ans[i]=oi;save();paint();});os.appendChild(b);});
     d.appendChild(os);const ex=document.createElement("div");ex.className="expl";ex.hidden=true;d.appendChild(ex);box.appendChild(d);
   });

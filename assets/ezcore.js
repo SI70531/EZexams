@@ -31,6 +31,33 @@
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",wire);else wire();
 
+  /* Answer options are made with EZopt() instead of <button>: browsers never let you select text inside a
+     button, so you could not copy an option. EZopt() gives a normal element that still acts like a button:
+     click, Tab to focus, Enter/Space to choose, and .disabled locks it (reflected as the disabled attribute). */
+  window.EZopt=function(){
+    const d=document.createElement("div");
+    d.setAttribute("role","button");d.tabIndex=0;
+    Object.defineProperty(d,"disabled",{get(){return this.hasAttribute("disabled");},set(v){this.toggleAttribute("disabled",!!v);this.setAttribute("aria-disabled",String(!!v));this.tabIndex=v?-1:0;}});
+    d.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target===d){e.preventDefault();d.click();}});
+    return d;
+  };
+  /* text in answer options and in the home-page cards (links) can be selected and copied: dragging selects text
+     instead of dragging the link, and finishing a selection does not count as a click (so it does not answer the
+     question or open the page). A disabled option ignores clicks, like a disabled button. */
+  const st=document.createElement("style");
+  st.textContent=".opt,.opt *,.ticket,.ticket *{-webkit-user-select:text;user-select:text}.ticket{-webkit-user-drag:none}";
+  document.head.appendChild(st);
+  document.addEventListener("dragstart",e=>{if(e.target.closest&&e.target.closest(".ticket"))e.preventDefault();},true);
+  let downX=0,downY=0;
+  document.addEventListener("mousedown",e=>{downX=e.clientX;downY=e.clientY;},true);
+  document.addEventListener("click",e=>{
+    const el=e.target.closest&&e.target.closest(".opt,.ticket");if(!el)return;
+    if(el.matches('.opt[disabled]')){e.preventDefault();e.stopImmediatePropagation();return;}
+    const sel=window.getSelection&&getSelection();
+    const moved=Math.abs(e.clientX-downX)+Math.abs(e.clientY-downY)>4;
+    if(moved&&sel&&!sel.isCollapsed&&String(sel).trim()&&sel.containsNode(el,true)){e.preventDefault();e.stopImmediatePropagation();}
+  },true);
+
   /* offline support */
   const me=document.currentScript;
   if(me&&("serviceWorker" in navigator)&&(location.protocol==="https:"||location.hostname==="localhost")){

@@ -8,10 +8,10 @@
   const css=`.ezs-btn{flex:0 0 auto;display:grid;place-items:center;width:36px;height:36px;border:1.5px solid var(--ink);border-radius:8px;background:var(--paper);color:var(--ink);cursor:pointer}
 .ezs-btn:hover{background:var(--indigo-soft)}.ezs-btn svg{width:17px;height:17px}
 .ezs-panel{position:fixed;z-index:50;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 64px);width:min(720px,calc(100vw - 24px));max-height:calc(100vh - 90px);display:flex;flex-direction:column;background:var(--paper);border:1.5px solid var(--ink);border-radius:12px;box-shadow:6px 6px 0 var(--hard,#06141b);overflow:hidden}
-.ezs-top{display:flex;gap:8px;align-items:center;padding:12px;border-bottom:1px solid var(--line)}
+.ezs-top{display:flex;gap:8px;align-items:center;padding:12px}
+.ezs-info{border-top:1px solid var(--line)}
 .ezs-top input{flex:1;min-width:0;font:inherit;font-size:16px;padding:9px 12px;border:1.5px solid var(--line-strong,var(--line));border-radius:8px;background:var(--paper2,var(--bg));color:var(--ink)}
 .ezs-top input:focus{outline:none;border-color:var(--indigo,var(--ink));box-shadow:0 0 0 3px var(--indigo-soft,transparent)}
-.ezs-x{font:inherit;border:0;background:transparent;color:var(--muted);font-size:22px;line-height:1;padding:4px 8px;cursor:pointer}
 .ezs-info{padding:8px 14px;font-size:13px;color:var(--muted)}
 .ezs-list{overflow-y:auto;padding:0 8px 10px}
 .ezs-g{font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--brass);padding:12px 8px 4px}
@@ -35,7 +35,7 @@
   new MutationObserver(()=>{const c=bar.querySelector(".syncchip");if(c&&c.nextElementSibling!==btn&&btn.nextElementSibling!==c)bar.insertBefore(btn,c);}).observe(bar,{childList:true});
 
   const panel=document.createElement("div");panel.className="ezs-panel";panel.hidden=true;panel.setAttribute("role","dialog");panel.setAttribute("aria-label","搜尋");
-  panel.innerHTML='<div class="ezs-top"><input type="search" placeholder="搜尋講義和題目，例如 SSD、deadlock、彈性" aria-label="搜尋關鍵字" autocomplete="off" spellcheck="false"><button class="ezs-x" type="button" aria-label="關閉">×</button></div><div class="ezs-info"></div><div class="ezs-list" role="listbox"></div>';
+  panel.innerHTML='<div class="ezs-top"><input type="search" placeholder="搜尋講義和題目" aria-label="搜尋關鍵字" autocomplete="off" spellcheck="false"></div><div class="ezs-info"></div><div class="ezs-list" role="listbox"></div>';
   document.body.appendChild(panel);
   const input=panel.querySelector("input"),info=panel.querySelector(".ezs-info"),list=panel.querySelector(".ezs-list");
 
@@ -73,7 +73,8 @@
   function run(){
     const q=input.value.trim();terms=q.toLowerCase().split(/\s+/).filter(Boolean);
     list.innerHTML="";hits=[];sel=-1;
-    if(!terms.length){info.textContent="輸入關鍵字，可以用空白分隔多個詞（全部都要出現）。按 Enter 跳到第一筆。";return;}
+    info.hidden=!terms.length;
+    if(!terms.length)return;
     if(!INDEX)build();
     hits=INDEX.filter(b=>terms.every(t=>b.low.includes(t)));
     info.textContent=hits.length?"找到 "+hits.length+" 筆"+(hits.length>80?"，先列出前 80 筆":""):"找不到「"+q+"」。換個寫法試試（英文縮寫、中文名稱都可以）。";
@@ -124,7 +125,6 @@
   }
   function close(){panel.hidden=true;btn.setAttribute("aria-expanded","false");}
   btn.addEventListener("click",e=>{e.stopPropagation();panel.hidden?open():close();});
-  panel.querySelector(".ezs-x").addEventListener("click",close);
   let tm=null;input.addEventListener("input",()=>{clearTimeout(tm);tm=setTimeout(run,120);});
   input.addEventListener("keydown",e=>{
     if(e.key==="ArrowDown"){e.preventDefault();select(sel+1);}

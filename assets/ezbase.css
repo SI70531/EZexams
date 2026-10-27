@@ -209,3 +209,4 @@ body.nograde .nogradenote{display:block}
   .qitem{padding:14px 14px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.exq.aigraded .selfsc,.exq.aigraded label.self{display:none}

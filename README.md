@@ -11,20 +11,37 @@ Exam Cram Hub: https://si70531.github.io/EZexams/
 
 ## Folder Structure
 
-Each subject gets its own directory, with subdirectories for individual exams:
-subject-name/exam-type/index.html
-operating-systems/midterm/index.html
-operating-systems/final/index.html       ← Future final exam
-data-structures/midterm/index.html
-economics/midterm/index.html
-statistics/midterm/index.html
-
+```
+index.html                     home page (exam tickets, sync setup, AI grading setup)
+sw.js, manifest.webmanifest    offline support / install to home screen
+assets/
+  ezcore.js     theme switcher + offline registration (every page loads it in <head>)
+  ezbase.css    styles shared by all subject pages
+  ezsync.js     cross-device sync through a private Gist
+  ezai.js       free AI grading with a Gemini API key
+  ezplan.js     N-day study plan
+  ezwrong.js    wrong-answer area
+  icon*, og.png favicon and link-preview image
+<subject>/<exam>/
+  index.html    notes, exams, page-specific styles and code
+  quiz.js       the multiple-choice question bank (QUIZ, plus MOCK for economics)
+tools/stamp.py  updates the ?v=<hash> on script/style links
+```
 
 When adding a new subject:
-1. Append a `<section class="exam-subj" data-date="YYYY-MM-DD">` inside `#subjects` in the root `index.html`.
-2. Add a corresponding row to the markdown table above. 
+1. Create `subject-name/exam-type/index.html` (copy an existing subject as a template) with its questions in `quiz.js` next to it.
+2. Append a `<section class="exam-subj" data-date="YYYY-MM-DD">` inside `#subjects` in the root `index.html`.
+3. Add a corresponding row to the markdown table above.
 
 The home page automatically sorts subjects chronologically based on `data-date`. Please keep the markdown table sorted by date as well.
+
+### Editing questions without losing anyone's progress
+
+Answers are saved by chapter and question position. In a `quiz.js`, fix typos in place and add new questions at the **end** of a chapter; inserting or deleting in the middle shifts every answer after it.
+
+### Cache versions
+
+Script and stylesheet links carry `?v=<content hash>` so browsers pick up changes right away. A GitHub Action (`.github/workflows/stamp.yml`) refreshes these on every push; to do it by hand, run `python3 tools/stamp.py`.
 
 ## Cross-Device Sync
 
@@ -36,3 +53,8 @@ To enable sync for a new subject page, include this script tag right before your
 
 ```html
 <script src="../../assets/ezsync.js" data-key="YOUR_STORAGE_KEY"></script>
+```
+
+## AI Grading (free)
+
+Written questions are graded by keyword matching by default. Under **AI 批改（免費）** on the main page, paste a free Google Gemini API key (from https://aistudio.google.com/apikey, no credit card) to have Gemini grade them with a score and feedback. The key stays in that browser only (it is not synced). If the free quota runs out or Gemini is unreachable, grading falls back to keywords automatically. Logic is in `assets/ezai.js`.

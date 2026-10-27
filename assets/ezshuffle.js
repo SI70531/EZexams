@@ -76,7 +76,7 @@
       if(!ord&&SAVED[id]&&SAVED[id].length===os.length)ord=OPTS[id]=SAVED[id].slice();
       if(!ord){
         if(answered(it)||os.some(o=>FIXED.test(o.textContent)))return;
-        const q=typeof QUIZ!=="undefined"&&QUIZ[bk]&&QUIZ[bk][qi];if(q&&LETTER.test(q.e||""))return;
+        const vw=(box.closest(".view")||{}).id,q=(typeof QUIZ!=="undefined"&&QUIZ[bk]&&QUIZ[bk][qi])||(typeof MOCK!=="undefined"&&MOCK[vw]&&MOCK[vw][qi]);if(q&&LETTER.test(q.e||""))return;
         ord=os.map(o=>o.dataset.oi);for(let j=ord.length-1;j>0;j--){const k=Math.floor(Math.random()*(j+1));[ord[j],ord[k]]=[ord[k],ord[j]];}
         OPTS[id]=ord;
       }

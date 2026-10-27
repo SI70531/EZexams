@@ -105,8 +105,26 @@
       else{set(LS.last,String(Date.now()));emit("ok","已同步");okNow();sessionStorage.removeItem("ezsync-reload");}
     }catch(e){emit(e.code==="off"?"off":"err",errMsg(e),e.code);try{console.warn("[EZSync] pull",key,e);}catch(_){}retryLater(key,e);}
   }
+  /* every upload waits for its turn: at most one every 7.2 s from this browser (about 500 an hour) */
+  const busyPush={};
   async function push(key,{keepalive=false}={}){
     if(!get(LS.tok))return;
+    if(busyPush[key]){busyPush[key]="again";return;}   /* one upload per subject at a time; a newer change rides on the next one */
+    busyPush[key]=true;
+    try{
+      if(keepalive&&lastAny()+GAP>Date.now()){
+        /* leaving the page inside the 7.2 s window: wait for the turn if the page keeps running;
+           if the browser freezes it, the next visit uploads the change (it is newer than the cloud copy) */
+        keepalive=false;
+      }
+      for(let w;(w=lastAny()+GAP-Date.now())>0;){emit("dirty","等待上傳（每 7.2 秒最多一次）…");await new Promise(r=>setTimeout(r,w+Math.random()*500));}
+      await pushNow(key,keepalive);
+    }finally{
+      const again=busyPush[key]==="again";busyPush[key]=false;
+      if(again)push(key);
+    }
+  }
+  async function pushNow(key,keepalive){
     const data=get(key);if(data==null)return;
     const at=+get(metaKey(key))||Date.now();
     emit("sync","同步中…");

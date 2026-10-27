@@ -10,6 +10,7 @@
   if(typeof S==="undefined"||typeof QUIZ==="undefined"||typeof save!=="function")return;
   const st=document.createElement("style");
   st.textContent=`.quiz>.qscore{display:none!important}
+.ezhere{animation:ezhere 2s ease-out;border-radius:10px}@keyframes ezhere{0%,55%{box-shadow:0 0 0 4px var(--indigo,#3949ab)}100%{box-shadow:0 0 0 0 transparent}}
 .qbtns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 .qbtns .wnotes{margin-top:0}
 .qclear{color:var(--muted)!important;margin-left:auto}   /* 清除作答 sits at the right end of the row, 回講義這一段 stays on the left */
@@ -91,6 +92,15 @@
       ensureClear(q,!!(ta&&ta.value.trim())||!!(g&&!g.hidden),()=>clearW(q));
     });
   }
+  /* 首頁進度表「ChN 章末練習」: the first question of the chapter you have not done yet, in the order shown on screen
+     (multiple choice first, then the written part). The page scrolls there and it glows for a moment. */
+  window.EZtodo=function(ch){
+    const sec=document.getElementById(ch);if(!sec)return null;
+    const mc=[...sec.querySelectorAll(".quiz[data-quiz] > .qitem")].find(it=>!it.querySelector(".opt.right,.opt.wrong"));if(mc)return mc;
+    const w=sec.querySelector(".chw");if(!w)return null;const x=(S.ex2||{})[w.dataset.exam]||{};
+    return [...w.querySelectorAll(".exq")].find(q=>!((x.grade||{})[q.id]||(x.self||{})[q.id]))||null;
+  };
+  window.EZglow=function(el){el.scrollIntoView({block:"center"});el.classList.remove("ezhere");void el.offsetWidth;el.classList.add("ezhere");};
   let t=null;const later=()=>{clearTimeout(t);t=setTimeout(update,40);};
   ["click","input","change"].forEach(ev=>document.addEventListener(ev,later));
   new MutationObserver(later).observe(document.body,{childList:true,subtree:true});

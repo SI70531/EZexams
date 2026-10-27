@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<style>[hidden]{display:none!important}body{margin:0}</style>
+<style>[hidden]{display:none!important}body{margin:0}.chw{margin-top:48px;padding-top:28px;border-top:2px solid var(--ink)}.chw>h2{margin-top:0}</style>
 <title>統計學期中衝刺｜EZexams</title>
 <meta name="description" content="統計學期中考衝刺：Anderson 14e Ch1–Ch4 白話講義、55 題選擇題、互動圖和期中作業，寫完直接批改。">
 <meta name="theme-color" content="#dde1e0" media="(prefers-color-scheme: light)">
@@ -27,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=LXGW+WenKai+TC:wght@400;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
-<link rel="stylesheet" href="../../assets/ezbase.css?v=db375213">
+<link rel="stylesheet" href="../../assets/ezbase.css?v=11a0f842">
 <style>
 /* Same design system as operating-systems/midterm: pill tabs, progress card on each cover, handwritten headings. */
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
@@ -104,7 +104,7 @@ table td{text-align:left}
   <div class="next" id="nextStep"></div>
   <h3>4 天讀書計畫</h3>
   <div class="plan" data-exam="2026-10-21">
-    <div class="day"><div class="d"></div><div class="t">讀 Ch1，做章末選擇題。<br><button class="btn" data-go="ch1">Ch1</button></div></div>
+    <div class="day"><div class="d"></div><div class="t">讀 Ch1，做章末選擇題和 Problems。<br><button class="btn" data-go="ch1">Ch1</button></div></div>
     <div class="day"><div class="d"></div><div class="t">讀 Ch2，自己畫一次直方圖和伸展莖葉圖，做選擇題。<br><button class="btn" data-go="ch2">Ch2</button></div></div>
     <div class="day"><div class="d"></div><div class="t">讀 Ch3，親手算一遍平均數、中位數、樣本變異數、百分位數和五數摘要，做選擇題。<br><button class="btn" data-go="ch3">Ch3</button></div></div>
     <div class="day"><div class="d"></div><div class="t">讀 Ch4，用表格法算一次貝氏定理，做選擇題。<br><button class="btn" data-go="ch4">Ch4</button></div></div>
@@ -124,7 +124,7 @@ table td{text-align:left}
   <li>「explain／interpret／why」題用英文寫完整句子，每個結論都附一句理由。</li></ul></div>
 </section>
 
-<section role="tabpanel" class="view" id="ch1" hidden><div class="vhead"><div class="pcb" data-pcb="ch1" role="img"></div><div class="eyebrow">Chapter 1</div><h1>Ch1 Data and Statistics</h1><p>資料的基本名詞、四種衡量尺度、類別與數量資料、資料來源、敘述與推論統計。讀完做最下面的選擇題。</p></div>
+<section role="tabpanel" class="view" id="ch1" hidden><div class="vhead"><div class="pcb" data-pcb="ch1" role="img"></div><div class="eyebrow">Chapter 1</div><h1>Ch1 Data and Statistics</h1><p>資料的基本名詞、四種衡量尺度、類別與數量資料、資料來源、敘述與推論統計。讀完做最下面的 Multiple-choice question 和 Problems。</p></div>
 <h3 data-sec="1.1">1.1 什麼是統計</h3>
 <ul>
 <li><b>統計數據（numerical facts）</b>：平均數、中位數、百分比、最大值等。</li>
@@ -300,7 +300,54 @@ table td{text-align:left}
 </ul>
 
 
-<div class="quiz" data-quiz="ch1"></div></section>
+<div class="quiz" data-quiz="ch1"></div>
+<div class="exam chw noshuf" data-exam="ch1w">
+<h2>Problems（50 分）</h2>
+<p class="small">格式照期中作業：一大題給一組資料，下面分小題，題目和作答用英文。寫完按「批改全部」，或一題一題按「批改這題」。</p>
+<div class="examtools"><span class="score"></span><span class="timer" hidden></span><button class="btn tbtn" type="button" hidden>開始計時</button><button class="btn primary gradeall" type="button">批改全部</button><button class="btn reset" type="button">清除作答</button><span class="gmsg"></span></div><p class="box tip nogradenote">這裡用關鍵字比對自動批改：有寫到必要的數字或術語就給分。分數僅供參考，寫完一定要展開參考答案對照。</p>
+<h3>第 1 題　Smartphone Comparison（30 分）</h3>
+<p>A consumer website compares six smartphones. Customer Rating is Excellent, Very good or Good.</p><table><tr><th>Model</th><th>Price ($)</th><th>Operating System</th><th>Screen Size (in)</th><th>Customer Rating</th><th>Storage (GB)</th></tr><tr><td>A</td><td>999</td><td>iOS</td><td>6.1</td><td>Excellent</td><td>128</td></tr><tr><td>B</td><td>799</td><td>Android</td><td>6.4</td><td>Very good</td><td>256</td></tr><tr><td>C</td><td>349</td><td>Android</td><td>6.5</td><td>Good</td><td>128</td></tr><tr><td>D</td><td>1199</td><td>iOS</td><td>6.7</td><td>Excellent</td><td>256</td></tr><tr><td>E</td><td>449</td><td>Android</td><td>6.6</td><td>Good</td><td>64</td></tr><tr><td>F</td><td>899</td><td>Android</td><td>6.2</td><td>Very good</td><td>128</td></tr></table>
+<div class="exq" id="ch1w-1-1" data-pts="3"><div class="qtext"><p class="q"><span class="pts">1-1</span>How many elements are in this data set? (3 points)</p></div><label class="small" for="ch1w-1-1-a">你的答案</label><textarea id="ch1w-1-1-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>6 elements (the six smartphones).<div class="zhtr"><span>中文</span>6 個元素（6 支手機）。</div></div>
+</div></details><label class="self" for="ch1w-1-1-c"><input type="checkbox" id="ch1w-1-1-c"> 我答對了（3 分）</label></div>
+<div class="exq" id="ch1w-1-2" data-pts="3"><div class="qtext"><p class="q"><span class="pts">1-2</span>How many variables are in this data set? (3 points)</p></div><label class="small" for="ch1w-1-2-a">你的答案</label><textarea id="ch1w-1-2-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>5 variables: Price, Operating System, Screen Size, Customer Rating and Storage. (Model only identifies the element.)<div class="zhtr"><span>中文</span>5 個變數：價格、作業系統、螢幕尺寸、顧客評價、容量。Model 只是元素的名字。</div></div>
+</div></details><label class="self" for="ch1w-1-2-c"><input type="checkbox" id="ch1w-1-2-c"> 我答對了（3 分）</label></div>
+<div class="exq" id="ch1w-1-3" data-pts="6"><div class="qtext"><p class="q"><span class="pts">1-3</span>Which variables are categorical and which are quantitative? (6 points)</p></div><label class="small" for="ch1w-1-3-a">你的答案</label><textarea id="ch1w-1-3-a" rows="6" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>Categorical: Operating System, Customer Rating. Quantitative: Price, Screen Size, Storage.<div class="zhtr"><span>中文</span>類別變數：作業系統、顧客評價。數量變數：價格、螢幕尺寸、容量。</div></div>
+</div></details><label class="self" for="ch1w-1-3-c"><input type="checkbox" id="ch1w-1-3-c"> 我答對了（6 分）</label></div>
+<div class="exq" id="ch1w-1-4" data-pts="10"><div class="qtext"><p class="q"><span class="pts">1-4</span>What measurement scale is used for each variable? (10 points)</p></div><label class="small" for="ch1w-1-4-a">你的答案</label><textarea id="ch1w-1-4-a" rows="6" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>Price: ratio. Operating System: nominal. Screen Size: ratio. Customer Rating: ordinal. Storage: ratio.<div class="zhtr"><span>中文</span>價格：比率尺度。作業系統：名目尺度。螢幕尺寸：比率尺度。顧客評價：順序尺度（有好壞順序）。容量：比率尺度。</div></div>
+</div></details><label class="self" for="ch1w-1-4-c"><input type="checkbox" id="ch1w-1-4-c"> 我答對了（10 分）</label></div>
+<div class="exq" id="ch1w-1-5" data-pts="4"><div class="qtext"><p class="q"><span class="pts">1-5</span>What is the average price of the six smartphones? (4 points)</p></div><label class="small" for="ch1w-1-5-a">你的答案</label><textarea id="ch1w-1-5-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>(999 + 799 + 349 + 1199 + 449 + 899) / 6 = 4694 / 6 = $782.33.<div class="zhtr"><span>中文</span>總和 4694，除以 6 = 782.33 美元。</div></div>
+</div></details><label class="self" for="ch1w-1-5-c"><input type="checkbox" id="ch1w-1-5-c"> 我答對了（4 分）</label></div>
+<div class="exq" id="ch1w-1-6" data-pts="4"><div class="qtext"><p class="q"><span class="pts">1-6</span>What percentage of the smartphones use the Android operating system? (4 points)</p></div><label class="small" for="ch1w-1-6-a">你的答案</label><textarea id="ch1w-1-6-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>4 of 6 use Android: 4/6 = 66.7%.<div class="zhtr"><span>中文</span>6 支中有 4 支是 Android：4/6 = 66.7%。</div></div>
+</div></details><label class="self" for="ch1w-1-6-c"><input type="checkbox" id="ch1w-1-6-c"> 我答對了（4 分）</label></div>
+<h3>第 2 題　Types of Data（8 分）</h3>
+<p>Classify each data set as cross-sectional or time series, and explain.</p>
+<div class="exq" id="ch1w-2-1" data-pts="4"><div class="qtext"><p class="q"><span class="pts">2-1</span>(a) The prices of the six smartphones above, all collected on March 1, 2026. (4 points)</p></div><label class="small" for="ch1w-2-1-a">你的答案</label><textarea id="ch1w-2-1-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>Cross-sectional data: collected at the same (or approximately the same) point in time.<div class="zhtr"><span>中文</span>橫斷面資料：在同一時間點蒐集。</div></div>
+</div></details><label class="self" for="ch1w-2-1-c"><input type="checkbox" id="ch1w-2-1-c"> 我答對了（4 分）</label></div>
+<div class="exq" id="ch1w-2-2" data-pts="4"><div class="qtext"><p class="q"><span class="pts">2-2</span>(b) The monthly sales of smartphone D from January to December 2025. (4 points)</p></div><label class="small" for="ch1w-2-2-a">你的答案</label><textarea id="ch1w-2-2-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>Time series data: collected over several time periods (12 months).<div class="zhtr"><span>中文</span>時間序列資料：在好幾個時間點（12 個月）蒐集。</div></div>
+</div></details><label class="self" for="ch1w-2-2-c"><input type="checkbox" id="ch1w-2-2-c"> 我答對了（4 分）</label></div>
+<h3>第 3 題　Observational vs. Experimental Study（6 分）</h3>
+<p>A school wants to know whether a tutoring program raises exam scores.</p>
+<div class="exq" id="ch1w-3-1" data-pts="3"><div class="qtext"><p class="q"><span class="pts">3-1</span>(a) The school compares the scores of students who chose to join the program with those who did not. Is this an observational or an experimental study? (3 points)</p></div><label class="small" for="ch1w-3-1-a">你的答案</label><textarea id="ch1w-3-1-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>Observational study: the variable of interest (joining the program) is not controlled; students chose it themselves.<div class="zhtr"><span>中文</span>觀察研究：沒有控制「是否參加」這個變數，學生自己選擇。</div></div>
+</div></details><label class="self" for="ch1w-3-1-c"><input type="checkbox" id="ch1w-3-1-c"> 我答對了（3 分）</label></div>
+<div class="exq" id="ch1w-3-2" data-pts="3"><div class="qtext"><p class="q"><span class="pts">3-2</span>(b) The school randomly assigns half of the students to the program and half to no program. Which type of study is this? (3 points)</p></div><label class="small" for="ch1w-3-2-a">你的答案</label><textarea id="ch1w-3-2-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>Experimental study: the variable of interest is controlled by randomly assigning students to the program.<div class="zhtr"><span>中文</span>實驗研究：用隨機分派控制了「是否參加」。</div></div>
+</div></details><label class="self" for="ch1w-3-2-c"><input type="checkbox" id="ch1w-3-2-c"> 我答對了（3 分）</label></div>
+<h3>第 4 題　Population, Sample and Inference（6 分）</h3>
+<p>A university has 20,000 students. A survey of 500 randomly selected students finds an average of 2.4 hours of phone use per day, and the university uses it to estimate the average for all students.</p>
+<div class="exq" id="ch1w-4-1" data-pts="6"><div class="qtext"><p class="q"><span class="pts">4-1</span>Identify the population, the sample, and the name of the process of using the sample result to estimate the population average. (6 points)</p></div><label class="small" for="ch1w-4-1-a">你的答案</label><textarea id="ch1w-4-1-a" rows="6" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>Population: all 20,000 students. Sample: the 500 surveyed students. Using the sample average to estimate the population average is statistical inference.<div class="zhtr"><span>中文</span>母體：全部 20,000 位學生。樣本：被調查的 500 位學生。用樣本結果估計母體，叫統計推論。</div></div>
+</div></details><label class="self" for="ch1w-4-1-c"><input type="checkbox" id="ch1w-4-1-c"> 我答對了（6 分）</label></div>
+</div>
+</section>
 <section role="tabpanel" class="view" id="ch2" hidden><div class="vhead"><div class="pcb" data-pcb="ch2" role="img"></div><div class="eyebrow">Chapter 2</div><h1>Ch2 表格與圖形</h1><p>次數分配、長條圖與直方圖、偏態、累積分配、莖葉圖、交叉表與散佈圖。</p></div>
 <h3 data-sec="2.1">2.1 類別資料的整理</h3>
 <ul>
@@ -444,7 +491,46 @@ table td{text-align:left}
 </ul>
 
 
-<div class="quiz" data-quiz="ch2"></div></section>
+<div class="quiz" data-quiz="ch2"></div>
+<div class="exam chw noshuf" data-exam="ch2w">
+<h2>Problems（50 分）</h2>
+<p class="small">格式照期中作業：一大題給一組資料，下面分小題，題目和作答用英文。寫完按「批改全部」，或一題一題按「批改這題」。</p>
+<div class="examtools"><span class="score"></span><span class="timer" hidden></span><button class="btn tbtn" type="button" hidden>開始計時</button><button class="btn primary gradeall" type="button">批改全部</button><button class="btn reset" type="button">清除作答</button><span class="gmsg"></span></div><p class="box tip nogradenote">這裡用關鍵字比對自動批改：有寫到必要的數字或術語就給分。分數僅供參考，寫完一定要展開參考答案對照。</p>
+<h3>第 1 題　Commute Times（38 分）</h3>
+<p>The commute times (minutes) of 20 employees are:</p><div class="calc">12, 15, 18, 22, 25, 25, 27, 28, 30, 31, 33, 34, 35, 36, 38, 40, 42, 45, 50, 58</div><p>Use the classes 10–19, 20–29, 30–39, 40–49 and 50–59.</p>
+<div class="exq" id="ch2w-1-1" data-pts="8"><div class="qtext"><p class="q"><span class="pts">1-1</span>Construct the frequency distribution. (8 points)</p></div><label class="small" for="ch2w-1-1-a">你的答案</label><textarea id="ch2w-1-1-a" rows="6" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>10–19: 3; 20–29: 5; 30–39: 7; 40–49: 3; 50–59: 2 (total 20).<div class="zhtr"><span>中文</span>10–19：3；20–29：5；30–39：7；40–49：3；50–59：2，合計 20。</div></div>
+</div></details><label class="self" for="ch2w-1-1-c"><input type="checkbox" id="ch2w-1-1-c"> 我答對了（8 分）</label></div>
+<div class="exq" id="ch2w-1-2" data-pts="8"><div class="qtext"><p class="q"><span class="pts">1-2</span>Construct the percent frequency distribution. (8 points)</p></div><label class="small" for="ch2w-1-2-a">你的答案</label><textarea id="ch2w-1-2-a" rows="6" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>15%, 25%, 35%, 15%, 10% (relative frequencies 0.15, 0.25, 0.35, 0.15, 0.10).<div class="zhtr"><span>中文</span>百分比次數：15%、25%、35%、15%、10%。</div></div>
+</div></details><label class="self" for="ch2w-1-2-c"><input type="checkbox" id="ch2w-1-2-c"> 我答對了（8 分）</label></div>
+<div class="exq" id="ch2w-1-3" data-pts="8"><div class="qtext"><p class="q"><span class="pts">1-3</span>Construct the cumulative frequency and cumulative percent frequency distributions. (8 points)</p></div><label class="small" for="ch2w-1-3-a">你的答案</label><textarea id="ch2w-1-3-a" rows="6" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>Cumulative frequency: 3, 8, 15, 18, 20. Cumulative percent: 15%, 40%, 75%, 90%, 100%.<div class="zhtr"><span>中文</span>累積次數：3、8、15、18、20。累積百分比：15%、40%、75%、90%、100%。</div></div>
+</div></details><label class="self" for="ch2w-1-3-c"><input type="checkbox" id="ch2w-1-3-c"> 我答對了（8 分）</label></div>
+<div class="exq" id="ch2w-1-4" data-pts="4"><div class="qtext"><p class="q"><span class="pts">1-4</span>What percentage of employees commute less than 40 minutes? (4 points)</p></div><label class="small" for="ch2w-1-4-a">你的答案</label><textarea id="ch2w-1-4-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>75% (15 of 20, the cumulative percent up to the 30–39 class).<div class="zhtr"><span>中文</span>75%（20 人中有 15 人）。</div></div>
+</div></details><label class="self" for="ch2w-1-4-c"><input type="checkbox" id="ch2w-1-4-c"> 我答對了（4 分）</label></div>
+<div class="exq" id="ch2w-1-5" data-pts="6"><div class="qtext"><p class="q"><span class="pts">1-5</span>Construct a stem-and-leaf display. (6 points)</p></div><label class="small" for="ch2w-1-5-a">你的答案</label><textarea id="ch2w-1-5-a" rows="6" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>1 | 2 5 8<br>2 | 2 5 5 7 8<br>3 | 0 1 3 4 5 6 8<br>4 | 0 2 5<br>5 | 0 8<div class="zhtr"><span>中文</span>莖是十位數、葉是個位數：1|258、2|25578、3|0134568、4|025、5|08。</div></div>
+</div></details><label class="self" for="ch2w-1-5-c"><input type="checkbox" id="ch2w-1-5-c"> 我答對了（6 分）</label></div>
+<div class="exq" id="ch2w-1-6" data-pts="4"><div class="qtext"><p class="q"><span class="pts">1-6</span>Describe the shape of the distribution. (4 points)</p></div><label class="small" for="ch2w-1-6-a">你的答案</label><textarea id="ch2w-1-6-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>Slightly skewed to the right: most values are in the 30s, with a longer tail toward 50–59 (mean 32.2 is slightly above median 32).<div class="zhtr"><span>中文</span>稍微右偏：多數在 30 幾分鐘，右邊尾巴較長（平均 32.2 略大於中位數 32）。</div></div>
+</div></details><label class="self" for="ch2w-1-6-c"><input type="checkbox" id="ch2w-1-6-c"> 我答對了（4 分）</label></div>
+<h3>第 2 題　Pie Chart（8 分）</h3>
+<p>200 students were asked how they usually get to campus: Bus 70, Scooter 60, Car 30, Walk/Bike 40.</p>
+<div class="exq" id="ch2w-2-1" data-pts="8"><div class="qtext"><p class="q"><span class="pts">2-1</span>Compute the relative frequency of each category and the angle of each slice in a pie chart. (8 points)</p></div><label class="small" for="ch2w-2-1-a">你的答案</label><textarea id="ch2w-2-1-a" rows="6" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>Bus 0.35 → 126°; Scooter 0.30 → 108°; Car 0.15 → 54°; Walk/Bike 0.20 → 72° (angle = relative frequency × 360°).<div class="zhtr"><span>中文</span>公車 0.35 → 126°；機車 0.30 → 108°；汽車 0.15 → 54°；走路／腳踏車 0.20 → 72°（角度 = 相對次數 × 360°）。</div></div>
+</div></details><label class="self" for="ch2w-2-1-c"><input type="checkbox" id="ch2w-2-1-c"> 我答對了（8 分）</label></div>
+<h3>第 3 題　Choosing a Display（4 分）</h3>
+
+<div class="exq" id="ch2w-3-1" data-pts="2"><div class="qtext"><p class="q"><span class="pts">3-1</span>Which tabular and graphical methods summarize the relationship between two categorical variables? (2 points)</p></div><label class="small" for="ch2w-3-1-a">你的答案</label><textarea id="ch2w-3-1-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>A crosstabulation and a side-by-side (clustered) or stacked bar chart.<div class="zhtr"><span>中文</span>交叉表，以及並排（群組）或堆疊長條圖。</div></div>
+</div></details><label class="self" for="ch2w-3-1-c"><input type="checkbox" id="ch2w-3-1-c"> 我答對了（2 分）</label></div>
+<div class="exq" id="ch2w-3-2" data-pts="2"><div class="qtext"><p class="q"><span class="pts">3-2</span>Which graph shows the relationship between two quantitative variables? (2 points)</p></div><label class="small" for="ch2w-3-2-a">你的答案</label><textarea id="ch2w-3-2-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>A scatter diagram (with a trendline).<div class="zhtr"><span>中文</span>散佈圖（可加趨勢線）。</div></div>
+</div></details><label class="self" for="ch2w-3-2-c"><input type="checkbox" id="ch2w-3-2-c"> 我答對了（2 分）</label></div>
+</div>
+</section>
 <section role="tabpanel" class="view" id="ch3" hidden><div class="vhead"><div class="pcb" data-pcb="ch3" role="img"></div><div class="eyebrow">Chapter 3</div><h1>Ch3 數值量數</h1><p>平均數、中位數、眾數、幾何平均、百分位數、變異數與標準差、z 分數、柴比雪夫、盒鬚圖、相關係數。</p></div>
 <ul>
 <li>由<b>樣本</b>算出 → <b>統計量（statistic）</b>，例如 x̄、s；由<b>母體</b>算出 → <b>參數（parameter）</b>，例如 μ、σ。</li>
@@ -652,7 +738,51 @@ table td{text-align:left}
 </ul>
 
 
-<div class="quiz" data-quiz="ch3"></div></section>
+<div class="quiz" data-quiz="ch3"></div>
+<div class="exam chw noshuf" data-exam="ch3w">
+<h2>Problems（50 分）</h2>
+<p class="small">格式照期中作業：一大題給一組資料，下面分小題，題目和作答用英文。寫完按「批改全部」，或一題一題按「批改這題」。</p>
+<div class="examtools"><span class="score"></span><span class="timer" hidden></span><button class="btn tbtn" type="button" hidden>開始計時</button><button class="btn primary gradeall" type="button">批改全部</button><button class="btn reset" type="button">清除作答</button><span class="gmsg"></span></div><p class="box tip nogradenote">這裡用關鍵字比對自動批改：有寫到必要的數字或術語就給分。分數僅供參考，寫完一定要展開參考答案對照。</p>
+<h3>第 1 題　Weekly Study Hours（32 分）</h3>
+<p>A sample of 8 students reported their weekly study hours:</p><div class="calc">4, 7, 8, 10, 10, 12, 15, 30</div><p>Use the percentile location L<sub>p</sub> = (p/100)(n + 1).</p>
+<div class="exq" id="ch3w-1-1" data-pts="6"><div class="qtext"><p class="q"><span class="pts">1-1</span>Compute the mean, the median and the mode. (6 points)</p></div><label class="small" for="ch3w-1-1-a">你的答案</label><textarea id="ch3w-1-1-a" rows="6" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>Mean = 96 / 8 = 12. Median = (10 + 10) / 2 = 10. Mode = 10.<div class="zhtr"><span>中文</span>平均 = 96/8 = 12；中位數 = (10 + 10)/2 = 10；眾數 = 10。</div></div>
+</div></details><label class="self" for="ch3w-1-1-c"><input type="checkbox" id="ch3w-1-1-c"> 我答對了（6 分）</label></div>
+<div class="exq" id="ch3w-1-2" data-pts="8"><div class="qtext"><p class="q"><span class="pts">1-2</span>Compute the range, the first and third quartiles, and the interquartile range. (8 points)</p></div><label class="small" for="ch3w-1-2-a">你的答案</label><textarea id="ch3w-1-2-a" rows="6" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>Range = 30 − 4 = 26. Q1: L = 0.25 × 9 = 2.25 → 7 + 0.25(8 − 7) = 7.25. Q3: L = 0.75 × 9 = 6.75 → 12 + 0.75(15 − 12) = 14.25. IQR = 14.25 − 7.25 = 7.<div class="zhtr"><span>中文</span>全距 = 26。Q1 位置 2.25 → 7.25；Q3 位置 6.75 → 14.25；IQR = 7。</div></div>
+</div></details><label class="self" for="ch3w-1-2-c"><input type="checkbox" id="ch3w-1-2-c"> 我答對了（8 分）</label></div>
+<div class="exq" id="ch3w-1-3" data-pts="8"><div class="qtext"><p class="q"><span class="pts">1-3</span>Compute the sample variance and the sample standard deviation. (8 points)</p></div><label class="small" for="ch3w-1-3-a">你的答案</label><textarea id="ch3w-1-3-a" rows="6" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>Squared deviations: 64, 25, 16, 4, 4, 0, 9, 324; sum = 446. s² = 446 / (8 − 1) = 63.71. s = √63.71 = 7.98.<div class="zhtr"><span>中文</span>離差平方和 446，s² = 446/7 = 63.71，s = 7.98。</div></div>
+</div></details><label class="self" for="ch3w-1-3-c"><input type="checkbox" id="ch3w-1-3-c"> 我答對了（8 分）</label></div>
+<div class="exq" id="ch3w-1-4" data-pts="6"><div class="qtext"><p class="q"><span class="pts">1-4</span>Is 30 an outlier by the 1.5 IQR rule? Also compute the z-score of 30. (6 points)</p></div><label class="small" for="ch3w-1-4-a">你的答案</label><textarea id="ch3w-1-4-a" rows="6" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>Upper limit = Q3 + 1.5 × IQR = 14.25 + 10.5 = 24.75 (lower limit −3.25). 30 &gt; 24.75, so 30 is an outlier. z = (30 − 12) / 7.98 = 2.26.<div class="zhtr"><span>中文</span>上限 = 14.25 + 10.5 = 24.75，30 超過上限，是離群值。z = (30 − 12)/7.98 = 2.26。</div></div>
+</div></details><label class="self" for="ch3w-1-4-c"><input type="checkbox" id="ch3w-1-4-c"> 我答對了（6 分）</label></div>
+<div class="exq" id="ch3w-1-5" data-pts="4"><div class="qtext"><p class="q"><span class="pts">1-5</span>Compute the coefficient of variation. (4 points)</p></div><label class="small" for="ch3w-1-5-a">你的答案</label><textarea id="ch3w-1-5-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>CV = (s / mean) × 100% = (7.98 / 12) × 100% = 66.5%.<div class="zhtr"><span>中文</span>變異係數 = 7.98/12 × 100% = 66.5%。</div></div>
+</div></details><label class="self" for="ch3w-1-5-c"><input type="checkbox" id="ch3w-1-5-c"> 我答對了（4 分）</label></div>
+<h3>第 2 題　Average Return（6 分）</h3>
+<p>A fund returned +25% in year 1, −20% in year 2 and +10% in year 3.</p>
+<div class="exq" id="ch3w-2-1" data-pts="6"><div class="qtext"><p class="q"><span class="pts">2-1</span>Compute the mean annual growth rate with the geometric mean. (6 points)</p></div><label class="small" for="ch3w-2-1-a">你的答案</label><textarea id="ch3w-2-1-a" rows="6" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>Growth factors 1.25, 0.80, 1.10. Geometric mean = (1.25 × 0.80 × 1.10)^(1/3) = 1.10^(1/3) = 1.0323, so the mean growth rate is 3.23% per year.<div class="zhtr"><span>中文</span>成長因子 1.25、0.80、1.10，乘積 1.10，開三次方 = 1.0323，平均年成長率 3.23%。</div></div>
+</div></details><label class="self" for="ch3w-2-1-c"><input type="checkbox" id="ch3w-2-1-c"> 我答對了（6 分）</label></div>
+<h3>第 3 題　Chebyshev and the Empirical Rule（8 分）</h3>
+<p>Exam scores have a mean of 70 and a standard deviation of 5.</p>
+<div class="exq" id="ch3w-3-1" data-pts="3"><div class="qtext"><p class="q"><span class="pts">3-1</span>(a) Using Chebyshev’s theorem, at least what percentage of scores are between 60 and 80? (3 points)</p></div><label class="small" for="ch3w-3-1-a">你的答案</label><textarea id="ch3w-3-1-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>z = 2, so at least 1 − 1/2² = 75%.<div class="zhtr"><span>中文</span>z = 2，至少 1 − 1/4 = 75%。</div></div>
+</div></details><label class="self" for="ch3w-3-1-c"><input type="checkbox" id="ch3w-3-1-c"> 我答對了（3 分）</label></div>
+<div class="exq" id="ch3w-3-2" data-pts="3"><div class="qtext"><p class="q"><span class="pts">3-2</span>(b) If the distribution is bell-shaped, about what percentage are between 60 and 80? (3 points)</p></div><label class="small" for="ch3w-3-2-a">你的答案</label><textarea id="ch3w-3-2-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>By the empirical rule, about 95% are within 2 standard deviations.<div class="zhtr"><span>中文</span>鐘形分配用經驗法則：約 95%。</div></div>
+</div></details><label class="self" for="ch3w-3-2-c"><input type="checkbox" id="ch3w-3-2-c"> 我答對了（3 分）</label></div>
+<div class="exq" id="ch3w-3-3" data-pts="2"><div class="qtext"><p class="q"><span class="pts">3-3</span>(c) Compute the z-score of a score of 82. (2 points)</p></div><label class="small" for="ch3w-3-3-a">你的答案</label><textarea id="ch3w-3-3-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>z = (82 − 70) / 5 = 2.4.<div class="zhtr"><span>中文</span>z = (82 − 70)/5 = 2.4。</div></div>
+</div></details><label class="self" for="ch3w-3-3-c"><input type="checkbox" id="ch3w-3-3-c"> 我答對了（2 分）</label></div>
+<h3>第 4 題　Correlation（4 分）</h3>
+<p>For a sample, the covariance of x and y is s<sub>xy</sub> = −12, with s<sub>x</sub> = 4 and s<sub>y</sub> = 5.</p>
+<div class="exq" id="ch3w-4-1" data-pts="4"><div class="qtext"><p class="q"><span class="pts">4-1</span>Compute the sample correlation coefficient and interpret it. (4 points)</p></div><label class="small" for="ch3w-4-1-a">你的答案</label><textarea id="ch3w-4-1-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>r = −12 / (4 × 5) = −0.6: a moderate negative linear relationship.<div class="zhtr"><span>中文</span>r = −12/(4 × 5) = −0.6，中度負向線性關係。</div></div>
+</div></details><label class="self" for="ch3w-4-1-c"><input type="checkbox" id="ch3w-4-1-c"> 我答對了（4 分）</label></div>
+</div>
+</section>
 <section role="tabpanel" class="view" id="ch4" hidden><div class="vhead"><div class="pcb" data-pcb="ch4" role="img"></div><div class="eyebrow">Chapter 4</div><h1>Ch4 機率導論</h1><p>樣本空間、計數法則、指派機率、加法律與乘法律、條件機率、獨立、貝氏定理。</p></div>
 <h3 data-sec="4.1">4.1 隨機實驗、樣本空間、計數法則</h3>
 <ul>
@@ -819,7 +949,66 @@ table td{text-align:left}
 <div class="b-table"></div>
 <div class="calc b-out"></div>
 </div>
-<div class="quiz" data-quiz="ch4"></div></section>
+<div class="quiz" data-quiz="ch4"></div>
+<div class="exam chw noshuf" data-exam="ch4w">
+<h2>Problems（50 分）</h2>
+<p class="small">格式照期中作業：一大題給一組資料，下面分小題，題目和作答用英文。寫完按「批改全部」，或一題一題按「批改這題」。</p>
+<div class="examtools"><span class="score"></span><span class="timer" hidden></span><button class="btn tbtn" type="button" hidden>開始計時</button><button class="btn primary gradeall" type="button">批改全部</button><button class="btn reset" type="button">清除作答</button><span class="gmsg"></span></div><p class="box tip nogradenote">這裡用關鍵字比對自動批改：有寫到必要的數字或術語就給分。分數僅供參考，寫完一定要展開參考答案對照。</p>
+<h3>第 1 題　Counting Rules（8 分）</h3>
+
+<div class="exq" id="ch4w-1-1" data-pts="2"><div class="qtext"><p class="q"><span class="pts">1-1</span>(a) How many experimental outcomes are there when three coins are tossed? (2 points)</p></div><label class="small" for="ch4w-1-1-a">你的答案</label><textarea id="ch4w-1-1-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>2 × 2 × 2 = 8 outcomes.<div class="zhtr"><span>中文</span>2 × 2 × 2 = 8 種。</div></div>
+</div></details><label class="self" for="ch4w-1-1-c"><input type="checkbox" id="ch4w-1-1-c"> 我答對了（2 分）</label></div>
+<div class="exq" id="ch4w-1-2" data-pts="3"><div class="qtext"><p class="q"><span class="pts">1-2</span>(b) In how many ways can 3 of 8 job candidates be selected for interviews (order does not matter)? (3 points)</p></div><label class="small" for="ch4w-1-2-a">你的答案</label><textarea id="ch4w-1-2-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>Combinations: C(8, 3) = 8! / (3! 5!) = 56.<div class="zhtr"><span>中文</span>組合：C(8,3) = 56。</div></div>
+</div></details><label class="self" for="ch4w-1-2-c"><input type="checkbox" id="ch4w-1-2-c"> 我答對了（3 分）</label></div>
+<div class="exq" id="ch4w-1-3" data-pts="3"><div class="qtext"><p class="q"><span class="pts">1-3</span>(c) In how many ways can a president, a vice president and a secretary be chosen from 8 people? (3 points)</p></div><label class="small" for="ch4w-1-3-a">你的答案</label><textarea id="ch4w-1-3-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>Permutations: P(8, 3) = 8 × 7 × 6 = 336.<div class="zhtr"><span>中文</span>排列：P(8,3) = 8 × 7 × 6 = 336。</div></div>
+</div></details><label class="self" for="ch4w-1-3-c"><input type="checkbox" id="ch4w-1-3-c"> 我答對了（3 分）</label></div>
+<h3>第 2 題　Work Preference（18 分）</h3>
+<p>A company surveyed 200 employees:</p><table><tr><th></th><th>Prefer remote (R)</th><th>Prefer office (O)</th><th>Total</th></tr><tr><td>Male (M)</td><td>48</td><td>72</td><td>120</td></tr><tr><td>Female (F)</td><td>52</td><td>28</td><td>80</td></tr><tr><td>Total</td><td>100</td><td>100</td><td>200</td></tr></table>
+<div class="exq" id="ch4w-2-1" data-pts="4"><div class="qtext"><p class="q"><span class="pts">2-1</span>Construct the joint probability table, including the marginal probabilities. (4 points)</p></div><label class="small" for="ch4w-2-1-a">你的答案</label><textarea id="ch4w-2-1-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>P(M ∩ R) = 0.24, P(M ∩ O) = 0.36, P(F ∩ R) = 0.26, P(F ∩ O) = 0.14. Marginals: P(M) = 0.60, P(F) = 0.40, P(R) = 0.50, P(O) = 0.50.<div class="zhtr"><span>中文</span>聯合機率：0.24、0.36、0.26、0.14；邊際機率：男 0.60、女 0.40、遠距 0.50、辦公室 0.50。</div></div>
+</div></details><label class="self" for="ch4w-2-1-c"><input type="checkbox" id="ch4w-2-1-c"> 我答對了（4 分）</label></div>
+<div class="exq" id="ch4w-2-2" data-pts="2"><div class="qtext"><p class="q"><span class="pts">2-2</span>What is the probability that an employee prefers remote work? (2 points)</p></div><label class="small" for="ch4w-2-2-a">你的答案</label><textarea id="ch4w-2-2-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>P(R) = 100 / 200 = 0.50.<div class="zhtr"><span>中文</span>P(R) = 0.50。</div></div>
+</div></details><label class="self" for="ch4w-2-2-c"><input type="checkbox" id="ch4w-2-2-c"> 我答對了（2 分）</label></div>
+<div class="exq" id="ch4w-2-3" data-pts="4"><div class="qtext"><p class="q"><span class="pts">2-3</span>Given that an employee is female, what is the probability she prefers remote work? (4 points)</p></div><label class="small" for="ch4w-2-3-a">你的答案</label><textarea id="ch4w-2-3-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>P(R | F) = P(R ∩ F) / P(F) = 0.26 / 0.40 = 0.65.<div class="zhtr"><span>中文</span>P(R | F) = 0.26/0.40 = 0.65。</div></div>
+</div></details><label class="self" for="ch4w-2-3-c"><input type="checkbox" id="ch4w-2-3-c"> 我答對了（4 分）</label></div>
+<div class="exq" id="ch4w-2-4" data-pts="4"><div class="qtext"><p class="q"><span class="pts">2-4</span>What is the probability that an employee is male or prefers remote work? (4 points)</p></div><label class="small" for="ch4w-2-4-a">你的答案</label><textarea id="ch4w-2-4-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>P(M ∪ R) = P(M) + P(R) − P(M ∩ R) = 0.60 + 0.50 − 0.24 = 0.86.<div class="zhtr"><span>中文</span>加法律：0.60 + 0.50 − 0.24 = 0.86。</div></div>
+</div></details><label class="self" for="ch4w-2-4-c"><input type="checkbox" id="ch4w-2-4-c"> 我答對了（4 分）</label></div>
+<div class="exq" id="ch4w-2-5" data-pts="4"><div class="qtext"><p class="q"><span class="pts">2-5</span>Are gender and work preference independent? Explain. (4 points)</p></div><label class="small" for="ch4w-2-5-a">你的答案</label><textarea id="ch4w-2-5-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>No. P(R | F) = 0.65 ≠ P(R) = 0.50 (equivalently P(M ∩ R) = 0.24 ≠ P(M)P(R) = 0.30), so they are not independent.<div class="zhtr"><span>中文</span>不獨立：P(R | F) = 0.65 ≠ P(R) = 0.50。</div></div>
+</div></details><label class="self" for="ch4w-2-5-c"><input type="checkbox" id="ch4w-2-5-c"> 我答對了（4 分）</label></div>
+<h3>第 3 題　Defective Parts（14 分）</h3>
+<p>Supplier A provides 60% of a factory’s parts and supplier B provides 40%. 2% of A’s parts and 5% of B’s parts are defective. A part is found to be defective (D).</p>
+<div class="exq" id="ch4w-3-1" data-pts="4"><div class="qtext"><p class="q"><span class="pts">3-1</span>Compute P(D). (4 points)</p></div><label class="small" for="ch4w-3-1-a">你的答案</label><textarea id="ch4w-3-1-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>P(D) = 0.60 × 0.02 + 0.40 × 0.05 = 0.012 + 0.020 = 0.032.<div class="zhtr"><span>中文</span>P(D) = 0.012 + 0.020 = 0.032。</div></div>
+</div></details><label class="self" for="ch4w-3-1-c"><input type="checkbox" id="ch4w-3-1-c"> 我答對了（4 分）</label></div>
+<div class="exq" id="ch4w-3-2" data-pts="4"><div class="qtext"><p class="q"><span class="pts">3-2</span>Compute P(A | D). (4 points)</p></div><label class="small" for="ch4w-3-2-a">你的答案</label><textarea id="ch4w-3-2-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>P(A | D) = 0.012 / 0.032 = 0.375.<div class="zhtr"><span>中文</span>P(A | D) = 0.012/0.032 = 0.375。</div></div>
+</div></details><label class="self" for="ch4w-3-2-c"><input type="checkbox" id="ch4w-3-2-c"> 我答對了（4 分）</label></div>
+<div class="exq" id="ch4w-3-3" data-pts="3"><div class="qtext"><p class="q"><span class="pts">3-3</span>Compute P(B | D). (3 points)</p></div><label class="small" for="ch4w-3-3-a">你的答案</label><textarea id="ch4w-3-3-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>P(B | D) = 0.020 / 0.032 = 0.625.<div class="zhtr"><span>中文</span>P(B | D) = 0.020/0.032 = 0.625。</div></div>
+</div></details><label class="self" for="ch4w-3-3-c"><input type="checkbox" id="ch4w-3-3-c"> 我答對了（3 分）</label></div>
+<div class="exq" id="ch4w-3-4" data-pts="3"><div class="qtext"><p class="q"><span class="pts">3-4</span>Explain the difference between the prior and the posterior probability of supplier B. (3 points)</p></div><label class="small" for="ch4w-3-4-a">你的答案</label><textarea id="ch4w-3-4-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>The prior probability P(B) = 0.40 is known before the part is inspected; after learning the part is defective, the posterior probability rises to P(B | D) = 0.625 because B has the higher defect rate.<div class="zhtr"><span>中文</span>事前機率 P(B) = 0.40 是檢查前的機率；知道是瑕疵品後更新成事後機率 0.625，因為 B 的瑕疵率較高。</div></div>
+</div></details><label class="self" for="ch4w-3-4-c"><input type="checkbox" id="ch4w-3-4-c"> 我答對了（3 分）</label></div>
+<h3>第 4 題　Mutually Exclusive vs. Independent（10 分）</h3>
+<p>P(A) = 0.3 and P(B) = 0.5.</p>
+<div class="exq" id="ch4w-4-1" data-pts="3"><div class="qtext"><p class="q"><span class="pts">4-1</span>(a) If A and B are mutually exclusive, compute P(A ∪ B). (3 points)</p></div><label class="small" for="ch4w-4-1-a">你的答案</label><textarea id="ch4w-4-1-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>P(A ∪ B) = 0.3 + 0.5 = 0.8.<div class="zhtr"><span>中文</span>互斥：P(A ∪ B) = 0.8。</div></div>
+</div></details><label class="self" for="ch4w-4-1-c"><input type="checkbox" id="ch4w-4-1-c"> 我答對了（3 分）</label></div>
+<div class="exq" id="ch4w-4-2" data-pts="4"><div class="qtext"><p class="q"><span class="pts">4-2</span>(b) If A and B are independent, compute P(A ∩ B) and P(A ∪ B). (4 points)</p></div><label class="small" for="ch4w-4-2-a">你的答案</label><textarea id="ch4w-4-2-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>P(A ∩ B) = 0.3 × 0.5 = 0.15; P(A ∪ B) = 0.3 + 0.5 − 0.15 = 0.65.<div class="zhtr"><span>中文</span>獨立：P(A ∩ B) = 0.15，P(A ∪ B) = 0.65。</div></div>
+</div></details><label class="self" for="ch4w-4-2-c"><input type="checkbox" id="ch4w-4-2-c"> 我答對了（4 分）</label></div>
+<div class="exq" id="ch4w-4-3" data-pts="3"><div class="qtext"><p class="q"><span class="pts">4-3</span>(c) Can two events with positive probabilities be both mutually exclusive and independent? Explain. (3 points)</p></div><label class="small" for="ch4w-4-3-a">你的答案</label><textarea id="ch4w-4-3-a" rows="4" placeholder="在這裡作答，中英文都可以"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>No. If they are mutually exclusive, P(A ∩ B) = 0, but independence needs P(A ∩ B) = P(A)P(B) &gt; 0.<div class="zhtr"><span>中文</span>不行。互斥代表 P(A ∩ B) = 0，但獨立要求 P(A ∩ B) = P(A)P(B) &gt; 0。</div></div>
+</div></details><label class="self" for="ch4w-4-3-c"><input type="checkbox" id="ch4w-4-3-c"> 我答對了（3 分）</label></div>
+</div>
+</section>
 <section role="tabpanel" class="view" id="confuse" hidden><div class="vhead"><div class="pcb" data-pcb="confuse" role="img"></div><div class="eyebrow">Easily confused</div><h1>易混淆觀念 32 組</h1><p>每一組都附判斷方法。考試看到題目，先套判斷方法再作答。</p></div>
 
 <h3>一、第 1 章：資料分類</h3>
@@ -2122,7 +2311,7 @@ table td{text-align:left}
 
 </main>
 <script src="../../assets/ezsync.js?v=0528b1c5" data-key="stats-midterm-v1"></script>
-<script src="quiz.js?v=bc3db111"></script>
+<script src="quiz.js?v=8f7d25e1"></script>
 <script>
 (function(){
   const tt=document.getElementById("toTop");
@@ -2187,7 +2376,7 @@ function renderQuiz(ch){
   const box=document.querySelector('[data-quiz="'+ch+'"]');if(!box)return;
   const qs=QUIZ[ch];const ans=S.quiz[ch]||{};
   box.innerHTML="";
-  const h=document.createElement("h2");h.textContent="章末選擇題（"+qs.length+" 題）";box.appendChild(h);
+  const h=document.createElement("h2");h.textContent="Multiple-choice question（"+qs.length+" 題，共 50 分）";box.appendChild(h);
   const p=document.createElement("p");p.className="small";p.textContent="點一個選項就會馬上對答案並顯示解析。錯的題目回上面找對應的段落再讀一次。";box.appendChild(p);
   qs.forEach((it,i)=>{
     const d=document.createElement("div");d.className="qitem";
@@ -2258,6 +2447,7 @@ const KEYS={
 "hw-9-2":[G(1,"0?\\.004","joint P(C ∩ −) = 0.004"),G(1,"0?\\.249","P(−) = 0.249"),G(2,"0?\\.016[01]|1\\.6\\s*%","P(C|−) ≈ 0.0161")],
 "hw-9-3":[G(1,"0?\\.77\\b","P(+) = 0.77"),G(3,"0?\\.41[56]|41\\.[56]\\s*%","P(C|+) ≈ 0.4156"),G(1,"0?\\.23\\b","P(−) = 0.23"),G(3,"0?\\.34[78]|34\\.[78]\\s*%","P(C|−) ≈ 0.3478")]
 };
+if(typeof KEYS_MORE!=="undefined")Object.assign(KEYS,KEYS_MORE);
 
 function normAns(s){
   return s.toLowerCase()
@@ -2437,7 +2627,7 @@ function renderHome(){
   t.innerHTML=html;
   const ns=document.getElementById("nextStep");
   ns.innerHTML="";const p=document.createElement("b");
-  if(next){p.textContent="下一步："+(next[0].startsWith("ch")?"讀 "+next[1]+" 再做章末選擇題":"寫"+next[1]+"（限時 60 分鐘，寫完按「批改全部」）");ns.appendChild(p);const b=document.createElement("button");b.className="btn primary";b.style.marginLeft="10px";b.textContent="開始";b.dataset.go=next[0];ns.appendChild(b);}
+  if(next){p.textContent="下一步："+(next[0].startsWith("ch")?"讀 "+next[1]+" 再做章末的選擇題和 Problems":"寫"+next[1]+"（限時 60 分鐘，寫完按「批改全部」）");ns.appendChild(p);const b=document.createElement("button");b.className="btn primary";b.style.marginLeft="10px";b.textContent="開始";b.dataset.go=next[0];ns.appendChild(b);}
   else{p.textContent="全部完成了。考前再看一次「易混淆」的 32 組觀念，然後早點睡。";ns.appendChild(p);}
 }
 
@@ -2594,8 +2784,8 @@ const svg=(w,h,inner)=>'<svg viewBox="0 0 '+w+' '+h+'" role="img">'+inner+'</svg
 </script>
 
 <script src="../../assets/ezquiz.js?v=985ad982"></script>
-<script src="../../assets/ezwrong.js?v=847b3091"></script>
+<script src="../../assets/ezwrong.js?v=cec64b0b"></script>
 <script src="../../assets/ezsearch.js?v=21af1ad4"></script>
-<script src="../../assets/ezshuffle.js?v=f2aa6481"></script>
+<script src="../../assets/ezshuffle.js?v=93fba9c4"></script>
 </body>
 </html>

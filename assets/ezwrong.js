@@ -18,7 +18,8 @@
 (function(){
   if(typeof QUIZ==="undefined"||typeof S==="undefined"||typeof VIEWS==="undefined")return;
   const css=`h3.missed{color:var(--bad,#c62828)!important;border-left:5px solid var(--bad,#c62828);padding-left:10px}
-h3 .missbadge{display:inline-block;white-space:nowrap;margin-left:10px;font-size:12px;font-weight:700;color:var(--paper,#fff);background:var(--bad,#c62828);border-radius:999px;padding:2px 10px;cursor:pointer;vertical-align:3px;border:0;font-family:inherit}
+h3.missed{flex-wrap:wrap;row-gap:4px}
+h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left:10px;font-size:12px;font-weight:700;color:var(--paper,#fff);background:var(--bad,#c62828);border-radius:999px;padding:2px 10px;cursor:pointer;vertical-align:3px;border:0;font-family:inherit}
 .wcard{border:1px solid var(--line);border-left:5px solid var(--bad,#c62828);border-radius:10px;padding:14px 18px;margin:14px 0;background:var(--paper)}
 .wcard .src{font-size:12px;color:var(--bad,#c62828);font-weight:700;letter-spacing:.08em}
 .wcard .wq2{font-weight:600;margin:6px 0;white-space:pre-wrap}
@@ -31,6 +32,8 @@ h3 .missbadge{display:inline-block;white-space:nowrap;margin-left:10px;font-size
 .wcard .wbar{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
 .wgroup h3{margin-top:28px;scroll-margin-top:80px}
 .wnotes{display:block;margin-top:10px}
+.ezback{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 18px);z-index:40;font:inherit;font-weight:700;font-size:15px;padding:11px 20px;border-radius:999px;border:1.5px solid var(--bad,#c62828);background:var(--paper,#fff);color:var(--bad,#c62828);box-shadow:0 6px 18px rgba(0,0,0,.18);cursor:pointer;max-width:calc(100vw - 32px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ezback:hover{background:var(--bad,#c62828);color:var(--paper,#fff)}
 .wback{display:block;margin-top:12px;border-color:var(--bad,#c62828)!important;color:var(--bad,#c62828)!important;font-weight:700}
 @keyframes wflash{0%,60%{box-shadow:0 0 0 4px var(--bad,#c62828)}100%{box-shadow:0 0 0 0 transparent}}
 .wflash{animation:wflash 2.2s ease-out;border-radius:10px}`;
@@ -144,7 +147,8 @@ h3 .missbadge{display:inline-block;white-space:nowrap;margin-left:10px;font-size
       const pts=q.querySelector(".pts");
       /* written questions can also sit inside a chapter tab (a chapter's 問答／填充 block) */
       const vw=q.closest(".view"),vid=vw?vw.id:id,ch=CH.includes(vid)?vid:null;
-      const where=NAME[id]||(ch?(NAME[ch]||ch)+" 問答":id);
+      const bh=q.closest(".exam").querySelector("h2"),part=bh?bh.textContent.replace(/[（(].*$/,"").trim():"問答"; /* e.g. Problems, Fill-in ＆ Quiz */
+      const where=NAME[id]||(ch?(NAME[ch]||ch)+" "+part:id);
       out.push({m:match({q:qt,e:ref?ref.textContent:"",sec:q.dataset.sec},ch),ch,src:where+" "+(pts?pts.textContent:q.id),go:vid,qid:q.id,q:qt.slice(0,700),yours:"得 "+g.score+" / "+q.dataset.pts+" 分",right:"看原題的參考答案",e:g.feedback||""});
     });
     return out;
@@ -185,17 +189,21 @@ h3 .missbadge{display:inline-block;white-space:nowrap;margin-left:10px;font-size
   function btn(txt,fn){const b=document.createElement("button");b.className="btn";b.type="button";b.textContent=txt;b.addEventListener("click",fn);return b;}
   /* under every wrong answer (chapter quiz, past exam, mock exam): a 「回講義這一段」 button.
      Jumping to the notes leaves a 「← 回到剛才的題目」 button under that heading. */
+  /* a floating "go back" pill at the bottom of the screen: it stays visible while you scroll through the notes */
+  const backPill=document.createElement("button");backPill.type="button";backPill.className="ezback";backPill.hidden=true;
+  document.body.appendChild(backPill);
+  function offerBack(label,fn){backPill.textContent=label;backPill.onclick=()=>{backPill.hidden=true;fn();};backPill.hidden=false;}
+  /* switching tabs yourself means you are done with it */
+  document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest("#tabs [data-go], .brand"))backPill.hidden=true;},true);
+  function numOf(el){const n=el&&el.querySelector(".stem .num, .pts");return n?n.textContent.replace(/[.\s·].*$/,"").replace(/\.$/,""):"";}
   function toNotes(w){
     const s=w.m.s;
     document.querySelectorAll(".wback").forEach(b=>b.remove());
     if(s){show(s.ch);}else if(w.ch){show(w.ch);}else return;
     const anchor=s?s.h:document.getElementById(w.ch).querySelector("h1,h2,h3");
-    if(anchor){
-      const b=document.createElement("button");b.type="button";b.className="btn wback";b.textContent="← 回到剛才的題目";
-      b.addEventListener("click",()=>{b.remove();show(w.go);const el=locate(w);if(el)flash(el,"center");});
-      anchor.after(b);
-      setTimeout(()=>{anchor.scrollIntoView({block:"start"});},30);
-    }
+    if(anchor)setTimeout(()=>{anchor.scrollIntoView({block:"start"});},30);
+    const n=numOf(locate(w));
+    offerBack("↩ 回到剛才的題目"+(n?"（第 "+n+" 題）":""),()=>{show(w.go);const el=locate(w);if(el)flash(el,"center");});
   }
   function notesButtons(list){
     const keep=new Set();
@@ -236,7 +244,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;margin-left:10px;font-size
         add("src",w.src);add("wq2",w.q);add("yours","你的答案："+w.yours);add("right","正確答案："+w.right);if(w.e)add("",w.e);
         const bar=document.createElement("div");bar.className="wbar";
         bar.appendChild(btn("回原題",()=>goto(w)));
-        if(s)bar.appendChild(btn("回講義這一段",()=>{show(s.ch);s.h.scrollIntoView({block:"start"});}));
+        if(s)bar.appendChild(btn("回講義這一段",()=>{show(s.ch);setTimeout(()=>s.h.scrollIntoView({block:"start"}),30);offerBack("↩ 回錯題區（回到這張卡）",()=>{pendingCard=wid(w);show("wrong");later();});}));
         else if(w.ch)bar.appendChild(btn("回 "+(NAME[w.ch]||w.ch)+" 講義",()=>show(w.ch)));
         c.appendChild(bar);
         if(s){

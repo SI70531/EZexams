@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<style>[hidden]{display:none!important}body{margin:0}</style>
+<style>[hidden]{display:none!important}body{margin:0}.chw{margin-top:48px;padding-top:28px;border-top:2px solid var(--ink)}.chw>h2{margin-top:0}.blank{letter-spacing:.05em;color:var(--brass)}</style>
 <title>資料結構期中衝刺｜EZexams</title>
-<meta name="description" content="資料與檔案結構期中考衝刺：Gilberg & Forouzan Ch1–Ch3 講義、選擇題、手寫練習和 2024／2025 考古題。">
+<meta name="description" content="資料與檔案結構期中考衝刺：Gilberg & Forouzan Ch1–Ch3 講義、選擇題、Fill-in／Quiz 練習和 2024／2025 考古題。">
 <meta name="theme-color" content="#dde1e0" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#11212d" media="(prefers-color-scheme: dark)">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="EZexams">
 <meta property="og:title" content="資料結構期中衝刺｜EZexams">
-<meta property="og:description" content="資料與檔案結構期中考衝刺：Gilberg & Forouzan Ch1–Ch3 講義、選擇題、手寫練習和 2024／2025 考古題。">
+<meta property="og:description" content="資料與檔案結構期中考衝刺：Gilberg & Forouzan Ch1–Ch3 講義、選擇題、Fill-in／Quiz 練習和 2024／2025 考古題。">
 <meta property="og:url" content="https://si70531.github.io/EZexams/data-structures/midterm/">
 <meta property="og:image" content="https://si70531.github.io/EZexams/assets/og.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -27,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=LXGW+WenKai+TC:wght@400;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
-<link rel="stylesheet" href="../../assets/ezbase.css?v=db375213">
+<link rel="stylesheet" href="../../assets/ezbase.css?v=11a0f842">
 <style>
 /* Layout: the study guide as a linked list. Tabs run node to node; each cover carries a node card (state, progress, link to the next view). Same EZexams system as the OS page. */
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
@@ -119,8 +119,8 @@ pre mark{background:var(--warn-soft);box-shadow:inset 0 -2px 0 var(--warn-line)}
 code{font-family:var(--f-mono);font-size:.88em;background:var(--code);border:1px solid var(--line);border-radius:4px;padding:0 5px}
 .box h4:first-child{margin-top:0}
 .two>.box{margin:0}
-.wpr{margin-top:48px;padding-top:6px}
-.wpr h2,.exam h2{font-family:var(--f-display);font-size:26px;font-weight:700;margin:0 0 4px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+
+.exam h2{font-family:var(--f-display);font-size:26px;font-weight:700;margin:0 0 4px;padding-bottom:8px;border-bottom:1px solid var(--line)}
 .wq{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:14px 20px;margin:14px 0}
 .wq .q{margin-top:0}
 .qtext table,.wq table{font-size:14px}
@@ -155,7 +155,7 @@ pre,code,.calc{font-variant-ligatures:none}
   </table>
   <h3>讀書計畫（到 11/6）</h3>
   <div class="plan" data-exam="2026-11-06">
-    <div class="day"><div class="d"></div><div class="t">讀 Ch1，做章末選擇題和手寫練習。重點是 header 四個欄位、atomic data、ADT、Big-O 推導。<br><button class="btn" data-go="ch1">Ch1</button></div></div>
+    <div class="day"><div class="d"></div><div class="t">讀 Ch1，做章末的 Multiple-choice question 和 Fill-in／Quiz。重點是 header 四個欄位、atomic data、ADT、Big-O 推導。<br><button class="btn" data-go="ch1">Ch1</button></div></div>
     <div class="day"><div class="d"></div><div class="t">讀 Ch2 前半：hashing 方法。自己動手算一遍 fold boundary、modulo。<br><button class="btn" data-go="ch2">Ch2</button></div></div>
     <div class="day"><div class="d"></div><div class="t">讀 Ch2 後半：碰撞處理。算一遍 linear probe、key offset，做 Ch2 章末題。<br><button class="btn" data-go="ch2">Ch2</button></div></div>
     <div class="day"><div class="d"></div><div class="t">讀 Ch3。把黃色螢光標記的 pseudocode 抄兩遍：insertNode、deleteNode、searchList、destroyList、append、getNext。<br><button class="btn" data-go="ch3">Ch3</button></div></div>
@@ -173,7 +173,7 @@ pre,code,.calc{font-variant-ligatures:none}
   <li>雜湊計算一定寫過程：摺疊 → 加總 → MOD → 每次碰撞的位置。答案錯了，過程還有部分分。</li>
   <li>程式填空按「先接後面、再改前面」的順序寫，箭頭寫 <code>-&gt;</code>。</li></ul></div>
 </section>
-<section role="tabpanel" class="view" id="ch1" hidden><div class="vhead"><div class="pcb" data-pcb="ch1" role="img"></div><div class="eyebrow">Chapter 1</div><h1>Ch1 Introduction（導論）</h1><p>Pseudocode（虛擬碼）、ADT（抽象資料型態）、Big-O（效率）。考試大多是觀念選擇題，加上 loop 次數與 Big-O 計算。讀完做最下面的選擇題和手寫練習。</p></div>
+<section role="tabpanel" class="view" id="ch1" hidden><div class="vhead"><div class="pcb" data-pcb="ch1" role="img"></div><div class="eyebrow">Chapter 1</div><h1>Ch1 Introduction（導論）</h1><p>Pseudocode（虛擬碼）、ADT（抽象資料型態）、Big-O（效率）。考試大多是觀念選擇題，加上 loop 次數與 Big-O 計算。讀完做最下面的 Multiple-choice question、Fill-in 和 Quiz。</p></div>
 <h3 id="s1-1" data-sec="1-1">1-1 Pseudocode（虛擬碼）</h3>
 <p><b>Pseudocode</b> 是 an English-like representation of the code（類似英文的程式表示法），一半英文、一半 structured code（結構化程式碼）。</p>
 
@@ -316,8 +316,19 @@ f(n) = aⱼnᵏ + aⱼ₋₁nᵏ⁻¹ + … + a₁n + a₀  ⇒ O(nᵏ)</pre>
 <p>相加只要把同位置的兩格加起來，<code>matrix3[r][c] = matrix1[r][c] + matrix2[r][c]</code>，沒有第三層，所以是 n × n = n²。</p>
 
 
-<div class="wpr"><h2>Ch1 手寫練習</h2><p class="small">先在紙上寫，再展開參考答案對照。考試的 Part III 就是這種題型。</p>
-  <div class="wq"><p class="q"><span class="pts">W1</span>How many times will <code>application code</code> run in the following loop? What is its Big-O?</p>
+<div class="quiz" data-quiz="ch1"></div>
+<div class="exam chw" data-exam="ch1w">
+<h2>Fill-in ＆ Quiz（50 分）</h2>
+<p class="small">格式照考古題的 Part II 和 Part III。先在紙上或框裡寫，寫完按「批改全部」，或一題一題按「批改這題」。中英文都可以。</p>
+<div class="examtools"><span class="score"></span><span class="timer" hidden></span><button class="btn tbtn" type="button" hidden>開始計時</button><button class="btn primary gradeall" type="button">批改全部</button><button class="btn reset" type="button">清除作答</button><span class="gmsg"></span></div><p class="box tip nogradenote">這裡用關鍵字比對自動批改：有寫到必要的英文術語、程式敘述或數字就給分。分數僅供參考，寫完一定要展開參考答案對照。</p>
+<h3>Part II. Fill-in（5 題，每題 2 分，共 10 分）</h3>
+<div class="exq" id="ch1w-1" data-pts="2"><div class="qtext"><p class="q"><span class="pts">F1 · 2 分</span>The part of an algorithm header that describes any requirements for the parameters is the <span class="blank">______</span>.</p></div><label class="small" for="ch1w-1-a">你的答案</label><textarea id="ch1w-1-a" rows="2" placeholder="填空格裡的答案"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>Precondition.<div class="zhtr"><span>中文</span>前置條件（precondition）。</div></div></div></details><label class="self" for="ch1w-1-c"><input type="checkbox" id="ch1w-1-c"> 我答對了（2 分）</label></div>
+<div class="exq" id="ch1w-2" data-pts="2"><div class="qtext"><p class="q"><span class="pts">F2 · 2 分</span><span class="blank">______</span> data are data that consist of a single piece of information and cannot be divided into other meaningful pieces.</p></div><label class="small" for="ch1w-2-a">你的答案</label><textarea id="ch1w-2-a" rows="2" placeholder="填空格裡的答案"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>Atomic data.<div class="zhtr"><span>中文</span>原子資料（atomic data）。</div></div></div></details><label class="self" for="ch1w-2-c"><input type="checkbox" id="ch1w-2-c"> 我答對了（2 分）</label></div>
+<div class="exq" id="ch1w-3" data-pts="2"><div class="qtext"><p class="q"><span class="pts">F3 · 2 分</span>A loop whose controlling variable is multiplied (or divided) by 2 on each pass has an efficiency of <span class="blank">______</span>.</p></div><label class="small" for="ch1w-3-a">你的答案</label><textarea id="ch1w-3-a" rows="2" placeholder="填空格裡的答案"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>O(log n) (logarithmic).<div class="zhtr"><span>中文</span>O(log n)，對數。</div></div></div></details><label class="self" for="ch1w-3-c"><input type="checkbox" id="ch1w-3-c"> 我答對了（2 分）</label></div>
+<div class="exq" id="ch1w-4" data-pts="2"><div class="qtext"><p class="q"><span class="pts">F4 · 2 分</span>An abstract data type is a data declaration packaged together with the <span class="blank">______</span> that are meaningful for the data type.</p></div><label class="small" for="ch1w-4-a">你的答案</label><textarea id="ch1w-4-a" rows="2" placeholder="填空格裡的答案"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>Operations.<div class="zhtr"><span>中文</span>操作（operations）。</div></div></div></details><label class="self" for="ch1w-4-c"><input type="checkbox" id="ch1w-4-c"> 我答對了（2 分）</label></div>
+<div class="exq" id="ch1w-5" data-pts="2"><div class="qtext"><p class="q"><span class="pts">F5 · 2 分</span>Bundling all processing for an object into a library and hiding it from the user is called <span class="blank">______</span>.</p></div><label class="small" for="ch1w-5-a">你的答案</label><textarea id="ch1w-5-a" rows="2" placeholder="填空格裡的答案"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>Encapsulation.<div class="zhtr"><span>中文</span>封裝（encapsulation）。</div></div></div></details><label class="self" for="ch1w-5-c"><input type="checkbox" id="ch1w-5-c"> 我答對了（2 分）</label></div>
+<h3>Part III. Quiz（6 題，共 40 分）</h3>
+<div class="exq" id="ch1w-6" data-pts="8"><div class="qtext"><p class="q"><span class="pts">Q1 · 8 分</span>How many times will <code>application code</code> run in the following loop? What is its Big-O?</p>
 <pre>1 i = 1
 2 loop (i &lt;= 1000)
   1 j = 1
@@ -326,13 +337,9 @@ f(n) = aⱼnᵏ + aⱼ₋₁nᵏ⁻¹ + … + a₁n + a₀  ⇒ O(nᵏ)</pre>
     2 j = j * 2
   3 end loop
   4 i = i + 1
-3 end loop</pre>
-  <details class="qa"><summary>看參考答案</summary><div class="inner">外層 linear loop 跑 1000 次。內層 j = 1, 2, 4, …, 512，共 10 次（≈ log₂1000）。<br>總次數 = 1000 × 10 = <span class="k">10,000</span>，屬於 linear logarithmic，<span class="k">O(n log n)</span>。</div></details></div>
-
-  <div class="wq"><p class="q"><span class="pts">W2</span>Derive the Big-O of f(n) = 3n³ + 100n² log n + 25n + 7. Show both steps.</p>
-  <details class="qa"><summary>看參考答案</summary><div class="inner">Step 1 係數設 1：n³ + n² log n + n + 1<br>Step 2 只留最大項：n³ ⇒ <span class="k">O(n³)</span><br>（n² log n 比 n³ 小，因為 log n 長得比 n 慢。）</div></details></div>
-
-  <div class="wq"><p class="q"><span class="pts">W3</span>The following loop is a dependent quadratic loop. Write f(n) and its Big-O.</p>
+3 end loop</pre></div><label class="small" for="ch1w-6-a">你的答案</label><textarea id="ch1w-6-a" rows="6" placeholder="在這裡作答，中英文都可以；填空寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">外層 linear loop 跑 1000 次。內層 j = 1, 2, 4, …, 512，共 10 次（≈ log₂1000）。<br>總次數 = 1000 × 10 = <span class="k">10,000</span>，屬於 linear logarithmic，<span class="k">O(n log n)</span>。</div></details><label class="self" for="ch1w-6-c"><input type="checkbox" id="ch1w-6-c"> 我答對了（8 分）</label></div>
+<div class="exq" id="ch1w-7" data-pts="6"><div class="qtext"><p class="q"><span class="pts">Q2 · 6 分</span>Derive the Big-O of f(n) = 3n³ + 100n² log n + 25n + 7. Show both steps.</p></div><label class="small" for="ch1w-7-a">你的答案</label><textarea id="ch1w-7-a" rows="6" placeholder="在這裡作答，中英文都可以；填空寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">Step 1 係數設 1：n³ + n² log n + n + 1<br>Step 2 只留最大項：n³ ⇒ <span class="k">O(n³)</span><br>（n² log n 比 n³ 小，因為 log n 長得比 n 慢。）</div></details><label class="self" for="ch1w-7-c"><input type="checkbox" id="ch1w-7-c"> 我答對了（6 分）</label></div>
+<div class="exq" id="ch1w-8" data-pts="6"><div class="qtext"><p class="q"><span class="pts">Q3 · 6 分</span>The following loop is a dependent quadratic loop. Write f(n) and its Big-O.</p>
 <pre>1 i = 1
 2 loop (i &lt;= n)
   1 j = 1
@@ -341,15 +348,10 @@ f(n) = aⱼnᵏ + aⱼ₋₁nᵏ⁻¹ + … + a₁n + a₀  ⇒ O(nᵏ)</pre>
     2 j = j + 1
   3 end loop
   4 i = i + 1
-3 end loop</pre>
-  <details class="qa"><summary>看參考答案</summary><div class="inner">內層次數依序是 1, 2, 3, …, n，總和 = <span class="k">n(n+1)/2</span> = ½n² + ½n ⇒ <span class="k">O(n²)</span>。</div></details></div>
-
-  <div class="wq"><p class="q"><span class="pts">W4</span>What is the difference between an <i>output parameter</i> and a <i>return value</i>? Which part of the header describes each?</p>
-  <details class="qa"><summary>看參考答案</summary><div class="inner">Output parameter 是用 <code>ref</code> 傳入、在演算法中被修改的參數，可以有很多個，由 <b>Postcondition</b> 描述它的狀態。Return value 只有一個，由 <code>return</code> 回傳，由 <b>Return condition</b> 描述。</div></details></div>
-
-  <div class="wq"><p class="q"><span class="pts">W5</span>Explain what an ADT is and why the bank-queue analyst should write a queue ADT instead of a program that only simulates the bank queue.</p>
-  <details class="qa"><summary>看參考答案</summary><div class="inner">ADT = a data declaration packaged together with the operations that are meaningful for the data type；使用者只知道能做什麼（what），實作被隱藏（how）。寫 queue ADT 可重複用在任何 queue 問題；專用模擬程式只能用一次。用 ADT 後，分析師只要專心寫銀行應用。</div></details></div>
-<div class="wq"><p class="q"><span class="pts">W6</span>Count how many times <code>statement</code> runs, then give the Big-O. Explain why it is NOT O(n log n).</p><pre>1 i = 1
+3 end loop</pre></div><label class="small" for="ch1w-8-a">你的答案</label><textarea id="ch1w-8-a" rows="6" placeholder="在這裡作答，中英文都可以；填空寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">內層次數依序是 1, 2, 3, …, n，總和 = <span class="k">n(n+1)/2</span> = ½n² + ½n ⇒ <span class="k">O(n²)</span>。</div></details><label class="self" for="ch1w-8-c"><input type="checkbox" id="ch1w-8-c"> 我答對了（6 分）</label></div>
+<div class="exq" id="ch1w-9" data-pts="6"><div class="qtext"><p class="q"><span class="pts">Q4 · 6 分</span>What is the difference between an <i>output parameter</i> and a <i>return value</i>? Which part of the header describes each?</p></div><label class="small" for="ch1w-9-a">你的答案</label><textarea id="ch1w-9-a" rows="6" placeholder="在這裡作答，中英文都可以；填空寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">Output parameter 是用 <code>ref</code> 傳入、在演算法中被修改的參數，可以有很多個，由 <b>Postcondition</b> 描述它的狀態。Return value 只有一個，由 <code>return</code> 回傳，由 <b>Return condition</b> 描述。</div></details><label class="self" for="ch1w-9-c"><input type="checkbox" id="ch1w-9-c"> 我答對了（6 分）</label></div>
+<div class="exq" id="ch1w-10" data-pts="7"><div class="qtext"><p class="q"><span class="pts">Q5 · 7 分</span>Explain what an ADT is and why the bank-queue analyst should write a queue ADT instead of a program that only simulates the bank queue.</p></div><label class="small" for="ch1w-10-a">你的答案</label><textarea id="ch1w-10-a" rows="6" placeholder="在這裡作答，中英文都可以；填空寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">ADT = a data declaration packaged together with the operations that are meaningful for the data type；使用者只知道能做什麼（what），實作被隱藏（how）。寫 queue ADT 可重複用在任何 queue 問題；專用模擬程式只能用一次。用 ADT 後，分析師只要專心寫銀行應用。</div></details><label class="self" for="ch1w-10-c"><input type="checkbox" id="ch1w-10-c"> 我答對了（7 分）</label></div>
+<div class="exq" id="ch1w-11" data-pts="7"><div class="qtext"><p class="q"><span class="pts">Q6 · 7 分</span>Count how many times <code>statement</code> runs, then give the Big-O. Explain why it is NOT O(n log n).</p><pre>1 i = 1
 2 loop (i &lt;= n)
   1 j = 1
   2 loop (j &lt;= i)
@@ -357,9 +359,9 @@ f(n) = aⱼnᵏ + aⱼ₋₁nᵏ⁻¹ + … + a₁n + a₀  ⇒ O(nᵏ)</pre>
     2 j = j + 1
   3 end loop
   4 i = i * 2
-3 end loop</pre><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>The inner loop runs i times, and i = 1, 2, 4, …, n. Total = 1 + 2 + 4 + … + n ≈ 2n − 1, so the efficiency is O(n). It is not O(n log n) because the inner loop does not run n times on every pass; it runs only i times.<div class="zhtr"><span>中文</span>內層跑 i 次，而 i 依序是 1, 2, 4, …, n。總共 1 + 2 + 4 + … + n ≈ 2n − 1，所以是 O(n)。不是 O(n log n)，因為內層不是每次都跑 n 次，只跑 i 次。</div></div></div></details></div>
+3 end loop</pre></div><label class="small" for="ch1w-11-a">你的答案</label><textarea id="ch1w-11-a" rows="6" placeholder="在這裡作答，中英文都可以；填空寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>The inner loop runs i times, and i = 1, 2, 4, …, n. Total = 1 + 2 + 4 + … + n ≈ 2n − 1, so the efficiency is O(n). It is not O(n log n) because the inner loop does not run n times on every pass; it runs only i times.<div class="zhtr"><span>中文</span>內層跑 i 次，而 i 依序是 1, 2, 4, …, n。總共 1 + 2 + 4 + … + n ≈ 2n − 1，所以是 O(n)。不是 O(n log n)，因為內層不是每次都跑 n 次，只跑 i 次。</div></div></div></details><label class="self" for="ch1w-11-c"><input type="checkbox" id="ch1w-11-c"> 我答對了（7 分）</label></div>
 </div>
-<div class="quiz" data-quiz="ch1"></div></section>
+</section>
 
 <section role="tabpanel" class="view" id="ch2" hidden><div class="vhead"><div class="pcb" data-pcb="ch2" role="img"></div><div class="eyebrow">Chapter 2</div><h1>Ch2 Searching（搜尋）</h1><p>Sequential／binary search 和三種變形、八種 hashing method、collision resolution。雜湊計算是 Part III 最大題，一定要會算。</p></div>
 <h3 id="s2-1" data-sec="2-1">2-1 List Searches（串列搜尋）</h3>
@@ -534,32 +536,34 @@ key 224562，list size 19：<br>
 <p>大型系統會組合：先 hash 到 bucket，滿了做固定次數的 linear probe，再用 linked list overflow area。</p>
 
 
-<div class="wpr"><h2>Ch2 手寫練習</h2><p class="small">先在紙上寫，再展開參考答案對照。考試的 Part III 就是這種題型。</p>
-  <div class="wq"><p class="q"><span class="pts">W1</span>Given the sorted list [4, 7, 8, 10, 14, 21, 22, 36, 62, 77, 81, 91], trace the binary search for target <b>62</b> and for target <b>80</b>. Show first, mid, last in each step.</p>
-  <details class="qa"><summary>看參考答案</summary><div class="inner">
+<div class="quiz" data-quiz="ch2"></div>
+<div class="exam chw" data-exam="ch2w">
+<h2>Fill-in ＆ Quiz（50 分）</h2>
+<p class="small">格式照考古題的 Part II 和 Part III。先在紙上或框裡寫，寫完按「批改全部」，或一題一題按「批改這題」。中英文都可以。</p>
+<div class="examtools"><span class="score"></span><span class="timer" hidden></span><button class="btn tbtn" type="button" hidden>開始計時</button><button class="btn primary gradeall" type="button">批改全部</button><button class="btn reset" type="button">清除作答</button><span class="gmsg"></span></div><p class="box tip nogradenote">這裡用關鍵字比對自動批改：有寫到必要的英文術語、程式敘述或數字就給分。分數僅供參考，寫完一定要展開參考答案對照。</p>
+<h3>Part II. Fill-in（5 題，每題 2 分，共 10 分）</h3>
+<div class="exq" id="ch2w-1" data-pts="2"><div class="qtext"><p class="q"><span class="pts">F1 · 2 分</span>The address produced by a hashing algorithm is called the <span class="blank">______</span> address.</p></div><label class="small" for="ch2w-1-a">你的答案</label><textarea id="ch2w-1-a" rows="2" placeholder="填空格裡的答案"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>Home address.<div class="zhtr"><span>中文</span>home address（起始位址）。</div></div></div></details><label class="self" for="ch2w-1-c"><input type="checkbox" id="ch2w-1-c"> 我答對了（2 分）</label></div>
+<div class="exq" id="ch2w-2" data-pts="2"><div class="qtext"><p class="q"><span class="pts">F2 · 2 分</span>A set of keys that hash to the same home address are called <span class="blank">______</span>.</p></div><label class="small" for="ch2w-2-a">你的答案</label><textarea id="ch2w-2-a" rows="2" placeholder="填空格裡的答案"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>Synonyms.<div class="zhtr"><span>中文</span>同義字（synonyms）。</div></div></div></details><label class="self" for="ch2w-2-c"><input type="checkbox" id="ch2w-2-c"> 我答對了（2 分）</label></div>
+<div class="exq" id="ch2w-3" data-pts="2"><div class="qtext"><p class="q"><span class="pts">F3 · 2 分</span>The number of filled elements divided by the total number of elements in a hashed list, times 100, is the <span class="blank">______</span>.</p></div><label class="small" for="ch2w-3-a">你的答案</label><textarea id="ch2w-3-a" rows="2" placeholder="填空格裡的答案"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>Load factor.<div class="zhtr"><span>中文</span>負載因子（load factor）。</div></div></div></details><label class="self" for="ch2w-3-c"><input type="checkbox" id="ch2w-3-c"> 我答對了（2 分）</label></div>
+<div class="exq" id="ch2w-4" data-pts="2"><div class="qtext"><p class="q"><span class="pts">F4 · 2 分</span>Placing the target at the end of the list so the search loop does not have to test for the end of the list is called a <span class="blank">______</span> search.</p></div><label class="small" for="ch2w-4-a">你的答案</label><textarea id="ch2w-4-a" rows="2" placeholder="填空格裡的答案"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>Sentinel search.<div class="zhtr"><span>中文</span>哨兵搜尋（sentinel search）。</div></div></div></details><label class="self" for="ch2w-4-c"><input type="checkbox" id="ch2w-4-c"> 我答對了（2 分）</label></div>
+<div class="exq" id="ch2w-5" data-pts="2"><div class="qtext"><p class="q"><span class="pts">F5 · 2 分</span>The efficiency of the binary search is <span class="blank">______</span>.</p></div><label class="small" for="ch2w-5-a">你的答案</label><textarea id="ch2w-5-a" rows="2" placeholder="填空格裡的答案"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>O(log n).<div class="zhtr"><span>中文</span>O(log n)。</div></div></div></details><label class="self" for="ch2w-5-c"><input type="checkbox" id="ch2w-5-c"> 我答對了（2 分）</label></div>
+<h3>Part III. Quiz（7 題，共 40 分）</h3>
+<div class="exq" id="ch2w-6" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q1 · 5 分</span>Given the sorted list [4, 7, 8, 10, 14, 21, 22, 36, 62, 77, 81, 91], trace the binary search for target <b>62</b> and for target <b>80</b>. Show first, mid, last in each step.</p></div><label class="small" for="ch2w-6-a">你的答案</label><textarea id="ch2w-6-a" rows="6" placeholder="在這裡作答，中英文都可以；填空寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">
   <b>找 62</b>：(0, 5, 11) list[5]=21 &lt; 62 → first=6；(6, 8, 11) list[8]=62 → <span class="k">found at index 8</span>。<br>
-  <b>找 80</b>：(0,5,11) 21 &lt; 80 → first=6；(6,8,11) 62 &lt; 80 → first=9；(9,10,11) 81 &gt; 80 → last=9；(9,9,9) 77 &lt; 80 → first=10；first 10 &gt; last 9 → <span class="k">not found</span>。</div></details></div>
-
-  <div class="wq"><p class="q"><span class="pts">W2</span>Compute the 3-digit address of key <b>123456789</b> using (a) fold shift and (b) fold boundary. Compute (c) the midsquare address of key <b>9452</b> (4 digits).</p>
-  <details class="qa"><summary>看參考答案</summary><div class="inner">(a) 123 + 456 + 789 = 1368 → 去掉最高位 → <span class="k">368</span><br>(b) 321 + 456 + 987 = 1764 → <span class="k">764</span><br>(c) 9452² = 89340304 → 取中間 4 位 → <span class="k">3403</span></div></details></div>
-
-  <div class="wq"><p class="q"><span class="pts">W3</span>Use the pseudorandom method y = ax + c with a = 17, c = 7 to hash key <b>121267</b> into a list of size 307.</p>
-  <details class="qa"><summary>看參考答案</summary><div class="inner">y = 17 × 121267 + 7 = 2061546；2061546 MOD 307：307 × 6715 = 2061505，餘 <span class="k">41</span>。</div></details></div>
-
-  <div class="wq"><p class="q"><span class="pts">W4</span>List size = 307. Keys 166702, 572556 and 067234 all hash to home address 1 by modulo division. Using <b>key offset</b>, fill in the key offset, probe 1 and probe 2 for each key.</p>
-  <details class="qa"><summary>看參考答案</summary><div class="inner"><div class="tbl"><table><tr><th>Key</th><th>Offset (key/307)</th><th>Probe 1</th><th>Probe 2</th></tr>
+  <b>找 80</b>：(0,5,11) 21 &lt; 80 → first=6；(6,8,11) 62 &lt; 80 → first=9；(9,10,11) 81 &gt; 80 → last=9；(9,9,9) 77 &lt; 80 → first=10；first 10 &gt; last 9 → <span class="k">not found</span>。</div></details><label class="self" for="ch2w-6-c"><input type="checkbox" id="ch2w-6-c"> 我答對了（5 分）</label></div>
+<div class="exq" id="ch2w-7" data-pts="6"><div class="qtext"><p class="q"><span class="pts">Q2 · 6 分</span>Compute the 3-digit address of key <b>123456789</b> using (a) fold shift and (b) fold boundary. Compute (c) the midsquare address of key <b>9452</b> (4 digits).</p></div><label class="small" for="ch2w-7-a">你的答案</label><textarea id="ch2w-7-a" rows="6" placeholder="在這裡作答，中英文都可以；填空寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">(a) 123 + 456 + 789 = 1368 → 去掉最高位 → <span class="k">368</span><br>(b) 321 + 456 + 987 = 1764 → <span class="k">764</span><br>(c) 9452² = 89340304 → 取中間 4 位 → <span class="k">3403</span></div></details><label class="self" for="ch2w-7-c"><input type="checkbox" id="ch2w-7-c"> 我答對了（6 分）</label></div>
+<div class="exq" id="ch2w-8" data-pts="4"><div class="qtext"><p class="q"><span class="pts">Q3 · 4 分</span>Use the pseudorandom method y = ax + c with a = 17, c = 7 to hash key <b>121267</b> into a list of size 307.</p></div><label class="small" for="ch2w-8-a">你的答案</label><textarea id="ch2w-8-a" rows="6" placeholder="在這裡作答，中英文都可以；填空寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">y = 17 × 121267 + 7 = 2061546；2061546 MOD 307：307 × 6715 = 2061505，餘 <span class="k">41</span>。</div></details><label class="self" for="ch2w-8-c"><input type="checkbox" id="ch2w-8-c"> 我答對了（4 分）</label></div>
+<div class="exq" id="ch2w-9" data-pts="7"><div class="qtext"><p class="q"><span class="pts">Q4 · 7 分</span>List size = 307. Keys 166702, 572556 and 067234 all hash to home address 1 by modulo division. Using <b>key offset</b>, fill in the key offset, probe 1 and probe 2 for each key.</p></div><label class="small" for="ch2w-9-a">你的答案</label><textarea id="ch2w-9-a" rows="6" placeholder="在這裡作答，中英文都可以；填空寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="tbl"><table><tr><th>Key</th><th>Offset (key/307)</th><th>Probe 1</th><th>Probe 2</th></tr>
   <tr><td>166702</td><td>543</td><td>(543+1) MOD 307 = 237</td><td>(543+237) MOD 307 = 166</td></tr>
   <tr><td>572556</td><td>1865</td><td>1866 MOD 307 = 24</td><td>(1865+24) MOD 307 = 47</td></tr>
-  <tr><td>067234</td><td>219</td><td>220</td><td>(219+220) MOD 307 = 132</td></tr></table></div>三個 key 的 home address 相同，但 collision path 都不一樣，這就是 key offset 的優點。</div></details></div>
-
-  <div class="wq"><p class="q"><span class="pts">W5</span>Insert keys 27, 18, 29, 28, 39, 13, 16 (in order) into a list of size 11 using modulo division and <b>linear probe</b>. How many collisions occur? Draw the final list. Which type of clustering do you see?</p>
-  <details class="qa"><summary>看參考答案</summary><div class="inner">27→5；18→7；29→7 撞 → 8（1 次）；28→6；39→6 撞，7 撞，8 撞 → 9（3 次）；13→2；16→5 撞，6、7、8、9 撞 → 10（5 次）。<br>總碰撞 <span class="k">9 次</span>。<br>
+  <tr><td>067234</td><td>219</td><td>220</td><td>(219+220) MOD 307 = 132</td></tr></table></div>三個 key 的 home address 相同，但 collision path 都不一樣，這就是 key offset 的優點。</div></details><label class="self" for="ch2w-9-c"><input type="checkbox" id="ch2w-9-c"> 我答對了（7 分）</label></div>
+<div class="exq" id="ch2w-10" data-pts="7"><div class="qtext"><p class="q"><span class="pts">Q5 · 7 分</span>Insert keys 27, 18, 29, 28, 39, 13, 16 (in order) into a list of size 11 using modulo division and <b>linear probe</b>. How many collisions occur? Draw the final list. Which type of clustering do you see?</p></div><label class="small" for="ch2w-10-a">你的答案</label><textarea id="ch2w-10-a" rows="6" placeholder="在這裡作答，中英文都可以；填空寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">27→5；18→7；29→7 撞 → 8（1 次）；28→6；39→6 撞，7 撞，8 撞 → 9（3 次）；13→2；16→5 撞，6、7、8、9 撞 → 10（5 次）。<br>總碰撞 <span class="k">9 次</span>。<br>
   <div class="tbl"><table><tr><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th></tr><tr><td></td><td></td><td>13</td><td></td><td></td><td>27</td><td>28</td><td>18</td><td>29</td><td>39</td><td>16</td></tr></table></div>
-  資料擠在 5–10 一整塊，這就是 linear probe 造成的 <b>primary clustering</b>。</div></details></div>
-<div class="wq"><p class="q"><span class="pts">W6</span>Insert keys 22, 33, 44, 55 (in order) into a list of size 11 with modulo division. Do it three times: with (a) linear probe, (b) quadratic probe, (c) key offset. For each, give the total collisions and the final addresses.</p><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>All four keys hash to 0.<br>(a) Linear: 22→0, 33→1 (1), 44→2 (2), 55→3 (3). Total 6; addresses 0, 1, 2, 3.<br>(b) Quadratic: 22→0, 33→0+1 = 1 (1), 44→1+4 = 5 (2), 55→5+9 = 14 MOD 11 = 3 (3). Total 6; addresses 0, 1, 5, 3.<br>(c) Key offset (offset = key / 11): 22→0, 33: offset 3 → 3 (1), 44: offset 4 → 4 (1), 55: offset 5 → 5 (1). Total 3; addresses 0, 3, 4, 5.<div class="zhtr"><span>中文</span>四個 key 都 hash 到 0。(a) 線性探測：碰撞 6 次，位置 0、1、2、3（擠在一起，primary clustering）。(b) 平方探測：碰撞 6 次，位置 0、1、5、3（散開一點，但大家走同一條路）。(c) 鍵值位移：每個 key 的 offset 不同，只碰撞 3 次，位置 0、3、4、5。這就是 key offset 能減少 secondary clustering 的原因。</div></div></div></details></div>
-<div class="wq"><p class="q"><span class="pts">W7</span>Keys are all multiples of 10 (10, 20, 30, …). Compare modulo division with list size 100 and list size 101. Which is better and why?</p><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>With size 100, key MOD 100 is always a multiple of 10, so only 10 addresses (0, 10, …, 90) are ever used and collisions pile up. With size 101 (a prime), multiples of 10 spread over all 101 addresses, so there are far fewer collisions. A prime list size is preferred.<div class="zhtr"><span>中文</span>用 100 時，餘數只會是 0、10、…、90 這 10 個位置，其他 90 格永遠空著，碰撞很多。用質數 101 時，10 的倍數會分散到全部 101 格。所以 list size 選質數比較好。</div></div></div></details></div>
+  資料擠在 5–10 一整塊，這就是 linear probe 造成的 <b>primary clustering</b>。</div></details><label class="self" for="ch2w-10-c"><input type="checkbox" id="ch2w-10-c"> 我答對了（7 分）</label></div>
+<div class="exq" id="ch2w-11" data-pts="6"><div class="qtext"><p class="q"><span class="pts">Q6 · 6 分</span>Insert keys 22, 33, 44, 55 (in order) into a list of size 11 with modulo division. Do it three times: with (a) linear probe, (b) quadratic probe, (c) key offset. For each, give the total collisions and the final addresses.</p></div><label class="small" for="ch2w-11-a">你的答案</label><textarea id="ch2w-11-a" rows="6" placeholder="在這裡作答，中英文都可以；填空寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>All four keys hash to 0.<br>(a) Linear: 22→0, 33→1 (1), 44→2 (2), 55→3 (3). Total 6; addresses 0, 1, 2, 3.<br>(b) Quadratic: 22→0, 33→0+1 = 1 (1), 44→1+4 = 5 (2), 55→5+9 = 14 MOD 11 = 3 (3). Total 6; addresses 0, 1, 5, 3.<br>(c) Key offset (offset = key / 11): 22→0, 33: offset 3 → 3 (1), 44: offset 4 → 4 (1), 55: offset 5 → 5 (1). Total 3; addresses 0, 3, 4, 5.<div class="zhtr"><span>中文</span>四個 key 都 hash 到 0。(a) 線性探測：碰撞 6 次，位置 0、1、2、3（擠在一起，primary clustering）。(b) 平方探測：碰撞 6 次，位置 0、1、5、3（散開一點，但大家走同一條路）。(c) 鍵值位移：每個 key 的 offset 不同，只碰撞 3 次，位置 0、3、4、5。這就是 key offset 能減少 secondary clustering 的原因。</div></div></div></details><label class="self" for="ch2w-11-c"><input type="checkbox" id="ch2w-11-c"> 我答對了（6 分）</label></div>
+<div class="exq" id="ch2w-12" data-pts="5"><div class="qtext"><p class="q"><span class="pts">Q7 · 5 分</span>Keys are all multiples of 10 (10, 20, 30, …). Compare modulo division with list size 100 and list size 101. Which is better and why?</p></div><label class="small" for="ch2w-12-a">你的答案</label><textarea id="ch2w-12-a" rows="6" placeholder="在這裡作答，中英文都可以；填空寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>With size 100, key MOD 100 is always a multiple of 10, so only 10 addresses (0, 10, …, 90) are ever used and collisions pile up. With size 101 (a prime), multiples of 10 spread over all 101 addresses, so there are far fewer collisions. A prime list size is preferred.<div class="zhtr"><span>中文</span>用 100 時，餘數只會是 0、10、…、90 這 10 個位置，其他 90 格永遠空著，碰撞很多。用質數 101 時，10 的倍數會分散到全部 101 格。所以 list size 選質數比較好。</div></div></div></details><label class="self" for="ch2w-12-c"><input type="checkbox" id="ch2w-12-c"> 我答對了（5 分）</label></div>
 </div>
-<div class="quiz" data-quiz="ch2"></div></section>
+</section>
 
 <section role="tabpanel" class="view" id="ch3" hidden><div class="vhead"><div class="pcb" data-pcb="ch3" role="img"></div><div class="eyebrow">Chapter 3</div><h1>Ch3 Linked Lists（鏈結串列）</h1><p>Linked list 的十個基本演算法、searchList 六種結果表、circular／doubly／multilinked list。程式填空每年必考，2024 考 destroyList、append，2025 考 insertNode。</p></div>
 <h3 id="s3-1" data-sec="3-1">3-1 Linear List Concepts（線性串列）</h3>
@@ -871,8 +875,19 @@ end deleteDbl</pre>
 </ul>
 
 
-<div class="wpr"><h2>Ch3 手寫練習</h2><p class="small">先在紙上寫，再展開參考答案對照。考試的 Part III 就是這種題型。</p>
-  <div class="wq"><p class="q"><span class="pts">W1</span>Finish algorithm <b>deleteNode</b> by filling (a)–(e).</p>
+<div class="quiz" data-quiz="ch3"></div>
+<div class="exam chw" data-exam="ch3w">
+<h2>Fill-in ＆ Quiz（50 分）</h2>
+<p class="small">格式照考古題的 Part II 和 Part III。先在紙上或框裡寫，寫完按「批改全部」，或一題一題按「批改這題」。中英文都可以。</p>
+<div class="examtools"><span class="score"></span><span class="timer" hidden></span><button class="btn tbtn" type="button" hidden>開始計時</button><button class="btn primary gradeall" type="button">批改全部</button><button class="btn reset" type="button">清除作答</button><span class="gmsg"></span></div><p class="box tip nogradenote">這裡用關鍵字比對自動批改：有寫到必要的英文術語、程式敘述或數字就給分。分數僅供參考，寫完一定要展開參考答案對照。</p>
+<h3>Part II. Fill-in（5 題，每題 2 分，共 10 分）</h3>
+<div class="exq" id="ch3w-1" data-pts="2"><div class="qtext"><p class="q"><span class="pts">F1 · 2 分</span>A linked list is identified by a pointer to its first node, which is stored in the <span class="blank">______</span> of the list&#x27;s metadata.</p></div><label class="small" for="ch3w-1-a">你的答案</label><textarea id="ch3w-1-a" rows="2" placeholder="填空格裡的答案"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>Head.<div class="zhtr"><span>中文</span>head（頭指標）。</div></div></div></details><label class="self" for="ch3w-1-c"><input type="checkbox" id="ch3w-1-c"> 我答對了（2 分）</label></div>
+<div class="exq" id="ch3w-2" data-pts="2"><div class="qtext"><p class="q"><span class="pts">F2 · 2 分</span>A linked list in which the last node&#x27;s link points to the first node is called a <span class="blank">______</span> linked list.</p></div><label class="small" for="ch3w-2-a">你的答案</label><textarea id="ch3w-2-a" rows="2" placeholder="填空格裡的答案"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>Circularly (circular) linked list.<div class="zhtr"><span>中文</span>環狀鏈結串列（circularly linked list）。</div></div></div></details><label class="self" for="ch3w-2-c"><input type="checkbox" id="ch3w-2-c"> 我答對了（2 分）</label></div>
+<div class="exq" id="ch3w-3" data-pts="2"><div class="qtext"><p class="q"><span class="pts">F3 · 2 分</span>In a doubly linked list, each node has a pointer to its successor and a pointer to its <span class="blank">______</span>.</p></div><label class="small" for="ch3w-3-a">你的答案</label><textarea id="ch3w-3-a" rows="2" placeholder="填空格裡的答案"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>Predecessor.<div class="zhtr"><span>中文</span>前一個節點（predecessor）。</div></div></div></details><label class="self" for="ch3w-3-c"><input type="checkbox" id="ch3w-3-c"> 我答對了（2 分）</label></div>
+<div class="exq" id="ch3w-4" data-pts="2"><div class="qtext"><p class="q"><span class="pts">F4 · 2 分</span>When the first node of a list is deleted, list.head is set to <span class="blank">______</span>.</p></div><label class="small" for="ch3w-4-a">你的答案</label><textarea id="ch3w-4-a" rows="2" placeholder="填空格裡的答案"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>pLoc-&gt;link (the deleted node&#x27;s successor).<div class="zhtr"><span>中文</span>list.head 改成 pLoc-&gt;link（被刪節點的下一個）。</div></div></div></details><label class="self" for="ch3w-4-c"><input type="checkbox" id="ch3w-4-c"> 我答對了（2 分）</label></div>
+<div class="exq" id="ch3w-5" data-pts="2"><div class="qtext"><p class="q"><span class="pts">F5 · 2 分</span>searchList returns two pointers: <span class="blank">______</span> points to the predecessor and <span class="blank">______</span> points to the node being examined.</p></div><label class="small" for="ch3w-5-a">你的答案</label><textarea id="ch3w-5-a" rows="2" placeholder="填空格裡的答案"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>pPre; pLoc.<div class="zhtr"><span>中文</span>pPre 指向前一個節點；pLoc 指向目前的節點。</div></div></div></details><label class="self" for="ch3w-5-c"><input type="checkbox" id="ch3w-5-c"> 我答對了（2 分）</label></div>
+<h3>Part III. Quiz（6 題，共 40 分）</h3>
+<div class="exq" id="ch3w-6" data-pts="7"><div class="qtext"><p class="q"><span class="pts">Q1 · 7 分</span>Finish algorithm <b>deleteNode</b> by filling (a)–(e).</p>
 <pre><b>Algorithm</b> deleteNode (ref list &lt;metadata&gt;, val pPre &lt;node pointer&gt;,
                       val pLoc &lt;node pointer&gt;, ref dataOut &lt;dataType&gt;)
 1 dataOut = pLoc-&gt;data
@@ -883,10 +898,8 @@ end deleteDbl</pre>
 4 end if
 5 ___(d)___
 6 ___(e)___
-end deleteNode</pre>
-  <details class="qa"><summary>看參考答案</summary><div class="inner">(a) pPre null　(b) list.head = pLoc-&gt;link　(c) pPre-&gt;link = pLoc-&gt;link　(d) list.count = list.count − 1　(e) recycle (pLoc)</div></details></div>
-
-  <div class="wq"><p class="q"><span class="pts">W2</span>Finish algorithm <b>getNext</b> (traverse).</p>
+end deleteNode</pre></div><label class="small" for="ch3w-6-a">你的答案</label><textarea id="ch3w-6-a" rows="6" placeholder="在這裡作答，中英文都可以；填空寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">(a) pPre null　(b) list.head = pLoc-&gt;link　(c) pPre-&gt;link = pLoc-&gt;link　(d) list.count = list.count − 1　(e) recycle (pLoc)</div></details><label class="self" for="ch3w-6-c"><input type="checkbox" id="ch3w-6-c"> 我答對了（7 分）</label></div>
+<div class="exq" id="ch3w-7" data-pts="7"><div class="qtext"><p class="q"><span class="pts">Q2 · 7 分</span>Finish algorithm <b>getNext</b> (traverse).</p>
 <pre>1 if (fromWhere is 0)
   1 if ( ___(a)___ )
     1 success = false
@@ -902,15 +915,11 @@ end deleteNode</pre>
     2 dataOut = list.pos-&gt;data
     3 success = true
 3 end if
-4 return ___(e)___</pre>
-  <details class="qa"><summary>看參考答案</summary><div class="inner">(a) list.count is zero　(b) list.pos = list.head　(c) list.pos-&gt;link null　(d) list.pos = list.pos-&gt;link　(e) success</div></details></div>
-
-  <div class="wq"><p class="q"><span class="pts">W3</span>A student writes the insert-in-middle code in this order. What goes wrong?</p>
+4 return ___(e)___</pre></div><label class="small" for="ch3w-7-a">你的答案</label><textarea id="ch3w-7-a" rows="6" placeholder="在這裡作答，中英文都可以；填空寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">(a) list.count is zero　(b) list.pos = list.head　(c) list.pos-&gt;link null　(d) list.pos = list.pos-&gt;link　(e) success</div></details><label class="self" for="ch3w-7-c"><input type="checkbox" id="ch3w-7-c"> 我答對了（7 分）</label></div>
+<div class="exq" id="ch3w-8" data-pts="6"><div class="qtext"><p class="q"><span class="pts">Q3 · 6 分</span>A student writes the insert-in-middle code in this order. What goes wrong?</p>
 <pre>1 pPre-&gt;link = pNew
-2 pNew-&gt;link = pPre-&gt;link</pre>
-  <details class="qa"><summary>看參考答案</summary><div class="inner">第 1 行先把 pPre 指向 pNew，原本的 successor 位址就不見了。第 2 行的 pPre-&gt;link 已經是 pNew，所以 pNew 指向<b>自己</b>，後面的節點全部弄丟。正確順序：<b>先 pNew-&gt;link = pPre-&gt;link，再 pPre-&gt;link = pNew</b>。</div></details></div>
-
-  <div class="wq"><p class="q"><span class="pts">W4</span>Finish algorithm <b>deleteDbl</b> for a doubly linked list.</p>
+2 pNew-&gt;link = pPre-&gt;link</pre></div><label class="small" for="ch3w-8-a">你的答案</label><textarea id="ch3w-8-a" rows="6" placeholder="在這裡作答，中英文都可以；填空寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">第 1 行先把 pPre 指向 pNew，原本的 successor 位址就不見了。第 2 行的 pPre-&gt;link 已經是 pNew，所以 pNew 指向<b>自己</b>，後面的節點全部弄丟。正確順序：<b>先 pNew-&gt;link = pPre-&gt;link，再 pPre-&gt;link = pNew</b>。</div></details><label class="self" for="ch3w-8-c"><input type="checkbox" id="ch3w-8-c"> 我答對了（6 分）</label></div>
+<div class="exq" id="ch3w-9" data-pts="7"><div class="qtext"><p class="q"><span class="pts">Q4 · 7 分</span>Finish algorithm <b>deleteDbl</b> for a doubly linked list.</p>
 <pre>4 if (pDlt-&gt;back not null)
   1 pPred = pDlt-&gt;back
   2 ___(a)___
@@ -923,14 +932,11 @@ end deleteNode</pre>
 8 else
   1 ___(d)___
 9 end if
-10 ___(e)___</pre>
-  <details class="qa"><summary>看參考答案</summary><div class="inner">(a) pPred-&gt;fore = pDlt-&gt;fore　(b) list.head = pDlt-&gt;fore　(c) pSucc-&gt;back = pDlt-&gt;back　(d) list.rear = pDlt-&gt;back　(e) recycle (pDlt)</div></details></div>
-
-  <div class="wq"><p class="q"><span class="pts">W5</span>In the searchList result table, fill pPre and pLoc for: (a) target &lt; first node, (b) target &gt; last node, (c) first &lt; target &lt; last (target not in list).</p>
-  <details class="qa"><summary>看參考答案</summary><div class="inner">(a) pPre = null，pLoc = first node，return false<br>(b) pPre = last node，pLoc = null，return false<br>(c) pPre = largest node &lt; target，pLoc = first node &gt; target，return false</div></details></div>
-<div class="wq"><p class="q"><span class="pts">W6</span>A doubly linked list is 10 ⇄ 20 ⇄ 30. Insert 25 with insertDbl: searchList returns pPred = node 20 and pSucc = node 30. Write the four pointer assignments in the correct order.</p><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>1. pNew-&gt;back = pPred (25 → back → 20)<br>2. pNew-&gt;fore = pPred-&gt;fore (25 → fore → 30)<br>3. pPred-&gt;fore = pNew (20 → fore → 25)<br>4. pSucc-&gt;back = pNew (30 → back → 25)<div class="zhtr"><span>中文</span>1. 新節點的 back 指向 20　2. 新節點的 fore 指向 30（要在 20 的 fore 被改掉之前讀）　3. 20 的 fore 改指向新節點　4. 30 的 back 改指向新節點。第 2 步一定要在第 3 步前面。</div></div></div></details></div>
+10 ___(e)___</pre></div><label class="small" for="ch3w-9-a">你的答案</label><textarea id="ch3w-9-a" rows="6" placeholder="在這裡作答，中英文都可以；填空寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">(a) pPred-&gt;fore = pDlt-&gt;fore　(b) list.head = pDlt-&gt;fore　(c) pSucc-&gt;back = pDlt-&gt;back　(d) list.rear = pDlt-&gt;back　(e) recycle (pDlt)</div></details><label class="self" for="ch3w-9-c"><input type="checkbox" id="ch3w-9-c"> 我答對了（7 分）</label></div>
+<div class="exq" id="ch3w-10" data-pts="6"><div class="qtext"><p class="q"><span class="pts">Q5 · 6 分</span>In the searchList result table, fill pPre and pLoc for: (a) target &lt; first node, (b) target &gt; last node, (c) first &lt; target &lt; last (target not in list).</p></div><label class="small" for="ch3w-10-a">你的答案</label><textarea id="ch3w-10-a" rows="6" placeholder="在這裡作答，中英文都可以；填空寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner">(a) pPre = null，pLoc = first node，return false<br>(b) pPre = last node，pLoc = null，return false<br>(c) pPre = largest node &lt; target，pLoc = first node &gt; target，return false</div></details><label class="self" for="ch3w-10-c"><input type="checkbox" id="ch3w-10-c"> 我答對了（6 分）</label></div>
+<div class="exq" id="ch3w-11" data-pts="7"><div class="qtext"><p class="q"><span class="pts">Q6 · 7 分</span>A doubly linked list is 10 ⇄ 20 ⇄ 30. Insert 25 with insertDbl: searchList returns pPred = node 20 and pSucc = node 30. Write the four pointer assignments in the correct order.</p></div><label class="small" for="ch3w-11-a">你的答案</label><textarea id="ch3w-11-a" rows="6" placeholder="在這裡作答，中英文都可以；填空寫 (a) … (b) …"></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>1. pNew-&gt;back = pPred (25 → back → 20)<br>2. pNew-&gt;fore = pPred-&gt;fore (25 → fore → 30)<br>3. pPred-&gt;fore = pNew (20 → fore → 25)<br>4. pSucc-&gt;back = pNew (30 → back → 25)<div class="zhtr"><span>中文</span>1. 新節點的 back 指向 20　2. 新節點的 fore 指向 30（要在 20 的 fore 被改掉之前讀）　3. 20 的 fore 改指向新節點　4. 30 的 back 改指向新節點。第 2 步一定要在第 3 步前面。</div></div></div></details><label class="self" for="ch3w-11-c"><input type="checkbox" id="ch3w-11-c"> 我答對了（7 分）</label></div>
 </div>
-<div class="quiz" data-quiz="ch3"></div></section>
+</section>
 <section role="tabpanel" class="view exam" id="y24" data-exam="y24" data-mins="110" hidden><div class="vhead"><div class="pcb" data-pcb="y24" role="img"></div><div class="eyebrow">2024 期中考</div><h1>2024 期中考古題</h1><p>Nov. 1, 2024　09:00–10:50。選擇題點了就對答案；手寫題在框裡作答，按「批改這題」或上方「批改全部手寫題」。題目照原卷打字。</p></div><div class="examtools"><span class="score"></span><span class="timer"></span><button class="btn tbtn" type="button">開始 110 分鐘計時</button><button class="btn primary gradeall" type="button">批改全部手寫題</button><button class="btn reset" type="button">清除作答</button><span class="gmsg"></span></div><p class="box tip nogradenote"><span class="lbl">批改方式</span>選擇題點了就對答案。手寫題用關鍵字比對自動批改：有寫到必要的英文術語或數字就給分。分數僅供參考，寫完一定要展開參考答案對照。</p>
 <h3>考卷結構</h3><table style="width:100%"><tr><th>大題</th><th>題號</th><th class="l">內容</th><th>配分</th></tr><tr><td>I 選擇</td><td>1–25</td><td class="l">Ch1 ×5、Ch2 ×11、Ch3 ×9</td><td>50%</td></tr><tr><td>II 填空</td><td>—</td><td class="l">Key offset 表格（1536、0922）</td><td>8%</td></tr><tr><td>III Quiz</td><td>26</td><td class="l">Fold boundary + modulo + linear probe / key offset</td><td>12%</td></tr><tr><td></td><td>27</td><td class="l">searchList 六種結果表</td><td>10%</td></tr><tr><td></td><td>28</td><td class="l">destroyList 程式填空</td><td>10%</td></tr><tr><td></td><td>29</td><td class="l">Append 程式填空</td><td>10%</td></tr></table>
 <h3>Part I. Multiple Choice（25 題，每題 2%）</h3><div class="quiz exmc" data-quiz="y24mc"></div>
@@ -1262,7 +1268,7 @@ recycle (pDlt)</div></div>
 
 </main>
 <script src="../../assets/ezsync.js?v=0528b1c5" data-key="ds-midterm-v1"></script>
-<script src="quiz.js?v=8a7241d6"></script>
+<script src="quiz.js?v=32abfbe4"></script>
 <script>
 (function(){
   const tt=document.getElementById("toTop");
@@ -1336,7 +1342,7 @@ function renderQuiz(key){
   const qs=QUIZ[key];const isExam=!!MCVIEW[key];
   box.innerHTML="";
   if(!isExam){
-    const h=document.createElement("h2");h.textContent="章末選擇題（"+qs.length+" 題）";box.appendChild(h);
+    const h=document.createElement("h2");h.textContent="Multiple-choice question（"+qs.length+" 題，共 50 分）";box.appendChild(h);
     const p=document.createElement("p");p.className="small";p.textContent="題目是英文，跟考卷一樣。點一個選項就會對答案並顯示中文解析。";box.appendChild(p);
   }else{
     const p=document.createElement("p");p.className="small";p.textContent="點一個選項就會對答案，答對每題 2 分，會算進上方總分。";box.appendChild(p);
@@ -1419,6 +1425,7 @@ const KEYS={
 "mock-b-27":[G(2,"ppred"+ARR+"fore\\s*=\\s*pdlt"+ARR+"fore","(a) pPred->fore = pDlt->fore"),G(2,"list"+ARR+"head\\s*=\\s*pdlt"+ARR+"fore","(b) list.head = pDlt->fore"),G(2,"psucc"+ARR+"back\\s*=\\s*pdlt"+ARR+"back","(c) pSucc->back = pDlt->back"),G(2,"list"+ARR+"rear\\s*=\\s*pdlt"+ARR+"back","(d) list.rear = pDlt->back"),G(2,"recycle","(e) recycle(pDlt)")],
 "mock-b-28":[G(2,"pnew"+ARR+"link\\s*=\\s*rear"+ARR+"link","pNew->link = rear->link"),G(2,"rear"+ARR+"link\\s*=\\s*pnew","rear->link = pNew"),G(2,"rear\\s*=\\s*pnew","(b) rear = pNew")]
 };
+if(typeof KEYS_MORE!=="undefined")Object.assign(KEYS,KEYS_MORE);
 function normAns(s){
   return s.toLowerCase()
     .replace(/[，、；]/g,",").replace(/（/g,"(").replace(/）/g,")").replace(/：/g,":").replace(/＝/g,"=").replace(/＋/g,"+").replace(/／/g,"/").replace(/＞/g,">")
@@ -1492,9 +1499,9 @@ document.querySelectorAll(".exam").forEach(ex=>{
   function upd(){
     let got=0,graded=0;
     qs.forEach(q=>{const g=st.grade[q.id];if(g){got+=+g.score||0;graded++;}});
-    const mn=QUIZ[mk].length,mDone=quizCount(mk),mGot=quizRight(mk)*2;
+    const mn=mk?QUIZ[mk].length:0,mDone=mk?quizCount(mk):0,mGot=mk?quizRight(mk)*2:0; /* a chapter's written block has no MC part */
     const total=wTotal+mn*2;
-    score.textContent="得分 "+(Math.round((got+mGot)*10)/10)+" / "+total+" 分（選擇 "+mDone+"/"+mn+"，手寫已批改 "+graded+"/"+qs.length+"）";
+    score.textContent="得分 "+(Math.round((got+mGot)*10)/10)+" / "+total+" 分（"+(mk?"選擇 "+mDone+"/"+mn+"，手寫已批改 ":"已批改 ")+graded+"/"+qs.length+"）";
     EX[id]=Object.assign(EX[id]||{},{total,got:got+mGot,graded,n:qs.length,touched:graded+mDone});
     refreshPCB();renderTabs(S.last);
   }
@@ -1575,9 +1582,9 @@ document.querySelectorAll(".exam").forEach(ex=>{
     const b=e.currentTarget;
     if(b.dataset.armed!=="1"){b.dataset.armed="1";b.textContent="確定清除作答與分數？";setTimeout(()=>{b.dataset.armed="";b.textContent="清除作答";},4000);return;}
     b.dataset.armed="";b.textContent="清除作答";
-    st.ans={};st.grade={};st.self={};delete S.quiz[mk];save();
+    st.ans={};st.grade={};st.self={};if(mk)delete S.quiz[mk];save();
     qs.forEach(q=>{q.querySelector("textarea").value="";q.querySelector(".selfsc input").value="";q.querySelector(".gstat").textContent="";render(q);});
-    ex.querySelectorAll("details.qa").forEach(d=>d.open=false);renderQuiz(mk);upd();
+    ex.querySelectorAll("details.qa").forEach(d=>d.open=false);if(mk)renderQuiz(mk);upd();
   });
 });
 function setGradingMode(){
@@ -1833,9 +1840,9 @@ const start=(location.hash||"").slice(1)||S.last||"home";
 show(start);
 </script>
 <script src="../../assets/ezquiz.js?v=985ad982"></script>
-<script src="../../assets/ezwrong.js?v=847b3091"></script>
+<script src="../../assets/ezwrong.js?v=cec64b0b"></script>
 
 <script src="../../assets/ezsearch.js?v=21af1ad4"></script>
-<script src="../../assets/ezshuffle.js?v=f2aa6481"></script>
+<script src="../../assets/ezshuffle.js?v=93fba9c4"></script>
 </body>
 </html>

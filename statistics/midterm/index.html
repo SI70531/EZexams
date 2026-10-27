@@ -2328,10 +2328,11 @@ function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 const tabs=document.getElementById("tabs");
 function quizDone(ch){const a=S.quiz[ch]||{};return QUIZ[ch]&&Object.keys(a).length>=QUIZ[ch].length;}
 const PID={home:0,ch1:1,ch2:2,ch3:3,ch4:4,confuse:5,hw:6};
+function chwStat(ch){const w=document.querySelector("#"+ch+" .chw");if(!w)return {n:0,k:0};const x=(S.ex2||{})[w.dataset.exam]||{},g=x.grade||{},sf=x.self||{};const qs=[...w.querySelectorAll(".exq")];return {n:qs.length,k:qs.filter(q=>g[q.id]||sf[q.id]).length};} /* a chapter is done only when its written part is done too */
 function procState(id){
-  if(QUIZ[id]){const n=QUIZ[id].length,k=Object.keys(S.quiz[id]||{}).length;return {state:k===0?"new":k<n?"running":"terminated",done:k,n};}
+  if(QUIZ[id]){const w=chwStat(id),n=QUIZ[id].length+w.n,k=Object.keys(S.quiz[id]||{}).length+w.k;return {state:k===0?"new":k<n?"running":"terminated",done:k,n};}
   if(id==="hw"){const e=(typeof EX!=="undefined"&&EX[id])||{};const n=e.n||0,k=e.graded||0;return {state:k===0?"new":k<n?"running":"terminated",done:k,n};}
-  if(id==="home"){const c=["ch1","ch2","ch3","ch4"].filter(c=>quizDone(c)).length;return {state:"running",done:c,n:4};}
+  if(id==="home"){const c=["ch1","ch2","ch3","ch4"].filter(c=>procState(c).state==="terminated").length;return {state:"running",done:c,n:4};}
   return {state:"ready",done:0,n:0};
 }
 function refreshPCB(){
@@ -2783,9 +2784,9 @@ const svg=(w,h,inner)=>'<svg viewBox="0 0 '+w+' '+h+'" role="img">'+inner+'</svg
 })();
 </script>
 
-<script src="../../assets/ezquiz.js?v=985ad982"></script>
+<script src="../../assets/ezquiz.js?v=4f89c9dd"></script>
 <script src="../../assets/ezwrong.js?v=cec64b0b"></script>
 <script src="../../assets/ezsearch.js?v=21af1ad4"></script>
-<script src="../../assets/ezshuffle.js?v=93fba9c4"></script>
+<script src="../../assets/ezshuffle.js?v=dec6cd37"></script>
 </body>
 </html>

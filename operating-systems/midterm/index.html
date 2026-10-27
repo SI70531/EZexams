@@ -28,7 +28,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=LXGW+WenKai+TC:wght@400;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
-<link rel="stylesheet" href="../../assets/ezbase.css?v=11a0f842">
+<link rel="stylesheet" href="../../assets/ezbase.css?v=3d0c0e7c">
 <style>
 /* Layout: the study guide as a running OS. Tabs are a Gantt chart of the course, each cover carries a PCB card whose state is your progress, headings are handwritten like the exam. */
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
@@ -2692,7 +2692,7 @@ function chScore(c){ /* chapter = multiple choice + written part (100 分) */
   if(w){const x=(S.ex2||{})[w.dataset.exam]||{},gr=x.grade||{},sf=x.self||{};w.querySelectorAll(".exq").forEach(q=>{m++;tot+=+q.dataset.pts;if(gr[q.id]){g++;got+=+gr[q.id].score||0;}else if(sf[q.id]){g++;got+=+q.dataset.pts;}});}
   return {k,n:qs.length,g,m,got:Math.round(got*10)/10,tot,done:k>=qs.length&&g>=m};
 }
-function chRow(c,n){const s=chScore(c);return '<tr><td class="l"><button class="btn" data-go="'+c+'">'+n+'</button></td><td >'+((s.k||s.g)?("得分 "+s.got+" / "+s.tot+" 分（選擇 "+s.k+"/"+s.n+(s.m?"，手寫 "+s.g+"/"+s.m:"")+"）"+(s.done?"":"（未完成）")):"還沒做")+'</td></tr>';}
+function chRow(c,n){const s=chScore(c);return '<tr><td class="l"><button class="btn" data-go="'+c+'">'+n+'</button></td><td >'+((s.k||s.g)?('<b class="pscore">得分 '+s.got+' / '+s.tot+' 分</b><span class="psub"><span>選擇 '+s.k+'/'+s.n+'</span>'+(s.m?'<span>手寫 '+s.g+'/'+s.m+'</span>':'')+(s.done?'<span class="pok">✓ 完成</span>':'<span class="ptodo">未完成</span>')+'</span>'):"還沒做")+'</td></tr>';}
 function renderHome(){
   const t=document.getElementById("progTable");
   let html='<tr><th class="l">項目</th><th>狀態</th></tr>';

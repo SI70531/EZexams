@@ -58,6 +58,38 @@
     if(moved&&sel&&!sel.isCollapsed&&String(sel).trim()&&sel.containsNode(el,true)){e.preventDefault();e.stopImmediatePropagation();}
   },true);
 
+  /* top tab bar: when the tabs do not fit, show ‹ › arrows at the edges, let the mouse wheel scroll it sideways,
+     and keep the current tab in view, so the last tabs (總複習, 錯題區) can be reached without clicking through */
+  const tst=document.createElement("style");
+  tst.textContent="nav.tabs{position:relative}"+
+    "nav.tabs .tarr{position:absolute;top:0;bottom:0;width:34px;display:flex;align-items:center;z-index:2;cursor:pointer;color:var(--ink);font:700 20px/1 var(--f-mono,monospace);user-select:none;-webkit-user-select:none}"+
+    "nav.tabs .tarr[hidden]{display:none}"+
+    "nav.tabs .tarr.l{left:0;justify-content:flex-start;padding-left:2px;background:linear-gradient(90deg,var(--bg) 55%,transparent)}"+
+    "nav.tabs .tarr.r{right:0;justify-content:flex-end;padding-right:2px;background:linear-gradient(270deg,var(--bg) 55%,transparent)}"+
+    "nav.tabs .tarr:hover{color:var(--indigo)}";
+  document.head.appendChild(tst);
+  function tabBar(){
+    document.querySelectorAll("nav.tabs").forEach(nav=>{
+      const row=nav.querySelector(".row");if(!row||nav.querySelector(".tarr"))return;
+      const mk=(c,t,lab)=>{const a=document.createElement("div");a.className="tarr "+c;a.textContent=t;a.setAttribute("role","button");a.setAttribute("aria-label",lab);a.hidden=true;nav.appendChild(a);return a;};
+      const L=mk("l","‹","往左捲動分頁"),R=mk("r","›","往右捲動分頁");
+      const upd=()=>{const max=row.scrollWidth-row.clientWidth;const hl=!(row.scrollLeft>2),hr=!(row.scrollLeft<max-2);if(L.hidden!==hl)L.hidden=hl;if(R.hidden!==hr)R.hidden=hr;};
+      const by=d=>row.scrollBy({left:d*Math.max(160,row.clientWidth*0.7),behavior:"smooth"});
+      L.addEventListener("click",()=>by(-1));R.addEventListener("click",()=>by(1));
+      row.addEventListener("scroll",upd,{passive:true});window.addEventListener("resize",upd);
+      row.addEventListener("wheel",e=>{if(row.scrollWidth<=row.clientWidth+2||Math.abs(e.deltaX)>Math.abs(e.deltaY))return;
+        e.preventDefault();row.scrollLeft+=e.deltaY;},{passive:false});
+      /* bring the current tab into view whenever it changes */
+      let last=null;
+      const follow=()=>{const cur=row.querySelector('[aria-current="true"]');if(cur&&cur!==last){last=cur;
+        const r=cur.getBoundingClientRect(),b=row.getBoundingClientRect();
+        if(r.left<b.left+30||r.right>b.right-30)row.scrollLeft+=(r.left+r.right)/2-(b.left+b.right)/2;}upd();};
+      new MutationObserver(follow).observe(row,{attributes:true,attributeFilter:["aria-current"],subtree:true,childList:true});
+      setTimeout(follow,50);upd();
+    });
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",tabBar);else tabBar();
+
   /* offline support */
   const me=document.currentScript;
   if(me&&("serviceWorker" in navigator)&&(location.protocol==="https:"||location.hostname==="localhost")){

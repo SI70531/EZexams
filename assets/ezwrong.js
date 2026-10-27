@@ -14,7 +14,9 @@ h3 .missbadge{display:inline-block;white-space:nowrap;margin-left:10px;font-size
 .wcard .cbody{font-size:14px;overflow-x:auto}
 .wcard .cbody .lab,.wcard .cbody button,.wcard .cbody canvas,.wcard .cbody input,.wcard .cbody select{display:none}
 .wcard pre{white-space:pre-wrap}
-.wgroup h3{margin-top:28px}`;
+.wgroup h3{margin-top:28px}
+@keyframes wflash{0%,60%{box-shadow:0 0 0 4px #c62828}100%{box-shadow:0 0 0 0 transparent}}
+.wflash{animation:wflash 2.2s ease-out;border-radius:10px}`;
   const stl=document.createElement("style");stl.textContent=css;document.head.appendChild(stl);
 
   const CH=Object.keys(QUIZ).filter(k=>{const v=document.getElementById(k);return v&&v.classList.contains("view");});
@@ -58,14 +60,14 @@ h3 .missbadge{display:inline-block;white-space:nowrap;margin-left:10px;font-size
     CH.forEach(ch=>{
       const a=S.quiz&&S.quiz[ch]||{};
       QUIZ[ch].forEach((it,i)=>{const pk=a[i];if(pk===undefined||pk===it.a)return;
-        out.push({sec:secOf(it.q+" "+it.q+" "+(it.o||[]).join(" ")+" "+(it.e||""),ch),src:(NAME[ch]||ch)+" 章末選擇第 "+(i+1)+" 題",go:ch,q:it.q,yours:it.o[pk],right:it.o[it.a],e:it.e||""});});
+        out.push({sec:secOf(it.q+" "+it.q+" "+(it.o||[]).join(" ")+" "+(it.e||""),ch),src:(NAME[ch]||ch)+" 章末選擇第 "+(i+1)+" 題",go:ch,quiz:ch,i,q:it.q,yours:it.o[pk],right:it.o[it.a],e:it.e||""});});
     });
     if(typeof MOCK!=="undefined"){
       Object.keys(MOCK).forEach(id=>{
         const st=S.exam&&S.exam[id];if(!st||!st.done)return;const a=st.ans||{};
         MOCK[id].forEach((it,i)=>{const pk=a[i];if(pk===undefined||pk===it.a)return;
           const ch=it.ch!=null?"ch"+it.ch:null;
-          out.push({sec:secOf(it.q+" "+it.q+" "+(it.o||[]).join(" ")+" "+(it.e||""),CH.includes(ch)?ch:null),src:(NAME[id]||id)+" 第 "+(i+1)+" 題",go:id,q:it.q,yours:it.o[pk],right:it.o[it.a],e:it.e||""});});
+          out.push({sec:secOf(it.q+" "+it.q+" "+(it.o||[]).join(" ")+" "+(it.e||""),CH.includes(ch)?ch:null),src:(NAME[id]||id)+" 第 "+(i+1)+" 題",go:id,i,q:it.q,yours:it.o[pk],right:it.o[it.a],e:it.e||""});});
       });
     }
     document.querySelectorAll(".exam .exq").forEach(q=>{
@@ -87,6 +89,14 @@ h3 .missbadge{display:inline-block;white-space:nowrap;margin-left:10px;font-size
   last.after(sec);
   if(typeof PID!=="undefined"&&PID.wrong===undefined)PID.wrong=Object.keys(PID).length;
 
+  function goto(w){
+    show(w.go);
+    let el=null;
+    if(w.qid)el=document.getElementById(w.qid);
+    else if(w.i!=null){const root=w.quiz?document.querySelector('[data-quiz="'+w.quiz+'"]'):document.querySelector("#"+CSS.escape(w.go)+" .exambody");if(root)el=root.querySelectorAll(".qitem")[w.i];}
+    if(!el)return;
+    setTimeout(()=>{el.scrollIntoView({block:"center"});el.classList.remove("wflash");void el.offsetWidth;el.classList.add("wflash");},30);
+  }
   function render(){
     let list;try{list=collect();}catch(e){return;}
     const by=new Map();list.forEach(w=>{const k=w.sec?w.sec.h.id:"_";if(!by.has(k))by.set(k,[]);by.get(k).push(w);});
@@ -110,7 +120,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;margin-left:10px;font-size
         add("src",w.src);add("wq2",w.q);add("yours","你的答案："+w.yours);add("right","正確答案："+w.right);if(w.e)add("",w.e);
         const bar=document.createElement("div");bar.style.marginTop="8px";
         const b1=document.createElement("button");b1.className="btn";b1.type="button";b1.textContent="回原題";
-        b1.addEventListener("click",()=>{show(w.go);if(w.qid){const el=document.getElementById(w.qid);if(el)el.scrollIntoView({block:"start"});}});
+        b1.addEventListener("click",()=>goto(w));
         bar.appendChild(b1);
         if(s){const b2=document.createElement("button");b2.className="btn";b2.type="button";b2.textContent="回講義這一段";b2.addEventListener("click",()=>{show(s.ch);s.h.scrollIntoView({block:"start"});});bar.appendChild(b2);}
         c.appendChild(bar);

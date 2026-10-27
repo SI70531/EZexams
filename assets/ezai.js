@@ -11,24 +11,29 @@
   const get=k=>{try{return localStorage.getItem(k);}catch(e){return null;}};
   const set=(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v);}catch(e){}};
   const fail=(code,msg)=>Object.assign(new Error(msg||code),{code});
+  /* never wait forever: abort a request that gets no answer in time */
+  async function fetchT(url,opt,ms){
+    const ac=new AbortController(),t=setTimeout(()=>ac.abort(),ms);
+    try{return await fetch(url,Object.assign({},opt,{signal:ac.signal}));}
+    catch(e){throw fail(e&&e.name==="AbortError"?"timeout":"network");}
+    finally{clearTimeout(t);}
+  }
+  function httpErr(r,body){
+    const m=(body&&body.error&&body.error.message)||"";
+    if(r.status===404)return fail("no_model",m);
+    if(r.status===429)return fail("rate_limited",m);
+    if(/location is not supported|not available in your country/i.test(m))return fail("region",m);
+    if(r.status===400&&/api key/i.test(m)||r.status===401||r.status===403)return fail("bad_key",m);
+    return fail("network",m||("http "+r.status));
+  }
 
   async function call(key,model,prompt,json){
-    let r;
-    try{
-      r=await fetch(API+encodeURIComponent(model)+":generateContent",{method:"POST",
+    const r=await fetchT(API+encodeURIComponent(model)+":generateContent",{method:"POST",
         headers:{"Content-Type":"application/json","x-goog-api-key":key},
         body:JSON.stringify({contents:[{role:"user",parts:[{text:prompt}]}],
-          generationConfig:Object.assign({temperature:0.2},json?{responseMimeType:"application/json"}:{})})});
-    }catch(e){throw fail("network");}
+          generationConfig:Object.assign({temperature:0.2},json?{responseMimeType:"application/json"}:{})})},120000);
     let body=null;try{body=await r.json();}catch(e){}
-    if(!r.ok){
-      const m=(body&&body.error&&body.error.message)||"";
-      if(r.status===404)throw fail("no_model",m);
-      if(r.status===429)throw fail("rate_limited",m);
-      if(/location is not supported|not available in your country/i.test(m))throw fail("region",m);
-      if(r.status===400&&/api key/i.test(m)||r.status===401||r.status===403)throw fail("bad_key",m);
-      throw fail("network",m||("http "+r.status));
-    }
+    if(!r.ok)throw httpErr(r,body);
     const c=body&&body.candidates&&body.candidates[0];
     const text=c&&c.content&&Array.isArray(c.content.parts)?c.content.parts.filter(p=>!p.thought).map(p=>p.text||"").join(""):"";
     if(!text.trim())throw fail("empty_completion");
@@ -62,8 +67,12 @@
     /* check a key with a tiny request, and save it if it works */
     async connect(key){
       key=(key||"").trim();if(!key)throw fail("empty");
-      const t=await run(key,'Reply with exactly this JSON: {"ok":true}',true);
-      parse(t);set(LS_KEY,key);return window.EZAI.model();
+      const r=await fetchT(API.replace(/models\/$/,"models")+"?pageSize=200",{headers:{"x-goog-api-key":key}},20000);
+      let body=null;try{body=await r.json();}catch(e){}
+      if(!r.ok)throw httpErr(r,body);
+      const have=new Set(((body&&body.models)||[]).filter(m=>(m.supportedGenerationMethods||[]).includes("generateContent")).map(m=>String(m.name).replace(/^models\//,"")));
+      const pick=MODELS.find(m=>have.has(m))||[...have].find(m=>/^gemini-[\d.]+-flash$/.test(m))||MODELS[0];
+      set(LS_KEY,key);set(LS_MODEL,pick);return pick;
     },
     disconnect(){set(LS_KEY,null);set(LS_MODEL,null);},
     sampler(){
@@ -79,6 +88,7 @@
       if(c==="rate_limited")return "免費額度暫時用完（每分鐘約 10 次），過一兩分鐘再按。";
       if(c==="invalid_json"||c==="empty_completion")return "AI 回覆的格式讀不懂，再按一次通常就好。";
       if(c==="empty")return "請先貼上金鑰。";
+      if(c==="timeout")return "連線逾時，Google 一直沒有回應。可能是網路不穩、VPN，或學校／公司網路、擋廣告外掛擋掉了 Google API。換個網路（例如手機熱點）再試一次。";
       return "連不上 Gemini，請檢查網路。";
     }
   };

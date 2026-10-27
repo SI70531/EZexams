@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<style>[hidden]{display:none!important}body{margin:0}</style>
+<style>[hidden]{display:none!important}body{margin:0}.rvch{margin:22px 0 30px}.rvmn ul{margin:4px 0 0;padding-left:18px}.rvmn li{margin:2px 0}.rvt{width:100%;font-size:14.5px}.rvt td{vertical-align:top}.rvt td:first-child{width:22%}.rvt td.small{width:24%}@media (max-width:640px){.rvt,.rvt tbody,.rvt tr,.rvt td{display:block;width:auto!important}.rvt tr:first-child{display:none}.rvt tr{border:1px solid var(--line);border-radius:8px;margin:10px 0;padding:8px 12px;background:var(--paper)}.rvt td{border:0!important;padding:2px 0!important}.rvt td.small::before{content:"考法：";font-weight:700}}</style>
 <title>作業系統期中衝刺｜EZexams</title>
 <style>.plansep{border:0;border-top:1px dashed var(--line);margin:10px 0}
 .chw{margin-top:48px;padding-top:28px;border-top:2px solid var(--ink)}.chw>h2{margin-top:0}.blank{letter-spacing:.05em;color:var(--brass)}</style>
@@ -1962,77 +1962,29 @@ RMS：period 越短越優先 → P1 (50) 優先於 P2 (80)
     Unsafe → No, P1 must wait.</div>
 </div>
 </div></details><label class="self" for="mock-b-15-c"><input type="checkbox" id="mock-b-15-c"> 我答對了（15 分）</label></div></section>
-<section role="tabpanel" class="view" id="review" hidden><div class="vhead"><div class="pcb" data-pcb="review" role="img"></div><div class="eyebrow">考前一天</div><h1>總複習</h1><p>速記頁、必畫的 8 張圖、額外的預測題。</p></div><h3>考前 10 分鐘速記</h3><div class="cheat">
-
-<div class="two">
-<div>
-<h3>Ch1</h3>
-<ul>
-<li>CPU（Central Processing Unit，中央處理器） = <b>CU + ALU + Registers（暫存器）</b></li>
-<li>OS = intermediary between user and hardware；resource（資源） allocator + control program</li>
-<li>Interrupt（中斷） → interrupt vector（中斷向量） → ISR（Interrupt Service Routine，中斷服務程式）；trap（陷阱） = software interrupt</li>
-<li><b>DMA（Direct Memory Access，直接記憶體存取）</b>：high-speed I/O，block 直接到 memory（記憶體），without CPU，one interrupt per block</li>
-<li>Multiprocessor（多處理器） 優點：throughput（吞吐量）、economy of scale、reliability</li>
-<li>Asymmetric vs Symmetric (SMP)</li>
-<li>Multiprogramming（效率）vs Timesharing（互動 &lt;1s）</li>
-<li>Dual mode：user / kernel（核心），mode bit（模式位元），privileged instr.；Timer 防霸佔</li>
-<li>Process（行程） = program in execution（active）</li>
-</ul>
-<h3>Ch2</h3>
-<ul>
-<li>memory：text / data / heap / stack</li>
-<li>5 states：new, ready, running, waiting, terminated</li>
-<li>6 箭頭：admitted、dispatch、interrupt、I/O wait、I/O completion、exit</li>
-<li>PCB（Process Control Block，行程控制區塊）：狀、PC、register、scheduling（排班）、memory、帳、I/O</li>
-<li>Long-term：選誰進 ready queue（就緒佇列），<b>控制</b> degree of MP</li>
-<li>Mid-term：swap，<b>降低</b> degree of MP</li>
-<li>Short-term：選誰用 CPU，ms 級要快</li>
-<li>IPC（Interprocess Communication，行程間通訊）：<b>shared memory（共享記憶體） ＆ message passing（訊息傳遞）</b></li>
-<li>Buffer 滿：(in+1)%SIZE==out；空：in==out；最多 SIZE−1</li>
-<li>Blocking（阻塞）=synchronous（同步）；兩邊都 blocking = rendezvous（會合）</li>
-</ul>
-</div>
-<div>
-<h3>Ch3</h3>
-<ul>
-<li>Nonpreemptive（不可搶奪）：running→waiting、terminate</li>
-<li>Criteria：utilization（使用率）、throughput ↑；turnaround、waiting、response ↓</li>
-<li>Waiting = 完成 − 到達 − burst（執行區段）</li>
-<li>FCFS（First-Come, First-Served，先到先服務） → <b>convoy effect（護航效應）</b></li>
-<li>SJF（Shortest-Job-First，最短工作優先） optimal；SRTF（Shortest-Remaining-Time-First，最短剩餘時間優先） = preemptive（可搶奪） SJF</li>
-<li><b>Starvation（飢餓）：SJF(SRTF)、Priority（優先權）</b> → 解法 aging（老化）</li>
-<li>RR：q 大 → FCFS；q 小 → overhead</li>
-<li>MLQ（Multilevel Queue，多層佇列） vs MLFQ（Multilevel Feedback Queue，多層回饋佇列）：<b>process moving between queues</b></li>
-<li>RMS：period 短優先；EDF（Earliest Deadline First，最早截止期限優先）：deadline（截止期限） 早優先；U = Σ t/p</li>
-<li>τ(n+1) = α t(n) + (1−α) τ(n)</li>
-</ul>
-<h3>Ch4</h3>
-<ul>
-<li>Benefits：responsiveness、resource sharing、economy、scalability</li>
-<li><b>Data parallelism（資料平行） ＆ task parallelism（工作平行）</b></li>
-<li><b>Amdahl：1 / (S + (1−S)/N)</b>，S＝serial（序列，不能平行）；N→∞ 上限 1/S</li>
-<li>M:1（一個 block 全 block）、1:1、M:M、<b>Two-level = M:M + bound</b></li>
-<li>Libraries：Pthreads、Win32、Java</li>
-<li>Implicit：thread pools（執行緒池）、OpenMP、GCD</li>
-</ul>
-<h3>Ch5</h3>
-<ul>
-<li><b>Mutual exclusion（互斥）、hold and wait（持有並等待）、no preemption（不可搶奪）、circular wait（循環等待）</b></li>
-<li>No cycle → no deadlock（死結）；cycle＋single instance → deadlock</li>
-<li>Safe → no deadlock；unsafe → 可能</li>
-<li>Single instance → RAG（Resource-Allocation Graph，資源配置圖）；multiple → Banker's</li>
-<li><b>Need = Max − Allocation</b></li>
-<li>Need ≤ Work → Work += <b>Allocation</b></li>
-<li>Request：≤ Need → ≤ Available → 假裝給再跑 safety</li>
-<li>Detection（偵測）：wait-for graph（等待圖）；用 Request 取代 Need</li>
-<li>Recovery（回復）：terminate／preempt（victim（犧牲者）、rollback（回滾）、starvation）</li>
-</ul>
-</div>
-</div>
+<section role="tabpanel" class="view" id="review" hidden><div class="vhead"><div class="pcb" data-pcb="review" role="img"></div><div class="eyebrow">考前一天</div><h1>總複習</h1><p>每章口訣＋一句話記法、最容易搞混的 12 組、計算題 SOP、必畫的 8 張圖、額外的預測題。</p></div><h3>考前總整理</h3>
+<p class="small">每章先看最上面的<b>口訣</b>，再看表格：左邊是要記的東西，中間是一句話記法，右邊是考試會怎麼問。看完一章就遮住中間那欄，自己唸一次。</p>
+<div class="rvch"><h3>Ch1 Introduction（簡介）</h3>
+<div class="box tip rvmn"><span class="lbl">口訣</span><ul><li><b>OS 三個身分</b>：「中間人、分配者、管理員」</li><li><b>多處理器三好處</b>：「多做、多省、多可靠」</li><li><b>中斷三步</b>：「查向量 → 跑 ISR → 回原處」</li></ul></div>
+<table class="rvt"><tr><th class="l">要記的</th><th class="l">一句話記法</th><th class="l">考法</th></tr><tr><td class="l"><b>OS 是什麼</b></td><td class="l">Intermediary between user and hardware；resource allocator（分配資源）＋ control program（管程式別亂來）。</td><td class="l small">What is an OS? 答兩個角色</td></tr><tr><td class="l"><b>電腦系統四元件</b></td><td class="l">由下往上：hardware → OS → application programs → users。</td><td class="l small">List the four components</td></tr><tr><td class="l"><b>Interrupt（中斷）</b></td><td class="l">裝置送訊號 → 查 interrupt vector（中斷向量表）找到 ISR → 執行 → 回到被打斷的指令。<b>一定要存被打斷指令的位址</b>。</td><td class="l small">interrupt vector 是什麼；中斷流程</td></tr><tr><td class="l"><b>Trap（陷阱）</b></td><td class="l"><b>software-generated interrupt</b>：程式錯誤（除以 0）或 system call 造成。</td><td class="l small">trap vs interrupt（system call 不是硬體中斷）</td></tr><tr><td class="l"><b>儲存階層</b></td><td class="l">registers → cache → main memory → SSD → HDD → optical → tape。越上面越快、越貴、越小；main memory 以上是 volatile（斷電就沒）。</td><td class="l small">排序、哪些 volatile</td></tr><tr><td class="l"><b>DMA</b></td><td class="l">高速 I/O 用。device controller 把<b>一整塊 block</b> 直接搬進 memory，<b>不經過 CPU</b>，每個 block 只發<b>一次</b> interrupt（不是每個 byte 一次）。</td><td class="l small">DMA 的好處（選擇題常考）</td></tr><tr><td class="l"><b>Multiprocessor</b></td><td class="l">好處：throughput ↑、economy of scale、reliability（graceful degradation：壞一顆還能跑）。AMP＝主從；SMP＝每顆 CPU 地位相同。</td><td class="l small">List three advantages；AMP vs SMP</td></tr><tr><td class="l"><b>Multiprogramming vs Timesharing</b></td><td class="l">Multiprogramming：job 等 I/O 就換別的 job，目標是 <b>CPU 不閒著（效率）</b>。Timesharing：很頻繁地切換，response time &lt; 1 秒，目標是 <b>互動</b>。</td><td class="l small">只在等 I/O 才換 → multiprogramming</td></tr><tr><td class="l"><b>Dual mode（雙模式）</b></td><td class="l">mode bit：<b>kernel = 0、user = 1</b>。privileged instructions 只能在 kernel mode 執行；system call 透過 trap 進 kernel。timer 防止程式霸佔 CPU。</td><td class="l small">What is the mode bit / privileged instruction</td></tr><tr><td class="l"><b>Program vs Process</b></td><td class="l">program 是 <b>passive</b>（磁碟上的檔案）；process 是 <b>program in execution（active）</b>。</td><td class="l small">定義題</td></tr></table></div>
+<div class="rvch"><h3>Ch2 Processes（行程）</h3>
+<div class="box tip rvmn"><span class="lbl">口訣</span><ul><li><b>五個狀態</b>：「新、就、跑、等、終」＝new、ready、running、waiting、terminated</li><li><b>記憶體四區</b>：「文、資、堆、疊」＝text、data、heap（往上長）、stack（往下長）</li><li><b>PCB 七項</b>：「狀、PC、暫、排、記、帳、I/O」</li><li><b>合作的理由</b>：「資、速、模、便」</li></ul></div>
+<table class="rvt"><tr><th class="l">要記的</th><th class="l">一句話記法</th><th class="l">考法</th></tr><tr><td class="l"><b>狀態轉換（6 條箭頭）</b></td><td class="l">new→ready <b>admitted</b>；ready→running <b>scheduler dispatch</b>；running→ready <b>interrupt</b>；running→waiting <b>I/O or event wait</b>；waiting→ready <b>I/O or event completion</b>；running→terminated <b>exit</b>。</td><td class="l small">畫圖題；<b>waiting 完要回 ready，不是 running</b></td></tr><tr><td class="l"><b>PCB</b></td><td class="l">process state、program counter、CPU registers、CPU-scheduling info、memory-management info、accounting info、I/O status info。</td><td class="l small">What does a PCB contain</td></tr><tr><td class="l"><b>Context switch</b></td><td class="l">把舊 process 的狀態存進它的 PCB，再載入新 process 的 PCB。切換期間不做有用的事（pure overhead），快慢看硬體支援。</td><td class="l small">Describe a context switch</td></tr><tr><td class="l"><b>三種 scheduler</b></td><td class="l">Long-term（job scheduler）：選誰進 ready queue，<b>控制</b> degree of multiprogramming，跑得少（秒～分）。Short-term（CPU scheduler）：選誰用 CPU，每幾 ms 就跑，要快。Medium-term：swap out／in，<b>降低</b> degree of multiprogramming。</td><td class="l small">比較三種；誰控制 degree of MP</td></tr><tr><td class="l"><b>I/O-bound vs CPU-bound</b></td><td class="l">I/O-bound：大多時間在做 I/O，CPU burst 短。CPU-bound：大多在計算，burst 長。long-term scheduler 要兩種混著選。</td><td class="l small">定義題</td></tr><tr><td class="l"><b>建立行程</b></td><td class="l">fork() 複製出 child；exec() 把 child 換成新程式；parent 用 wait() 等 child 結束。child 結束但 parent 沒 wait → <b>zombie</b>；parent 先結束 → <b>orphan</b>。</td><td class="l small">fork 會印幾次（2ⁿ）</td></tr><tr><td class="l"><b>IPC 兩種模型</b></td><td class="l">Shared memory：建好之後不用 kernel，<b>快</b>，適合大量資料。Message passing：每次 send／receive 都是 system call，<b>適合少量資料、分散式系統</b>。</td><td class="l small">Compare the two IPC models</td></tr><tr><td class="l"><b>Bounded buffer</b></td><td class="l">空：in == out；滿：(in + 1) % SIZE == out；最多只放 <b>SIZE − 1</b> 筆。</td><td class="l small">buffer 滿／空的條件</td></tr><tr><td class="l"><b>Message passing 選項</b></td><td class="l">direct（指名對方）vs indirect（透過 mailbox）；blocking＝synchronous、non-blocking＝asynchronous；send 和 receive 都 blocking → <b>rendezvous</b>。buffering：zero、bounded、unbounded capacity。</td><td class="l small">synchronous / rendezvous 定義</td></tr></table></div>
+<div class="rvch"><h3>Ch3 CPU Scheduling（排班）</h3>
+<div class="box tip rvmn"><span class="lbl">口訣</span><ul><li><b>評估標準</b>：「兩大三小」：utilization、throughput 要大；turnaround、waiting、response 要小</li><li><b>會不會搶</b>：「只有 running→waiting 和結束時才排班」＝nonpreemptive</li><li><b>誰會餓死</b>：「SJF、SRTF、Priority 會餓死，aging 來救」</li></ul></div>
+<table class="rvt"><tr><th class="l">要記的</th><th class="l">一句話記法</th><th class="l">考法</th></tr><tr><td class="l"><b>什麼時候要排班</b></td><td class="l">① running→waiting ② running→ready ③ waiting→ready ④ terminate。只在 ① ④ 排班 → <b>nonpreemptive</b>；其他也排 → preemptive。</td><td class="l small">哪些情況是 nonpreemptive</td></tr><tr><td class="l"><b>Dispatcher</b></td><td class="l">做三件事：context switch、切回 user mode、跳到程式該執行的位置。所花的時間＝<b>dispatch latency</b>。</td><td class="l small">dispatcher 做什麼</td></tr><tr><td class="l"><b>三個公式</b></td><td class="l">turnaround = 完成 − 到達；waiting = turnaround − burst；response = 第一次跑 − 到達。</td><td class="l small">Gantt 題算平均</td></tr><tr><td class="l"><b>FCFS</b></td><td class="l">先到先做，nonpreemptive。長 job 擋住後面一堆短 job → <b>convoy effect</b>。</td><td class="l small">哪個有 convoy effect</td></tr><tr><td class="l"><b>SJF / SRTF</b></td><td class="l">SJF：平均 waiting time <b>最小（optimal）</b>，但要預測下一次 burst。SRTF＝preemptive SJF：新來的剩餘時間更短就搶。</td><td class="l small">哪個 optimal</td></tr><tr><td class="l"><b>預測 burst</b></td><td class="l">τ(n+1) = α·t(n) + (1 − α)·τ(n)。α = 0 只看歷史；α = 1 只看最近一次。</td><td class="l small">代數字算 τ</td></tr><tr><td class="l"><b>Priority</b></td><td class="l">數字越小越優先（課本慣例）。會 <b>starvation</b>，解法 <b>aging</b>：等越久優先權越高。</td><td class="l small">starvation 的解法</td></tr><tr><td class="l"><b>RR（Round Robin）</b></td><td class="l">每人一個 time quantum q。q 很大 → 變成 FCFS；q 很小 → context switch 太多。經驗法則：80% 的 CPU burst 要小於 q。</td><td class="l small">q 太大／太小會怎樣</td></tr><tr><td class="l"><b>MLQ vs MLFQ</b></td><td class="l">MLQ：process 固定在一個 queue。MLFQ：process <b>可以在 queue 之間移動</b>（用太多 CPU 就降級、等太久就升級）。</td><td class="l small">差別一句話</td></tr><tr><td class="l"><b>多處理器排班</b></td><td class="l">processor affinity（soft／hard）：盡量留在同一顆 CPU，cache 才有用。load balancing：push migration、pull migration。</td><td class="l small">affinity 定義</td></tr><tr><td class="l"><b>Real-time</b></td><td class="l">soft（盡量趕）vs hard（一定要趕上）。延遲＝interrupt latency＋dispatch latency。RMS：period 越短優先權越高（固定）；EDF：deadline 越早越優先（動態）。CPU utilization U = Σ tᵢ/pᵢ；EDF 只要 U ≤ 1 就排得完；RMS 的保證上限 N(2^(1/N) − 1)，兩個 process 是 83%。</td><td class="l small">算 U、判斷 RMS／EDF 能不能排</td></tr></table></div>
+<div class="rvch"><h3>Ch4 Threads（執行緒）</h3>
+<div class="box tip rvmn"><span class="lbl">口訣</span><ul><li><b>四個好處</b>：「反、資、經、擴」＝responsiveness、resource sharing、economy、scalability</li><li><b>Amdahl</b>：「S 是不能平行的部分；核心再多，上限也只有 1/S」</li><li><b>隱式多執行緒</b>：「池、Open、GCD」＝thread pools、OpenMP、Grand Central Dispatch</li></ul></div>
+<table class="rvt"><tr><th class="l">要記的</th><th class="l">一句話記法</th><th class="l">考法</th></tr><tr><td class="l"><b>Thread 共用什麼</b></td><td class="l">同一個 process 的 threads <b>共用</b> code、data、open files；<b>各自有</b> thread ID、program counter、registers、stack。</td><td class="l small">畫 single vs multithreaded</td></tr><tr><td class="l"><b>Concurrency vs Parallelism</b></td><td class="l">concurrency：輪流跑，大家都有進度（單核也行）。parallelism：真的同時跑（要多核）。</td><td class="l small">定義題</td></tr><tr><td class="l"><b>兩種平行</b></td><td class="l">data parallelism：同一件事分給不同資料（各算一段陣列）。task parallelism：不同的工作分給不同核心。</td><td class="l small">舉例判斷</td></tr><tr><td class="l"><b>Amdahl's law</b></td><td class="l">speedup ≤ 1 / (S + (1 − S)/N)，S＝serial 比例、N＝核心數。例：S = 0.25、N = 2 → 1/(0.25 + 0.375) = <b>1.6</b>；N → ∞ → 上限 1/S = <b>4</b>。</td><td class="l small"><b>S 要用 serial，不是 parallel</b></td></tr><tr><td class="l"><b>Multithreading models</b></td><td class="l">M:1：一個 thread 呼叫 blocking system call，<b>全部被卡住</b>，也不能多核平行。1:1：可平行，但 kernel thread 太多有負擔（Windows、Linux）。M:M：多對多，最有彈性。Two-level：M:M 再加上可以 1:1 綁定。</td><td class="l small">哪個模型一個 block 全部 block</td></tr><tr><td class="l"><b>Thread libraries</b></td><td class="l">Pthreads（POSIX 標準，可在 user 或 kernel level）、Windows threads（kernel level）、Java threads（由 JVM 對應到主機的 thread）。</td><td class="l small">List three libraries</td></tr><tr><td class="l"><b>Implicit threading</b></td><td class="l">thread pool：先建好一批 thread 等工作，比每次新建快，也能限制數量。OpenMP：#pragma omp parallel。GCD：用 block ^{ } 丟進 dispatch queue。</td><td class="l small">thread pool 的好處</td></tr><tr><td class="l"><b>多核心寫程式的挑戰</b></td><td class="l">identifying tasks、balance、data splitting、data dependency、testing and debugging。</td><td class="l small">List the challenges</td></tr></table></div>
+<div class="rvch"><h3>Ch5 Deadlocks（死結）</h3>
+<div class="box tip rvmn"><span class="lbl">口訣</span><ul><li><b>四個必要條件</b>：「互、持、不、循」＝mutual exclusion、hold and wait、no preemption、circular wait（四個<b>同時</b>成立才會死結）</li><li><b>Banker 三句</b>：「Need = Max − Allocation；Need ≤ Work 才能跑；跑完 Work 加回 Allocation」</li><li><b>處理方法</b>：「防、避、偵、不理」＝prevention、avoidance、detection & recovery、ignore</li></ul></div>
+<table class="rvt"><tr><th class="l">要記的</th><th class="l">一句話記法</th><th class="l">考法</th></tr><tr><td class="l"><b>RAG（資源配置圖）</b></td><td class="l">P → R 是 request edge；R → P 是 assignment edge；虛線是 claim edge。<b>沒有 cycle → 一定沒死結</b>；有 cycle 且每種資源只有一個 → 一定死結；有 cycle 但資源有多個 → 可能死結。</td><td class="l small">看圖判斷</td></tr><tr><td class="l"><b>Prevention（打破一個條件）</b></td><td class="l">mutual exclusion：可共用的資源不需要互斥。hold and wait：一開始就要齊，或手上沒資源才能要（使用率低、可能 starvation）。no preemption：要不到就把手上的放掉。circular wait：資源編號，<b>只能照遞增順序要</b>。</td><td class="l small">每個條件怎麼打破</td></tr><tr><td class="l"><b>Safe state</b></td><td class="l">存在一個 safe sequence → safe → <b>一定不會死結</b>。unsafe → <b>可能</b>死結（不是一定）。</td><td class="l small">safe／unsafe 的關係</td></tr><tr><td class="l"><b>Avoidance 選哪個</b></td><td class="l">每種資源只有一個 → RAG（加 claim edge）；有多個 → Banker's algorithm。</td><td class="l small">Two avoidance algorithms and when</td></tr><tr><td class="l"><b>Banker's：safety</b></td><td class="l">Work = Available；找 Need ≤ Work 而且還沒做完的 process；Work += 它的 <b>Allocation</b>，標記完成；全部完成 → safe。</td><td class="l small">寫出 safe sequence</td></tr><tr><td class="l"><b>Banker's：request</b></td><td class="l">① Request ≤ Need ② Request ≤ Available ③ 假裝給它（Available −、Allocation +、Need −），再跑一次 safety，safe 才真的給。</td><td class="l small">可不可以立刻答應</td></tr><tr><td class="l"><b>Detection</b></td><td class="l">每種資源一個 → wait-for graph 找 cycle。多個 → 類似 Banker's，但用 <b>Request</b> 取代 Need；Allocation 全為 0 的 process 一開始就算 finish。</td><td class="l small">detection 和 avoidance 的差別</td></tr><tr><td class="l"><b>Recovery</b></td><td class="l">終止 process：全部終止，或一次終止一個直到解開。搶資源：選 victim（成本最小）、rollback、避免同一個一直被選（starvation，把 rollback 次數算進成本）。</td><td class="l small">三個要考慮的問題</td></tr></table></div>
+<div class="rvch"><h3>最容易搞混的 12 組</h3><table class="rvt"><tr><th class="l">比較</th><th class="l">前者</th><th class="l">後者</th></tr><tr><td class="l"><b>Interrupt vs Trap</b></td><td class="l">硬體裝置發出的訊號</td><td class="l">軟體造成：錯誤或 system call</td></tr><tr><td class="l"><b>Program vs Process</b></td><td class="l">passive，磁碟上的檔案</td><td class="l">active，執行中的程式</td></tr><tr><td class="l"><b>Process vs Thread</b></td><td class="l">有自己的位址空間，建立和切換都比較重</td><td class="l">共用 process 的 code、data、files，只有自己的 stack 和 registers，比較輕</td></tr><tr><td class="l"><b>Multiprogramming vs Timesharing</b></td><td class="l">等 I/O 才換，目標效率</td><td class="l">頻繁切換，目標互動（&lt; 1 秒）</td></tr><tr><td class="l"><b>Shared memory vs Message passing</b></td><td class="l">快、大量資料，建好後不用 kernel</td><td class="l">每次都是 system call，適合少量、分散式</td></tr><tr><td class="l"><b>Preemptive vs Nonpreemptive</b></td><td class="l">可以中途把 CPU 搶走</td><td class="l">只有自己放棄（等 I/O 或結束）才換</td></tr><tr><td class="l"><b>Long-term vs Short-term scheduler</b></td><td class="l">選誰進 ready queue，控制 degree of MP，跑得少</td><td class="l">選誰用 CPU，每幾 ms 跑一次，要快</td></tr><tr><td class="l"><b>Concurrency vs Parallelism</b></td><td class="l">輪流跑，大家都有進度</td><td class="l">真的同時跑，需要多核</td></tr><tr><td class="l"><b>Prevention vs Avoidance</b></td><td class="l">打破四條件之一，限制怎麼要資源</td><td class="l">事先知道最大需求，只在 safe 時才給</td></tr><tr><td class="l"><b>Avoidance vs Detection</b></td><td class="l">事前擋：用 Need 判斷 safe</td><td class="l">事後查：用 Request 找出已經死結的 process</td></tr><tr><td class="l"><b>Safe vs Unsafe</b></td><td class="l">一定沒有死結</td><td class="l">可能死結，不是一定</td></tr><tr><td class="l"><b>RMS vs EDF</b></td><td class="l">固定優先權：period 越短越優先</td><td class="l">動態優先權：deadline 越早越優先，U ≤ 1 就排得完</td></tr></table></div>
+<div class="rvch"><h3>計算題 SOP</h3><table class="rvt"><tr><th class="l">題型</th><th class="l">步驟</th></tr><tr><td class="l"><b>Gantt chart（3.4）</b></td><td class="l">① 照 arrival 排好 ② 時間軸從 0 開始，CPU 閒著要畫 idle ③ preemptive 的演算法（SRTF、preemptive priority）每次有人到達都要重新比 ④ 每格下方標切換時間 ⑤ 用表格算每個 process 的 turnaround、waiting，再平均。</td></tr><tr><td class="l"><b>Amdahl（4.3）</b></td><td class="l">① 先寫出 S＝serial 比例（題目給 parallel 就用 1 減）② 代 1 / (S + (1 − S)/N) ③ N → ∞ 時上限是 1/S。</td></tr><tr><td class="l"><b>Banker's（5.7）</b></td><td class="l">① 算 Need = Max − Allocation ② Work = Available，逐一找 Need ≤ Work 的 process，Work += Allocation ③ 寫出 safe sequence ④ 有 request 時：≤ Need → ≤ Available → 假裝給 → 再跑一次 safety。</td></tr><tr><td class="l"><b>RMS／EDF（3.7）</b></td><td class="l">① 算 U = Σ tᵢ/pᵢ ② U > 1：誰都排不完 ③ EDF：U ≤ 1 就行 ④ RMS：period 短的優先，畫到最小公倍數，看有沒有人錯過 deadline。</td></tr><tr><td class="l"><b>Exponential averaging（3.5）</b></td><td class="l">τ(n+1) = α·t(n) + (1 − α)·τ(n)，從 τ₀ 開始一次代一個 burst，每一步都寫出來。</td></tr></table></div>
 <div class="box warn" style="margin-top:8px"><span class="lbl">最常被扣分的 5 件事</span>
 ① Amdahl 的 S 用成 parallel 比例　② Banker's 做完加回 Need（要加 Allocation）　③ state diagram（狀態圖） waiting 直接回 running（要回 ready）　④ Gantt 題忽略 arrival time　⑤ 畫圖沒標箭頭名稱
 </div>
-</div><h3>必畫的 8 張圖</h3>
+<h3>必畫的 8 張圖</h3>
 
 <p>考前一天每張親手畫一次。圖都在前面各章，這裡列畫法重點。</p>
 <table style="width:100%">

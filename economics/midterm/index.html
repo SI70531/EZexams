@@ -1054,7 +1054,8 @@ function renderExam(id){
   });
   function paint(){
     const s=st();
-    box.querySelectorAll(".qitem").forEach((d,i)=>{
+    box.querySelectorAll(".qitem").forEach((d,k)=>{
+      const i=d.dataset.i!=null?+d.dataset.i:k; /* questions may be shuffled; data-i is the original position */
       const it=qs[i],pick=s.ans[i];
       d.querySelectorAll(".opt").forEach(b=>{const oi=+b.dataset.oi;b.classList.remove("pick","right","wrong");b.disabled=!!s.done;
         if(s.done){if(oi===it.a)b.classList.add("right");else if(oi===pick)b.classList.add("wrong");}else if(oi===pick)b.classList.add("pick");});
@@ -1295,7 +1296,8 @@ document.querySelectorAll(".ilab input[type=range]").forEach(r=>{const b=r.paren
 })();
 
 </script>
-<script src="../../assets/ezwrong.js?v=fd6fe111"></script>
+<script src="../../assets/ezwrong.js?v=dc9ddef5"></script>
 <script src="../../assets/ezsearch.js?v=21af1ad4"></script>
+<script src="../../assets/ezshuffle.js?v=6aa338f8"></script>
 </body>
 </html>

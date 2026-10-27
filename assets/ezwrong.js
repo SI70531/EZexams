@@ -30,6 +30,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;margin-left:10px;font-size
 .wcard pre{white-space:pre-wrap}
 .wcard .wbar{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
 .wgroup h3{margin-top:28px;scroll-margin-top:80px}
+.wback{display:block;margin-top:12px;border-color:var(--bad,#c62828)!important;color:var(--bad,#c62828)!important;font-weight:700}
 @keyframes wflash{0%,60%{box-shadow:0 0 0 4px var(--bad,#c62828)}100%{box-shadow:0 0 0 0 transparent}}
 .wflash{animation:wflash 2.2s ease-out;border-radius:10px}`;
   const stl=document.createElement("style");stl.textContent=css;document.head.appendChild(stl);
@@ -105,10 +106,13 @@ h3 .missbadge{display:inline-block;white-space:nowrap;margin-left:10px;font-size
 
   /* ---------- collect ---------- */
   const L="ABCDEFGH";
-  const opt=(it,k)=>"("+L[k]+") "+(it.o?it.o[k]:"");
   function mc(out,it,i,pk,ch,src,go,quiz){
-    const m=match(it,ch);
-    out.push({m,ch,src,go,quiz,i,q:it.q,yours:opt(it,pk),right:opt(it,it.a),e:it.e||""});
+    const m=match(it,ch),w={m,ch,src,go,quiz,i,q:it.q,e:it.e||""};
+    /* some pages shuffle the options, so use the letter printed next to that option on the page */
+    const el=locate(w);
+    const opt=k=>{const ab=el&&el.querySelector('.opt[data-oi="'+k+'"] .ab');return "("+(ab?ab.textContent.trim():L[k])+") "+(it.o?it.o[k]:"");};
+    w.yours=opt(pk);w.right=opt(it.a);
+    out.push(w);
   }
   function collect(){
     const out=[];
@@ -154,13 +158,24 @@ h3 .missbadge{display:inline-block;white-space:nowrap;margin-left:10px;font-size
   last.after(view);
   if(typeof PID!=="undefined"&&PID.wrong===undefined)PID.wrong=Object.keys(PID).length;
 
+  /* the original question on the page, and a stable id for its card */
+  function locate(w){
+    if(w.qid)return document.getElementById(w.qid);
+    if(w.i==null)return null;
+    const root=w.quiz?document.querySelector('[data-quiz="'+w.quiz+'"]'):document.querySelector("#"+CSS.escape(w.go)+" .exambody");
+    return root?root.querySelectorAll(".qitem")[w.i]||null:null;
+  }
+  const wid=w=>w.go+"|"+(w.quiz||"")+"|"+(w.qid||w.i);
+  function flash(el,block){setTimeout(()=>{el.scrollIntoView({block});el.classList.remove("wflash");void el.offsetWidth;el.classList.add("wflash");},30);}
+  /* 回原題: open the question, and put a 「← 回錯題區」 button under it that comes back to this same card */
   function goto(w){
     show(w.go);
-    let el=null;
-    if(w.qid)el=document.getElementById(w.qid);
-    else if(w.i!=null){const root=w.quiz?document.querySelector('[data-quiz="'+w.quiz+'"]'):document.querySelector("#"+CSS.escape(w.go)+" .exambody");if(root)el=root.querySelectorAll(".qitem")[w.i];}
-    if(!el)return;
-    setTimeout(()=>{el.scrollIntoView({block:"center"});el.classList.remove("wflash");void el.offsetWidth;el.classList.add("wflash");},30);
+    const el=locate(w);if(!el)return;
+    document.querySelectorAll(".wback").forEach(b=>b.remove());
+    const b=document.createElement("button");b.type="button";b.className="btn wback";b.textContent="← 回錯題區（回到這題）";
+    b.addEventListener("click",()=>{b.remove();pendingCard=wid(w);pendingSec=w.m.s?w.m.s.key:null;show("wrong");});
+    el.appendChild(b);
+    flash(el,"center");
   }
   function btn(txt,fn){const b=document.createElement("button");b.className="btn";b.type="button";b.textContent=txt;b.addEventListener("click",fn);return b;}
   function render(){
@@ -184,7 +199,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;margin-left:10px;font-size
       t.textContent=(s?(NAME[s.ch]||s.ch)+"｜"+s.title:k==="_"?"其他（沒對到特定段落）":(NAME[k.slice(1)]||k.slice(1))+"｜未對到特定段落")+"（"+arr.length+" 題）";
       g.appendChild(t);
       arr.forEach(w=>{
-        const c=document.createElement("div");c.className="wcard";
+        const c=document.createElement("div");c.className="wcard";c.dataset.wid=wid(w);
         const add=(cls,txt)=>{const e=document.createElement("div");if(cls)e.className=cls;e.textContent=txt;c.appendChild(e);};
         add("src",w.src);add("wq2",w.q);add("yours","你的答案："+w.yours);add("right","正確答案："+w.right);if(w.e)add("",w.e);
         const bar=document.createElement("div");bar.className="wbar";
@@ -203,10 +218,12 @@ h3 .missbadge{display:inline-block;white-space:nowrap;margin-left:10px;font-size
       });
       box.appendChild(g);
     });
-    const sec=pendingSec;pendingSec=null;jumpTo(box,sec);
+    const card=pendingCard,sec=pendingSec;pendingCard=pendingSec=null;
+    const hit=card&&[...box.querySelectorAll(".wcard")].find(c=>c.dataset.wid===card);
+    if(hit)flash(hit,"center");else jumpTo(box,sec); /* answered right since? fall back to its section */
   }
   /* a "✗ 錯 N 題 → 錯題區" badge jumps straight to that section's mistakes, not the top of the list */
-  let pendingSec=null;
+  let pendingSec=null,pendingCard=null;
   function jumpTo(box,sec){if(!sec)return;const g=box.querySelector('.wgroup[data-wsec="'+CSS.escape(sec)+'"]');if(!g)return;
     setTimeout(()=>{(g.querySelector("h3")||g).scrollIntoView({block:"start"});g.querySelectorAll(".wcard").forEach(c=>{c.classList.remove("wflash");void c.offsetWidth;c.classList.add("wflash");});},30);}
   document.addEventListener("click",e=>{const b=e.target.closest(".missbadge");if(b)pendingSec=b.dataset.wsec||null;},true);

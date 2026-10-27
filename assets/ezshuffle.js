@@ -1,7 +1,10 @@
-/* EZexams: questions (and their options) come in a different order on every visit.
-   - Shuffled: chapter multiple choice, mock-exam multiple choice, a chapter's 問答／填充 block, written practice (.wq).
-   - Not shuffled: past exams (a tab whose name contains 考古), blocks marked .noshuf (statistics problems whose sub-questions build on each other), and any question you have already answered keeps its
-     original number and place; only the unanswered ones move around the remaining places.
+/* EZexams: questions (and their options) come in a different order every time you open a tab
+   (reload, or switch to another tab and come back).
+   - Questions you have already answered go to the top, numbered 1, 2, 3 … in the order you answered them,
+     so their numbers stay put; only the unanswered ones below are shuffled.
+   - Shuffled: chapter multiple choice, mock-exam multiple choice, a chapter's written part, written practice (.wq).
+   - Not shuffled: past exams (a tab whose name contains 考古) and blocks marked .noshuf (statistics problems
+     whose sub-questions build on each other).
    Every question keeps its original position in data-i, which is what answers are saved by, so progress is unaffected.
    Load after the page's main script (uses VIEWS). */
 (function(){
@@ -37,6 +40,13 @@
     const n=it.querySelector(".stem .num");if(n){const t=(k+1)+".";if(n.textContent!==t)n.textContent=t;return;}
     const p=it.querySelector(".pts");if(p){const t=p.textContent.replace(/^([A-Za-z]*)\d+/,(m,a)=>a+(k+1));if(p.textContent!==t)p.textContent=t;}
   }
+  /* when a question was answered (0 = before answer times were recorded) */
+  function when(it){
+    try{
+      if(it.classList.contains("exq")){const ex=it.closest(".exam");const x=ex&&S.ex2&&S.ex2[ex.dataset.exam];return x&&x.at&&x.at[it.id]||0;}
+      const box=it.closest(".quiz[data-quiz]");const k=box&&box.dataset.quiz;return k&&S.qat&&S.qat[k]&&S.qat[k][it.dataset.i]||0;
+    }catch(e){return 0;}
+  }
   const ORDER=new WeakMap();   /* container → { run key → [original index per slot] } fixed for this visit */
   function arrange(r){
     r.items.forEach((it,k)=>{if(it.dataset.i==null)it.dataset.i=k;});
@@ -44,10 +54,11 @@
     let order=byKey[r.key];
     if(!order||order.length!==r.items.length){
       const n=r.items.length,byI={};r.items.forEach(it=>byI[it.dataset.i]=it);
-      order=new Array(n);const free=[],loose=[];
-      for(let i=0;i<n;i++){const it=byI[i];if(it&&answered(it))order[i]=i;else{free.push(i);loose.push(i);}}
+      const done=[],loose=[];
+      for(let i=0;i<n;i++){const it=byI[i];if(it&&answered(it))done.push(i);else loose.push(i);}
+      done.sort((a,b)=>(when(byI[a])-when(byI[b]))||(a-b));   /* answered: in the order you answered them */
       for(let j=loose.length-1;j>0;j--){const k=Math.floor(Math.random()*(j+1));[loose[j],loose[k]]=[loose[k],loose[j]];}
-      free.forEach((slot,j)=>order[slot]=loose[j]);
+      order=done.concat(loose);
       byKey[r.key]=order;
     }
     const cur=r.items.map(it=>+it.dataset.i);
@@ -66,13 +77,15 @@
   function keep(id,ord){if(SAVED[id]&&SAVED[id].join()===ord.join())return;SAVED[id]=ord;try{localStorage.setItem(SK,JSON.stringify(SAVED));}catch(e){}}
   const FIXED=/all of the above|none of the above|both [a-d] and|以上皆|以上都|皆非/i;
   const LETTER=/\([A-D]\)|選 ?[A-D](?![A-Za-z])|答案(就變成|是)? ?\(?[A-D](?![A-Za-z])|[A-D] ?或 ?[A-D](?![A-Za-z])/;
+  function optId(it){const box=it.closest(".quiz[data-quiz], .exambody");if(!box)return "";const bk=box.dataset.quiz||box.dataset.exam||(box.closest(".view")||{}).id;
+    return bk+"|"+(it.dataset.i!=null?+it.dataset.i:[...box.querySelectorAll(".qitem")].indexOf(it));}
   function shuffleOpts(){
     document.querySelectorAll(".quiz[data-quiz] .qitem, .exambody .qitem").forEach((it,n)=>{
       const os=[...it.querySelectorAll(".opt[data-oi]")];if(os.length<3)return;
       const wrap=os[0].parentElement;if(os.some(o=>o.parentElement!==wrap)||isPast(it))return;
       const box=it.closest(".quiz[data-quiz], .exambody"),bk=box.dataset.quiz||box.dataset.exam||(box.closest(".view")||{}).id;
       const qi=it.dataset.i!=null?+it.dataset.i:[...box.querySelectorAll(".qitem")].indexOf(it);
-      const id=bk+"|"+qi;let ord=OPTS[id];
+      const id=optId(it);let ord=OPTS[id];
       if(!ord&&SAVED[id]&&SAVED[id].length===os.length)ord=OPTS[id]=SAVED[id].slice();
       if(!ord){
         if(answered(it)||os.some(o=>FIXED.test(o.textContent)))return;
@@ -92,7 +105,16 @@
   let busy=false;
   function all(){if(busy)return;busy=true;try{runs().forEach(arrange);shuffleOpts();}finally{busy=false;}}
   all();
-  /* a quiz that is drawn again (e.g. after 重做) gets the same order back */
+  /* a quiz that is drawn again (e.g. after 清除作答) gets the same order back during this visit of the tab */
   let t=null;new MutationObserver(()=>{if(busy)return;clearTimeout(t);t=setTimeout(all,0);})
     .observe(document.body,{childList:true,subtree:true});
+  /* opening a tab again (from 首頁 or another chapter) deals a new order for its unanswered questions */
+  function reshuffle(view){
+    view.querySelectorAll(".quiz[data-quiz], .exambody, .chw").forEach(b=>ORDER.delete(b));
+    view.querySelectorAll(".wq").forEach(w=>ORDER.delete(w.parentElement));
+    view.querySelectorAll(".qitem").forEach(it=>{if(!answered(it))delete OPTS[optId(it)];});
+    all();
+  }
+  new MutationObserver(ms=>{ms.forEach(m=>{const v=m.target;if(v.tagName==="SECTION"&&v.classList.contains("view")&&m.oldValue!==null&&!v.hidden)reshuffle(v);});})
+    .observe(document.body,{attributes:true,attributeFilter:["hidden"],attributeOldValue:true,subtree:true});
 })();

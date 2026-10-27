@@ -36,7 +36,7 @@
   --ok:#73d48f; --ok-soft:rgba(115,212,143,.09); --ok-line:rgba(115,212,143,.32);
   --accent:#9ba8ab; --accent-ink:#06141b; --accent-soft:rgba(155,168,171,.1);
   --bad:#ff7d5a; --bad-soft:rgba(255,125,90,.08); --warn:#f2bd5a; --warn-soft:rgba(242,189,90,.09); --warn-line:rgba(242,189,90,.32);
-  --code:#0d1b25; --fig:#ccd0cf; --hard:#06141b; --shadow:0 6px 18px rgba(0,0,0,.4);
+  --code:#0d1b25; --fig:#1a2c3a; --hard:#06141b; --shadow:0 6px 18px rgba(0,0,0,.4);
   color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#11212d; --paper:#1c2e3b; --paper2:#172835;
@@ -47,7 +47,7 @@
   --ok:#73d48f; --ok-soft:rgba(115,212,143,.09); --ok-line:rgba(115,212,143,.32);
   --accent:#9ba8ab; --accent-ink:#06141b; --accent-soft:rgba(155,168,171,.1);
   --bad:#ff7d5a; --bad-soft:rgba(255,125,90,.08); --warn:#f2bd5a; --warn-soft:rgba(242,189,90,.09); --warn-line:rgba(242,189,90,.32);
-  --code:#0d1b25; --fig:#ccd0cf; --hard:#06141b; --shadow:0 6px 18px rgba(0,0,0,.4);
+  --code:#0d1b25; --fig:#1a2c3a; --hard:#06141b; --shadow:0 6px 18px rgba(0,0,0,.4);
   color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.8;-webkit-font-smoothing:antialiased;transition:background .25s,color .25s}
@@ -151,6 +151,9 @@ td.l,th.l{text-align:left}
 .fig{background:var(--fig);color:#16233b;border:1px solid var(--line);border-radius:8px;padding:14px;margin:16px 0;text-align:center;overflow-x:auto}
 .fig svg{max-width:100%;height:auto}
 .fig .cap{color:#5d6782;font-size:13px}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .fig svg{filter:invert(.88) hue-rotate(180deg)}:root:not([data-theme="light"]) .fig .cap{color:var(--muted)}}
+:root[data-theme="dark"] .fig svg{filter:invert(.88) hue-rotate(180deg)}
+:root[data-theme="dark"] .fig .cap{color:var(--muted)}
 .cap{font-size:13px;color:var(--muted);text-align:center}
 .gantt{margin:14px 12px 22px}
 .gbar{display:flex;border:1.5px solid var(--ink);height:32px;border-radius:3px;overflow:hidden}

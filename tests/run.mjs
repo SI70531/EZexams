@@ -151,16 +151,34 @@ await check("總複習: wrong answers sit right after their section's card", asy
     await pg.ctx.close();
   }
 });
-await check("AI grading without signing in falls back to keyword grading", async () => {
+await check("chapter-end written: no keyword grading — without signing in it says why and offers 重試, no score", async () => {
   const pg = await device({ skipGate: true }); await pg.goto(U + "operating-systems/midterm/#ch1"); await pg.waitForTimeout(600);
   const r = await pg.evaluate(async () => { const q = document.querySelector("#ch1 .chw .exq"); const ta = q.querySelector("textarea");
     ta.value = "an intermediary between the user and the hardware"; ta.dispatchEvent(new Event("input")); q.querySelector(".grade").click();
-    for (let i = 0; i < 40 && !/關鍵字/.test(q.querySelector(".gstat").textContent); i++) await new Promise(z => setTimeout(z, 100));
-    return q.querySelector(".gstat").textContent; });
-  assert(/PIN/.test(r) && /關鍵字/.test(r), "status: " + r);
+    for (let i = 0; i < 40 && !/重試/.test(q.querySelector(".gstat").textContent); i++) await new Promise(z => setTimeout(z, 100));
+    return [q.querySelector(".gstat").textContent, q.querySelector(".gres").hidden, getComputedStyle(q.querySelector("details.qa")).display]; });
+  assert(/PIN/.test(r[0]) && /重試/.test(r[0]) && r[1] === true && r[2] === "none", JSON.stringify(r));
   await pg.ctx.close();
 });
-
+await check("chapter-end written: AI grades from the notes, shows its own ANSWER (EN + 中文); 看 AI 解答 works without answering", async () => {
+  resetWorker(); const prompts = [];
+  setGemini(body => { const t = JSON.stringify(body); prompts.push(t); const ids = [...new Set(t.match(/ch1w-\d+/g) || [])];
+    const grading = /student_answer/.test(t);
+    return { candidates: [{ content: { parts: [{ text: JSON.stringify(ids.map(id => grading ? { id, score: 1, verdict: "partial", feedback: "部分", missing: [], answer_en: "EN " + id, answer_zh: "中 " + id } : { id, answer_en: "EN " + id, answer_zh: "中 " + id })) }] } }] }; });
+  const pg = await device(); await pg.goto(U + "operating-systems/midterm/"); await pg.waitForTimeout(500);
+  await pg.click("#egSw"); await pg.waitForTimeout(800); await typePin(pg, 1, "8462"); await typePin(pg, 2, "8462"); await settle(pg, 1500);
+  const r = await pg.evaluate(async () => { show("ch1"); await new Promise(z => setTimeout(z, 300));
+    const [q1, q2] = document.querySelectorAll("#ch1 .chw .exq"); const ta = q1.querySelector("textarea");
+    ta.value = "it is a software interrupt"; ta.dispatchEvent(new Event("input")); q1.querySelector(".grade").click();
+    for (let i = 0; i < 60 && !/完成/.test(q1.querySelector(".gstat").textContent); i++) await new Promise(z => setTimeout(z, 100));
+    q2.querySelector(".aibtn").click();
+    for (let i = 0; i < 60 && !q2.querySelector(".aians"); i++) await new Promise(z => setTimeout(z, 100));
+    const a1 = q1.querySelector(".aians"), a2 = q2.querySelector(".aians");
+    return [q1.querySelector(".gstat").textContent, a1 && !a1.hidden && a1.textContent, a2 && !a2.hidden && a2.textContent, !!q1.querySelector(".gres .miss"), q1.id, q2.id]; });
+  assert(r[0] === "批改完成。" && new RegExp("ANSWER.*EN " + r[4] + ".*中文.*中 " + r[4]).test(r[1]) && new RegExp("EN " + r[5]).test(r[2]) && !r[3], JSON.stringify(r));
+  assert(prompts.length === 2 && /COURSE NOTES/.test(prompts[0]) && /reference_for_reference_only/.test(prompts[0]) && /student_answer/.test(prompts[0]), "prompt lacks notes/reference");
+  await pg.ctx.close();
+});
 await check("AI grading when signed in: goes through the Worker with temperature 0 and a fixed seed", async () => {
   resetWorker(); let seen = null;
   setGemini(body => { seen = body; return { candidates: [{ content: { parts: [{ text: JSON.stringify([{ id: "x", score: 1 }]) }] } }] }; });

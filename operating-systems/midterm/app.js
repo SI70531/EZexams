@@ -217,6 +217,7 @@ document.querySelectorAll(".exam").forEach(ex=>{
   const id=ex.dataset.exam;
   const st=exState(id);
   const qs=[...ex.querySelectorAll(".exq")];
+  const CHW=!!(window.EZchw&&EZchw.is(ex));   /* chapter-end written part: AI only (assets/ezchw.js) */
   const total=qs.reduce((s,q)=>s+ +q.dataset.pts,0);
   const tools=ex.querySelector(".examtools");
   const score=tools.querySelector(".score");
@@ -239,8 +240,8 @@ document.querySelectorAll(".exam").forEach(ex=>{
     h.textContent=(g.self?"✎ 自評　":"")+(g.verdict==="correct"?"✓ 正確":g.verdict==="partial"?"△ 部分正確":"✗ 錯誤")+"　"+g.score+" / "+q.dataset.pts+" 分"+(stale?"（答案改過了，請重新批改）":"");
     box.appendChild(h);
     const f=document.createElement("div");f.textContent=g.feedback||"";box.appendChild(f);
-    if(!g.ai&&g.missing&&g.missing.length){ /* AI feedback already says what is missing */const m=document.createElement("div");m.className="miss";m.textContent="缺少的關鍵字："+g.missing.join("、");box.appendChild(m);}
-    if(!stale&&!g.ai){const P=+q.dataset.pts,row=document.createElement("div");row.style.cssText="margin-top:8px;display:flex;gap:6px;align-items:center;flex-wrap:wrap";
+    if(!g.ai&&!CHW&&g.missing&&g.missing.length){ /* AI feedback already says what is missing */const m=document.createElement("div");m.className="miss";m.textContent="缺少的關鍵字："+g.missing.join("、");box.appendChild(m);}
+    if(!stale&&!g.ai&&!CHW){const P=+q.dataset.pts,row=document.createElement("div");row.style.cssText="margin-top:8px;display:flex;gap:6px;align-items:center;flex-wrap:wrap";
       row.innerHTML='<span class="small">自己給分：</span>';const inp=document.createElement("input");inp.type="number";inp.min=0;inp.max=P;inp.step=0.5;inp.value=g.score;inp.style.cssText="width:70px;padding:3px 6px";
       const ok=document.createElement("button");ok.type="button";ok.className="btn chip";ok.textContent="改分";
       const full=document.createElement("button");full.type="button";full.className="btn chip";full.textContent="滿分";
@@ -260,6 +261,7 @@ document.querySelectorAll(".exam").forEach(ex=>{
     save();upd();
   }
   async function grade(list,btns,stat){
+    if(CHW)return EZchw.grade(list.filter(it=>it.ans).map(it=>document.getElementById(it.id)),{st,render,upd,save,btns,stat});
     list=list.filter(it=>it.ans);
     if(!list.length){stat.textContent="還沒有作答。";return;}
     if(!SAMPLE){kwGrade(list);stat.textContent="批改完成（關鍵字比對）。";return;}
@@ -306,7 +308,7 @@ document.querySelectorAll(".exam").forEach(ex=>{
     inp.addEventListener("keydown",e=>{if(e.key==="Enter"&&inp.value!=="")setSelf(inp.value);});
     sw.querySelector("[data-clr]").addEventListener("click",()=>{delete st.grade[q.id];inp.value="";save();render(q);upd();});
     if(st.grade[q.id])inp.value=st.grade[q.id].score;
-    render(q);
+    render(q);if(CHW)EZchw.setup(q);
   });
   gAll.addEventListener("click",()=>{
     const list=qs.map(q=>{st.ans[q.id]=q.querySelector("textarea").value;return qInfo(q);})

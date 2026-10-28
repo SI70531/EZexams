@@ -155,6 +155,7 @@ document.querySelectorAll(".exam").forEach(ex=>{
   const id=ex.dataset.exam;
   const st=exState(id);
   const qs=[...ex.querySelectorAll(".exq")];
+  const CHW=!!(window.EZchw&&EZchw.is(ex));   /* chapter-end written part: AI only (assets/ezchw.js) */
   const total=qs.reduce((s,q)=>s+ +q.dataset.pts,0);
   const tools=ex.querySelector(".examtools");
   const score=tools.querySelector(".score");
@@ -177,7 +178,7 @@ document.querySelectorAll(".exam").forEach(ex=>{
     h.textContent=(g.self?"✎ 自評　":"")+(g.verdict==="correct"?"✓ 正確":g.verdict==="partial"?"△ 部分正確":"✗ 錯誤")+"　"+g.score+" / "+q.dataset.pts+" 分"+(stale?"（答案改過了，請重新批改）":"");
     box.appendChild(h);
     const f=document.createElement("div");f.textContent=g.feedback||"";box.appendChild(f);
-    if(!g.ai&&g.missing&&g.missing.length){ /* AI feedback already says what is missing */const m=document.createElement("div");m.className="miss";m.textContent="缺少的關鍵字："+g.missing.join("、");box.appendChild(m);}
+    if(!g.ai&&!CHW&&g.missing&&g.missing.length){ /* AI feedback already says what is missing */const m=document.createElement("div");m.className="miss";m.textContent="缺少的關鍵字："+g.missing.join("、");box.appendChild(m);}
   }
   function upd(){
     let got=0,graded=0;
@@ -191,6 +192,7 @@ document.querySelectorAll(".exam").forEach(ex=>{
     save();upd();
   }
   async function grade(list,btns,stat){
+    if(CHW)return EZchw.grade(list.filter(it=>it.ans).map(it=>document.getElementById(it.id)),{st,render,upd,save,btns,stat});
     list=list.filter(it=>it.ans);
     if(!list.length){stat.textContent="還沒有作答。";return;}
     if(!SAMPLE){kwGrade(list);stat.textContent="批改完成（關鍵字比對）。";return;}
@@ -240,7 +242,7 @@ document.querySelectorAll(".exam").forEach(ex=>{
     const cb=q.querySelector(".self input");
     cb.checked=!!st.self[q.id];
     cb.addEventListener("change",()=>{st.self[q.id]=cb.checked;save();upd();});
-    render(q);
+    render(q);if(CHW)EZchw.setup(q);
   });
   gAll.addEventListener("click",()=>{
     const list=qs.map(q=>{st.ans[q.id]=q.querySelector("textarea").value;return qInfo(q);})

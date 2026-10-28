@@ -7,6 +7,11 @@
    Error messages carry Google's own reason, so errText() can show it. */
 (function(){
   const LS_KEY="ezai-key",LS_MODEL="ezai-model",LS_AUTH="ezai-auth",LS_BAD="ezai-rejected";
+  /* built-in key, so AI grading works without any setup. It is only lightly scrambled (anyone can still read it),
+     so in Google Cloud the key is restricted to requests from si70531.github.io and to the Gemini API.
+     A key pasted on the home page (stored in this browser) takes priority over the built-in one. */
+  const BUILTIN=(()=>{try{return atob("QXAwQko5bzlua2FUOUlnRzNUWlRNb2h1QjhkZUhKSDhPVlFyQWZaaVpoeUs2TlI4YkEuUUE=").split("").reverse().join("");}catch(e){return "";}})();
+  const myKey=()=>get(LS_KEY)||BUILTIN;
   /* best first; when one is overloaded or its free quota is used up, the next one is tried */
   const MODELS=["gemini-flash-latest","gemini-2.5-flash","gemini-flash-lite-latest","gemini-2.5-flash-lite","gemini-2.0-flash"];
   const API="https://generativelanguage.googleapis.com/v1beta/models/";
@@ -79,8 +84,9 @@
 
   const OWN=new WeakSet();
   window.EZAI={
-    key:()=>get(LS_KEY),
-    connected:()=>!!get(LS_KEY),
+    key:()=>myKey(),
+    connected:()=>!!myKey(),
+    builtin:()=>!get(LS_KEY)&&!!BUILTIN,
     model:()=>get(LS_MODEL)||MODELS[0],
     /* check a key with a tiny request, and save it if it works */
     async connect(key){
@@ -97,7 +103,7 @@
     disconnect(){set(LS_KEY,null);set(LS_MODEL,null);set(LS_AUTH,null);set(LS_BAD,null);},
     rejected:()=>!!get(LS_BAD),
     sampler(){
-      const key=get(LS_KEY);if(!key)return null;
+      const key=myKey();if(!key)return null;
       const s={json:async(prompt)=>parse(await run(key,prompt,true)),text:(prompt)=>run(key,prompt,false)};
       OWN.add(s);return s;
     },

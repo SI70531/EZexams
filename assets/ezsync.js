@@ -1,18 +1,23 @@
-/* EZSync: keeps each subject's progress in one private GitHub Gist so every device sees the same state.
-   The token lives only in this browser (localStorage), shared by all EZexams pages on this site.
-   Each subject stores one file "<key>.json" = {updatedAt, data}.
+/* EZSync: keeps each subject's progress in the cloud so every device sees the same state.
+   Two ways to connect (stored in this browser's localStorage, shared by all EZexams pages on this site):
+   - a sync code (default): devices that enter the same code share progress. The EZexams Worker
+     (tools/ezexams-worker.js) stores it in a private Gist with its own GitHub token, so nobody needs a token.
+   - a GitHub token (older setup): progress goes straight to a private Gist in that GitHub account.
+   Each subject stores one file = {updatedAt, data}.
 
    Hooking up a subject page takes one line, placed before the page's own script:
      <script src="../../assets/ezsync.js" data-key="<the page's localStorage key>"></script>
    It watches writes to that key, merges with the cloud copy on load, and adds a sync chip to the top bar. */
 (function(){
   const API="https://api.github.com", MARK="ezexams-progress.json";
-  const LS={tok:"ezsync-token",gist:"ezsync-gist",user:"ezsync-user",last:"ezsync-last"};
+  const LS={tok:"ezsync-token",gist:"ezsync-gist",user:"ezsync-user",last:"ezsync-last",code:"ezsync-code"};
+  const WORKER="https://ezexams-ai.ta77199ta.workers.dev";
   const get=k=>{try{return localStorage.getItem(k);}catch(e){return null;}};
   let internal=false;
+  const on=()=>!!(get(LS.code)||get(LS.tok));
   const set=(k,v)=>{internal=true;try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v);}catch(e){}internal=false;};
   const listeners=new Set();
-  let status={state:get(LS.tok)?"idle":"off",msg:""};
+  let status={state:(get(LS.code)||get(LS.tok))?"idle":"off",msg:""};
   function emit(state,msg,code){status={state,msg:msg||"",code:code||""};listeners.forEach(f=>{try{f(status);}catch(e){}});}
 
   async function gh(path,opt={}){
@@ -31,6 +36,30 @@
     if(r.status===404)throw err("404");
     if(r.status===422&&/too large|size/i.test(why))throw err("big");
     throw err("http");
+  }
+  /* sync code: the Worker reads and writes the Gist for us */
+  async function px(method,path,body){
+    let r;
+    try{r=await fetch(WORKER+path,{method,headers:body?{"Content-Type":"application/json"}:{},body,keepalive:!!(body&&body.length<60000&&px.keepalive)});}
+    catch(e){throw Object.assign(new Error(String(e&&e.message||e)),{code:"net"});}
+    const text=await r.text();
+    if(r.ok)return text;
+    let er={};try{er=JSON.parse(text).error||{};}catch(e){}
+    const why=er.message||("HTTP "+r.status),wait=(+r.headers.get("retry-after")||0)*1000;
+    const code=r.status===429?"rate":er.status==="BAD_CODE"?"badcode":er.status==="TOO_BIG"?"big":(er.status==="NO_TOKEN"||er.status==="BAD_TOKEN")?"server":"http";
+    throw Object.assign(new Error(why),{code,status:r.status,why,wait});
+  }
+  const codeQ=()=>"code="+encodeURIComponent(get(LS.code));
+  async function readRemote(key){   /* the subject's cloud copy as a string, or null */
+    if(get(LS.code)){const t=await px("GET","/sync?"+codeQ()+"&key="+encodeURIComponent(key));return t&&t.trim()!=="{}"?t:null;}
+    const g=await readGist();return fileContent(g.files[key+".json"]);
+  }
+  async function writeRemote(key,payload,keepalive){
+    if(get(LS.code)){px.keepalive=keepalive;try{await px("POST","/sync",JSON.stringify({code:get(LS.code),key,payload}));}finally{px.keepalive=false;}return;}
+    const id=await gistId();
+    const body=JSON.stringify({files:{[key+".json"]:{content:JSON.stringify(payload)}}});
+    /* the browser refuses a keepalive request over 64 KB, so a big progress file is sent normally */
+    await gh("/gists/"+id,{method:"PATCH",keepalive:keepalive&&body.length<60000,body});
   }
   async function gistId(){
     let id=get(LS.gist);if(id)return id;
@@ -55,6 +84,8 @@
   function errMsg(e){
     const c=e&&e.code,why=e&&e.why?"（GitHub："+e.why+"）":"";
     if(c==="auth")return "金鑰無效或過期，請到首頁重新連結。";
+    if(c==="badcode")return "同步代碼要 6～40 個字，不能有空白。";
+    if(c==="server")return "同步伺服器還沒設定好（"+(e.why||"")+"）。";
     if(c==="scope")return "這把金鑰沒有 gist 權限"+why+"。請到首頁換一把有勾 gist 的金鑰。";
     if(c==="rate")return "GitHub 暫時限制次數"+why+"，會自動再試。";
     if(c==="big")return "進度資料太大，GitHub 拒收"+why+"。";
@@ -66,7 +97,7 @@
   /* after a failure (offline, GitHub busy or rate-limited) try again by itself: 30 s, 1, 2, 4 … up to 15 minutes */
   let retryT=null,retryN=0;
   function retryLater(key,e){
-    if(!e||e.code==="auth"||e.code==="scope"||e.code==="off")return;
+    if(!e||e.code==="auth"||e.code==="scope"||e.code==="off"||e.code==="badcode"||e.code==="server")return;
     clearTimeout(retryT);const ms=Math.max(e.wait||0,Math.min(15*60000,30000*Math.pow(2,retryN++)));
     retryT=setTimeout(()=>{retryT=null;pull(key,{reloadOnChange:false});},ms);
   }
@@ -78,11 +109,10 @@
   const lastAny=()=>+get(LASTK)||0;
 
   async function pull(key,{reloadOnChange=true}={}){
-    const sub=subjects[key];if(!sub||!get(LS.tok))return;
+    const sub=subjects[key];if(!sub||!on())return;
     emit("sync","同步中…");
     try{
-      const g=await readGist();
-      const raw=await fileContent(g.files[key+".json"]);
+      const raw=await readRemote(key);
       const localAt=+get(metaKey(key))||0;
       const localStr=get(key);
       if(!raw){await push(key);return;}
@@ -108,7 +138,7 @@
   /* every upload waits for its turn: at most one every 7.2 s from this browser (about 500 an hour) */
   const busyPush={};
   async function push(key,{keepalive=false}={}){
-    if(!get(LS.tok))return;
+    if(!on())return;
     if(busyPush[key]){busyPush[key]="again";return;}   /* one upload per subject at a time; a newer change rides on the next one */
     busyPush[key]=true;
     try{
@@ -129,11 +159,8 @@
     const at=+get(metaKey(key))||Date.now();
     emit("sync","同步中…");
     try{
-      const id=await gistId();
       set(LASTK,String(Date.now()));   /* claim the slot before sending, so another tab waits its turn */
-      const body=JSON.stringify({files:{[key+".json"]:{content:JSON.stringify({updatedAt:at,data:JSON.parse(data)})}}});
-      /* the browser refuses a keepalive request over 64 KB, so a big progress file is sent normally */
-      await gh("/gists/"+id,{method:"PATCH",keepalive:keepalive&&body.length<60000,body});
+      await writeRemote(key,{updatedAt:at,data:JSON.parse(data)},keepalive);
 
       set(LS.last,String(Date.now()));emit("ok","已同步");okNow();
     }catch(e){emit(e.code==="off"?"off":"err",errMsg(e),e.code);try{console.warn("[EZSync] push",key,e);}catch(_){}retryLater(key,e);}
@@ -142,14 +169,14 @@
   window.EZSync={
     register(key,opts={}){
       subjects[key]={merge:opts.merge||null,sig:opts.sig||(o=>JSON.stringify(o)),timer:null};
-      if(get(LS.tok)){
+      if(on()){
         pull(key);
         document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")pull(key);else if(subjects[key].timer){clearTimeout(subjects[key].timer);subjects[key].timer=null;push(key,{keepalive:true});}});
       }
     },
     changed(key){
       set(metaKey(key),String(Date.now()));
-      const sub=subjects[key];if(!sub||!get(LS.tok))return;
+      const sub=subjects[key];if(!sub||!on())return;
       clearTimeout(sub.timer);emit("dirty","有變更，準備同步…");
       /* every upload is a new gist revision and GitHub limits those to about 500 an hour: upload soon,
          but never sooner than 7.2 s after the last upload from this browser; leaving the page uploads right away */
@@ -163,13 +190,26 @@
       try{const u=await gh("/user");set(LS.user,u.login);await gistId();emit("ok","已連結");return u.login;}
       catch(e){set(LS.tok,old);throw e;}
     },
-    disconnect(){[LS.tok,LS.gist,LS.user,LS.last].forEach(k=>set(k,null));emit("off","");},
+    /* sync code: devices with the same code share progress; replaces a GitHub token set up before */
+    async connectCode(code){
+      code=(code||"").trim();
+      if(!code)throw Object.assign(new Error("empty"),{code:"empty"});
+      if(code.length<6||code.length>40||/\s/.test(code))throw Object.assign(new Error("bad code"),{code:"badcode"});
+      const old=get(LS.code);set(LS.code,code);
+      try{await px("GET","/sync?"+codeQ()+"&key=ping");}
+      catch(e){set(LS.code,old);throw e;}
+      [LS.tok,LS.gist,LS.user].forEach(k=>set(k,null));
+      emit("ok","已連結");return code;
+    },
+    mode:()=>get(LS.code)?"code":get(LS.tok)?"token":"off",
+    codeHint:()=>{const c=get(LS.code)||"";return c?c.slice(0,2)+"•".repeat(Math.max(2,c.length-2)):"";},
+    disconnect(){[LS.tok,LS.gist,LS.user,LS.last,LS.code].forEach(k=>set(k,null));emit("off","");},
     /* sync this page's subject right now: upload pending answers, then download (reloads if another device changed something) */
     async syncNow(){
       for(const k of Object.keys(subjects)){const sub=subjects[k];if(sub.timer){clearTimeout(sub.timer);sub.timer=null;}await pull(k);}
     },
-    async syncAll(){const ks=Object.keys(subjects);for(const k of ks)await pull(k,{reloadOnChange:false});if(!ks.length){emit("sync","同步中…");try{await readGist();set(LS.last,String(Date.now()));emit("ok","已同步");}catch(e){emit("err",errMsg(e));}}},
-    connected:()=>!!get(LS.tok),
+    async syncAll(){const ks=Object.keys(subjects);for(const k of ks)await pull(k,{reloadOnChange:false});if(!ks.length){emit("sync","同步中…");try{if(get(LS.code))await px("GET","/sync?"+codeQ()+"&key=ping");else await readGist();set(LS.last,String(Date.now()));emit("ok","已同步");}catch(e){emit("err",errMsg(e));}}},
+    connected:()=>on(),
     user:()=>get(LS.user),
     lastSync:()=>+get(LS.last)||0,
     status:()=>status,
@@ -255,7 +295,7 @@
       a.dataset.state=on?s.state:"off";
       a.querySelector(".synclab").textContent=!on?"未同步":s.state==="sync"?"同步中":s.state==="dirty"?"待同步":s.state==="err"?"同步失敗":"已同步";
       const needKey=s.state==="err"&&s.code==="auth";
-      a.title=!on?"只存在這台裝置。點這裡到首頁設定跨裝置同步。":needKey?"GitHub 金鑰失效了，點這裡到首頁重新連結。":(s.msg&&s.state==="err"?s.msg+" 點一下再同步一次。":"已同步到 GitHub"+(window.EZSync.user()?"（@"+window.EZSync.user()+"）":"")+"。點一下立即同步。");
+      a.title=!on?"只存在這台裝置。點這裡到首頁設定跨裝置同步。":needKey?"GitHub 金鑰失效了，點這裡到首頁重新連結。":(s.msg&&s.state==="err"?s.msg+" 點一下再同步一次。":(window.EZSync.mode()==="code"?"已同步（同步代碼 "+window.EZSync.codeHint()+"）":"已同步到 GitHub"+(window.EZSync.user()?"（@"+window.EZSync.user()+"）":""))+"。點一下立即同步。");
     });
   }
   function updateNote(){

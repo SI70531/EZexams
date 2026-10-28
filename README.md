@@ -58,9 +58,9 @@ Script and stylesheet links carry `?v=<content hash>` so browsers pick up change
 
 ## Cross-Device Sync
 
-Study progress is synced via a private GitHub Gist (its description is set in `assets/ezsync.js`) under your GitHub account, where each subject stores its own `<STORAGE_KEY>.json`.
+Progress syncs by **sync code**: in the cross-device sync section on the main page, type a code of your choice (6-40 characters, like a PIN) once per device; devices with the same code share progress. Nobody needs a GitHub account or token. The pages talk to the EZexams Worker (`tools/ezexams-worker.js`), which keeps all progress in one private Gist of the GitHub account behind its secret `GITHUB_TOKEN` (a classic token with only the `gist` scope). Each file is named `<first 24 hex of SHA-256(code)>--<STORAGE_KEY>.json`, so the codes themselves are never stored. Anyone who knows a code can read and change that progress, so codes should not be trivial.
 
-Under **Cross-Device Sync** on the main page, paste a GitHub Personal Access Token scoped strictly with `gist` permissions once. This token is shared across all subject pages on the site. Sync logic is handled by `assets/ezsync.js`.
+Devices that were linked with a GitHub token before keep working that way until a sync code is entered. Sync logic is handled by `assets/ezsync.js`; uploads are spread to at most one every 7.2 s per browser (GitHub allows about 500 gist revisions an hour).
 
 To enable sync for a new subject page, include this script tag right before your main script:
 
@@ -70,7 +70,7 @@ To enable sync for a new subject page, include this script tag right before your
 
 ## AI Grading (free)
 
-AI grading works out of the box. The pages call a small Cloudflare Worker (`tools/gemini-worker.js`, deployed at `https://ezexams-ai.ta77199ta.workers.dev`) that forwards requests to Google Gemini and adds the API key on its side, so the key never appears on the website. The Worker only serves pages from `https://si70531.github.io` and only forwards `generateContent` calls; the key is stored in the Worker as the secret `GEMINI_KEY` (Settings → Variables and Secrets). If the proxy ever stops working, the **AI Correcting** section on the main page reappears and you can paste your own free key (from https://aistudio.google.com/apikey); a pasted key stays in that browser only and is used directly. If the free quota runs out or Gemini is unreachable, grading falls back to keyword matching automatically. Logic is in `assets/ezai.js`.
+AI grading works out of the box. The pages call a small Cloudflare Worker (`tools/ezexams-worker.js`, deployed at `https://ezexams-ai.ta77199ta.workers.dev`) that forwards requests to Google Gemini and adds the API key on its side, so the key never appears on the website. The Worker only serves pages from `https://si70531.github.io` and only forwards `generateContent` calls; the key is stored in the Worker as the secret `GEMINI_KEY` (Settings → Variables and Secrets). If the proxy ever stops working, the **AI Correcting** section on the main page reappears and you can paste your own free key (from https://aistudio.google.com/apikey); a pasted key stays in that browser only and is used directly. If the free quota runs out or Gemini is unreachable, grading falls back to keyword matching automatically. Logic is in `assets/ezai.js`.
 
 The same connection powers the multiple-choice explanations (`assets/ezexplain.js`): after you answer, Gemini explains your mistake and why each option is right or wrong. Results are cached in the browser so each question is only asked once.
 

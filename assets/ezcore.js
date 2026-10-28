@@ -179,3 +179,12 @@
     e.preventDefault();o.click();
   });
 })();
+
+/* DOM changes that are only decoration or side panels (ripples, sparks, the review's wrong-answer cards, AI text,
+   the search panel, the tour...). Scripts that re-scan the questions after every DOM change skip these, which keeps
+   the page from re-scanning itself in a loop. */
+window.EZnoise=function(ms){
+  const N=".fx-rip,.fx-spark,#fxbar,.fx-ring,.ezs-panel,mark.ezs-hit,.rvwrong,.wgroup,#wrongArea,.ezback,.wback,.aiexp,#eztour,#syncChip,#ezOut,.missbadge,.wnotes,.ezhere";
+  const inN=n=>{const e=n&&(n.nodeType===1?n:n.parentElement);return !!(e&&e.closest&&e.closest(N));};
+  return ms.every(m=>inN(m.target)||(m.type==="childList"&&[...m.addedNodes,...m.removedNodes].every(n=>n.nodeType!==1?inN(m.target):(n.matches&&n.matches(N)))&&(m.addedNodes.length+m.removedNodes.length)>0));
+};

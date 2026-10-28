@@ -84,7 +84,7 @@
   function errMsg(e){
     const c=e&&e.code,why=e&&e.why?"（GitHub："+e.why+"）":"";
     if(c==="auth")return "金鑰無效或過期，請到首頁重新連結。";
-    if(c==="badcode")return "同步代碼要 6～40 個字，不能有空白。";
+    if(c==="badcode")return "同步碼是 6 位數字。";
     if(c==="server")return "同步伺服器還沒設定好（"+(e.why||"")+"）。";
     if(c==="scope")return "這把金鑰沒有 gist 權限"+why+"。請到首頁換一把有勾 gist 的金鑰。";
     if(c==="rate")return "GitHub 暫時限制次數"+why+"，會自動再試。";
@@ -191,18 +191,25 @@
       catch(e){set(LS.tok,old);throw e;}
     },
     /* sync code: devices with the same code share progress; replaces a GitHub token set up before */
-    async connectCode(code){
+    /* mode "create": the code must be new; "join": it must already hold progress */
+    async connectCode(code,{mode}={}){
       code=(code||"").trim();
       if(!code)throw Object.assign(new Error("empty"),{code:"empty"});
-      if(code.length<6||code.length>40||/\s/.test(code))throw Object.assign(new Error("bad code"),{code:"badcode"});
+      if(!/^\d{6}$/.test(code))throw Object.assign(new Error("bad code"),{code:"badcode"});
       const old=get(LS.code);set(LS.code,code);
-      try{await px("GET","/sync?"+codeQ()+"&key=ping");}
+      try{
+        const r=JSON.parse(await px("GET","/sync?"+codeQ()+"&key=ping")||"{}");
+        if(mode==="create"&&r.exists)throw Object.assign(new Error("taken"),{code:"taken"});
+        if(mode==="join"&&r.exists===false)throw Object.assign(new Error("no such code"),{code:"nocode"});
+      }
       catch(e){set(LS.code,old);throw e;}
+      /* a new code is claimed right away, so another device can join it before any subject is opened */
+      if(mode==="create"){try{await px("POST","/sync",JSON.stringify({code,key:"meta",payload:{createdAt:Date.now()}}));}catch(e){}}
       [LS.tok,LS.gist,LS.user].forEach(k=>set(k,null));
       emit("ok","已連結");return code;
     },
     mode:()=>get(LS.code)?"code":get(LS.tok)?"token":"off",
-    codeHint:()=>{const c=get(LS.code)||"";return c?c.slice(0,2)+"•".repeat(Math.max(2,c.length-2)):"";},
+    codeHint:()=>{const c=get(LS.code)||"";return c?c.slice(0,2)+"••••":"";},
     disconnect(){[LS.tok,LS.gist,LS.user,LS.last,LS.code].forEach(k=>set(k,null));emit("off","");},
     /* sync this page's subject right now: upload pending answers, then download (reloads if another device changed something) */
     async syncNow(){

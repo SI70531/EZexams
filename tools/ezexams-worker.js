@@ -1,6 +1,6 @@
 /* EZexams Worker (Cloudflare): keeps every secret off the website.
    1. Gemini proxy  POST /v1beta/models/<model>:generateContent  → adds the secret GEMINI_KEY and forwards to Google.
-   2. Sync by code  GET  /sync?code=<code>&key=<subject key>      → {updatedAt, data} or {}
+   2. Sync by code  GET  /sync?code=<6 digits>&key=<subject key>  → {updatedAt, data} or {}   (key=ping → {exists})
                     POST /sync  {code, key, payload:{updatedAt, data}}
       Progress is stored in one private Gist of the GitHub account behind the secret GITHUB_TOKEN (gist scope).
       Each file is "<first 24 hex of SHA-256(code)>--<subject key>.json", so the codes themselves are never stored.
@@ -57,14 +57,15 @@ export default {
         if (!payload || typeof payload !== "object") return fail(400, "BAD_JSON", "Missing payload");
       } else return fail(405, "METHOD", "GET or POST only");
       code = String(code || "").trim();
-      if (code.length < 6 || code.length > 40 || /\s/.test(code)) return fail(400, "BAD_CODE", "The sync code must be 6-40 characters without spaces");
+      if (!/^\d{6}$/.test(code)) return fail(400, "BAD_CODE", "The sync code must be 6 digits");
       if (!/^[a-z0-9-]{1,40}$/.test(String(key || ""))) return fail(400, "BAD_KEY", "Bad subject key");
       const name = (await sha(code)).slice(0, 24) + "--" + key + ".json";
       try {
         const id = await gistId(env);
         if (req.method === "GET") {
-          if (key === "ping") return json({ ok: true });
           const g = await gh(env, "/gists/" + id);
+          /* ping: does this code already hold any progress? (setting up a new code vs joining one) */
+          if (key === "ping") return json({ ok: true, exists: Object.keys(g.files || {}).some(n => n.startsWith(name.split("--")[0] + "--")) });
           const f = g.files && g.files[name];
           if (!f) return json({});
           const content = f.truncated ? await (await fetch(f.raw_url)).text() : f.content;

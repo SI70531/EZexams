@@ -3,8 +3,7 @@
    - each tab slides in when opened; notes, cards and questions rise in as they scroll into view
    - typed "$ ..." prompt lines, ripple on every button press, cursor spotlight on cards
    - home tickets tilt toward the cursor with a moving shine
-   - answering a multiple-choice question: the right option pops with a burst, a wrong one shakes;
-     finishing every question of a set fires a small confetti burst
+   - answering a multiple-choice question: the right option pops with a burst, a wrong one shakes
    - back-to-top button shows a ring of how far down the page you are
    Colours come from the page's theme tokens, so light and dark mode both work. Loaded with defer on every page. */
 (function(){
@@ -46,7 +45,6 @@
 .opt.fx-bad{animation:fxshake .45s ease}
 .fx-spark{position:fixed;width:7px;height:7px;border-radius:50%;pointer-events:none;z-index:70;animation:fxspark .65s cubic-bezier(.2,.7,.3,1) forwards}
 @keyframes fxspark{from{transform:translate(-50%,-50%) scale(1);opacity:1}to{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(.3);opacity:0}}
-#fxconf{position:fixed;inset:0;pointer-events:none;z-index:80}
 .ticket{transform-style:preserve-3d;will-change:transform}
 .ticket.fx-tilt{transition:transform .08s linear,box-shadow .2s}
 .ticket .fx-shine{position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:2;opacity:0;transition:opacity .25s;
@@ -55,7 +53,7 @@
 .totop{transition:transform .2s,opacity .25s}
 .totop .fx-ring{position:absolute;inset:-5px;pointer-events:none}
 .totop .fx-ring rect{fill:none;stroke:var(--seal);stroke-width:2.5;stroke-linecap:round}
-@media print{#fxbar,#fxconf{display:none}.fx-rv{opacity:1;transform:none}}`;
+@media print{#fxbar{display:none}.fx-rv{opacity:1;transform:none}}`;
   const st=document.createElement("style");st.id="ezfx-css";st.textContent=css;document.head.appendChild(st);
   const raf=f=>{let q=false;return(...a)=>{if(q)return;q=true;requestAnimationFrame(()=>{q=false;f(...a);});};};
   const tok=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
@@ -145,13 +143,12 @@
   document.addEventListener("pointermove",mv,{passive:true});
   document.addEventListener("pointerout",e=>{const c=e.target.closest&&e.target.closest(".ticket");if(c&&!c.contains(e.relatedTarget)){c.classList.remove("fx-tilt");c.style.transform="";}},true);
 
-  /* answering: pop + burst when right, shake when wrong; confetti when a whole set is done */
+  /* answering: pop + burst when right, shake when wrong */
   let lastPick=null;
-  const doneSet=b=>{const its=[...b.querySelectorAll(":scope > .qitem")];return its.length>1&&its.every(it=>it.querySelector(".opt.right,.opt.wrong"));};
   document.addEventListener("click",e=>{
     const o=e.target.closest&&e.target.closest(".opt");if(!o||o.disabled)return;
-    const q=o.closest(".qitem"),box=o.closest(".quiz");
-    lastPick={q,box,was:box?doneSet(box):true,at:Date.now(),x:e.clientX,y:e.clientY};
+    const q=o.closest(".qitem");
+    lastPick={q,at:Date.now()};
     setTimeout(()=>react(lastPick),30);
   },true);
   function react(p){
@@ -160,23 +157,11 @@
     if(right){right.classList.remove("fx-good");void right.offsetWidth;right.classList.add("fx-good");setTimeout(()=>right.classList.remove("fx-good"),800);}
     if(wrong){wrong.classList.remove("fx-bad");void wrong.offsetWidth;wrong.classList.add("fx-bad");setTimeout(()=>wrong.classList.remove("fx-bad"),600);}
     else if(right){const ab=right.querySelector(".ab")||right,r=ab.getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2);}
-    if(p.box&&!p.was&&doneSet(p.box))confetti();
   }
   function burst(x,y){
     const cols=[tok("--ok"),tok("--brass"),tok("--indigo")];
     for(let i=0;i<10;i++){const s=document.createElement("span");s.className="fx-spark";const a=i/10*Math.PI*2,d=26+Math.random()*16;
       s.style.cssText="left:"+x+"px;top:"+y+"px;background:"+cols[i%3]+";--dx:"+Math.cos(a)*d+"px;--dy:"+Math.sin(a)*d+"px";document.body.appendChild(s);setTimeout(()=>s.remove(),700);}
-  }
-  function confetti(){
-    const c=document.createElement("canvas");c.id="fxconf";document.body.appendChild(c);const g=c.getContext("2d"),dpr=devicePixelRatio||1;
-    c.width=innerWidth*dpr;c.height=innerHeight*dpr;g.scale(dpr,dpr);
-    const cols=[tok("--seal"),tok("--ok"),tok("--brass"),tok("--indigo"),tok("--warn")].filter(Boolean);
-    const P=[...Array(140)].map((_,i)=>{const left=i%2===0;return{x:left?-10:innerWidth+10,y:innerHeight*.75,vx:(left?1:-1)*(6+Math.random()*9),vy:-(10+Math.random()*12),
-      r:Math.random()*Math.PI,vr:(Math.random()-.5)*.4,w:6+Math.random()*6,h:3+Math.random()*4,c:cols[i%cols.length]};});
-    const t0=performance.now();
-    (function f(t){const k=(t-t0)/1000;g.clearRect(0,0,innerWidth,innerHeight);
-      P.forEach(p=>{p.vy+=.45;p.vx*=.985;p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;g.save();g.translate(p.x,p.y);g.rotate(p.r);g.globalAlpha=Math.max(0,1-k/2.6);g.fillStyle=p.c;g.fillRect(-p.w/2,-p.h/2,p.w,p.h);g.restore();});
-      if(k<2.6)requestAnimationFrame(f);else c.remove();})(t0);
   }
   onScroll();
 })();

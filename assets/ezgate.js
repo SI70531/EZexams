@@ -113,7 +113,7 @@
     $("#egSkip").addEventListener("click",()=>{try{sessionStorage.setItem("ezgate-skip","1");}catch(e){}close();});
     ticket.addEventListener("submit",submit);
   }
-  const RM=()=>false;   /* always animate: Windows with "animation effects" off reports reduced motion, and the site wanted its animations anyway */
+  const RM=()=>!!(window.EZcalm&&EZcalm());   /* always animate: Windows with "animation effects" off reports reduced motion, and the site wanted its animations anyway */
   const pop=x=>{if(!RM()&&x.animate)x.animate([{transform:"scale(.86)"},{transform:"scale(1.07)",offset:.6},{transform:"none"}],{duration:200,easing:"ease-out"});};
   function fill(g,from,digits,gi){const c=cells(g);let i=from;for(const d of digits){if(i>=4)break;c[i].value=d;c[i].classList.add("on");pop(c[i]);i++;}
     if(i>=4&&gi===0&&ticket.dataset.mode==="create")cells(cellsets[1])[0].focus();else c[Math.min(i,3)].focus();

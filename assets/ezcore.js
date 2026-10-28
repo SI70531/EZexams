@@ -41,6 +41,29 @@
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",wire);else wire();
 
+  /* 動畫: full (default) or 減少動畫, chosen in the same menu; saved per browser. The system "reduce motion" setting
+     is not followed on purpose (Windows turns it on by default), so this switch is the way to calm things down. */
+  const MK="ezexams-motion";
+  let calm=false;try{calm=localStorage.getItem(MK)==="calm";}catch(e){}
+  root.classList.toggle("ezcalm",calm);
+  const cst=document.createElement("style");
+  cst.textContent="html.ezcalm *,html.ezcalm *::before,html.ezcalm *::after{animation-duration:.001ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.001ms!important;transition-delay:0s!important;scroll-behavior:auto!important}"+
+    "html.ezcalm .fx-rv{opacity:1!important;transform:none!important}"+
+    ".thmenu .thsep{height:1px;background:var(--line);margin:5px 4px}.thmenu .thhead{font-family:var(--f-mono);font-size:11px;color:var(--muted);padding:2px 10px 0}";
+  document.head.appendChild(cst);
+  function wireMotion(){
+    const menu=document.getElementById("themeMenu");if(!menu||menu.querySelector("[data-m]"))return;
+    const sep=document.createElement("div");sep.className="thsep";sep.setAttribute("role","separator");
+    const head=document.createElement("div");head.className="thhead";head.textContent="動畫";
+    menu.append(sep,head);
+    [["full","完整動畫"],["calm","減少動畫"]].forEach(([k,t])=>{const b=document.createElement("button");b.type="button";b.setAttribute("role","menuitemradio");b.dataset.m=k;b.textContent=t;menu.appendChild(b);});
+    const mark=()=>menu.querySelectorAll("[data-m]").forEach(b=>b.setAttribute("aria-checked",String((b.dataset.m==="calm")===calm)));mark();
+    menu.addEventListener("click",e=>{const b=e.target.closest("[data-m]");if(!b)return;e.stopPropagation();calm=b.dataset.m==="calm";root.classList.toggle("ezcalm",calm);
+      try{calm?localStorage.setItem(MK,"calm"):localStorage.removeItem(MK);}catch(err){}mark();});
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",wireMotion);else wireMotion();
+  window.EZcalm=()=>root.classList.contains("ezcalm");
+
   /* Answer options are made with EZopt() instead of <button>: browsers never let you select text inside a
      button, so you could not copy an option. EZopt() gives a normal element that still acts like a button:
      click, Tab to focus, Enter/Space to choose, and .disabled locks it (reflected as the disabled attribute). */
@@ -125,4 +148,34 @@
   }
   addEventListener("error",e=>{if(e&&e.filename&&!/si70531\.github\.io|localhost/.test(e.filename))return;send(e&&e.message,(e.filename||"").replace(/^.*\/EZexams\//,"")+":"+(e.lineno||0));});
   addEventListener("unhandledrejection",e=>{const r=e&&e.reason;send("Unhandled: "+(r&&(r.message||r.code)||r),"promise");});
+})();
+
+/* keyboard: A–D (or 1–4) answers the multiple-choice question you are on (the focused one, else the unanswered one
+   nearest the middle of the screen); ← / → on a focused chapter tab moves to the next tab */
+(function(){
+  const vis=el=>{const r=el.getBoundingClientRect();return r.bottom>60&&r.top<innerHeight;};
+  function current(){
+    const a=document.activeElement&&document.activeElement.closest&&document.activeElement.closest(".qitem");
+    if(a&&vis(a))return a;
+    const mid=innerHeight/2;let best=null,bd=1e9;
+    document.querySelectorAll(".view:not([hidden]) .qitem").forEach(q=>{
+      if(!vis(q)||!q.querySelector(".opt")||q.querySelector(".opt.right,.opt.wrong"))return;
+      const r=q.getBoundingClientRect(),d=Math.abs((r.top+r.bottom)/2-mid);if(d<bd){bd=d;best=q;}
+    });
+    return best;
+  }
+  document.addEventListener("keydown",e=>{
+    if(e.ctrlKey||e.metaKey||e.altKey||e.defaultPrevented)return;
+    const t=e.target;if(t&&(t.isContentEditable||/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)))return;
+    if(document.documentElement.classList.contains("ezgate-on")||document.getElementById("eztour"))return;
+    if((e.key==="ArrowLeft"||e.key==="ArrowRight")&&t&&t.closest&&t.closest("#tabs")){
+      const tabs=[...document.querySelectorAll("#tabs [data-go]")];const i=tabs.indexOf(t.closest("[data-go]"));if(i<0)return;
+      const n=tabs[(i+(e.key==="ArrowRight"?1:-1)+tabs.length)%tabs.length];e.preventDefault();n.click();n.focus();return;
+    }
+    const k=e.key.toLowerCase();const idx="abcdefgh".indexOf(k)>=0&&k.length===1?"abcdefgh".indexOf(k):/^[1-8]$/.test(k)?+k-1:-1;
+    if(idx<0)return;
+    const q=current();if(!q)return;
+    const o=[...q.querySelectorAll(".opt")][idx];if(!o||o.disabled)return;
+    e.preventDefault();o.click();
+  });
 })();

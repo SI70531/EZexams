@@ -1,6 +1,6 @@
 /* EZexams Worker (Cloudflare): keeps every secret off the website.
    1. Gemini proxy  POST /v1beta/models/<model>:generateContent  → adds the secret GEMINI_KEY and forwards to Google.
-   2. Sync by code  GET  /sync?code=<6 digits>&key=<subject key>  → {updatedAt, data} or {}   (key=ping → {exists})
+   2. Sync by code  GET  /sync?code=<4 digits (older 6-digit codes still work)>&key=<subject key>  → {updatedAt, data} or {}   (key=ping → {exists})
                     POST /sync  {code, key, payload:{updatedAt, data}}
       Progress is stored in one private Gist of the GitHub account behind the secret GITHUB_TOKEN (gist scope).
       Each file is "<first 24 hex of SHA-256(code)>--<subject key>.json", so the codes themselves are never stored.
@@ -62,7 +62,7 @@ export default {
         if (!payload || typeof payload !== "object") return fail(400, "BAD_JSON", "Missing payload");
       } else return fail(405, "METHOD", "GET or POST only");
       code = String(code || "").trim();
-      if (!/^\d{6}$/.test(code)) return fail(400, "BAD_CODE", "The sync code must be 6 digits");
+      if (!/^\d{4}(\d{2})?$/.test(code)) return fail(400, "BAD_CODE", "The PIN must be 4 digits");
       if (!/^[a-z0-9-]{1,40}$/.test(String(key || ""))) return fail(400, "BAD_KEY", "Bad subject key");
       const name = (await sha(code)).slice(0, 24) + "--" + key + ".json";
       try {

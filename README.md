@@ -17,8 +17,8 @@ sw.js, manifest.webmanifest    offline support / install to home screen
 assets/
   ezcore.js     theme switcher + offline registration (every page loads it in <head>)
   ezbase.css    styles shared by all subject pages
-  ezsync.js     cross-device sync (6-digit PIN through the Worker, or an older GitHub token)
-  ezgate.js     entry gate that asks for the 6-digit PIN before the site opens
+  ezsync.js     cross-device sync (4-digit PIN through the Worker, or an older GitHub token)
+  ezgate.js     entry gate that asks for the 4-digit PIN before the site opens
   ezai.js       free AI grading with a Gemini API key
   ezexplain.js  AI explanation for multiple-choice answers (what went wrong + all four options)
   ezplan.js     N-day study plan
@@ -59,7 +59,7 @@ Script and stylesheet links carry `?v=<content hash>` so browsers pick up change
 
 ## Cross-Device Sync
 
-Progress syncs by a 6-digit **PIN**. The PIN is asked for every time the site is opened (closing the site signs out), and a newly created PIN starts from zero progress. Opening the site without one shows an entry gate (`assets/ezgate.js`, styled as an admission ticket in the site's own light/dark theme): set a code up on the first device and enter the same code once on every other device (or choose to use this device only for the session); devices with the same code share progress. Nobody needs a GitHub account or token. The pages talk to the EZexams Worker (`tools/ezexams-worker.js`), which keeps all progress in one private Gist of the GitHub account behind its secret `GITHUB_TOKEN` (a classic token with only the `gist` scope). Each file is named `<first 24 hex of SHA-256(code)>--<STORAGE_KEY>.json`, so the codes themselves are never stored. Anyone who knows a code can read and change that progress, so codes should not be trivial.
+Progress syncs by a 4-digit **PIN** (the Worker still accepts the older 6-digit codes; a browser that last used one keeps its progress when it first sets up a 4-digit PIN). The PIN is asked for every time the site is opened (closing the site signs out), and a newly created PIN starts from zero progress. Opening the site without one shows an entry gate (`assets/ezgate.js`, styled as an admission ticket in the site's own light/dark theme): set a code up on the first device and enter the same code once on every other device (or choose to use this device only for the session); devices with the same code share progress. Nobody needs a GitHub account or token. The pages talk to the EZexams Worker (`tools/ezexams-worker.js`), which keeps all progress in one private Gist of the GitHub account behind its secret `GITHUB_TOKEN` (a classic token with only the `gist` scope). Each file is named `<first 24 hex of SHA-256(code)>--<STORAGE_KEY>.json`, so the codes themselves are never stored. Anyone who knows a code can read and change that progress, so codes should not be trivial.
 
 Devices that were linked with a GitHub token before keep working that way until a PIN is entered. Sync logic is handled by `assets/ezsync.js`; uploads are spread to at most one every 7.2 s per browser (GitHub allows about 500 gist revisions an hour).
 

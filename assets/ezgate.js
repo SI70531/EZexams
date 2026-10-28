@@ -1,6 +1,6 @@
-/* EZexams entry gate: before the site opens, ask for the 6-digit sync code (like an admission ticket).
+/* EZexams entry gate: before the site opens, ask for the 4-digit PIN (like an admission ticket).
    - Shown on every page while this browser has no sync code (ezcore.js hides the page early so nothing flashes).
-   - The code is checked as soon as all six boxes are filled (no Enter); a wrong one shakes and clears.
+   - The code is checked as soon as all four boxes are filled (no Enter); a wrong one shakes and clears.
    - Signed in for this browser tab only: closing the site signs out (ezsync.js keeps the code in sessionStorage).
    - 輸入 PIN 碼: join a code that already holds progress. 建立 PIN 碼: set up a new one (typed twice).
    - 先不同步: use this device only, for this browser session.
@@ -30,10 +30,10 @@
 .eg-lab{display:flex;justify-content:space-between;align-items:center;font-family:var(--f-mono);font-size:12px;color:var(--muted);margin:0 0 6px;letter-spacing:.04em}
 .eg-eye{border:0;background:none;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:4px;font:inherit;padding:2px}
 .eg-eye svg{width:16px;height:16px}.eg-eye[aria-pressed="true"]{color:var(--indigo)}
-.eg-cells{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:0 0 14px}
+.eg-cells{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:340px;margin:0 auto 14px}
 .eg-cell{position:relative}
 .eg-cell::before{content:attr(data-n);position:absolute;left:7px;top:4px;font-family:var(--f-mono);font-size:9.5px;color:var(--muted);pointer-events:none}
-.eg-cell input{width:100%;min-width:0;aspect-ratio:1/1.15;text-align:center;padding-top:6px;font:600 24px/1 var(--f-mono);color:var(--ink);caret-color:var(--seal);
+.eg-cell input{width:100%;min-width:0;aspect-ratio:1/1.15;text-align:center;padding-top:6px;font:600 30px/1 var(--f-mono);color:var(--ink);caret-color:var(--seal);
   background:var(--paper2);border:1.5px solid var(--line-strong);border-bottom-width:3px;border-radius:8px;outline:none;transition:border-color .15s,background .15s,transform .1s}
 .eg-cell input:focus{border-color:var(--indigo);background:var(--indigo-soft)}
 .eg-cell input.on{border-color:var(--ink)}
@@ -71,13 +71,13 @@
 .eg-done path{fill:none;stroke:var(--ok);stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:24;stroke-dashoffset:24}
 .eg-foot{margin:16px 2px 0;font-family:var(--f-mono);font-size:11.5px;color:var(--muted);text-align:center}
 @media (max-width:560px){
-  .eg-main{padding:18px 16px 16px}.eg-cells{gap:6px}.eg-cell input{font-size:20px}
+  .eg-main{padding:18px 16px 16px}.eg-cells{gap:9px}.eg-cell input{font-size:26px}
 }
 `;
 
   const TEXT={
-    join:{prompt:"ezexams --sync",h:"輸入 <em>PIN 碼</em>",p:"輸入你的 6 位數 PIN 碼，就會載入這組 PIN 碼的進度：每一科的作答、分數和錯題。",btn:"進入 EZexams",sw:"第一次使用？",swb:"建立 PIN 碼"},
-    create:{prompt:"ezexams --new",h:"建立 <em>PIN 碼</em>",p:"自己設定一組 6 位數 PIN 碼，輸入兩次確認。新的 PIN 碼從 0 開始；之後每台裝置輸入同一組，進度就會同步。避開 123456、生日這種好猜的。",btn:"建立並進入",sw:"已經有 PIN 碼？",swb:"輸入 PIN 碼"}
+    join:{prompt:"ezexams --sync",h:"輸入 <em>PIN 碼</em>",p:"輸入你的 4 位數 PIN 碼，就會載入這組 PIN 碼的進度：每一科的作答、分數和錯題。",btn:"進入 EZexams",sw:"第一次使用？",swb:"建立 PIN 碼"},
+    create:{prompt:"ezexams --new",h:"建立 <em>PIN 碼</em>",p:"自己設定一組 4 位數 PIN 碼，輸入兩次確認。新的 PIN 碼從 0 開始；之後每台裝置輸入同一組，進度就會同步。避開 1234、0000 這種好猜的。",btn:"建立並進入",sw:"已經有 PIN 碼？",swb:"輸入 PIN 碼"}
   };
   let root=null,ticket=null,cellsets=[],opened=false,opts={};
   const $=s=>root.querySelector(s);
@@ -86,7 +86,7 @@
   function build(){
     const st=document.createElement("style");st.textContent=css;document.head.appendChild(st);
     root=document.createElement("div");root.id="ezgate";root.setAttribute("role","dialog");root.setAttribute("aria-modal","true");root.setAttribute("aria-labelledby","egH");
-    const row=n=>'<div class="eg-cells" data-row="'+n+'">'+[1,2,3,4,5,6].map(i=>'<div class="eg-cell" data-n="'+i+'"><input type="password" inputmode="numeric" maxlength="1" autocomplete="off" aria-label="PIN 碼第 '+i+' 位"></div>').join("")+'</div>';
+    const row=n=>'<div class="eg-cells" data-row="'+n+'">'+[1,2,3,4].map(i=>'<div class="eg-cell" data-n="'+i+'"><input type="password" inputmode="numeric" maxlength="1" autocomplete="off" aria-label="PIN 碼第 '+i+' 位"></div>').join("")+'</div>';
     root.innerHTML='<div class="eg-wrap"><div class="eg-brand"><span class="mk">EZ</span>EZexams 考試衝刺</div>'+
       '<form class="eg-ticket" data-mode="join" novalidate autocomplete="off"><div class="eg-main">'+
         '<div class="eg-prompt" id="egPrompt"></div><h1 class="eg-h" id="egH"></h1><p class="eg-p" id="egP"></p>'+
@@ -104,7 +104,7 @@
       x.addEventListener("input",()=>{const d=x.value.replace(/\D/g,"");x.value="";x.classList.remove("on");g.classList.remove("bad");if(d)fill(g,i,d,gi);});
       x.addEventListener("keydown",e=>{const c=cells(g);
         if(e.key==="Backspace"&&!x.value&&i>0){e.preventDefault();c[i-1].value="";c[i-1].classList.remove("on");c[i-1].focus();}
-        else if(e.key==="ArrowLeft"&&i>0)c[i-1].focus();else if(e.key==="ArrowRight"&&i<5)c[i+1].focus();});
+        else if(e.key==="ArrowLeft"&&i>0)c[i-1].focus();else if(e.key==="ArrowRight"&&i<3)c[i+1].focus();});
       x.addEventListener("paste",e=>{const d=(e.clipboardData||window.clipboardData).getData("text").replace(/\D/g,"");if(d){e.preventDefault();fill(g,i,d,gi);}});
     }));
     $("#egEye").addEventListener("click",e=>{const b=e.currentTarget,on=b.getAttribute("aria-pressed")!=="true";b.setAttribute("aria-pressed",on);b.querySelector("span").textContent=on?"隱藏":"顯示";root.querySelectorAll(".eg-cell input").forEach(x=>x.type=on?"text":"password");});
@@ -115,13 +115,13 @@
   }
   const RM=()=>false;   /* always animate: Windows with "animation effects" off reports reduced motion, and the site wanted its animations anyway */
   const pop=x=>{if(!RM()&&x.animate)x.animate([{transform:"scale(.86)"},{transform:"scale(1.07)",offset:.6},{transform:"none"}],{duration:200,easing:"ease-out"});};
-  function fill(g,from,digits,gi){const c=cells(g);let i=from;for(const d of digits){if(i>=6)break;c[i].value=d;c[i].classList.add("on");pop(c[i]);i++;}
-    if(i>=6&&gi===0&&ticket.dataset.mode==="create")cells(cellsets[1])[0].focus();else c[Math.min(i,5)].focus();
+  function fill(g,from,digits,gi){const c=cells(g);let i=from;for(const d of digits){if(i>=4)break;c[i].value=d;c[i].classList.add("on");pop(c[i]);i++;}
+    if(i>=4&&gi===0&&ticket.dataset.mode==="create")cells(cellsets[1])[0].focus();else c[Math.min(i,3)].focus();
     clearTimeout(autoT);autoT=setTimeout(auto,140);}
   /* no Enter needed: as soon as every box is filled, check the code */
   let autoT=null,busy=false;
-  function auto(){if(busy||!root||root.hidden)return;if(val(cellsets[0]).length<6)return;
-    if(ticket.dataset.mode==="create"&&val(cellsets[1]).length<6)return;submit();}
+  function auto(){if(busy||!root||root.hidden)return;if(val(cellsets[0]).length<4)return;
+    if(ticket.dataset.mode==="create"&&val(cellsets[1]).length<4)return;submit();}
   function say(t,cls){const m=$("#egMsg");m.className="eg-msg"+(cls?" "+cls:"");m.textContent=t;}
   /* a rejected code: shake, show why, then empty the boxes so the next try starts from the first box */
   function bad(g,t){g.classList.remove("bad");void g.offsetWidth;g.classList.add("bad");say(t,"err");
@@ -136,9 +136,9 @@ $("#egSwT").textContent=t.sw;$("#egSw").textContent=t.swb;
   }
   async function submit(e){
     if(e)e.preventDefault();if(busy)return;const mode=ticket.dataset.mode,c1=val(cellsets[0]),c2=val(cellsets[1]),go=$("#egGo");
-    if(!/^\d{6}$/.test(c1))return bad(cellsets[0],"PIN 碼是 6 位數字。");
+    if(!/^\d{4}$/.test(c1))return bad(cellsets[0],"PIN 碼是 4 位數字。");
     if(mode==="create"&&c1!==c2)return bad(cellsets[1],"兩次輸入的 PIN 碼不一樣。");
-    if(mode==="create"&&/^(\d)\1{5}$|^(012345|123456|234567|345678|456789|987654|876543|654321|543210)$/.test(c1))return bad(cellsets[0],"這組太好猜了，換一組吧。");
+    if(mode==="create"&&/^(\d)\1{3}$|^(0123|1234|2345|3456|4567|5678|6789|9876|8765|7654|6543|5432|4321|3210|1212|6969)$/.test(c1))return bad(cellsets[0],"這組太好猜了，換一組吧。");
     if(!window.EZSync){say("同步功能還在載入，請再按一次。","err");return;}
     busy=true;go.disabled=true;ticket.classList.remove("retry");say("連線中…");cellsets[0].classList.add("wait");
     try{
@@ -184,11 +184,11 @@ $("#egSwT").textContent=t.sw;$("#egSw").textContent=t.swb;
     await wait(180);
     const n=all.length;
     await Promise.all(all.map((x,i)=>{                             /* slide together, fanned like a deck */
-      const r=x.getBoundingClientRect(),dx=cx-(r.left+r.width/2),dy=cy-(r.top+r.height/2),k=i%6,rot=(k-2.5)*5;
+      const r=x.getBoundingClientRect(),dx=cx-(r.left+r.width/2),dy=cy-(r.top+r.height/2),k=i%4,rot=(k-1.5)*6;
       return x.animate([{transform:"none"},
         {transform:"translate("+(dx*.78+k*3)+"px,"+dy+"px) rotate("+rot+"deg)",offset:.65},
         {transform:"translate("+(dx+k*1.5)+"px,"+dy+"px) rotate("+(rot*.35)+"deg) scale(.97)"}],
-        {duration:560,delay:(n>6?(i%6):i)*22,easing:"cubic-bezier(.65,0,.25,1)",fill:"forwards"}).finished;}));
+        {duration:560,delay:(n>4?(i%4):i)*30,easing:"cubic-bezier(.65,0,.25,1)",fill:"forwards"}).finished;}));
     box.style.opacity=1;all.forEach(x=>x.style.visibility="hidden");
     await box.animate([                                            /* the stack wobbles into one box and turns green */
       {transform:"rotate(-7deg) scale(1.04)",borderRadius:"14px 6px 12px 7px",borderColor:"var(--seal)"},

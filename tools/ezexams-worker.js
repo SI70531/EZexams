@@ -5,7 +5,9 @@
       Progress is stored in one private Gist of the GitHub account behind the secret GITHUB_TOKEN (gist scope).
       Each file is "<first 24 hex of SHA-256(code)>--<subject key>.json", so the codes themselves are never stored.
    Only pages from ALLOWED may use it.
-   Secrets (Settings → Variables and Secrets): GEMINI_KEY, GITHUB_TOKEN; optional GIST_ID to pin the Gist. */
+   Secrets (Settings → Variables and Secrets): GEMINI_KEY, GITHUB_TOKEN; optional GIST_ID to pin the Gist.
+   Deployed by .github/workflows/worker.yml with tools/wrangler.toml, which places it in a US region:
+   Google does not offer Gemini in Hong Kong, where Taiwanese visitors are often served from. */
 const ALLOWED = ["https://si70531.github.io"];
 const MAX_BODY = 1000000;
 const MARK = "ezexams-sync-codes.json";

@@ -1,0 +1,10 @@
+# Deploys tools/ezexams-worker.js as the "ezexams-ai" Worker (see .github/workflows/worker.yml).
+# Placement: run the Worker in a US Google Cloud region. Without it, visitors from Taiwan are often served from
+# Hong Kong, where Google does not offer the Gemini API ("User location is not supported").
+name = "ezexams-ai"
+main = "ezexams-worker.js"
+compatibility_date = "2026-01-01"
+workers_dev = true
+
+[placement]
+region = "gcp:us-central1"

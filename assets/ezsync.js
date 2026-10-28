@@ -324,7 +324,7 @@
       a.dataset.state=on?s.state:"off";
       a.querySelector(".synclab").textContent=!on?"未同步":s.state==="sync"?"同步中":s.state==="dirty"?"待同步":s.state==="err"?"同步失敗":"已同步";
       const needKey=s.state==="err"&&s.code==="auth";
-      a.title=!on?"只存在這台裝置。點這裡輸入 PIN 碼。":needKey?"同步失敗，點一下再試一次。":(s.msg&&s.state==="err"?s.msg+" 點一下再同步一次。":(window.EZSync.mode()==="code"?"已同步（同步代碼 "+window.EZSync.codeHint()+"）":"已同步到 GitHub"+(window.EZSync.user()?"（@"+window.EZSync.user()+"）":""))+"。點一下立即同步。");
+      a.title=!on?"只存在這台裝置。點這裡輸入 PIN 碼。":needKey?"同步失敗，點一下再試一次。":(s.msg&&s.state==="err"?s.msg+" 點一下再同步一次。":(window.EZSync.mode()==="code"?"已同步（PIN 碼 "+window.EZSync.codeHint()+"）":"已同步到 GitHub"+(window.EZSync.user()?"（@"+window.EZSync.user()+"）":""))+"。點一下立即同步。");
     });
   }
   function updateNote(){

@@ -209,6 +209,29 @@ $("#egSwT").textContent=t.sw;$("#egSw").textContent=t.swb;
   }
   function close(){if(!root)return;root.classList.add("out");document.documentElement.classList.remove("ezgate-on","ezlock");setTimeout(()=>{root.hidden=true;},450);opened=false;}
   window.EZGate={open,close,isOpen:()=>opened};
+  /* 登出 at the top right (next to the theme button), in case the wrong PIN was entered: signs this tab out and
+     opens the gate again. Without a PIN (先不同步) it reads 登入. */
+  function outButton(){
+    const theme=document.querySelector(".top .bar .theme, .topline .theme");if(!theme||document.getElementById("ezOut"))return;
+    const st=document.createElement("style");
+    st.textContent='.ezout{flex:0 0 auto;display:flex;align-items:center;gap:6px;height:36px;padding:0 11px;border:1.5px solid var(--ink);border-radius:8px;background:var(--paper);color:var(--ink);font:600 13px var(--f-body);cursor:pointer;white-space:nowrap;transition:background .15s}'+
+      '.ezout:hover{background:var(--paper2)}.ezout svg{width:16px;height:16px}.topline .ezout{margin-left:auto}'+
+      '@media (max-width:700px){.top .bar .ezout{padding:0;width:32px;height:32px;justify-content:center}.top .bar .ezout span{display:none}}';
+    document.head.appendChild(st);
+    const b=document.createElement("button");b.type="button";b.id="ezOut";b.className="ezout";
+    theme.parentNode.insertBefore(b,theme);
+    const draw=()=>{const on=!!(window.EZSync&&EZSync.connected());
+      b.innerHTML=on?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg><span>登出</span>'
+        :'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5M15 12H3"/></svg><span>登入</span>';
+      b.title=on?"登出這個 PIN 碼（輸入錯了可以重新登入）":"輸入 PIN 碼登入";b.setAttribute("aria-label",on?"登出":"登入");};
+    draw();if(window.EZSync&&EZSync.onStatus)EZSync.onStatus(draw);
+    b.addEventListener("click",()=>{
+      if(window.EZSync&&EZSync.connected())EZSync.disconnect();
+      try{sessionStorage.removeItem("ezgate-skip");}catch(e){}
+      draw();open();
+    });
+  }
+  addEventListener("load",()=>setTimeout(outButton,30));
   const go=()=>{let code=null,skip=null;try{code=sessionStorage.getItem("ezsync-code")||localStorage.getItem("ezsync-code");skip=sessionStorage.getItem("ezgate-skip");}catch(e){}
     if(!code&&!skip)open();else document.documentElement.classList.remove("ezlock");};
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",go);else go();

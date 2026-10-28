@@ -1,5 +1,7 @@
 /* EZexams entry gate: before the site opens, ask for the 6-digit sync code (like an admission ticket).
    - Shown on every page while this browser has no sync code (ezcore.js hides the page early so nothing flashes).
+   - The code is checked as soon as all six boxes are filled (no Enter); a wrong one shakes and clears.
+   - Signed in for this browser tab only: closing the site signs out (ezsync.js keeps the code in sessionStorage).
    - 輸入同步碼: join a code that already holds progress. 建立同步碼: set up a new one (typed twice).
    - 先不同步: use this device only, for this browser session.
    - EZGate.open({mode}) opens it again later (e.g. to change the code from the home page).
@@ -41,7 +43,8 @@
 .eg-go{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;margin:6px 0 0;padding:11px 16px;border:1.5px solid var(--ink);border-radius:8px;cursor:pointer;
   font:700 15.5px var(--f-body);background:var(--ink);color:var(--bg);box-shadow:3px 3px 0 var(--seal);transition:transform .12s,box-shadow .12s}
 .eg-go:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--seal)}.eg-go:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--seal)}
-.eg-go:disabled{opacity:.6;cursor:wait}.eg-go svg{width:18px;height:18px}
+.eg-go:disabled{opacity:.6;cursor:wait}
+.eg-go{display:none}.eg-ticket.retry .eg-go{display:flex}   /* no button: a full code is checked by itself; it only shows to retry after a network error */.eg-go svg{width:18px;height:18px}
 .eg-msg{min-height:1.4em;margin:10px 0 0;font-size:13.5px;color:var(--ink70)}.eg-msg.err{color:var(--seal)}.eg-msg.ok{color:var(--ok)}
 .eg-links{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 14px;margin:14px 0 0;padding-top:12px;border-top:1.5px dashed var(--line);font-size:13px;color:var(--muted)}
 .eg-link{border:0;background:none;padding:0;font:inherit;font-weight:600;color:var(--indigo);cursor:pointer;text-decoration:underline;text-decoration-color:var(--line-strong);text-underline-offset:3px}
@@ -113,7 +116,12 @@
   const RM=()=>matchMedia("(prefers-reduced-motion: reduce)").matches;
   const pop=x=>{if(!RM()&&x.animate)x.animate([{transform:"scale(.86)"},{transform:"scale(1.07)",offset:.6},{transform:"none"}],{duration:200,easing:"ease-out"});};
   function fill(g,from,digits,gi){const c=cells(g);let i=from;for(const d of digits){if(i>=6)break;c[i].value=d;c[i].classList.add("on");pop(c[i]);i++;}
-    if(i>=6&&gi===0&&ticket.dataset.mode==="create")cells(cellsets[1])[0].focus();else c[Math.min(i,5)].focus();}
+    if(i>=6&&gi===0&&ticket.dataset.mode==="create")cells(cellsets[1])[0].focus();else c[Math.min(i,5)].focus();
+    clearTimeout(autoT);autoT=setTimeout(auto,140);}
+  /* no Enter needed: as soon as every box is filled, check the code */
+  let autoT=null,busy=false;
+  function auto(){if(busy||!root||root.hidden)return;if(val(cellsets[0]).length<6)return;
+    if(ticket.dataset.mode==="create"&&val(cellsets[1]).length<6)return;submit();}
   function say(t,cls){const m=$("#egMsg");m.className="eg-msg"+(cls?" "+cls:"");m.textContent=t;}
   /* a rejected code: shake, show why, then empty the boxes so the next try starts from the first box */
   function bad(g,t){g.classList.remove("bad");void g.offsetWidth;g.classList.add("bad");say(t,"err");
@@ -122,17 +130,17 @@
     const apply=()=>{ticket.dataset.mode=m;const t=TEXT[m];
       $("#egPrompt").textContent=t.prompt;$("#egH").innerHTML=t.h;$("#egP").textContent=t.p;$("#egGoT").textContent=t.btn;
 $("#egSwT").textContent=t.sw;$("#egSw").textContent=t.swb;
-      cellsets.forEach(g=>{cells(g).forEach(x=>{x.value="";x.classList.remove("on");});g.classList.remove("bad");});say("");};
+      cellsets.forEach(g=>{cells(g).forEach(x=>{x.value="";x.classList.remove("on");});g.classList.remove("bad");});say("");ticket.classList.remove("retry");};
     if(!animate||matchMedia("(prefers-reduced-motion: reduce)").matches){apply();return;}
     ticket.classList.add("flip");setTimeout(()=>{apply();ticket.classList.remove("flip");setTimeout(()=>cells(cellsets[0])[0].focus(),330);},320);
   }
   async function submit(e){
-    e.preventDefault();const mode=ticket.dataset.mode,c1=val(cellsets[0]),c2=val(cellsets[1]),go=$("#egGo");
+    if(e)e.preventDefault();if(busy)return;const mode=ticket.dataset.mode,c1=val(cellsets[0]),c2=val(cellsets[1]),go=$("#egGo");
     if(!/^\d{6}$/.test(c1))return bad(cellsets[0],"同步碼是 6 位數字。");
     if(mode==="create"&&c1!==c2)return bad(cellsets[1],"兩次輸入的同步碼不一樣。");
     if(mode==="create"&&/^(\d)\1{5}$|^(012345|123456|234567|345678|456789|987654|876543|654321|543210)$/.test(c1))return bad(cellsets[0],"這組太好猜了，換一組吧。");
     if(!window.EZSync){say("同步功能還在載入，請再按一次。","err");return;}
-    go.disabled=true;say("連線中…");cellsets[0].classList.add("wait");
+    busy=true;go.disabled=true;ticket.classList.remove("retry");say("連線中…");cellsets[0].classList.add("wait");
     try{
       await EZSync.connectCode(c1,{mode});
       cellsets[0].classList.remove("wait");
@@ -141,12 +149,12 @@ $("#egSwT").textContent=t.sw;$("#egSw").textContent=t.swb;
       await celebrate(mode);
       root.classList.add("out");setTimeout(()=>location.reload(),420);   /* reload so this page syncs right away */
     }catch(err){
-      go.disabled=false;cellsets[0].classList.remove("wait");
+      busy=false;go.disabled=false;cellsets[0].classList.remove("wait");
       if(err.code==="taken")bad(cellsets[0],"這組同步碼已經有人在用了，換一組吧。");
       else if(err.code==="nocode"){bad(cellsets[0],"");const m=$("#egMsg");m.textContent="找不到這組同步碼的進度。是第一次使用嗎？ ";
         const l=document.createElement("button");l.type="button";l.className="eg-link";l.textContent="用它建立同步碼";
         l.onclick=()=>{setMode("create",true);setTimeout(()=>{fill(cellsets[0],0,c1,1);fill(cellsets[1],0,c1,1);},700);};m.appendChild(l);}
-      else say(window.EZSync.errMsg?EZSync.errMsg(err):"連不上同步伺服器，請稍後再試。","err");
+      else{say(window.EZSync.errMsg?EZSync.errMsg(err):"連不上同步伺服器，請稍後再試。","err");$("#egGoT").textContent="再試一次";ticket.classList.add("retry");}
     }
   }
   const wait=ms=>new Promise(r=>setTimeout(r,ms));
@@ -201,7 +209,7 @@ $("#egSwT").textContent=t.sw;$("#egSw").textContent=t.swb;
   }
   function close(){if(!root)return;root.classList.add("out");document.documentElement.classList.remove("ezgate-on","ezlock");setTimeout(()=>{root.hidden=true;},450);opened=false;}
   window.EZGate={open,close,isOpen:()=>opened};
-  const go=()=>{let code=null,skip=null;try{code=localStorage.getItem("ezsync-code");skip=sessionStorage.getItem("ezgate-skip");}catch(e){}
+  const go=()=>{let code=null,skip=null;try{code=sessionStorage.getItem("ezsync-code")||localStorage.getItem("ezsync-code");skip=sessionStorage.getItem("ezgate-skip");}catch(e){}
     if(!code&&!skip)open();else document.documentElement.classList.remove("ezlock");};
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",go);else go();
 })();

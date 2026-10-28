@@ -12,10 +12,14 @@
   const API="https://api.github.com", MARK="ezexams-progress.json";
   const LS={tok:"ezsync-token",gist:"ezsync-gist",user:"ezsync-user",last:"ezsync-last",code:"ezsync-code"};
   const WORKER="https://ezexams-ai.ta77199ta.workers.dev";
-  const get=k=>{try{return localStorage.getItem(k);}catch(e){return null;}};
+  /* the sync code is kept for this browser tab only (sessionStorage): closing the site signs this device out, and the
+     next visit asks for the code again. Progress itself stays in localStorage. */
+  const store=k=>k===LS.code?sessionStorage:localStorage;
+  try{const old=localStorage.getItem(LS.code);if(old){if(!sessionStorage.getItem(LS.code))sessionStorage.setItem(LS.code,old);localStorage.removeItem(LS.code);}}catch(e){}
+  const get=k=>{try{return store(k).getItem(k);}catch(e){return null;}};
   let internal=false;
   const on=()=>!!(get(LS.code)||get(LS.tok));
-  const set=(k,v)=>{internal=true;try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v);}catch(e){}internal=false;};
+  const set=(k,v)=>{internal=true;try{v==null?store(k).removeItem(k):store(k).setItem(k,v);}catch(e){}internal=false;};
   const listeners=new Set();
   let status={state:(get(LS.code)||get(LS.tok))?"idle":"off",msg:""};
   function emit(state,msg,code){status={state,msg:msg||"",code:code||""};listeners.forEach(f=>{try{f(status);}catch(e){}});}

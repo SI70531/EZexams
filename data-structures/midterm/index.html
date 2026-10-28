@@ -27,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=LXGW+WenKai+TC:wght@400;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
-<link rel="stylesheet" href="../../assets/ezbase.css?v=bcac0648">
+<link rel="stylesheet" href="../../assets/ezbase.css?v=53299750">
 <style>
 /* Layout: the study guide as a linked list. Tabs run node to node; each cover carries a node card (state, progress, link to the next view). Same EZexams system as the OS page. */
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
@@ -1176,73 +1176,63 @@ end deleteDbl</div></div><label class="small" for="mock-b-27-a">你的答案</la
 
 <div class="exq" id="mock-b-28" data-pts="6"><div class="qtext"><p class="q"><span class="pts">28 · 6%</span>A circularly linked list keeps only a <b>rear</b> pointer: rear → 40, and 40 → 10 → 20 → 30 → 40. pNew is a new node. Write the statements to (a) insert pNew at the <b>beginning</b>, and (b) insert pNew at the <b>end</b>. Explain the only difference between (a) and (b).</p></div><label class="small" for="mock-b-28-a">你的答案</label><textarea id="mock-b-28-a" rows="5" placeholder="(a) ... (b) ... 差別：..."></textarea><div class="gradebar"><button class="btn grade" type="button">批改這題</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>看參考答案</summary><div class="inner"><div class="box en"><span class="lbl">ANSWER</span>(a) pNew-&gt;link = rear-&gt;link; rear-&gt;link = pNew<br>(b) pNew-&gt;link = rear-&gt;link; rear-&gt;link = pNew; rear = pNew<br>The only difference is that inserting at the end also moves the rear pointer to the new node.<div class="zhtr"><span>中文</span>(a) 新節點先指向原本的第一個（rear->link），再讓最後一個節點指向新節點，新節點就變成第一個。(b) 前兩步完全一樣，再多一步把 rear 移到新節點，它就變成最後一個。差別只有「rear 要不要移」。</div></div><div class="box zh"><span class="lbl">為什麼容易錯</span>環狀串列只存 rear 時，第一個節點是 rear-&gt;link。插頭插尾的指標動作一樣，很多人會以為插尾要從頭走到尾。</div></div></details><label class="self" for="mock-b-28-c"><input type="checkbox" id="mock-b-28-c"> 我答對了（6 分）</label></div>
 
-<div class="next"><b>兩份模擬卷寫完了，考前一天看總複習</b><button class="btn primary" type="button" data-go="review">總複習 →</button></div></section><section role="tabpanel" class="view" id="review" hidden><div class="vhead"><div class="pcb" data-pcb="review" role="img"></div><div class="eyebrow">考前一天</div><h1>總複習</h1><p>考前一天和考前 10 分鐘看這頁就好：必背清單、公式和六段一定要會寫的程式。</p></div>
-<h3>必背 12 點 <span class="star">★★★</span></h3>
-<ol>
-<li><b>Pseudocode 三種結構</b>：sequence（循序）、selection（選擇）、loop（迴圈）。Sequence <b>does not</b> alter the execution path。</li>
-<li><b>Header</b>：precondition（前置條件）＝參數要先滿足什麼；postcondition（後置條件）＝做完後輸出的狀態；return condition（回傳條件）。</li>
-<li><b>Atomic data type（原子資料型態）</b>：integer、floating point、character。Statement 不是。</li>
-<li><b>ADT</b>：使用者只看得到 operation name and its parameters（操作名稱與參數）。</li>
-<li><b>Big-O</b>：係數設 1，只留最大項。Binary search O(log n)、sequential O(n)、矩陣相加 O(n²)、相乘 O(n³)。</li>
-<li><b>Sentinel search</b> 把迴圈的兩個條件減成一個（Knuth）。<b>Probability search</b> 會在搜尋時把找到的元素往前換。</li>
-<li><b>Binary search</b> 停止：找到，或 first &gt; last。1024 個元素答 10。</li>
-<li><b>Direct hashing</b>：no synonyms, no collisions。<b>Modulo-division</b>：用餘數，任何 list size 都能用，偏好質數。</li>
-<li><b>Open addressing</b>：linear probe、quadratic probe、double hashing（pseudorandom）、key offset。Chaining 不是。</li>
-<li><b>Clustering</b>：linear probe → primary clustering；secondary clustering 沿著 <b>collision path</b>，用 key offset 減少。</li>
-<li><b>searchList 六種結果表</b>：pLoc 停在第一個 ≥ target 的節點；全部都比較小 → pPre = last node、pLoc = null。</li>
-<li><b>insertNode 順序</b>：先 pNew-&gt;link，再改 head 或 pPre-&gt;link。</li>
-</ol>
-
-<h3>雜湊計算公式卡</h3>
-<div class="calc">Fold shift      22|45|62 → 22 + 45 + 62 = 129
+<div class="next"><b>兩份模擬卷寫完了，考前一天看總複習</b><button class="btn primary" type="button" data-go="review">總複習 →</button></div></section><section role="tabpanel" class="view" id="review" hidden><div class="vhead"><div class="pcb" data-pcb="review" role="img"></div><div class="eyebrow">考前一天</div><h1>總複習</h1><p>照講義順序一段一張重點卡：必背重點、雜湊公式和六段程式都放進它所屬的那一段；錯題直接接在那一段後面。</p></div>
+<p class="small rvhow">照講義順序，一段一張重點卡：先唸<b>口訣</b>，再看重點。那一段有答錯的題目，會直接接在那張卡的後面（紅框）；按卡片右上的「講義 ›」回到講義原文。</p><div class="rvsecs">
+<div class="rvchap" data-rch="ch1"><h2 class="rvchh">Ch1 Introduction（導論）</h2>
+<div class="rvsec" data-rsec="1-1"><div class="rvsh"><span class="rvk">1-1</span><h3>Pseudocode（虛擬碼）</h3><button type="button" class="rvgo" data-rsec="1-1" title="回講義這一段">講義 ›</button></div><div class="box tip rvmn"><span class="lbl">口訣</span><ul><li>三種結構：「<b>循、選、迴</b>」＝sequence、selection、loop</li></ul></div><ul class="rvpts"><li><b>Pseudocode 三種結構</b>：sequence（循序）、selection（選擇）、loop（迴圈）。Sequence <b>does not</b> alter the execution path。</li><li><b>Header</b>：precondition（前置條件）＝參數要先滿足什麼；postcondition（後置條件）＝做完後輸出的狀態；return condition（回傳條件）。沒有前置條件也要寫 <b>Pre nothing</b>。</li><li><b>val</b>＝pass by value；<b>ref</b>＝pass by reference，用來把結果寫回（output parameter 可以很多個，return value 只有一個）。</li><li>Statement numbers：3.1 是第 3 行底下展開的第 1 行。</li></ul></div>
+<div class="rvsec" data-rsec="1-2"><div class="rvsh"><span class="rvk">1-2</span><h3>The Abstract Data Type（抽象資料型態）</h3><button type="button" class="rvgo" data-rsec="1-2" title="回講義這一段">講義 ›</button></div><ul class="rvpts"><li><b>Atomic data type（原子資料型態）</b>：integer、floating point、character。Statement 不是。</li><li><b>Data type</b>＝a set of data ＋ the operations on the data；<b>composite</b> 可拆成有意義的部分（電話號碼）；<b>data structure</b>＝atomic／composite 依定義好的關係組成（array、record）。</li><li><b>ADT</b>：使用者只在乎 <b>what it can do</b>，不在乎 how；隱藏實作＝abstraction。底層是 array 還是 linked list，使用者不該知道。</li><li><b>Encapsulation</b>：一個 object 的處理全部包在 library 裡、對使用者隱藏。銀行排隊例：寫一個通用的 queue ADT，分析師才能專心在應用。</li></ul></div>
+<div class="rvsec" data-rsec="1-3"><div class="rvsh"><span class="rvk">1-3</span><h3>A Model for an ADT（ADT 模型）</h3><button type="button" class="rvgo" data-rsec="1-3" title="回講義這一段">講義 ›</button></div><ul class="rvpts"><li><b>ADT</b>：使用者只看得到 operation name and its parameters（操作名稱與參數）。</li><li>模型裡兩樣東西：<b>data structure</b> 和 <b>operational functions</b>，都<b>不在 user's scope</b>。</li><li>使用者拿到的是 <b>pointer to a hidden structure</b>；class template 用 TYPE（資料）和 KTYPE（key，optional）。</li></ul></div>
+<div class="rvsec" data-rsec="1-4"><div class="rvsh"><span class="rvk">1-4</span><h3>Algorithm Efficiency（演算法效率） <span class="star">★★★</span></h3><button type="button" class="rvgo" data-rsec="1-4" title="回講義這一段">講義 ›</button></div><div class="box tip rvmn"><span class="lbl">口訣</span><ul><li>加減 → linear；乘除 → logarithmic；內層看外層變數 → dependent，要加總</li></ul></div><ul class="rvpts"><li><b>Big-O</b>：係數設 1，只留最大項。Binary search O(log n)、sequential O(n)、矩陣相加 O(n²)、相乘 O(n³)。</li><li>i += 2 → n/2 → O(n)；i *= 2 或 i /= 2 → log₂n → O(log n)；外層 n × 內層 log₂n → O(n log n)；j ≤ i → n(n+1)/2 → O(n²)。</li><li>數乘除迴圈：i = 1, 2, 4 … 找最大的 2ᵏ 還滿足條件，次數 = k + 1。i &lt; 1000 → 512 是最後一個 → <b>10 次</b>。</li></ul></div>
+</div>
+<div class="rvchap" data-rch="ch2"><h2 class="rvchh">Ch2 Searching（搜尋）</h2>
+<div class="rvsec" data-rsec="2-1"><div class="rvsh"><span class="rvk">2-1</span><h3>List Searches（串列搜尋）</h3><button type="button" class="rvgo" data-rsec="2-1" title="回講義這一段">講義 ›</button></div><ul class="rvpts"><li><b>Sequential search</b>：沒排序、小、不常搜尋的 list 用；四個參數 list、last、target、ref locn；O(n)。</li><li><b>Sentinel search</b> 把迴圈的兩個條件減成一個（Knuth）。<b>Probability search</b> 會在搜尋時把找到的元素往前換。</li><li><b>Ordered list search</b>：target ≤ 目前元素就停，不用找到底。</li><li><b>Binary search</b> 停止：找到，或 first &gt; last。1024 個元素答 10。</li></ul></div>
+<div class="rvsec" data-rsec="2-2"><div class="rvsh"><span class="rvk">2-2</span><h3>Hashed List Searches（雜湊搜尋）</h3><button type="button" class="rvgo" data-rsec="2-2" title="回講義這一段">講義 ›</button></div><ul class="rvpts"><li>目標：<b>只比一次就找到</b>；hashing＝key-to-address transformation。</li><li>名詞：<b>synonyms</b>（hash 到同一位置的 keys）、<b>collision</b>（位置被佔）、<b>home address</b>、<b>prime area</b>、<b>probe</b>（每算一次地址並測試）。</li><li><b>Direct hashing</b>：no synonyms, no collisions。<b>Modulo-division</b>：用餘數，任何 list size 都能用，偏好質數。</li><li>其他：subtraction、digit extraction（取第幾位）、midsquare（平方取中）、fold shift／boundary、rotation（最後一位轉到最前）、pseudorandom（y = ax + c 再 MOD）。</li></ul><div class="calc">Fold shift      22|45|62 → 22 + 45 + 62 = 129
 Fold boundary   22|45|62 → 22 + 45 + 26 = 93      (左右兩段反轉)
-Home address    sum MOD listSize                  93 MOD 19 = 17
-Linear probe    next = (addr + 1) MOD size
+Home address    sum MOD listSize                  93 MOD 19 = 17</div></div>
+<div class="rvsec" data-rsec="2-3"><div class="rvsh"><span class="rvk">2-3</span><h3>Collision Resolution（碰撞處理）</h3><button type="button" class="rvgo" data-rsec="2-3" title="回講義這一段">講義 ›</button></div><ul class="rvpts"><li><b>Open addressing</b>：linear probe、quadratic probe、double hashing（pseudorandom）、key offset。Chaining 不是。</li><li><b>Clustering</b>：linear probe → primary clustering；secondary clustering 沿著 <b>collision path</b>，用 key offset 減少。</li><li>Bucket hashing 的問題：<b>more space</b>；does not completely resolve collisions。</li><li>Linked list resolution：<b>prime area + overflow area</b>（LIFO 或 key sequence）。</li></ul><div class="calc">Linear probe    next = (addr + 1) MOD size
 Quadratic       next = (addr + i²) MOD size       i = 1, 2, 3 …
 Key offset      offset = sum / size  (取商)
                 next = (offset + addr) MOD size
-Load factor     k / n × 100                       9 / 19 ≈ 47%</div>
-<div class="box warn"><span class="lbl">易錯</span>Key offset 用<b>摺疊後的數字</b>算商。Linear probe 的碰撞次數 = 每次撞到被佔用的格子就算一次。</div>
-
-<h3>六段程式（考前默寫一次）</h3>
-<div class="two">
-<div><h4>insertNode</h4><div class="calc">if (pPre null)
+Load factor     k / n × 100                       9 / 19 ≈ 47%</div><div class="box warn"><span class="lbl">易錯</span>Key offset 用<b>摺疊後的數字</b>算商。Linear probe 的碰撞次數 = 每次撞到被佔用的格子就算一次。Quadratic 別忘了 MOD：size 17、home 5 → 6 → 10 → 19 MOD 17 = <b>2</b>。</div></div>
+</div>
+<div class="rvchap" data-rch="ch3"><h2 class="rvchh">Ch3 Linked Lists（鏈結串列）</h2>
+<div class="rvsec" data-rsec="3-1"><div class="rvsh"><span class="rvk">3-1</span><h3>Linear List Concepts（線性串列）</h3><button type="button" class="rvgo" data-rsec="3-1" title="回講義這一段">講義 ›</button></div><ul class="rvpts"><li>Array 好建好用但插入刪除要搬資料；linked list 插入刪除快但 search、retrieval 沒效率。</li><li>General list：random 或 ordered。<b>Restricted list FIFO / LIFO</b> → <b>queue / stack</b>。</li><li>四種操作：insertion、deletion、retrieval、traversal。<b>Not applicable to restricted lists</b> → <b>traversal</b>。</li></ul></div>
+<div class="rvsec" data-rsec="3-2"><div class="rvsh"><span class="rvk">3-2</span><h3>Linked List Concepts（鏈結串列觀念）</h3><button type="button" class="rvgo" data-rsec="3-2" title="回講義這一段">講義 ›</button></div><ul class="rvpts"><li>每個 <b>node</b> 至少 data ＋ link；self-referential structure。</li><li>節點在記憶體<b>不連續</b>（no physical relationship）→ 不能用 binary search。Empty list：head 是 null。</li><li>head structure 放 <b>metadata</b>（count、pos、head）；pLoc＝目前節點、pPre＝前一個。</li><li><b>Not always necessary but improves efficiency</b> → <b>rear pointer</b>。</li></ul></div>
+<div class="rvsec" data-rsec="3-3"><div class="rvsh"><span class="rvk">3-3</span><h3>Linked List Algorithms（十個基本演算法） <span class="star">★★★</span></h3><button type="button" class="rvgo" data-rsec="3-3" title="回講義這一段">講義 ›</button></div><ul class="rvpts"><li><b>insertNode 順序</b>：先 pNew-&gt;link，再改 head 或 pPre-&gt;link（先接後面再改前面，不然會弄丟後面的節點）。</li><li>insert 四情況（empty、beginning、middle、end）→ 兩種邏輯：pPre 是 null／不是 null；overflow 回傳 false。</li><li>delete 四情況 → 兩種：刪第一個、刪其他；pLoc 呼叫前就要先找到。</li><li><b>searchList 六種結果表</b>：pLoc 停在第一個 ≥ target 的節點；全部都比較小 → pPre = last node、pLoc = null。</li><li><b>How to test full list</b> → allocate memory and see if it succeeds。</li></ul><div class="two"><div><h4>insertNode</h4><div class="calc">if (pPre null)
    pNew-&gt;link = list.head
    list.head = pNew
 else
    pNew-&gt;link = pPre-&gt;link
    pPre-&gt;link = pNew
-list.count = list.count + 1</div></div>
-<div><h4>deleteNode</h4><div class="calc">dataOut = pLoc-&gt;data
+list.count = list.count + 1</div></div><div><h4>deleteNode</h4><div class="calc">dataOut = pLoc-&gt;data
 if (pPre null)
    list.head = pLoc-&gt;link
 else
    pPre-&gt;link = pLoc-&gt;link
 list.count = list.count - 1
-recycle (pLoc)</div></div>
-<div><h4>searchList</h4><div class="calc">pPre = null
+recycle (pLoc)</div></div><div><h4>searchList</h4><div class="calc">pPre = null
 pLoc = list.head
 loop (pLoc not null AND
       target &gt; pLoc-&gt;data.key)
    pPre = pLoc
    pLoc = pLoc-&gt;link
 found = (pLoc not null AND
-         target equal pLoc-&gt;data.key)</div></div>
-<div><h4>destroyList</h4><div class="calc">loop (list.count not zero)
+         target equal pLoc-&gt;data.key)</div></div><div><h4>destroyList</h4><div class="calc">loop (list.count not zero)
    dltPtr = list.head
    list.head = dltPtr-&gt;link
    list.count = list.count - 1
    recycle (dltPtr)
-list.pos = null</div></div>
-<div><h4>append</h4><div class="calc">if (list1.count zero)
+list.pos = null</div></div></div></div>
+<div class="rvsec" data-rsec="3-4"><div class="rvsh"><span class="rvk">3-4</span><h3>Processing a Linked List（整合程式）</h3><button type="button" class="rvgo" data-rsec="3-4" title="回講義這一段">講義 ›</button></div><ul class="rvpts"><li><b>addNode</b>：searchList 找插入點 → insertNode；要決定 duplicate 和 overflow 怎麼處理。</li><li><b>Remove a node</b> → <b>searchList → deleteNode</b>；找不到回傳 false。</li><li>printList：先測 empty；第一次 getNext 的 fromWhere 是 0。</li><li>測試 insert／delete 各 4 種：null list、第一個、中間、最後。</li></ul></div>
+<div class="rvsec" data-rsec="3-5"><div class="rvsh"><span class="rvk">3-5</span><h3>List Applications（應用）</h3><button type="button" class="rvgo" data-rsec="3-5" title="回講義這一段">講義 ›</button></div><ul class="rvpts"><li>append：list1 最後一個節點的 link 指向 list2 的第一個，count 相加；要走到底 → <b>O(n)</b>，有 rear pointer 就直接 list1.rear-&gt;link = list2.head。</li><li>Array of lists：array 存多個 head，可表示 2D array（每條 list 是一列）。</li></ul><div class="two"><div><h4>append</h4><div class="calc">if (list1.count zero)
    list1.head = list2.head
 else
    pLoc = list1.head
    loop (pLoc-&gt;link not null)
       pLoc = pLoc-&gt;link
    pLoc-&gt;link = list2.head
-list1.count = list1.count + list2.count</div></div>
-<div><h4>deleteDbl</h4><div class="calc">if (pDlt-&gt;back not null)
+list1.count = list1.count + list2.count</div></div></div></div>
+<div class="rvsec" data-rsec="3-6"><div class="rvsh"><span class="rvk">3-6</span><h3>Complex Linked List Structures（進階結構）</h3><button type="button" class="rvgo" data-rsec="3-6" title="回講義這一段">講義 ›</button></div><ul class="rvpts"><li><b>Circular list</b>：最後一個指回第一個；知道 rear，第一個就是 rear-&gt;link。插在最前：pNew-&gt;link = rear-&gt;link；rear-&gt;link = pNew（插在最後再加 rear = pNew）。</li><li><b>Circular list, target not found</b> → save the starting node, stop when circled back。</li><li><b>Dummy node</b>：不存資料、head 永遠指向它 → pPre 不會是 null，刪插第一個資料節點和中間一樣。2025 第 28 題：最後一個指回 dummy → 有 dummy 的環狀串列。</li><li><b>Doubly linked</b>：back、fore 兩個指標；<b>insertDbl returns 0 / 1 / 2</b> → overflow / success / duplicate。</li><li><b>Multilinked presidents list</b> → two links: president and spouse。</li></ul><div class="two"><div><h4>deleteDbl</h4><div class="calc">if (pDlt-&gt;back not null)
    pDlt-&gt;back-&gt;fore = pDlt-&gt;fore
 else
    list.head = pDlt-&gt;fore
@@ -1250,23 +1240,9 @@ if (pDlt-&gt;fore not null)
    pDlt-&gt;fore-&gt;back = pDlt-&gt;back
 else
    list.rear = pDlt-&gt;back
-recycle (pDlt)</div></div>
+recycle (pDlt)</div></div></div></div>
 </div>
-
-<h3>一句話對照</h3>
-<table style="width:100%">
-<tr><th class="l">考題關鍵字</th><th class="l">答案</th></tr>
-<tr><td class="l">Restricted list FIFO / LIFO</td><td class="l">queue / stack</td></tr>
-<tr><td class="l">Not applicable to restricted lists</td><td class="l">traversal</td></tr>
-<tr><td class="l">How to test full list</td><td class="l">allocate memory and see if it succeeds</td></tr>
-<tr><td class="l">Remove a node</td><td class="l">searchList → deleteNode</td></tr>
-<tr><td class="l">Circular list, target not found</td><td class="l">save the starting node, stop when circled back</td></tr>
-<tr><td class="l">insertDbl returns 0 / 1 / 2</td><td class="l">overflow / success / duplicate</td></tr>
-<tr><td class="l">Multilinked presidents list</td><td class="l">two links: president and spouse</td></tr>
-<tr><td class="l">Not always necessary but improves efficiency</td><td class="l">rear pointer</td></tr>
-<tr><td class="l">Bucket hashing problems</td><td class="l">more space; does not completely resolve collisions</td></tr>
-<tr><td class="l">Linked list resolution areas</td><td class="l">prime area + overflow area (LIFO or key sequence)</td></tr>
-</table>
+</div>
 <div class="next"><b>11/6 考試加油，早點睡。</b><button class="btn primary" type="button" data-go="home">回首頁</button></div>
 </section>
 
@@ -1856,9 +1832,9 @@ show(start);
 </script>
 <script>window.EZ_MC_PTS=40; /* MC 40 + Fill-in Questions 20 + Quiz 40 = 100, like the exam */</script>
 <script src="../../assets/ezquiz.js?v=3b54c8bc"></script>
-<script src="../../assets/ezwrong.js?v=e25b6aba"></script>
+<script src="../../assets/ezwrong.js?v=c04371c5"></script>
 
-<script src="../../assets/ezsearch.js?v=e14852bd"></script>
+<script src="../../assets/ezsearch.js?v=65b5b4ec"></script>
 <script src="../../assets/ezshuffle.js?v=327fea02"></script>
 <script src="../../assets/ezexplain.js?v=b37b412f"></script>
 </body>

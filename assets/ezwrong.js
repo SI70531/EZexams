@@ -1,7 +1,8 @@
 /* EZexams 錯題區 (one shared version for every subject)
    Collects wrong answers (chapter MC, MC parts of past/mock exams, MOCK exams, written questions below full marks),
    groups them by the notes section they belong to, marks that section's heading in red with a badge that jumps
-   straight to its mistakes, and adds a 錯題區 tab after 總複習 (or at the end).
+   straight to its mistakes, and puts each section's mistakes in 總複習 right after that section's key-point card
+   (.rvsec[data-rsec]); a subject without a 總複習 tab gets one.
    Load after the page's main script. Uses the page globals QUIZ, S, VIEWS, show, renderTabs (and MOCK if present).
 
    Which notes section does a question belong to? Checked in this order, first hit wins:
@@ -32,8 +33,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
 .wcard .wbar{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
 .wgroup h3{margin-top:28px;scroll-margin-top:80px}
 .wnotes{display:block;margin-top:10px}
-.wrongblock{margin:8px 0 44px;padding-bottom:28px;border-bottom:2px solid var(--ink,#06141b)}
-.wrongblock .wrongh{margin-top:0}
+.wrongsum .box{margin:10px 0}.wrongsum .btn{margin-top:6px}
 .ezback{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 18px);z-index:40;font:inherit;font-weight:700;font-size:15px;padding:11px 20px;border-radius:999px;border:1.5px solid var(--bad,#c62828);background:var(--paper,#fff);color:var(--bad,#c62828);box-shadow:0 6px 18px rgba(0,0,0,.18);cursor:pointer;max-width:calc(100vw - 32px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ezback:hover{background:var(--bad,#c62828);color:var(--paper,#fff)}
 .wback{display:block;margin-top:12px;border-color:var(--bad,#c62828)!important;color:var(--bad,#c62828)!important;font-weight:700}
@@ -173,11 +173,21 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
     if(typeof PID!=="undefined"&&PID.review===undefined)PID.review=Object.keys(PID).length;
   }
   const HOST=host.id;
-  const view=document.createElement("div");view.id="wrongArea";view.className="wrongblock";   /* not "wrong": that id would make the page treat it as a tab */
-  view.innerHTML='<h2 class="wrongh">錯題區</h2><p class="small">章末選擇題、考古題、模擬試題答錯的題目會自動收進來，按講義段落分組。展開「相關觀念」就是講義那一段的完整內容。手寫題沒拿滿分也算錯；重做答對就會自動移出。</p><div id="wrongList"></div>';
-  const vh=host.querySelector(":scope > .vhead");if(vh)vh.after(view);else host.prepend(view);
-  /* open 總複習 at the 錯題區 (a pending card or section scrolls further once the list is drawn) */
-  function showWrong(){show(HOST);setTimeout(()=>{if(!pendingCard&&!pendingSec)view.scrollIntoView({block:"start"});},40);}
+  /* 總複習 is one key-point card per notes section (.rvsec[data-rsec]); each section's wrong answers go right after
+     its card, a chapter's unmatched ones at the end of that chapter, the rest after the last chapter.
+     At the top: a one-line summary (#wrongArea; not "wrong": that id would make the page treat it as a tab). */
+  const view=document.createElement("div");view.id="wrongArea";view.className="wrongsum";
+  view.innerHTML='<div id="wrongList"></div>';
+  const anchorTop=host.querySelector(":scope > .rvhow")||host.querySelector(":scope > .vhead");if(anchorTop)anchorTop.after(view);else host.prepend(view);
+  /* open 總複習 at the first wrong answer (a pending card or section scrolls further once the list is drawn) */
+  function showWrong(){show(HOST);setTimeout(()=>{if(pendingCard||pendingSec)return;const f=host.querySelector(".rvwrong");(f||view).scrollIntoView({block:"start"});},40);}
+  /* 「講義 ›」 on a review card: open that section in the notes, with a pill back to the same card */
+  host.addEventListener("click",e=>{
+    const b=e.target.closest(".rvgo");if(!b)return;
+    const s=BYKEY[b.dataset.rsec],card=b.closest(".rvsec");if(!s)return;
+    show(s.ch);setTimeout(()=>s.h.scrollIntoView({block:"start"}),30);
+    offerBack("↩ 回總複習（"+b.dataset.rsec+"）",()=>{show(HOST);setTimeout(()=>card&&card.scrollIntoView({block:"start"}),30);});
+  });
 
   /* the original question on the page, and a stable id for its card */
   function locate(w){
@@ -194,7 +204,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
     show(w.go);
     const el=locate(w);if(!el)return;
     document.querySelectorAll(".wback").forEach(b=>b.remove());
-    const b=document.createElement("button");b.type="button";b.className="btn wback";b.textContent="← 回錯題區（回到這題）";
+    const b=document.createElement("button");b.type="button";b.className="btn wback";b.textContent="← 回總複習（回到這題）";
     b.addEventListener("click",()=>{b.remove();pendingCard=wid(w);pendingSec=w.m.s?w.m.s.key:null;showWrong();});
     el.appendChild(b);
     flash(el,"center");
@@ -237,19 +247,38 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
     SECS.forEach(s=>{
       const n=(by.get(s.key)||[]).length;s.h.classList.toggle("missed",n>0);
       let b=s.h.querySelector(".missbadge");
-      if(n){if(!b){b=document.createElement("button");b.type="button";b.className="missbadge";b.dataset.go=HOST;b.dataset.wsec=s.key;s.h.appendChild(b);}b.textContent="✗ 錯 "+n+" 題 → 錯題區";}
+      if(n){if(!b){b=document.createElement("button");b.type="button";b.className="missbadge";b.dataset.go=HOST;b.dataset.wsec=s.key;s.h.appendChild(b);}b.textContent="✗ 錯 "+n+" 題 → 總複習";}
       else if(b)b.remove();
     });
     const box=document.getElementById("wrongList");box.innerHTML="";
-    if(!list.length){box.innerHTML='<p class="box tip"><span class="lbl">目前沒有錯題</span>去做章末選擇題、考古題或模擬試題，答錯的會自動出現在這裡。</p>';return;}
-    const p=document.createElement("p");p.className="small";p.textContent="共 "+list.length+" 題錯題。講義裡標題變紅色的段落就是要回去補的地方。";box.appendChild(p);
+    host.querySelectorAll(".rvwrong").forEach(g=>g.remove());
+    host.querySelectorAll(".rvsec.missed").forEach(c=>c.classList.remove("missed"));
+    if(!list.length){box.innerHTML='<p class="box tip"><span class="lbl">目前沒有錯題</span>章末選擇題、考古題、模擬試題答錯的題目（手寫題沒拿滿分也算），會自動接在下面那一段重點卡的後面；重做答對就會移出。</p>';return;}
+    const p=document.createElement("p");p.className="box warn";
+    p.innerHTML='<span class="lbl">錯題 '+list.length+' 題</span>已經接在各段重點卡後面（紅框）。卡片變紅的段落就是要補的地方；講義裡那一段的標題也會變紅。 ';
+    const first=document.createElement("button");first.type="button";first.className="btn";first.textContent="跳到第一題錯題 ↓";
+    first.addEventListener("click",()=>{const f=host.querySelector(".rvwrong");if(f)f.scrollIntoView({block:"start"});});
+    p.appendChild(first);box.appendChild(p);
+    /* where a group goes: after its section's card; a chapter's unmatched at the end of that chapter; the rest after
+       the last chapter. A page without cards gets everything right under the summary, in notes order. */
+    let tail=view;
+    const place=(k,g)=>{
+      const card=k[0]!=="_"&&host.querySelector('.rvsec[data-rsec="'+CSS.escape(k)+'"]');
+      if(card){card.classList.add("missed");card.after(g);return;}
+      const chap=k.length>1&&k[0]==="_"&&host.querySelector('.rvchap[data-rch="'+CSS.escape(k.slice(1))+'"]');
+      if(chap){chap.appendChild(g);return;}
+      const all=k==="_"&&host.querySelector(".rvsecs");
+      if(all){all.appendChild(g);return;}
+      tail.after(g);tail=g;
+    };
     /* order: sections in notes order, each chapter's unmatched right after its sections, then "other" */
     const order=[];CH.forEach(ch=>{SECS.filter(s=>s.ch===ch).forEach(s=>order.push(s.key));order.push("_"+ch);});order.push("_");
     order.forEach(k=>{
       const arr=by.get(k);if(!arr)return;const s=BYKEY[k]&&BYKEY[k].key===k?BYKEY[k]:null;
-      const g=document.createElement("div");g.className="wgroup";g.dataset.wsec=k;
-      const t=document.createElement("h3");
-      t.textContent=(s?(NAME[s.ch]||s.ch)+"｜"+s.title:k==="_"?"其他（沒對到特定段落）":(NAME[k.slice(1)]||k.slice(1))+"｜未對到特定段落")+"（"+arr.length+" 題）";
+      const g=document.createElement("div");g.className="wgroup rvwrong";g.dataset.wsec=k;
+      const t=document.createElement("div");t.className="wgh";
+      const inCard=s&&host.querySelector('.rvsec[data-rsec="'+CSS.escape(k)+'"]');
+      t.textContent="✗ "+(inCard?"這一段答錯 ":s?(NAME[s.ch]||s.ch)+"｜"+s.title+"　答錯 ":k==="_"?"其他錯題（沒對到特定段落）":(NAME[k.slice(1)]||k.slice(1))+"｜未對到特定段落的錯題　")+arr.length+" 題";
       g.appendChild(t);
       arr.forEach(w=>{
         const c=document.createElement("div");c.className="wcard";c.dataset.wid=wid(w);
@@ -257,7 +286,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
         add("src",w.src);add("wq2",w.q);add("yours","你的答案："+w.yours);add("right","正確答案："+w.right);if(w.e)add("",w.e);
         const bar=document.createElement("div");bar.className="wbar";
         bar.appendChild(btn("回原題",()=>goto(w)));
-        if(s)bar.appendChild(btn("回講義這一段",()=>{show(s.ch);setTimeout(()=>s.h.scrollIntoView({block:"start"}),30);offerBack("↩ 回錯題區（回到這張卡）",()=>{pendingCard=wid(w);showWrong();later();});}));
+        if(s)bar.appendChild(btn("回講義這一段",()=>{show(s.ch);setTimeout(()=>s.h.scrollIntoView({block:"start"}),30);offerBack("↩ 回總複習（回到這張卡）",()=>{pendingCard=wid(w);showWrong();later();});}));
         else if(w.ch)bar.appendChild(btn("回 "+(NAME[w.ch]||w.ch)+" 講義",()=>show(w.ch)));
         c.appendChild(bar);
         if(s){
@@ -269,16 +298,16 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
         }
         g.appendChild(c);
       });
-      box.appendChild(g);
+      place(k,g);
     });
     const card=pendingCard,sec=pendingSec;pendingCard=pendingSec=null;
-    const hit=card&&[...box.querySelectorAll(".wcard")].find(c=>c.dataset.wid===card);
+    const hit=card&&[...host.querySelectorAll(".wcard")].find(c=>c.dataset.wid===card);
     if(hit)flash(hit,"center");else jumpTo(box,sec); /* answered right since? fall back to its section */
   }
   /* a "✗ 錯 N 題 → 錯題區" badge jumps straight to that section's mistakes, not the top of the list */
   let pendingSec=null,pendingCard=null;
-  function jumpTo(box,sec){if(!sec)return;const g=box.querySelector('.wgroup[data-wsec="'+CSS.escape(sec)+'"]');if(!g)return;
-    setTimeout(()=>{(g.querySelector("h3")||g).scrollIntoView({block:"start"});g.querySelectorAll(".wcard").forEach(c=>{c.classList.remove("wflash");void c.offsetWidth;c.classList.add("wflash");});},30);}
+  function jumpTo(box,sec){if(!sec)return;const g=host.querySelector('.rvwrong[data-wsec="'+CSS.escape(sec)+'"]');if(!g)return;
+    setTimeout(()=>{const c=g.previousElementSibling;(c&&c.classList.contains("rvsec")?c:g.querySelector(".wgh")||g).scrollIntoView({block:"start"});g.querySelectorAll(".wcard").forEach(c=>{c.classList.remove("wflash");void c.offsetWidth;c.classList.add("wflash");});},30);}
   document.addEventListener("click",e=>{const b=e.target.closest(".missbadge");if(b)pendingSec=b.dataset.wsec||null;},true);
   let tm=null;const later=()=>{clearTimeout(tm);tm=setTimeout(render,120);};
   document.addEventListener("click",later);document.addEventListener("change",later);

@@ -30,7 +30,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=LXGW+WenKai+TC:wght@400;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
-<link rel="stylesheet" href="../../assets/ezbase.css?v=bcac0648">
+<link rel="stylesheet" href="../../assets/ezbase.css?v=53299750">
 <style>
 /* Same design system as operating-systems/midterm: pill tabs, progress card on each cover, handwritten headings. */
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
@@ -2311,6 +2311,42 @@ table td{text-align:left}
 </table>
 <p>作業沒考到但講義有、值得再練的：加權平均數、變異係數、經驗法則、共變異數與相關係數、組合與排列、加法律、互斥 vs 獨立。</p>
 </section>
+<section role="tabpanel" class="view" id="review" hidden><div class="vhead"><div class="pcb" data-pcb="review" role="img"></div><div class="eyebrow">考前一天</div><h1>總複習</h1><p>照講義順序一段一張重點卡（口訣＋重點），錯題直接接在那一段後面。易混淆觀念另見「易混淆」分頁。</p></div>
+<p class="small rvhow">照講義順序，一段一張重點卡：先唸<b>口訣</b>，再看重點。那一段有答錯的題目，會直接接在那張卡的後面（紅框）；按卡片右上的「講義 ›」回到講義原文。</p><div class="rvsecs">
+<div class="rvchap" data-rch="ch1"><h2 class="rvchh">Ch1 Data and Statistics</h2>
+<div class="rvsec" data-rsec="1.1"><div class="rvsh"><span class="rvk">1.1</span><h3>什麼是統計</h3><button type="button" class="rvgo" data-rsec="1.1" title="回講義這一段">講義 ›</button></div><ul class="rvpts"><li><b>統計數據</b>（numerical facts）：平均數、中位數、百分比；<b>統計學</b>：蒐集、分析、呈現、解釋資料的方法（art and science）。</li></ul></div>
+<div class="rvsec" data-rsec="1.2"><div class="rvsh"><span class="rvk">1.2</span><h3>資料的基本名詞（期中必考，作業第 1 題）</h3><button type="button" class="rvgo" data-rsec="1.2" title="回講義這一段">講義 ›</button></div><div class="box tip rvmn"><span class="lbl">口訣</span><ul><li>「元素是列、變數是欄、觀測值是一整列」</li></ul></div><ul class="rvpts"><li><b>data set</b> 整張表；<b>element</b> 被蒐集的對象（每位學生）；<b>variable</b> 特徵（年齡、主修）；<b>observation</b> 某一元素在所有變數上的結果。</li><li>n 個元素 → n 個觀測值；<b>資料值總數 = 元素數 × 變數數</b>。</li><li>數變數時，<b>名稱欄（例如平板型號）不算變數</b>；表頭不算元素。</li></ul></div>
+<div class="rvsec" data-rsec="1.3"><div class="rvsh"><span class="rvk">1.3</span><h3>衡量尺度（Scales of Measurement）</h3><button type="button" class="rvgo" data-rsec="1.3" title="回講義這一段">講義 ›</button></div><div class="box tip rvmn"><span class="lbl">口訣</span><ul><li>「名、序、區、比」，每一層都有前一層的性質</li></ul></div><ul class="rvpts"><li>Nominal 只是標籤（郵遞區號、作業系統）；Ordinal 有順序但間距沒意義（滿意度、名次）；Interval 間距有意義、<b>沒有真正的 0</b>（攝氏、SAT、年份）；Ratio 有真正的 0（價格、時間、續航）。</li><li>判斷：是標籤 → 有順序？是數值 → <b>0 代表完全沒有嗎？</b>能說「兩倍」→ 比率；20°C 不是 10°C 的兩倍熱 → 區間。</li></ul></div>
+<div class="rvsec" data-rsec="1.4"><div class="rvsh"><span class="rvk">1.4</span><h3>類別資料 vs 數量資料</h3><button type="button" class="rvgo" data-rsec="1.4" title="回講義這一段">講義 ›</button></div><ul class="rvpts"><li><b>類別資料</b>（qualitative）：名目或順序，可以是數字代碼，但算術沒意義（代碼不能平均）。</li><li><b>數量資料</b>：區間或比率，一定是數字，可以做算術，分析方法較多。</li></ul></div>
+<div class="rvsec" data-rsec="1.5"><div class="rvsh"><span class="rvk">1.5</span><h3>橫斷面資料 vs 時間序列資料</h3><button type="button" class="rvgo" data-rsec="1.5" title="回講義這一段">講義 ›</button></div><ul class="rvpts"><li><b>橫斷面</b>：同一時間、多個對象（2025 年 9 月各縣市建照數）。<b>時間序列</b>：同一對象、多個時間點（台北 36 個月建照數），看趨勢、預測。</li></ul></div>
+<div class="rvsec" data-rsec="1.6"><div class="rvsh"><span class="rvk">1.6</span><h3>資料來源</h3><button type="button" class="rvgo" data-rsec="1.6" title="回講義這一段">講義 ›</button></div><ul class="rvpts"><li>既有資料：內部紀錄、商業資料庫、政府、公會、網路。</li><li><b>觀察研究</b>：不控制變數（問卷、吸菸者 vs 非吸菸者）；<b>實驗研究</b>：控制其他變數（RCT）。考量：時間、成本、資料錯誤。</li></ul></div>
+<div class="rvsec" data-rsec="1.7"><div class="rvsh"><span class="rvk">1.7</span><h3>敘述統計 vs 推論統計</h3><button type="button" class="rvgo" data-rsec="1.7" title="回講義這一段">講義 ›</button></div><ul class="rvpts"><li><b>敘述統計</b>：用表、圖、數值摘要資料。<b>統計推論</b>：用樣本估計母體特徵或檢定假設。</li><li>母體 population vs 樣本 sample；普查 census vs 抽樣調查 sample survey。</li></ul></div>
+<div class="rvsec" data-rsec="1.8"><div class="rvsh"><span class="rvk">1.8</span><h3>Analytics（分析學）</h3><button type="button" class="rvgo" data-rsec="1.8" title="回講義這一段">講義 ›</button></div><ul class="rvpts"><li>描述性（過去發生什麼）→ 預測性（建模預測未來）→ 處方性（給最佳行動方案）。</li></ul></div>
+</div>
+<div class="rvchap" data-rch="ch2"><h2 class="rvchh">Ch2 表格與圖形</h2>
+<div class="rvsec" data-rsec="2.1"><div class="rvsh"><span class="rvk">2.1</span><h3>類別資料的整理</h3><button type="button" class="rvgo" data-rsec="2.1" title="回講義這一段">講義 ›</button></div><ul class="rvpts"><li>相對次數 = 次數 ÷ 總數；百分比 = 相對次數 × 100。只看次數會誤判：A 20 則中 10 則（50%）比 B 200 則中 50 則（25%）好。</li><li>長條圖：類別資料、長條分開。圓餅圖：<b>相對次數 × 360°</b>（0.25 → 90°），適合類別少、看部分占整體。</li></ul></div>
+<div class="rvsec" data-rsec="2.2"><div class="rvsh"><span class="rvk">2.2</span><h3>數量資料的整理</h3><button type="button" class="rvgo" data-rsec="2.2" title="回講義這一段">講義 ›</button></div><div class="box tip rvmn"><span class="lbl">口訣</span><ul><li>三步驟：「組數 5～20 → 組距 ≈ (最大 − 最小) ÷ 組數取整 → 組限不重疊、全涵蓋」</li></ul></div><ul class="rvpts"><li>Hudson：(109 − 52) ÷ 6 = 9.5 → 組距取 <b>10</b>。累積次數以各組上限累加（≤59、≤69…），累積相對次數 = 累積次數 ÷ n。</li><li>直方圖長條<b>相連</b>；點圖、莖葉圖保留原始資料。</li><li>偏態看尾巴：右偏（所得、課金）平均 &gt; 中位；左偏（簡單考試）平均 &lt; 中位；對稱相等。</li><li>莖葉圖葉單位：1682 用葉單位 10 → 莖 16、葉 8（<b>捨去</b>不是四捨五入）；伸展莖葉圖每個莖寫兩次（0～4、5～9）。</li></ul></div>
+<div class="rvsec" data-rsec="2.3"><div class="rvsh"><span class="rvk">2.3</span><h3>兩個變數：交叉表（Crosstabulation）</h3><button type="button" class="rvgo" data-rsec="2.3" title="回講義這一段">講義 ›</button></div><ul class="rvpts"><li>交叉表：類別＋類別、類別＋數量、數量＋數量（數量要先分組）。</li><li><b>辛普森悖論</b>：分組的結論在合併後反轉，原因是隱藏變數（各組樣本數差很多）→ 先看分組表。</li></ul></div>
+<div class="rvsec" data-rsec="2.4"><div class="rvsh"><span class="rvk">2.4</span><h3>兩個變數：圖形</h3><button type="button" class="rvgo" data-rsec="2.4" title="回講義這一段">講義 ›</button></div><ul class="rvpts"><li><b>散佈圖＋趨勢線</b>：兩個數量變數（正、負、無關係）。</li><li>群組長條圖：比較各組差異；堆疊長條圖：看總量與組成，用百分比時每條都等高到 100%。</li></ul></div>
+<div class="rvsec" data-rsec="2.5"><div class="rvsh"><span class="rvk">2.5</span><h3>圖形選擇總表</h3><button type="button" class="rvgo" data-rsec="2.5" title="回講義這一段">講義 ›</button></div><ul class="rvpts"><li>分布：類別 → 長條、圓餅；數量 → 點圖、直方圖、莖葉圖。比較 → 群組／堆疊長條圖。關係 → 散佈圖＋趨勢線。</li><li>Dashboard：呈現 KPI；減少捲動、不要多餘顏色或 3D、用框線分隔。</li></ul></div>
+</div>
+<div class="rvchap" data-rch="ch3"><h2 class="rvchh">Ch3 數值量數</h2>
+<div class="rvsec" data-rsec="3.1"><div class="rvsh"><span class="rvk">3.1</span><h3>位置量數（Measures of Location）</h3><button type="button" class="rvgo" data-rsec="3.1" title="回講義這一段">講義 ›</button></div><div class="box tip rvmn"><span class="lbl">口訣</span><ul><li>百分位數：「排序 → L = (p/100)(n+1) → 整數直接取，有小數就內插」</li></ul></div><ul class="rvpts"><li>平均數受極端值影響大；有極端值（所得、房價）用<b>中位數</b>；眾數可以雙峰、多峰。</li><li><b>加權平均</b> Σwx ÷ Σw（GPA、平均工資：5 種工資直接平均是錯的）。</li><li><b>幾何平均</b>：報酬率換成 1 + r（−10% → 0.90），全部相乘開 n 次方，再 −1。</li><li>70 筆租金 80th：L = 0.8 × 71 = 56.8 → 635 + 0.8(649 − 635) = <b>646.2</b>。Q1、Q2、Q3 = 第 25、50、75 百分位數。</li></ul></div>
+<div class="rvsec" data-rsec="3.2"><div class="rvsh"><span class="rvk">3.2</span><h3>離散量數（Measures of Variability）</h3><button type="button" class="rvgo" data-rsec="3.2" title="回講義這一段">講義 ›</button></div><ul class="rvpts"><li>全距 = 最大 − 最小（對極端值超敏感）；<b>IQR = Q3 − Q1</b>（不受極端值影響）。</li><li>樣本變異數 s² 分母 <b>n − 1</b>（用 x̄ 會低估變異）；母體 σ² 分母 N；標準差單位和原資料相同。</li><li><b>CV = s / x̄ × 100%</b>，跨單位比較：A（100, 10）10%、B（1000, 50）5% → B 相對變異較小。</li></ul></div>
+<div class="rvsec" data-rsec="3.3"><div class="rvsh"><span class="rvk">3.3</span><h3>分布形狀、相對位置、離群值</h3><button type="button" class="rvgo" data-rsec="3.3" title="回講義這一段">講義 ›</button></div><div class="box tip rvmn"><span class="lbl">口訣</span><ul><li>「方向看尾巴，平均數跟著尾巴跑」</li></ul></div><ul class="rvpts"><li><b>z = (x − x̄) / s</b>：離平均幾個標準差。</li><li><b>柴比雪夫</b>（任何分布）：至少 1 − 1/z²：z = 2 → 75%、z = 3 → 88.89%、z = 4 → 93.75%。</li><li><b>經驗法則</b>（只有鐘形）：68%、95%、99.7%。分布未知只能用柴比雪夫。</li><li>離群值：|z| &gt; 3，或超出 Q1 − 1.5·IQR、Q3 + 1.5·IQR；不一定要刪。</li></ul></div>
+<div class="rvsec" data-rsec="3.4"><div class="rvsh"><span class="rvk">3.4</span><h3>五數摘要與盒鬚圖</h3><button type="button" class="rvgo" data-rsec="3.4" title="回講義這一段">講義 ›</button></div><ul class="rvpts"><li>五數摘要：最小、Q1、中位數、Q3、最大。</li><li>盒鬚圖：盒子 Q1～Q3、中間一線是中位數；上下限只定位不畫；鬚線到限內的最小最大值；離群值標 *。</li><li>租金：Q1 545、Q3 625、IQR 80 → 下限 425、上限 745。</li></ul></div>
+<div class="rvsec" data-rsec="3.5"><div class="rvsh"><span class="rvk">3.5</span><h3>兩變數的關聯</h3><button type="button" class="rvgo" data-rsec="3.5" title="回講義這一段">講義 ›</button></div><ul class="rvpts"><li>共變異數 sxy = Σ(x − x̄)(y − ȳ) / (n − 1)：只看方向，受單位影響。</li><li>相關係數 <b>r = sxy / (sx·sy)</b>：−1～+1、無單位，看方向和強度。</li><li>只衡量<b>線性</b>關係；<b>相關不等於因果</b>。高爾夫：距離越遠桿數越低 → r ≈ −0.96。</li></ul></div>
+</div>
+<div class="rvchap" data-rch="ch4"><h2 class="rvchh">Ch4 機率導論</h2>
+<div class="rvsec" data-rsec="4.1"><div class="rvsh"><span class="rvk">4.1</span><h3>隨機實驗、樣本空間、計數法則</h3><button type="button" class="rvgo" data-rsec="4.1" title="回講義這一段">講義 ›</button></div><ul class="rvpts"><li>樣本空間 S：所有實驗結果；每個結果是樣本點。</li><li>多步驟計數：n₁ × n₂ × …（Bradley 4 × 2 = 8，用樹狀圖）。</li><li><b>組合</b>（順序不重要）C(N, n) = N! / [n!(N − n)!]；<b>排列</b>（順序重要）P(N, n) = N! / (N − n)!；P = n! × C；0! = 1。</li></ul></div>
+<div class="rvsec" data-rsec="4.2"><div class="rvsh"><span class="rvk">4.2</span><h3>指派機率</h3><button type="button" class="rvgo" data-rsec="4.2" title="回講義這一段">講義 ›</button></div><ul class="rvpts"><li>兩個要求：0 ≤ P ≤ 1、全部加起來 = 1。</li><li>古典法（等可能，骰子 1/6）、相對次數法（Lucas：40 天中 18 天 → 0.45）、主觀法（專家判斷）。</li><li>事件機率 = 它所含樣本點機率加總。</li></ul></div>
+<div class="rvsec" data-rsec="4.3"><div class="rvsh"><span class="rvk">4.3</span><h3>基本機率關係</h3><button type="button" class="rvgo" data-rsec="4.3" title="回講義這一段">講義 ›</button></div><ul class="rvpts"><li>補集 P(Aᶜ) = 1 − P(A)。</li><li><b>加法律</b> P(A ∪ B) = P(A) + P(B) − P(A ∩ B)；Bradley：0.70 + 0.48 − 0.36 = 0.82。</li><li>互斥 → P(A ∩ B) = 0 → 直接相加。乘法律 P(A ∩ B) = P(B)·P(A｜B)。</li></ul></div>
+<div class="rvsec" data-rsec="4.4"><div class="rvsh"><span class="rvk">4.4</span><h3>條件機率與獨立</h3><button type="button" class="rvgo" data-rsec="4.4" title="回講義這一段">講義 ›</button></div><ul class="rvpts"><li><b>P(A｜B) = P(A ∩ B) / P(B)</b>；從聯合機率表算：該格 ÷ B 那一列（欄）的合計。</li><li>表內是聯合機率，邊緣是邊際機率。</li><li><b>獨立</b>：P(A｜B) = P(A)，等價 P(A ∩ B) = P(A)P(B)。</li><li><b>互斥 ≠ 獨立</b>：兩個機率都 &gt; 0 的互斥事件一定<b>不</b>獨立。</li></ul></div>
+<div class="rvsec" data-rsec="4.5"><div class="rvsh"><span class="rvk">4.5</span><h3>貝氏定理（Bayes’ Theorem）</h3><button type="button" class="rvgo" data-rsec="4.5" title="回講義這一段">講義 ›</button></div><div class="box tip rvmn"><span class="lbl">口訣</span><ul><li>表格五欄：「事件、事前、條件、聯合 = 事前 × 條件、事後 = 聯合 ÷ 合計」</li></ul></div><ul class="rvpts"><li>事前 P(Aᵢ) → 新資訊 B → 事後 P(Aᵢ｜B)；分母是全機率 P(B)；Aᵢ 必須互斥且聯集為全部。</li><li>例：0.7 × 0.2 = 0.14、0.3 × 0.9 = 0.27 → P(B) = 0.41 → 事後 0.3415、0.6585。條件那一欄加起來<b>不必是 1</b>。</li><li>作業 9：事前 0.02、P(+｜C) 0.8、偽陽性 0.75 → P(C｜+) = 0.016 / 0.751 ≈ <b>0.021</b>。</li></ul></div>
+</div>
+</div>
+</section>
+
 
 </main>
 <script src="../../assets/ezsync.js?v=27402c21" data-key="stats-midterm-v1"></script>
@@ -2323,7 +2359,7 @@ table td{text-align:left}
   tt.addEventListener("click",()=>scrollTo({top:0,behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"}));
 })();
 
-const VIEWS=[["home","首頁"],["ch1","Ch1 資料"],["ch2","Ch2 圖表"],["ch3","Ch3 數值量數"],["ch4","Ch4 機率"],["|"],["confuse","易混淆"],["hw","期中作業"]];
+const VIEWS=[["home","首頁"],["ch1","Ch1 資料"],["ch2","Ch2 圖表"],["ch3","Ch3 數值量數"],["ch4","Ch4 機率"],["|"],["confuse","易混淆"],["hw","期中作業"],["review","總複習"]];
 const KEY="stats-midterm-v1";
 let S={quiz:{},exam:{}};
 try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(S,JSON.parse(raw));}catch(e){}
@@ -2331,7 +2367,7 @@ function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 
 const tabs=document.getElementById("tabs");
 function quizDone(ch){const a=S.quiz[ch]||{};return QUIZ[ch]&&Object.keys(a).length>=QUIZ[ch].length;}
-const PID={home:0,ch1:1,ch2:2,ch3:3,ch4:4,confuse:5,hw:6};
+const PID={home:0,ch1:1,ch2:2,ch3:3,ch4:4,confuse:5,hw:6,review:7};
 function chwStat(ch){const w=document.querySelector("#"+ch+" .chw");if(!w)return {n:0,k:0};const x=(S.ex2||{})[w.dataset.exam]||{},g=x.grade||{},sf=x.self||{};const qs=[...w.querySelectorAll(".exq")];return {n:qs.length,k:qs.filter(q=>g[q.id]||sf[q.id]).length};} /* a chapter is done only when its written part is done too */
 function procState(id){
   if(QUIZ[id]){const w=chwStat(id),n=QUIZ[id].length+w.n,k=Object.keys(S.quiz[id]||{}).length+w.k;return {state:k===0?"new":k<n?"running":"terminated",done:k,n};}
@@ -2811,8 +2847,8 @@ const svg=(w,h,inner)=>'<svg viewBox="0 0 '+w+' '+h+'" role="img">'+inner+'</svg
 </script>
 
 <script src="../../assets/ezquiz.js?v=3b54c8bc"></script>
-<script src="../../assets/ezwrong.js?v=e25b6aba"></script>
-<script src="../../assets/ezsearch.js?v=e14852bd"></script>
+<script src="../../assets/ezwrong.js?v=c04371c5"></script>
+<script src="../../assets/ezsearch.js?v=65b5b4ec"></script>
 <script src="../../assets/ezshuffle.js?v=327fea02"></script>
 <script src="../../assets/ezexplain.js?v=b37b412f"></script>
 </body>

@@ -11,7 +11,7 @@ const EXMC={y24:"y24mc",y25:"y25mc","mock-a":"m1","mock-b":"m2"};
 const MCVIEW=Object.fromEntries(Object.entries(EXMC).map(([v,k])=>[k,v]));
 const CHAPTERS=["ch1","ch2","ch3"];
 const EXAMS=[["y24","2024 考古題"],["y25","2025 考古題"],["mock-a","模擬試題 A"],["mock-b","模擬試題 B"]];
-const EXAM_DAY=new Date(2026,10,6);   /* the countdown label follows this date; change it here only */
+const EXAM_DAY=(window.EZDATES&&EZDATES.day())||new Date(2026,10,6);   /* the date lives in assets/ezdates.js */
 const EXAM_TAG='<span class="cdk">EXAM '+(EXAM_DAY.getMonth()+1)+'/'+EXAM_DAY.getDate()+'</span>';
 const KEY="ds-midterm-v1";
 let S={quiz:{},exam:{}};

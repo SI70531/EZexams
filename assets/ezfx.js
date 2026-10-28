@@ -86,6 +86,7 @@
   /* typed prompt lines ($ ls ~/exams, $ Operating Systems · Midterm, ...) */
   function type(el){
     if(!el||el.dataset.fxTyped)return;el.dataset.fxTyped=1;
+    if(window.EZDATES)EZDATES.fill(el);   /* an exam date inside the line is filled in before it is typed out */
     const full=el.textContent;if(!full.trim()||full.length>60)return;
     el.textContent="";el.classList.add("fx-typing");let i=0;
     /* about a person's typing pace: 90–170 ms a key, a short pause after a space or punctuation, the caret

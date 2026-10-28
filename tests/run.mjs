@@ -153,6 +153,26 @@ await check("sync: an upload keeps answers another device made in the meantime",
   assert(up.quiz.ch2 && up.quiz.ch3 && up.quiz.ch3[0] === 1, "lost the other device's answer: " + JSON.stringify(up.quiz));
   await pg.ctx.close();
 });
+await check("exam dates: every page takes them from assets/ezdates.js", async () => {
+  const pg = await device({ skipGate: true }); await pg.goto(U); await pg.waitForTimeout(500);
+  const home = await pg.evaluate(() => [...document.querySelectorAll(".exam-subj")].map(s => [s.querySelector("a.ticket").getAttribute("href"), s.dataset.date, s.querySelector(".stub .v").textContent]));
+  const all = await pg.evaluate(() => EZDATES.all);
+  assert(home.length === 4 && home.every(([h, d, v]) => all[h.replace(/\/$/, "")] === d && v === +d.slice(5, 7) + "/" + +d.slice(8)), JSON.stringify(home));
+  for (const sub of Object.keys(SUBJECTS)) {
+    await pg.goto(U + sub + "/midterm/"); await pg.waitForFunction(() => { const e = document.querySelector("#home .vhead .eyebrow"); return e && e.dataset.fxTyped && !e.classList.contains("fx-typing"); }, null, { timeout: 15000 }).catch(() => {}); await pg.waitForTimeout(300);   /* the subtitle types itself out */
+    const r = await pg.evaluate(() => [EZDATES.md(), [...document.querySelectorAll("[data-examdate]")].map(e => e.textContent), document.querySelector("#home .vhead .eyebrow").textContent]);
+    assert(r[0] && r[1].every(t => t === r[0]) && r[2].endsWith("· " + r[0]), sub + " " + JSON.stringify(r));
+  }
+  await pg.ctx.close();
+});
+await check("PIN cells: number pad (masked text field), 顯示 reveals the digits", async () => {
+  const pg = await device(); await pg.goto(PAGE); await pg.waitForTimeout(500);
+  await typePin(pg, 1, "12");
+  const r = await pg.evaluate(() => { const x = document.querySelector("#ezgate .eg-cell input"); const a = [x.type, x.inputMode, getComputedStyle(x).webkitTextSecurity];
+    document.getElementById("egEye").click(); return a.concat(getComputedStyle(x).webkitTextSecurity, x.value); });
+  assert(r[0] === "text" && r[1] === "numeric" && r[2] === "disc" && r[3] === "none" && r[4] === "1", JSON.stringify(r));
+  await pg.ctx.close();
+});
 await check("merge: per question, the later answer wins", async () => {
   const pg = await device({ skipGate: true }); await pg.goto(PAGE); await pg.waitForTimeout(400);
   const r = await pg.evaluate(() => {

@@ -20,6 +20,19 @@
   let internal=false;
   const on=()=>!!(get(LS.code)||get(LS.tok));
   const set=(k,v)=>{internal=true;try{v==null?store(k).removeItem(k):store(k).setItem(k,v);}catch(e){}internal=false;};
+  /* each PIN is its own progress: a new PIN starts from zero, and signing in with a different PIN than last time on
+     this browser replaces the local progress with that PIN's (the same PIN as last time keeps local answers that
+     were not uploaded yet and merges them). Only a short hash of the last PIN is kept, never the PIN itself. */
+  const who=c=>{let h=2166136261;for(const ch of "ezexams:"+c){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);}return (h>>>0).toString(36);};
+  function startFor(code,fresh){
+    const w=who(code),prev=get("ezsync-who");
+    if(fresh||(prev&&prev!==w)){
+      Object.values(subjects).forEach(s=>{clearTimeout(s.timer);s.timer=null;});
+      const drop=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(/-midterm-v1$|^ezsync-at:|^ezopt:|^eznum:/.test(k))drop.push(k);}
+      drop.forEach(k=>set(k,null));[LS.last,"ezsync-lastpush"].forEach(k=>set(k,null));
+    }
+    set("ezsync-who",w);
+  }
   const listeners=new Set();
   let status={state:(get(LS.code)||get(LS.tok))?"idle":"off",msg:""};
   function emit(state,msg,code){status={state,msg:msg||"",code:code||""};listeners.forEach(f=>{try{f(status);}catch(e){}});}
@@ -88,7 +101,7 @@
   function errMsg(e){
     const c=e&&e.code,why=e&&e.why?"（GitHub："+e.why+"）":"";
     if(c==="auth")return "金鑰無效或過期，請到首頁重新連結。";
-    if(c==="badcode")return "同步碼是 6 位數字。";
+    if(c==="badcode")return "PIN 碼是 6 位數字。";
     if(c==="server")return "同步伺服器還沒設定好（"+(e.why||"")+"）。";
     if(c==="scope")return "這把金鑰沒有 gist 權限"+why+"。請到首頁換一把有勾 gist 的金鑰。";
     if(c==="rate")return "GitHub 暫時限制次數"+why+"，會自動再試。";
@@ -210,6 +223,7 @@
       /* a new code is claimed right away, so another device can join it before any subject is opened */
       if(mode==="create"){try{await px("POST","/sync",JSON.stringify({code,key:"meta",payload:{createdAt:Date.now()}}));}catch(e){}}
       [LS.tok,LS.gist,LS.user].forEach(k=>set(k,null));
+      startFor(code,mode==="create");
       emit("ok","已連結");return code;
     },
     mode:()=>get(LS.code)?"code":get(LS.tok)?"token":"off",
@@ -306,13 +320,13 @@
       a.dataset.state=on?s.state:"off";
       a.querySelector(".synclab").textContent=!on?"未同步":s.state==="sync"?"同步中":s.state==="dirty"?"待同步":s.state==="err"?"同步失敗":"已同步";
       const needKey=s.state==="err"&&s.code==="auth";
-      a.title=!on?"只存在這台裝置。點這裡輸入同步碼。":needKey?"同步失敗，點一下再試一次。":(s.msg&&s.state==="err"?s.msg+" 點一下再同步一次。":(window.EZSync.mode()==="code"?"已同步（同步代碼 "+window.EZSync.codeHint()+"）":"已同步到 GitHub"+(window.EZSync.user()?"（@"+window.EZSync.user()+"）":""))+"。點一下立即同步。");
+      a.title=!on?"只存在這台裝置。點這裡輸入 PIN 碼。":needKey?"同步失敗，點一下再試一次。":(s.msg&&s.state==="err"?s.msg+" 點一下再同步一次。":(window.EZSync.mode()==="code"?"已同步（同步代碼 "+window.EZSync.codeHint()+"）":"已同步到 GitHub"+(window.EZSync.user()?"（@"+window.EZSync.user()+"）":""))+"。點一下立即同步。");
     });
   }
   function updateNote(){
     let n=document.getElementById("storeNote");
     if(!n)n=[...document.querySelectorAll("p.small")].find(p=>/只存在這台裝置/.test(p.textContent));
-    if(n){const c=window.EZSync.connected();n.hidden=c;if(!c)n.textContent="目前只存在這台裝置。點右上角的同步按鈕輸入同步碼，所有裝置就會同步。";}
+    if(n){const c=window.EZSync.connected();n.hidden=c;if(!c)n.textContent="目前只存在這台裝置。點右上角的同步按鈕輸入 PIN 碼，所有裝置就會同步。";}
   }
   window.addEventListener("load",()=>setTimeout(()=>{
     let cur=null;try{cur=localStorage.getItem(autoKey);}catch(e){}

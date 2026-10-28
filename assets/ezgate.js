@@ -2,7 +2,7 @@
    - Shown on every page while this browser has no sync code (ezcore.js hides the page early so nothing flashes).
    - The code is checked as soon as all six boxes are filled (no Enter); a wrong one shakes and clears.
    - Signed in for this browser tab only: closing the site signs out (ezsync.js keeps the code in sessionStorage).
-   - 輸入同步碼: join a code that already holds progress. 建立同步碼: set up a new one (typed twice).
+   - 輸入 PIN 碼: join a code that already holds progress. 建立 PIN 碼: set up a new one (typed twice).
    - 先不同步: use this device only, for this browser session.
    - EZGate.open({mode}) opens it again later (e.g. to change the code from the home page).
    Uses EZSync.connectCode (ezsync.js). Colours come from the page's theme tokens, so it fits light and dark mode. */
@@ -76,8 +76,8 @@
 `;
 
   const TEXT={
-    join:{prompt:"ezexams --sync",h:"輸入<em>同步碼</em>",p:"輸入你在其他裝置設定的 6 位數同步碼，就會載入同一份進度：每一科的作答、分數和錯題。",btn:"進入 EZexams",sw:"第一次使用？",swb:"建立同步碼"},
-    create:{prompt:"ezexams --new",h:"建立<em>同步碼</em>",p:"自己設定一組 6 位數同步碼，輸入兩次確認。之後每台裝置輸入同一組，進度就會同步。避開 123456、生日這種好猜的。",btn:"建立並進入",sw:"已經有同步碼？",swb:"輸入同步碼"}
+    join:{prompt:"ezexams --sync",h:"輸入 <em>PIN 碼</em>",p:"輸入你的 6 位數 PIN 碼，就會載入這組 PIN 碼的進度：每一科的作答、分數和錯題。",btn:"進入 EZexams",sw:"第一次使用？",swb:"建立 PIN 碼"},
+    create:{prompt:"ezexams --new",h:"建立 <em>PIN 碼</em>",p:"自己設定一組 6 位數 PIN 碼，輸入兩次確認。新的 PIN 碼從 0 開始；之後每台裝置輸入同一組，進度就會同步。避開 123456、生日這種好猜的。",btn:"建立並進入",sw:"已經有 PIN 碼？",swb:"輸入 PIN 碼"}
   };
   let root=null,ticket=null,cellsets=[],opened=false,opts={};
   const $=s=>root.querySelector(s);
@@ -86,15 +86,15 @@
   function build(){
     const st=document.createElement("style");st.textContent=css;document.head.appendChild(st);
     root=document.createElement("div");root.id="ezgate";root.setAttribute("role","dialog");root.setAttribute("aria-modal","true");root.setAttribute("aria-labelledby","egH");
-    const row=n=>'<div class="eg-cells" data-row="'+n+'">'+[1,2,3,4,5,6].map(i=>'<div class="eg-cell" data-n="'+i+'"><input type="password" inputmode="numeric" maxlength="1" autocomplete="off" aria-label="第 '+i+' 位"></div>').join("")+'</div>';
+    const row=n=>'<div class="eg-cells" data-row="'+n+'">'+[1,2,3,4,5,6].map(i=>'<div class="eg-cell" data-n="'+i+'"><input type="password" inputmode="numeric" maxlength="1" autocomplete="off" aria-label="PIN 碼第 '+i+' 位"></div>').join("")+'</div>';
     root.innerHTML='<div class="eg-wrap"><div class="eg-brand"><span class="mk">EZ</span>EZexams 考試衝刺</div>'+
       '<form class="eg-ticket" data-mode="join" novalidate autocomplete="off"><div class="eg-main">'+
         '<div class="eg-prompt" id="egPrompt"></div><h1 class="eg-h" id="egH"></h1><p class="eg-p" id="egP"></p>'+
-        '<div class="eg-lab"><span>同步碼</span><button type="button" class="eg-eye" id="egEye" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span>顯示</span></button></div>'+
+        '<div class="eg-lab"><span>PIN 碼</span><button type="button" class="eg-eye" id="egEye" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span>顯示</span></button></div>'+
         row(1)+'<div class="eg-confirm"><div class="eg-lab"><span>再輸入一次</span></div>'+row(2)+'</div>'+
         '<button class="eg-go" type="submit" id="egGo"><span id="egGoT"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>'+
         '<p class="eg-msg" id="egMsg" role="status"></p>'+
-        '<div class="eg-links"><span><span id="egSwT"></span> <button type="button" class="eg-link" id="egSw"></button></span><button type="button" class="eg-link" id="egForgot">忘記同步碼？</button></div>'+
+        '<div class="eg-links"><span><span id="egSwT"></span> <button type="button" class="eg-link" id="egSw"></button></span><button type="button" class="eg-link" id="egForgot">忘記 PIN 碼？</button></div>'+
       '</div>'+
       '<div class="eg-glow" aria-hidden="true"></div></form>'+
       '<p class="eg-foot"><button type="button" class="eg-link" id="egSkip">先不同步，只用這台裝置</button></p></div>';
@@ -109,7 +109,7 @@
     }));
     $("#egEye").addEventListener("click",e=>{const b=e.currentTarget,on=b.getAttribute("aria-pressed")!=="true";b.setAttribute("aria-pressed",on);b.querySelector("span").textContent=on?"隱藏":"顯示";root.querySelectorAll(".eg-cell input").forEach(x=>x.type=on?"text":"password");});
     $("#egSw").addEventListener("click",()=>setMode(ticket.dataset.mode==="join"?"create":"join",true));
-    $("#egForgot").addEventListener("click",()=>say("同步碼沒有存在任何地方，所以找不回來。每台裝置自己的進度都還在：建立一組新的同步碼，再到每台裝置輸入新的，大家的進度會合併在一起。"));
+    $("#egForgot").addEventListener("click",()=>say("PIN 碼沒有存在任何地方，所以找不回來。可以建立一組新的 PIN 碼，但新的 PIN 碼會從 0 開始。"));
     $("#egSkip").addEventListener("click",()=>{try{sessionStorage.setItem("ezgate-skip","1");}catch(e){}close();});
     ticket.addEventListener("submit",submit);
   }
@@ -136,8 +136,8 @@ $("#egSwT").textContent=t.sw;$("#egSw").textContent=t.swb;
   }
   async function submit(e){
     if(e)e.preventDefault();if(busy)return;const mode=ticket.dataset.mode,c1=val(cellsets[0]),c2=val(cellsets[1]),go=$("#egGo");
-    if(!/^\d{6}$/.test(c1))return bad(cellsets[0],"同步碼是 6 位數字。");
-    if(mode==="create"&&c1!==c2)return bad(cellsets[1],"兩次輸入的同步碼不一樣。");
+    if(!/^\d{6}$/.test(c1))return bad(cellsets[0],"PIN 碼是 6 位數字。");
+    if(mode==="create"&&c1!==c2)return bad(cellsets[1],"兩次輸入的 PIN 碼不一樣。");
     if(mode==="create"&&/^(\d)\1{5}$|^(012345|123456|234567|345678|456789|987654|876543|654321|543210)$/.test(c1))return bad(cellsets[0],"這組太好猜了，換一組吧。");
     if(!window.EZSync){say("同步功能還在載入，請再按一次。","err");return;}
     busy=true;go.disabled=true;ticket.classList.remove("retry");say("連線中…");cellsets[0].classList.add("wait");
@@ -145,14 +145,14 @@ $("#egSwT").textContent=t.sw;$("#egSw").textContent=t.swb;
       await EZSync.connectCode(c1,{mode});
       cellsets[0].classList.remove("wait");
       try{sessionStorage.removeItem("ezgate-skip");}catch(_){}
-      say(mode==="create"?"同步碼建立好了，其他裝置輸入同一組就會同步。":"已載入這組同步碼的進度。","ok");
+      say(mode==="create"?"PIN 碼建立好了，從 0 開始。":"已載入這組 PIN 碼的進度。","ok");
       await celebrate(mode);
       root.classList.add("out");setTimeout(()=>location.reload(),420);   /* reload so this page syncs right away */
     }catch(err){
       busy=false;go.disabled=false;cellsets[0].classList.remove("wait");
-      if(err.code==="taken")bad(cellsets[0],"這組同步碼已經有人在用了，換一組吧。");
-      else if(err.code==="nocode"){bad(cellsets[0],"");const m=$("#egMsg");m.textContent="找不到這組同步碼的進度。是第一次使用嗎？ ";
-        const l=document.createElement("button");l.type="button";l.className="eg-link";l.textContent="用它建立同步碼";
+      if(err.code==="taken")bad(cellsets[0],"這組 PIN 碼已經有人在用了，換一組吧。");
+      else if(err.code==="nocode"){bad(cellsets[0],"");const m=$("#egMsg");m.textContent="找不到這組 PIN 碼的進度。是第一次使用嗎？ ";
+        const l=document.createElement("button");l.type="button";l.className="eg-link";l.textContent="用它建立 PIN 碼";
         l.onclick=()=>{setMode("create",true);setTimeout(()=>{fill(cellsets[0],0,c1,1);fill(cellsets[1],0,c1,1);},700);};m.appendChild(l);}
       else{say(window.EZSync.errMsg?EZSync.errMsg(err):"連不上同步伺服器，請稍後再試。","err");$("#egGoT").textContent="再試一次";ticket.classList.add("retry");}
     }
@@ -176,8 +176,8 @@ $("#egSwT").textContent=t.sw;$("#egSw").textContent=t.swb;
     box.innerHTML='<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
     ticket.appendChild(box);
     const glow=$(".eg-glow");glow.style.setProperty("--gx",(cx-tr.left)+"px");glow.style.setProperty("--gy",(cy-tr.top)+"px");
-    swap($("#egH"),mode==="create"?"同步碼<em>建立好了</em>":"同步<em>成功</em>");
-    swap($("#egP"),mode==="create"?"其他裝置輸入同一組同步碼，進度就會同步。":"已載入這組同步碼的進度，馬上進入。");
+    swap($("#egH"),mode==="create"?"PIN 碼<em>建立好了</em>":"登入<em>成功</em>");
+    swap($("#egP"),mode==="create"?"全新的進度，從 0 開始。之後每台裝置輸入同一組 PIN 碼，進度就會同步。":"已載入這組 PIN 碼的進度，馬上進入。");
     if(RM()||!box.animate){all.forEach(x=>x.style.visibility="hidden");box.style.opacity=1;box.style.borderColor="var(--ok)";box.querySelector("path").style.strokeDashoffset=0;glow.style.opacity=1;await wait(900);return;}
     await wait(160);
     all.forEach(x=>x.classList.add("fade"));                       /* digits fade out */

@@ -1,4 +1,5 @@
-/* EZexams chapter-end written questions (.exam.chw): graded by AI only.
+/* EZexams written questions graded by AI only: chapter-end parts, mock exams and the statistics assignment
+   (blocks get the class .aiw). Past exams (考古題) keep the reference answer, keyword grading and self-grading.
    - No keyword grading and no self-grading here. If the AI cannot answer (not signed in, quota used up, offline),
      the question says so and offers 重試; nothing is scored.
    - The reference answer stays in the page but is never shown: it goes to the AI as a reference only.
@@ -6,14 +7,14 @@
      ideas that are not in the notes, and it scores the idea, not the wording of the reference answer.
    - The AI also writes a model answer (English + 中文, the same ANSWER box as before). It appears after grading, and
      「看 AI 解答」 shows it without answering. Answers are kept in this browser (localStorage "ezaians:<page>").
-   Used by each subject's app.js (EZchw.grade / EZchw.setup); past exams, mock exams and the statistics assignment
-   keep their own grading. */
+   Used by each subject's app.js (EZchw.is / EZchw.grade / EZchw.setup). Outside a chapter tab, a question's notes are
+   the section that shares the most words with it. */
 (function(){
-  const css=`.chw details.qa,.chw .self,.chw .selfsc,.chw .nogradenote{display:none!important}
-.chw .aians{margin-top:12px}
-.chw .aians .aisrc{display:block;margin-top:8px;font-family:var(--f-mono);font-size:11px;color:var(--muted)}
-.chw .aibtn{margin-left:6px}
-.chw .gretry{margin-left:8px}`;
+  const css=`.aiw details.qa,.aiw .self,.aiw .selfsc,.aiw .nogradenote{display:none!important}
+.aiw .aians{margin-top:12px}
+.aiw .aians .aisrc{display:block;margin-top:8px;font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+.aiw .aibtn{margin-left:6px}
+.aiw .gretry{margin-left:8px}`;
   const st=document.createElement("style");st.textContent=css;document.head.appendChild(st);
 
   const LK="ezaians:"+location.pathname;
@@ -29,6 +30,7 @@
     const question=txt(q.querySelector(".qtext")),ref=txt(q.querySelector(".qa .inner"));
     let s=null;
     try{if(window.EZWrong&&EZWrong.match){const m=EZWrong.match({q:question,e:ref},ch);s=m&&m.s;}}catch(e){}
+    if(!s&&!(ch&&/^ch\d+$/.test(ch))&&window.EZWrong&&EZWrong.sections)s=closest(question+" "+ref);
     if(s)return {title:s.title,text:s.parts.map(txt).join("\n").slice(0,7000)};
     const notes=[...(view?view.children:[])].filter(n=>!n.matches(".vhead,.quiz,.chw,script,style")&&!n.closest(".quiz,.chw"));
     return {title:(view&&view.querySelector(".vhead h1")||{}).textContent||"",text:notes.map(txt).join("\n").slice(0,12000)};
@@ -43,6 +45,15 @@
     }
     return out.join("\n").trim();
   }
+  /* outside a chapter (mock exams, the assignment): the notes section sharing the most words with the question */
+  const words=t=>{t=(t||"").toLowerCase();const o=new Set();(t.match(/[a-z][a-z0-9-]{3,}/g)||[]).forEach(w=>o.add(w));(t.match(/[\u4e00-\u9fff]+/g)||[]).forEach(x=>{for(let i=0;i<x.length-1;i++)o.add(x.slice(i,i+2));});return o;};
+  const SW=new WeakMap();
+  function closest(t){
+    const q=words(t);let best=null,bs=0;
+    EZWrong.sections.forEach(s=>{let w=SW.get(s);if(!w){w=words(s.title+" "+s.parts.map(p=>p.textContent).join(" "));SW.set(s,w);}
+      let n=0;q.forEach(x=>{if(w.has(x))n++;});const sc=n/Math.sqrt(w.size+50);if(sc>bs){bs=sc;best=s;}});
+    return best;
+  }
   function info(q){
     const ta=q.querySelector("textarea"),pre=stem(q);
     return {id:q.id,pts:+q.dataset.pts,q:((pre?pre+"\n":"")+txt(q.querySelector(".qtext"))).slice(0,3000),ref:txt(q.querySelector(".qa .inner")).slice(0,4000),
@@ -56,7 +67,7 @@
   }
   function gradePrompt(items){
     return [
-"You are grading a student's answers to chapter-end written questions of a university course ("+course()+").",
+"You are grading a student's answers to written exam questions of a university course ("+course()+").",
 "The student may answer in English or Traditional Chinese, or a mix; judge only the content, never the language, spelling or grammar.",
 "How to grade:",
 "- Judge each answer against the COURSE NOTES below. Do not require, and do not reward, ideas that are not in the notes.",
@@ -76,7 +87,7 @@ context(items),
   }
   function answerPrompt(items){
     return [
-"Write model answers to chapter-end written questions of a university course ("+course()+").",
+"Write model answers to written exam questions of a university course ("+course()+").",
 "Base every answer only on the COURSE NOTES below; do not add ideas that are not in the notes. A REFERENCE answer is given for reference only; you may word and organise your answer differently.",
 "Write the way a strong student would in the exam: answer_en in English, as long as the question needs; answer_zh the same answer in Traditional Chinese (Taiwan), keeping technical terms in English like 中斷（interrupt）.",
 "Reply with ONLY a JSON array: [{\"id\":\"...\",\"answer_en\":\"...\",\"answer_zh\":\"...\"}]",
@@ -108,7 +119,13 @@ context(items),
   }
 
   window.EZchw={
-    is:ex=>!!ex&&ex.classList.contains("chw"),
+    /* every written block except past exams (考古題: tabs "past", "y24", "y25" ...), which keep their own grading */
+    is(ex){
+      if(!ex||!ex.querySelector(".exq"))return false;
+      const v=ex.closest("section.view"),past=v&&/^(past|y\d+)$/.test(v.id);
+      const on=!past&&(ex.classList.contains("chw")||ex.matches("section.view.exam"));
+      ex.classList.toggle("aiw",on);return on;
+    },
     info,
     /* grade a list of questions (DOM elements) of one chapter-end block; ctx: {st, render, upd, save, btns, stat} */
     async grade(qsEls,ctx){

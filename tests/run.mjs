@@ -230,6 +230,16 @@ await check("AI grading: an unreadable reply is retried automatically, never sho
   assert(r === "批改完成。" && n === 2, `status "${r}", Gemini calls ${n}`);
   await pg.ctx.close();
 });
+await check("written blocks: past exams keep the reference answer and keyword grading; mock exams, assignment and chapters are AI-only", async () => {
+  for (const [sub, views] of [["operating-systems", { past: false, "mock-a": true, ch1: true }], ["data-structures", { y24: false, y25: false, "mock-b": true }], ["statistics", { hw: true, ch1: true }]]) {
+    const pg = await device({ skipGate: true }); await pg.goto(U + sub + "/midterm/"); await pg.waitForTimeout(700);
+    const r = await pg.evaluate(vs => Object.keys(vs).map(v => { show(v); const q = document.querySelector("#" + v + " .exq"); const qa = q.querySelector("details.qa");
+      const ai = !!q.closest(".aiw") && !!q.querySelector(".aibtn") && (!qa || getComputedStyle(qa).display === "none");
+      return ai === vs[v] ? "" : v + ":" + ai; }).filter(Boolean), views);
+    assert(!r.length, sub + " wrong mode: " + r.join(","));
+    await pg.ctx.close();
+  }
+});
 await check("keyboard: A–D answers the question on screen, ← → moves between tabs; 減少動畫 switch works", async () => {
   const pg = await device({ skipGate: true }); await pg.goto(U + "operating-systems/midterm/#ch2"); await pg.waitForTimeout(700);
   await pg.evaluate(() => { const q = document.querySelector("#ch2 .quiz > .qitem"); q.scrollIntoView({ block: "center" }); });

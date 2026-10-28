@@ -30,11 +30,15 @@
       box.innerHTML=h;mark();schedule();
     }
     const isDone=g=>{const t=document.querySelector('[data-go="'+g+'"][data-state]');return !!t&&t.dataset.state==="terminated";};
-    function mark(){box.querySelectorAll(".day").forEach(day=>{const bs=[...day.querySelectorAll("[data-go]")];let all=bs.length>0;
-      bs.forEach(b=>{const ok=isDone(b.dataset.go);b.classList.toggle("ezdone",ok);if(!ok)all=false;});day.classList.toggle("ezdone",all);});}
+    /* 總複習 has no "finished" state of its own: on a day that also has other work, it turns green with that work */
+    const REVIEW=g=>g==="review"||g==="sheet";
+    function mark(){box.querySelectorAll(".day").forEach(day=>{const bs=[...day.querySelectorAll("[data-go]")];
+      const work=bs.filter(b=>!REVIEW(b.dataset.go)),workDone=work.length>0&&work.every(b=>isDone(b.dataset.go));let all=bs.length>0;
+      bs.forEach(b=>{const ok=REVIEW(b.dataset.go)?workDone:isDone(b.dataset.go);b.classList.toggle("ezdone",ok);if(!ok)all=false;});day.classList.toggle("ezdone",all);});}
     let timer;function schedule(){clearTimeout(timer);const now=new Date(),nx=new Date(now.getFullYear(),now.getMonth(),now.getDate()+1);timer=setTimeout(render,nx-now+1000);}
     /* redraw when a chapter's state changes */
-    let q;new MutationObserver(()=>{clearTimeout(q);q=setTimeout(mark,200);})
+    /* only tab-state changes count (typing effects and other page changes must not keep postponing it) */
+    let q=null;new MutationObserver(ms=>{if(q||!ms.some(m=>m.type==="attributes"||(m.target.closest&&m.target.closest("#tabs"))))return;q=setTimeout(()=>{q=null;mark();},200);})
       .observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:["data-state"]});
     render();
   }

@@ -88,15 +88,17 @@
   /* scroll reveal: blocks below the fold rise in when they arrive */
   const SEL=".view>*:not(.vhead):not(script):not(style),.view .note>*,.qitem,.exq,.rvsec,.rvchh,.ticket,.tickets>*,main>section>*,.wrap>section>*";
   const io="IntersectionObserver" in window?new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("fx-in");io.unobserve(e.target);}});},{rootMargin:"0px 0px -6% 0px",threshold:.04}):null;
+  /* only the tab on screen, and only blocks within a few screens below: farther ones just appear normally.
+     All positions are read first and the classes written after, so the browser lays the page out once. */
   function arm(root){
-    if(!io)return;
-    const vh=innerHeight;
-    root.querySelectorAll(SEL).forEach(el=>{
-      if(el.dataset.fxRv||el.closest("#ezgate,.ezs-panel,.wcard,details:not([open])"))return;el.dataset.fxRv=1;
-      const r=el.getBoundingClientRect();if(!r.height)return;          /* hidden: armed again when its tab opens */
-      if(r.top<vh*.92){return;}                                        /* already on screen: leave it be */
-      el.classList.add("fx-rv");io.observe(el);
-    });
+    if(!io||document.documentElement.classList.contains("ezcalm"))return;
+    const vh=innerHeight,scope=root===document?[...document.querySelectorAll("section.view:not([hidden])")]:[root];
+    const roots=scope.length?scope:[document];
+    const els=[];roots.forEach(r=>r.querySelectorAll(SEL).forEach(el=>{if(!el.dataset.fxRv&&!el.closest("#ezgate,.ezs-panel,.wcard,details:not([open])"))els.push(el);}));
+    const rects=els.map(el=>el.getBoundingClientRect());
+    els.forEach((el,i)=>{const r=rects[i];if(!r.height)return;el.dataset.fxRv=1;   /* hidden: armed again when its tab opens */
+      if(r.top<vh*.92||r.top>vh*4)return;                             /* on screen already, or far below: no animation */
+      el.classList.add("fx-rv");io.observe(el);});
   }
   /* an element something wants to scroll to (jump, search, glow) must not be invisible */
   /* (and must already sit where it will end up: a box still mid-slide would make the scroll land a little off) */

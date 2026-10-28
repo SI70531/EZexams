@@ -14,11 +14,13 @@
 
   /* a "run" = consecutive sibling questions of one kind inside one container */
   const KINDS=[[".quiz[data-quiz], .exambody",".qitem"],[".chw",".exq"],["*",".wq"]];
+  /* only the tab on screen is arranged (a tab is arranged again whenever it is opened) */
+  const scopes=()=>{const v=[...document.querySelectorAll("section.view:not([hidden])")];return v.length?v:[document];};
   function runs(){
     const out=[];
     KINDS.forEach(([boxSel,itemSel])=>{
       const parents=new Set();
-      document.querySelectorAll(itemSel).forEach(it=>{if(it.parentElement&&(boxSel==="*"||it.parentElement.matches(boxSel)))parents.add(it.parentElement);});
+      scopes().forEach(sc=>sc.querySelectorAll(itemSel).forEach(it=>{if(it.parentElement&&(boxSel==="*"||it.parentElement.matches(boxSel)))parents.add(it.parentElement);}));
       parents.forEach(p=>{
         if(notCh(p)||p.closest(".noshuf"))return;   /* .noshuf: sub-questions that build on each other */
         let cur=null,idx=0;
@@ -100,7 +102,7 @@
   function optId(it){const box=it.closest(".quiz[data-quiz], .exambody");if(!box)return "";const bk=box.dataset.quiz||box.dataset.exam||(box.closest(".view")||{}).id;
     return bk+"|"+(it.dataset.i!=null?+it.dataset.i:[...box.querySelectorAll(".qitem")].indexOf(it));}
   function shuffleOpts(){
-    document.querySelectorAll(".quiz[data-quiz] .qitem, .exambody .qitem").forEach((it,n)=>{
+    scopes().flatMap(sc=>[...sc.querySelectorAll(".quiz[data-quiz] .qitem, .exambody .qitem")]).forEach((it,n)=>{
       const os=[...it.querySelectorAll(".opt[data-oi]")];if(os.length<3)return;
       const wrap=os[0].parentElement;if(os.some(o=>o.parentElement!==wrap)||notCh(it))return;
       const box=it.closest(".quiz[data-quiz], .exambody"),bk=box.dataset.quiz||box.dataset.exam||(box.closest(".view")||{}).id;
@@ -126,7 +128,7 @@
   function all(){if(busy)return;busy=true;try{runs().forEach(arrange);shuffleOpts();}finally{busy=false;}}
   all();
   /* a quiz that is drawn again (e.g. after 清除作答) gets the same order back during this visit of the tab */
-  let t=null;new MutationObserver(()=>{if(busy)return;clearTimeout(t);t=setTimeout(all,0);})
+  let t=null;new MutationObserver(ms=>{if(busy||(window.EZnoise&&EZnoise(ms)))return;clearTimeout(t);t=setTimeout(all,20);})
     .observe(document.body,{childList:true,subtree:true});
   /* opening a tab again (from 首頁 or another chapter) deals a new order for its unanswered questions */
   function reshuffle(view){

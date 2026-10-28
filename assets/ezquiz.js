@@ -99,13 +99,15 @@
       else if(finished&&g.hidden)WAIT.delete(q);
     });
   }
+  /* only the tab on screen (opening a tab updates it) */
+  const onScreen=sel=>[...document.querySelectorAll("section.view:not([hidden]) "+sel)].concat([...document.querySelectorAll(sel)].filter(e=>!e.closest("section.view")));
   function update(){
     openGraded();
-    document.querySelectorAll(".quiz[data-quiz]").forEach(box=>{
+    onScreen(".quiz[data-quiz]").forEach(box=>{
       scoreBar(box);
       box.querySelectorAll(":scope > .qitem").forEach(it=>ensureClear(it,!!it.querySelector(".opt.right,.opt.wrong"),()=>clearMC(box,it)));
     });
-    document.querySelectorAll(".exq").forEach(q=>{
+    onScreen(".exq").forEach(q=>{
       const ta=q.querySelector("textarea"),g=q.querySelector(".gres");
       ensureClear(q,!!(ta&&ta.value.trim())||!!(g&&!g.hidden),()=>clearW(q));
     });
@@ -124,6 +126,7 @@
   document.addEventListener("animationend",e=>{const n=e.animationName,t=e.target;if(n==="ezhere")t.classList.remove("ezhere");else if(n==="wflash")t.classList.remove("wflash");else if(n==="ezsflash")t.classList.remove("ezs-flash");},true);
   let t=null;const later=()=>{clearTimeout(t);t=setTimeout(update,40);};
   ["click","input","change"].forEach(ev=>document.addEventListener(ev,later));
-  new MutationObserver(later).observe(document.body,{childList:true,subtree:true});
+  new MutationObserver(ms=>{if(window.EZnoise&&EZnoise(ms))return;later();}).observe(document.body,{childList:true,subtree:true});
+  document.querySelectorAll("section.view").forEach(v=>new MutationObserver(()=>{if(!v.hidden)later();}).observe(v,{attributes:true,attributeFilter:["hidden"]}));
   update();
 })();

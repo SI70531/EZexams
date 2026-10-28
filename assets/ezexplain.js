@@ -146,7 +146,7 @@ x.q.e?"TEACHER'S SHORT NOTE (use it as the ground truth): "+x.q.e:"",
   let busy=false;
   function all(){
     if(busy)return;busy=true;
-    try{document.querySelectorAll(".quiz[data-quiz] > .qitem").forEach(it=>{const x=info(it);if(!x)return;
+    try{document.querySelectorAll("section.view:not([hidden]) .quiz[data-quiz] > .qitem, .quiz[data-quiz]:not(section.view .quiz) > .qitem").forEach(it=>{const x=info(it);if(!x)return;
       /* every answered question in the tab you are looking at is analysed by itself, the one just answered first */
       const v=it.closest(".view");const shown=!v||!v.hidden;
       if(FRESH.has(it)){FRESH.delete(it);enqueue(it,x,true);}else if(shown)enqueue(it,x,false);
@@ -155,6 +155,9 @@ x.q.e?"TEACHER'S SHORT NOTE (use it as the ground truth): "+x.q.e:"",
   }
   /* an option clicked now: explain it right away */
   document.addEventListener("click",e=>{const o=e.target.closest&&e.target.closest(".quiz[data-quiz] .opt");if(!o)return;const it=o.closest(".qitem");if(it&&!it.querySelector(".opt.right"))FRESH.add(it);},true);
-  let t=null;new MutationObserver(()=>{if(busy)return;clearTimeout(t);t=setTimeout(all,30);}).observe(document.body,{childList:true,subtree:true});
+  let t=null;const later=()=>{if(busy)return;clearTimeout(t);t=setTimeout(all,30);};
+  new MutationObserver(ms=>{if(window.EZnoise&&EZnoise(ms))return;later();}).observe(document.body,{childList:true,subtree:true});
+  /* only the tab on screen is drawn; opening another tab draws it */
+  document.querySelectorAll("section.view").forEach(v=>new MutationObserver(()=>{if(!v.hidden)later();}).observe(v,{attributes:true,attributeFilter:["hidden"]}));
   all();
 })();

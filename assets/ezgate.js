@@ -241,6 +241,8 @@ $("#egSwT").textContent=t.sw;$("#egSw").textContent=t.swb;
     draw();if(window.EZSync&&EZSync.onStatus)EZSync.onStatus(draw);
     b.addEventListener("click",async()=>{
       if(b.disabled)return;
+      /* signed in: ask first (not when it reads 登入) */
+      if(window.EZSync&&EZSync.connected()&&!(await askOut()))return;
       /* upload answers that are still waiting before letting go of the PIN (at most 8 s) */
       if(window.EZSync&&EZSync.connected()&&EZSync.pending&&EZSync.pending()){
         b.disabled=true;b.querySelector("span").textContent="上傳中…";
@@ -250,6 +252,27 @@ $("#egSwT").textContent=t.sw;$("#egSw").textContent=t.swb;
       if(window.EZSync&&EZSync.connected())EZSync.disconnect();
       try{sessionStorage.removeItem("ezgate-skip");}catch(e){}
       draw();open();
+    });
+  }
+  /* 「確定要登出嗎？」: a small dialog in the page's own style; Esc or clicking outside cancels */
+  function askOut(){
+    return new Promise(res=>{
+      if(!document.getElementById("ezaskcss")){const st=document.createElement("style");st.id="ezaskcss";st.textContent=
+        '#ezask{position:fixed;inset:0;z-index:990;display:grid;place-items:center;padding:16px;background:rgba(6,20,27,.45);animation:ezaskin .18s ease-out}'+
+        '#ezask .box{width:min(360px,100%);background:var(--paper);color:var(--ink);border:1.5px solid var(--ink);border-radius:12px;box-shadow:6px 6px 0 var(--hard);padding:20px 22px 16px;font-family:var(--f-body);animation:ezaskpop .22s cubic-bezier(.3,1.4,.5,1)}'+
+        '#ezask h2{margin:0 0 6px;font:700 20px var(--f-display)}#ezask p{margin:0 0 16px;color:var(--ink70);font-size:14.5px;line-height:1.7}'+
+        '#ezask .row{display:flex;justify-content:flex-end;gap:8px}#ezask button{font:600 14px var(--f-body);border-radius:8px;padding:8px 16px;cursor:pointer;border:1.5px solid var(--ink)}'+
+        '#ezask .no{background:var(--paper);color:var(--ink)}#ezask .yes{background:var(--seal);border-color:var(--seal);color:var(--paper)}'+
+        '@keyframes ezaskin{from{opacity:0}}@keyframes ezaskpop{from{opacity:0;transform:translateY(8px) scale(.97)}}';document.head.appendChild(st);}
+      const w=document.createElement("div");w.id="ezask";w.setAttribute("role","alertdialog");w.setAttribute("aria-modal","true");w.setAttribute("aria-labelledby","ezaskH");
+      w.innerHTML='<div class="box"><h2 id="ezaskH">確定要登出嗎？</h2><p>登出後要重新輸入 PIN 碼才能同步。還沒上傳的作答會先傳完再登出。</p><div class="row"><button type="button" class="no">取消</button><button type="button" class="yes">登出</button></div></div>';
+      document.body.appendChild(w);
+      const done=v=>{w.remove();removeEventListener("keydown",key,true);res(v);if(!v)b0&&b0.focus();};
+      const key=e=>{if(e.key==="Escape"){e.preventDefault();done(false);}};
+      const b0=document.getElementById("ezOut");
+      w.querySelector(".no").onclick=()=>done(false);w.querySelector(".yes").onclick=()=>done(true);
+      w.addEventListener("click",e=>{if(e.target===w)done(false);});
+      addEventListener("keydown",key,true);w.querySelector(".no").focus();
     });
   }
   addEventListener("load",()=>setTimeout(outButton,30));

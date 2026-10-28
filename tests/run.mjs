@@ -102,18 +102,28 @@ await check("gate: switching to another PIN asks before clearing this device's a
   const pg = await device(); await pg.goto(PAGE); await pg.waitForTimeout(500);
   await typePin(pg, 1, "4821"); await settle(pg, 1500);
   const n0 = await answered(pg, KEY); assert(n0 === 3, "expected 3 answers, got " + n0);
-  await pg.click("#ezOut"); await pg.waitForTimeout(600);
+  await pg.click("#ezOut"); await pg.click("#ezask .yes"); await pg.waitForTimeout(600);
   await pg.click("#egSw"); await pg.waitForTimeout(800); await typePin(pg, 1, "6283"); await typePin(pg, 2, "6283"); await pg.waitForTimeout(1500);
   const msg = await pg.textContent("#egMsg"); assert(/會被清掉/.test(msg), "no question: " + msg);
   await pg.click("#egMsg >> text=取消"); await pg.waitForTimeout(600);
   assert(await answered(pg, KEY) === 3, "answers gone after cancel");
   await pg.ctx.close();
 });
+await check("登出 asks first; 取消 keeps you signed in", async () => {
+  const pg = await device(); await pg.goto(PAGE); await pg.waitForTimeout(500);
+  await typePin(pg, 1, "4821"); await settle(pg, 1500);
+  await pg.click("#ezOut"); await pg.waitForTimeout(200);
+  assert(await pg.locator("#ezask").count() === 1, "no confirm dialog");
+  await pg.screenshot({ path: process.env.SHOT || "/dev/null" }).catch(() => {});
+  await pg.click("#ezask .no"); await pg.waitForTimeout(300);
+  assert(await pg.evaluate(() => EZSync.connected()) && !(await gateUp(pg)), "signed out after cancel");
+  await pg.ctx.close();
+});
 await check("sync: logging out right after answering still uploads the answer", async () => {
   const pg = await device(); await pg.goto(PAGE); await pg.waitForTimeout(500);
   await typePin(pg, 1, "4821"); await settle(pg, 1500);
   await pg.evaluate(() => { show("ch2"); document.querySelector("#ch2 .quiz > .qitem .opt").click(); });
-  await pg.waitForTimeout(300); await pg.click("#ezOut"); await pg.waitForTimeout(2500);
+  await pg.waitForTimeout(300); await pg.click("#ezOut"); await pg.click("#ezask .yes"); await pg.waitForTimeout(2500);
   const f = Object.entries(gist.files).find(([n]) => n.endsWith("--" + KEY + ".json"));
   const data = JSON.parse(f[1].content).data;
   assert(data.quiz && data.quiz.ch2 && Object.keys(data.quiz.ch2).length === 1, "ch2 not uploaded: " + JSON.stringify(data.quiz));

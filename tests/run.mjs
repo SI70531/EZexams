@@ -223,6 +223,22 @@ await check("chapter-end written: AI grades from the notes, shows its own ANSWER
   assert(prompts.length === 2 && /COURSE NOTES/.test(prompts[0]) && /reference_for_reference_only/.test(prompts[0]) && /student_answer/.test(prompts[0]), "prompt lacks notes/reference: " + prompts.length + " " + prompts.map(p => p.slice(0, 80)).join(" // "));
   await pg.ctx.close();
 });
+await check("AI grading: a correct verdict is never shown as 0 points (score 0, \"5/5\" or text)", async () => {
+  for (const score of [0, "5/5", "滿分", 5]) {
+    resetWorker();
+    setGemini(body => { const t = JSON.stringify(body); const ids = [...new Set(t.match(/ch1w-\d+/g) || [])];
+      return { candidates: [{ content: { parts: [{ text: JSON.stringify(ids.map(id => ({ id, score, verdict: "correct", feedback: "完全正確", missing: [], answer_en: "e", answer_zh: "z" }))) }] } }] }; });
+    const pg = await device(); await pg.goto(U + "operating-systems/midterm/"); await pg.waitForTimeout(500);
+    await pg.click("#egSw"); await pg.waitForTimeout(800); await typePin(pg, 1, "8462"); await typePin(pg, 2, "8462"); await settle(pg, 1500);
+    const r = await pg.evaluate(async () => { show("ch1"); await new Promise(z => setTimeout(z, 300));
+      const q = document.querySelector("#ch1 .chw .exq"); const ta = q.querySelector("textarea");
+      ta.value = "a full answer"; ta.dispatchEvent(new Event("input")); q.querySelector(".grade").click();
+      for (let i = 0; i < 60 && !/完成/.test(q.querySelector(".gstat").textContent); i++) await new Promise(z => setTimeout(z, 100));
+      return [q.dataset.pts, q.querySelector(".gres").textContent]; });
+    assert(new RegExp(r[0] + "\\s*/\\s*" + r[0]).test(r[1]) && !/錯誤/.test(r[1]), JSON.stringify(score) + " → " + JSON.stringify(r));
+    await pg.ctx.close();
+  }
+});
 await check("AI grading when signed in: goes through the Worker with temperature 0 and a fixed seed", async () => {
   resetWorker(); let seen = null;
   setGemini(body => { seen = body; return { candidates: [{ content: { parts: [{ text: JSON.stringify([{ id: "x", score: 1 }]) }] } }] }; });

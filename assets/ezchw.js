@@ -77,13 +77,30 @@
 "- An empty or irrelevant answer scores 0.",
 "For EACH item also write a model answer based only on the notes, the way a strong student would write it in the exam:",
 "  answer_en: in English, as long as the question needs (a definition: 1-2 sentences; an essay: a short paragraph or list); answer_zh: the same answer in Traditional Chinese (Taiwan), keeping technical terms in English like 中斷（interrupt）.",
-"Reply with ONLY a JSON array: [{\"id\":\"...\",\"score\":0,\"verdict\":\"correct|partial|wrong\",\"feedback\":\"1-3 sentences in Traditional Chinese: what is right, what is missing or wrong\",\"missing\":[\"short English keywords the answer lacked\"],\"answer_en\":\"...\",\"answer_zh\":\"...\"}]",
+"score is a NUMBER from 0 to that item's points (e.g. 5 for a full answer worth 5 points), and it must agree with verdict: correct = full points, partial = more than 0 and less than full, wrong = 0.",
+"Reply with ONLY a JSON array: [{\"id\":\"...\",\"score\":<number>,\"verdict\":\"correct|partial|wrong\",\"feedback\":\"1-3 sentences in Traditional Chinese: what is right, what is missing or wrong\",\"missing\":[\"short English keywords the answer lacked\"],\"answer_en\":\"...\",\"answer_zh\":\"...\"}]",
 "",
 context(items),
 "",
 "ITEMS:",
 ...items.map(it=>JSON.stringify({id:it.id,points:it.pts,question:it.q,reference_for_reference_only:it.ref,student_answer:it.ans}))
     ].join("\n");
+  }
+  /* the score from an AI reply, between 0 and the question's points. Replies sometimes give the score as text
+     ("5", "5/5", "5 分", "4.5 points") or contradict themselves (verdict "correct" with score 0); the verdict
+     then wins, because the feedback the student reads is written to match it. */
+  function scoreOf(r,pts){
+    pts=+pts>0?+pts:0;
+    const raw=r&&r.score,m=typeof raw==="number"?[String(raw)]:String(raw==null?"":raw).match(/-?\d+(?:\.\d+)?/);
+    let sc=m?Number(m[0]):NaN;
+    const vd=String(r&&r.verdict||"").toLowerCase().trim();
+    if(!isFinite(sc))sc=vd==="correct"?pts:vd==="partial"?pts/2:0;
+    else if(vd==="correct"&&sc<pts)sc=pts;
+    else if(vd==="partial"&&sc<=0)sc=pts/2;
+    else if(vd==="partial"&&sc>=pts)sc=pts-0.5;
+    else if(vd==="wrong"&&sc>=pts)sc=0;
+    sc=Math.max(0,Math.min(pts,sc));
+    return Math.floor(sc*2+1e-9)/2;
   }
   function answerPrompt(items){
     return [
@@ -143,8 +160,7 @@ context(items),
         miss=list.filter(it=>!arr.some(x=>String(x.id)===it.id));
         list.forEach(it=>{
           const r=arr.find(x=>String(x.id)===it.id);if(!r)return;
-          let sc=Math.max(0,Math.min(it.pts,Number(r.score)||0));sc=Math.round(sc*2)/2;
-          const v=sc>=it.pts?"correct":sc>0?"partial":"wrong";
+          const sc=scoreOf(r,it.pts),v=sc>=it.pts?"correct":sc>0?"partial":"wrong";
           st.grade[it.id]={score:sc,verdict:v,feedback:String(r.feedback||""),missing:Array.isArray(r.missing)?r.missing.map(String).slice(0,8):[],ans:it.ans,ai:true};
           keep(it.id,r.answer_en,r.answer_zh);
           const q=document.getElementById(it.id);render(q);showAnswer(q,true);

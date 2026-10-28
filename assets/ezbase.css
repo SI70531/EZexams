@@ -208,7 +208,6 @@ body.nograde .nogradenote{display:block}
   .examtools{position:static}
   .qitem{padding:14px 14px}
 }
-@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 .exq.aigraded .selfsc,.exq.aigraded label.self{display:none}
 .quiz>h2,.chw>h2{overflow-wrap:anywhere}
 pre{max-width:100%;overflow-x:auto}

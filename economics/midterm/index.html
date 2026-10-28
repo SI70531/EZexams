@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=LXGW+WenKai+TC:wght@400;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
-<link rel="stylesheet" href="../../assets/ezbase.css?v=53299750">
+<link rel="stylesheet" href="../../assets/ezbase.css?v=4eae20cb">
 <style>
 /* Same design system as operating-systems/midterm: pill tabs, progress card on each cover, handwritten headings. */
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
@@ -964,13 +964,13 @@ DWL = D + F = 125
 <section role="tabpanel" class="view exam" id="mock-3" data-exam="mock-3" hidden><div class="vhead"><div class="pcb" data-pcb="mock-3" role="img"></div><div class="eyebrow">Mock exam 3 · 35 題</div><h1>模擬考 3</h1><p>35 題英文選擇題，題數比例和範圍跟期中考一樣（Ch1–Ch9）。建議先按「隱藏中文翻譯」、開始 60 分鐘計時。點了選項就會對答案並顯示中文解析，全部寫完最下面有各章答對率。</p></div><div class="examtools"><span class="score"></span><span class="timer"></span><button class="btn tbtn" type="button">開始 60 分鐘計時</button><button class="btn zhbtn" type="button"></button><button class="btn reset" type="button">清除作答</button></div><div class="exambody"></div><div class="report" hidden></div></section>
 </main>
 <script src="../../assets/ezsync.js?v=0487d604" data-key="econ-midterm-v1"></script>
-<script src="../../assets/ezgate.js?v=bbc552ff"></script>
+<script src="../../assets/ezgate.js?v=b3ea47b5"></script>
 <script src="quiz.js?v=3ce81650"></script>
 <script>
 (function(){
   const tt=document.getElementById("toTop");
   addEventListener("scroll",()=>tt.classList.toggle("show",scrollY>500),{passive:true});
-  tt.addEventListener("click",()=>scrollTo({top:0,behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"}));
+  tt.addEventListener("click",()=>scrollTo({top:0,behavior:"smooth"}));
 })();
 const CHN={ch1:"Ch1 十大原理",ch2:"Ch2 像經濟學家思考",ch3:"Ch3 相互依賴與貿易",ch4:"Ch4 供給與需求",ch5:"Ch5 彈性",ch6:"Ch6 政府政策",ch7:"Ch7 消費者與生產者剩餘",ch8:"Ch8 課稅的成本",ch9:"Ch9 國際貿易"};
 const VIEWS=[["home","首頁"],["ch1","Ch1 十大原理"],["ch2","Ch2 思考方式"],["ch3","Ch3 貿易"],["ch4","Ch4 供需"],["ch5","Ch5 彈性"],["ch6","Ch6 政府政策"],["ch7","Ch7 剩餘"],["ch8","Ch8 課稅"],["ch9","Ch9 國際貿易"],["|"],["sheet","總複習"],["mock-1","模擬考 1"],["mock-2","模擬考 2"],["mock-3","模擬考 3"]];

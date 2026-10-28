@@ -27,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=LXGW+WenKai+TC:wght@400;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
-<link rel="stylesheet" href="../../assets/ezbase.css?v=53299750">
+<link rel="stylesheet" href="../../assets/ezbase.css?v=4eae20cb">
 <style>
 /* Layout: the study guide as a linked list. Tabs run node to node; each cover carries a node card (state, progress, link to the next view). Same EZexams system as the OS page. */
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
@@ -1248,13 +1248,13 @@ recycle (pDlt)</div></div></div></div>
 
 </main>
 <script src="../../assets/ezsync.js?v=0487d604" data-key="ds-midterm-v1"></script>
-<script src="../../assets/ezgate.js?v=bbc552ff"></script>
+<script src="../../assets/ezgate.js?v=b3ea47b5"></script>
 <script src="quiz.js?v=5a45cbba"></script>
 <script>
 (function(){
   const tt=document.getElementById("toTop");
   addEventListener("scroll",()=>tt.classList.toggle("show",scrollY>500),{passive:true});
-  tt.addEventListener("click",()=>scrollTo({top:0,behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"}));
+  tt.addEventListener("click",()=>scrollTo({top:0,behavior:"smooth"}));
 })();
 
 const VIEWS=[["home","首頁"],["ch1","Ch1 導論"],["ch2","Ch2 搜尋"],["ch3","Ch3 鏈結串列"],["|"],["y24","2024 考古"],["y25","2025 考古"],["mock-a","模擬 A"],["mock-b","模擬 B"],["review","總複習"]];

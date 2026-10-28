@@ -73,7 +73,7 @@
 @media (max-width:560px){
   .eg-main{padding:18px 16px 16px}.eg-cells{gap:6px}.eg-cell input{font-size:20px}
 }
-@media (prefers-reduced-motion:reduce){#ezgate,.eg-ticket{transition:none}.eg-prompt::after,.eg-cells.wait .eg-cell::after{animation:none}}`;
+`;
 
   const TEXT={
     join:{prompt:"ezexams --sync",h:"輸入<em>同步碼</em>",p:"輸入你在其他裝置設定的 6 位數同步碼，就會載入同一份進度：每一科的作答、分數和錯題。",btn:"進入 EZexams",sw:"第一次使用？",swb:"建立同步碼"},
@@ -113,7 +113,7 @@
     $("#egSkip").addEventListener("click",()=>{try{sessionStorage.setItem("ezgate-skip","1");}catch(e){}close();});
     ticket.addEventListener("submit",submit);
   }
-  const RM=()=>matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const RM=()=>false;   /* always animate: Windows with "animation effects" off reports reduced motion, and the site wanted its animations anyway */
   const pop=x=>{if(!RM()&&x.animate)x.animate([{transform:"scale(.86)"},{transform:"scale(1.07)",offset:.6},{transform:"none"}],{duration:200,easing:"ease-out"});};
   function fill(g,from,digits,gi){const c=cells(g);let i=from;for(const d of digits){if(i>=6)break;c[i].value=d;c[i].classList.add("on");pop(c[i]);i++;}
     if(i>=6&&gi===0&&ticket.dataset.mode==="create")cells(cellsets[1])[0].focus();else c[Math.min(i,5)].focus();
@@ -131,7 +131,7 @@
       $("#egPrompt").textContent=t.prompt;$("#egH").innerHTML=t.h;$("#egP").textContent=t.p;$("#egGoT").textContent=t.btn;
 $("#egSwT").textContent=t.sw;$("#egSw").textContent=t.swb;
       cellsets.forEach(g=>{cells(g).forEach(x=>{x.value="";x.classList.remove("on");});g.classList.remove("bad");});say("");ticket.classList.remove("retry");};
-    if(!animate||matchMedia("(prefers-reduced-motion: reduce)").matches){apply();return;}
+    if(!animate){apply();return;}
     ticket.classList.add("flip");setTimeout(()=>{apply();ticket.classList.remove("flip");setTimeout(()=>cells(cellsets[0])[0].focus(),330);},320);
   }
   async function submit(e){

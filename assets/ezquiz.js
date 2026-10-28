@@ -130,3 +130,53 @@
   document.querySelectorAll("section.view").forEach(v=>new MutationObserver(()=>{if(!v.hidden)later();}).observe(v,{attributes:true,attributeFilter:["hidden"]}));
   update();
 })();
+
+/* 「章末練習」 pill: while you read a chapter's notes, a button at the bottom right says how many of the chapter's
+   exercises are left and jumps straight to the first one you have not done (like ChN 章末練習 on the home table).
+   It hides once the exercises are on screen. */
+(function(){
+  const css=`.ezgo{position:fixed;right:calc(20px + env(safe-area-inset-right,0px));bottom:calc(72px + env(safe-area-inset-bottom,0px));z-index:39;
+  display:flex;align-items:center;gap:8px;max-width:calc(100vw - 40px);padding:9px 14px 9px 12px;border:1.5px solid var(--ink);border-radius:999px;
+  background:var(--paper);color:var(--ink);font:700 14px var(--f-body);cursor:pointer;box-shadow:3px 3px 0 var(--hard);white-space:nowrap;
+  transition:transform .2s,opacity .2s,box-shadow .15s}
+.ezgo:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--hard)}
+.ezgo[hidden]{display:none}
+.ezgo .n{font-family:var(--f-mono);font-size:12px;font-weight:600;color:var(--paper);background:var(--seal);border-radius:999px;padding:1px 8px}
+.ezgo.done .n{background:var(--ok)}
+.ezgo svg{width:16px;height:16px;flex:none}
+@media (max-width:640px){.ezgo{right:12px;bottom:calc(66px + env(safe-area-inset-bottom,0px));padding:8px 12px;font-size:13px}}`;
+  const st=document.createElement("style");st.textContent=css;document.head.appendChild(st);
+  const b=document.createElement("button");b.type="button";b.className="ezgo";b.hidden=true;document.body.appendChild(b);
+  const cur=()=>{const v=document.querySelector("section.view:not([hidden])");return v&&/^ch\d+$/.test(v.id)?v:null;};
+  /* exercises left in a chapter: unanswered multiple choice + written answers not graded yet */
+  function left(v){
+    let n=0,t=0;
+    v.querySelectorAll(".quiz[data-quiz] > .qitem").forEach(it=>{t++;if(!it.querySelector(".opt.right,.opt.wrong"))n++;});
+    const w=v.querySelector(".chw");
+    if(w&&typeof S!=="undefined"){const x=(S.ex2||{})[w.dataset.exam]||{};w.querySelectorAll(".exq").forEach(q=>{t++;if(!((x.grade||{})[q.id]||(x.self||{})[q.id]))n++;});}
+    return {n,t};
+  }
+  function draw(){
+    const v=cur();const q=v&&v.querySelector(".quiz[data-quiz]");
+    if(!v||!q||document.documentElement.classList.contains("ezgate-on")){b.hidden=true;return;}
+    /* only while reading the notes: hidden once the exercises reach the screen */
+    if(q.getBoundingClientRect().top<innerHeight*.85){b.hidden=true;return;}
+    const {n,t}=left(v);
+    b.classList.toggle("done",!n);
+    b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>章末練習'+
+      '<span class="n">'+(n?"還有 "+n+" 題":"✓ 已完成")+'</span>';
+    b.title=n?"跳到第一題還沒寫的（共 "+t+" 題）":"這章的題目都寫完了，跳到章末練習";
+    b.hidden=false;
+  }
+  b.addEventListener("click",()=>{
+    const v=cur();if(!v)return;
+    const todo=window.EZtodo&&EZtodo(v.id);
+    if(todo&&window.EZglow){EZglow(todo);return;}
+    const q=v.querySelector(".quiz[data-quiz]");if(q){q.scrollIntoView({block:"start"});scrollBy(0,-76);}
+  });
+  let raf=0;const later=()=>{if(raf)return;raf=requestAnimationFrame(()=>{raf=0;draw();});};
+  addEventListener("scroll",later,{passive:true});addEventListener("resize",later);
+  document.addEventListener("click",()=>setTimeout(later,60));
+  document.querySelectorAll("section.view").forEach(v=>new MutationObserver(later).observe(v,{attributes:true,attributeFilter:["hidden"]}));
+  later();
+})();

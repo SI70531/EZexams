@@ -59,6 +59,7 @@
 .eg-cells.wait .eg-cell:nth-child(2)::after{animation-delay:-.15s}.eg-cells.wait .eg-cell:nth-child(3)::after{animation-delay:-.3s}
 .eg-cells.wait .eg-cell:nth-child(4)::after{animation-delay:-.45s}.eg-cells.wait .eg-cell:nth-child(5)::after{animation-delay:-.6s}.eg-cells.wait .eg-cell:nth-child(6)::after{animation-delay:-.75s}
 @keyframes egtrace{to{--eg-a:360deg}}
+.eg-cells.wait .eg-cell input,.eg-cells.lock .eg-cell input{outline:none!important}
 .eg-cells.lock .eg-cell input{border-color:var(--seal);border-bottom-width:1.5px;transition:color .18s,border-color .18s}
 .eg-cells.lock .eg-cell::before{opacity:0;transition:opacity .15s}
 .eg-cells.lock .eg-cell input.fade{color:transparent;caret-color:transparent}
@@ -141,6 +142,8 @@ $("#egSwT").textContent=t.sw;$("#egSw").textContent=t.swb;
     if(mode==="create"&&/^(\d)\1{3}$|^(0123|1234|2345|3456|4567|5678|6789|9876|8765|7654|6543|5432|4321|3210|1212|6969)$/.test(c1))return bad(cellsets[0],"這組太好猜了，換一組吧。");
     if(!window.EZSync){say("同步功能還在載入，請再按一次。","err");return;}
     busy=true;go.disabled=true;ticket.classList.remove("retry");say("連線中…");cellsets[0].classList.add("wait");
+    /* the last box keeps the "type here" frame while it has focus: let go of it while checking and animating */
+    try{const ae=document.activeElement;if(ae&&root.contains(ae))ae.blur();}catch(_){}
     try{
       await EZSync.connectCode(c1,{mode,confirm:askClear});
       cellsets[0].classList.remove("wait");

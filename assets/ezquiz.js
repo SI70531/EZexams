@@ -118,7 +118,10 @@
     const w=sec.querySelector(".chw");if(!w)return null;const x=(S.ex2||{})[w.dataset.exam]||{};
     return [...w.querySelectorAll(".exq")].find(q=>!((x.grade||{})[q.id]||(x.self||{})[q.id]))||null;
   };
-  window.EZglow=function(el){el.scrollIntoView({block:"center"});el.classList.remove("ezhere");void el.offsetWidth;el.classList.add("ezhere");};
+  /* the glow class comes off when its animation ends: a class left on an element replays the animation every time
+     its tab is shown again, which made earlier targets light up together with the new one */
+  window.EZglow=function(el){el.scrollIntoView({block:"center"});document.querySelectorAll(".ezhere").forEach(x=>x.classList.remove("ezhere"));void el.offsetWidth;el.classList.add("ezhere");};
+  document.addEventListener("animationend",e=>{const n=e.animationName,t=e.target;if(n==="ezhere")t.classList.remove("ezhere");else if(n==="wflash")t.classList.remove("wflash");else if(n==="ezsflash")t.classList.remove("ezs-flash");},true);
   let t=null;const later=()=>{clearTimeout(t);t=setTimeout(update,40);};
   ["click","input","change"].forEach(ev=>document.addEventListener(ev,later));
   new MutationObserver(later).observe(document.body,{childList:true,subtree:true});

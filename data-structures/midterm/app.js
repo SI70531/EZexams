@@ -11,7 +11,8 @@ const EXMC={y24:"y24mc",y25:"y25mc","mock-a":"m1","mock-b":"m2"};
 const MCVIEW=Object.fromEntries(Object.entries(EXMC).map(([v,k])=>[k,v]));
 const CHAPTERS=["ch1","ch2","ch3"];
 const EXAMS=[["y24","2024 考古題"],["y25","2025 考古題"],["mock-a","模擬試題 A"],["mock-b","模擬試題 B"]];
-const EXAM_DAY=new Date(2026,10,6);
+const EXAM_DAY=new Date(2026,10,6);   /* the countdown label follows this date; change it here only */
+const EXAM_TAG='<span class="cdk">EXAM '+(EXAM_DAY.getMonth()+1)+'/'+EXAM_DAY.getDate()+'</span>';
 const KEY="ds-midterm-v1";
 let S={quiz:{},exam:{}};
 try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(S,JSON.parse(raw));}catch(e){}
@@ -308,7 +309,7 @@ function renderHome(){
   const cd=document.getElementById("countdown");
   const today=new Date();today.setHours(0,0,0,0);
   const days=Math.round((EXAM_DAY-today)/86400000);
-  cd.innerHTML=days>0?'<span class="cdk">EXAM 11/6</span><b>'+days+'</b><span>天後考試</span>':days===0?'<span class="cdk">EXAM 11/6</span><b>今天</b><span>考試，加油</span>':'<span class="cdk">EXAM 11/6</span><b>考完了</b><span>辛苦了</span>';
+  cd.innerHTML=days>0?EXAM_TAG+'<b>'+days+'</b><span>天後考試</span>':days===0?EXAM_TAG+'<b>今天</b><span>考試，加油</span>':EXAM_TAG+'<b>考完了</b><span>辛苦了</span>';
   const t=document.getElementById("progTable");
   let html='<tr><th class="l">項目</th><th class="l">狀態</th></tr>';
   let next=null;

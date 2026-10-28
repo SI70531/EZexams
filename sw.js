@@ -5,12 +5,15 @@
    - Everything else (GitHub API for sync, Gemini for grading): not touched.
    On install it caches the home page, the shared assets, and every subject page linked from the home page
    (plus the scripts those pages load), so a subject works offline even before you open it. */
-const CACHE="ezexams-v1";
+/* v2: each file is now kept once, without its ?v= version stamp, so the cache no longer grows with every
+   release; installing v2 deletes the old v1 cache. Progress lives in localStorage and is not touched. */
+const CACHE="ezexams-v2";
+const bare=u=>{const x=new URL(u);x.search="";return x.href;};
 const BASE=new URL("./",self.location).href;
 
 async function precache(){
   const c=await caches.open(CACHE);
-  const grab=async u=>{try{const r=await fetch(u,{cache:"no-cache"});if(r.ok){await c.put(u,r.clone());return r;}}catch(e){}return null;};
+  const grab=async u=>{try{const r=await fetch(u,{cache:"no-cache"});if(r.ok){await c.put(bare(u),r.clone());return r;}}catch(e){}return null;};
   const home=await grab(BASE);
   if(!home)return;
   const html=await home.text();
@@ -41,10 +44,10 @@ self.addEventListener("fetch",e=>{
       const c=await caches.open(CACHE);
       try{
         const r=await fetch(req,{cache:"no-cache"});
-        if(r.ok)c.put(req,r.clone());
+        if(r.ok&&r.type==="basic")c.put(bare(req.url),r.clone());
         return r;
       }catch(err){
-        const hit=await c.match(req)||await c.match(req,{ignoreSearch:true});
+        const hit=await c.match(bare(req.url));
         if(hit)return hit;
         if(req.mode==="navigate"){const home=await c.match(BASE);if(home)return home;}
         throw err;

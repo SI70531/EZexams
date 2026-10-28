@@ -68,8 +68,10 @@
     const low=text.toLowerCase();let at=Math.min(...ts.map(t=>{const i=low.indexOf(t);return i<0?Infinity:i;}));if(!isFinite(at))at=0;
     const from=Math.max(0,at-40),to=Math.min(text.length,at+120);
     let s=(from?"…":"")+text.slice(from,to)+(to<text.length?"…":"");
-    s=esc(s);const re=new RegExp("("+ts.map(t=>reEsc(esc(t))).join("|")+")","gi");
-    return s.replace(re,"<mark>$1</mark>");
+    /* find the matches in the plain text first, then escape each piece: highlighting after escaping would split
+       entities such as &amp; when someone searches for "amp", "lt" or "gt" */
+    const re=new RegExp("("+ts.map(reEsc).join("|")+")","gi");
+    return s.split(re).map((part,i)=>i%2?"<mark>"+esc(part)+"</mark>":esc(part)).join("");
   }
   function run(){
     const q=input.value.trim();terms=q.toLowerCase().split(/\s+/).filter(Boolean);

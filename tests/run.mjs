@@ -44,6 +44,15 @@ await check("Worker: 5 wrong PINs lock that visitor out, others are unaffected",
   const other = await W("/login", { method: "POST", body: JSON.stringify({ code: "4821", mode: "join" }) }, "7.7.7.7");
   assert(other.status === 200, "other visitor " + other.status);
 });
+await check("Worker: only the site's Gemini models; IPv6 neighbours share one wrong-PIN count", async () => {
+  resetWorker();
+  const r = await (await W("/login", { method: "POST", body: JSON.stringify({ code: "4821", mode: "create" }) })).json();
+  const pro = await W("/v1beta/models/gemini-2.5-pro:generateContent?t=" + encodeURIComponent(r.token), { method: "POST", body: "{}" });
+  assert(pro.status === 404 && calls.gemini === 0, "other model " + pro.status);
+  const codes = [];
+  for (let i = 0; i < 6; i++) codes.push((await W("/login", { method: "POST", body: JSON.stringify({ code: "100" + i, mode: "join" }) }, "2001:db8:1:2::" + (i + 1).toString(16))).status);
+  assert(codes[5] === 429, "IPv6 rotation not counted: " + codes.join(","));
+});
 await check("Worker: /health and /errors answer", async () => {
   const h = await (await W("/health")).json();
   assert(h.github && h.github.ok && h.github.daysLeft > 1000 && h.gemini && h.gemini.ok, JSON.stringify(h));
@@ -127,6 +136,21 @@ await check("sync: logging out right after answering still uploads the answer", 
   const f = Object.entries(gist.files).find(([n]) => n.endsWith("--" + KEY + ".json"));
   const data = JSON.parse(f[1].content).data;
   assert(data.quiz && data.quiz.ch2 && Object.keys(data.quiz.ch2).length === 1, "ch2 not uploaded: " + JSON.stringify(data.quiz));
+  await pg.ctx.close();
+});
+await check("sync: an upload keeps answers another device made in the meantime", async () => {
+  resetWorker(); await W("/login", { method: "POST", body: JSON.stringify({ code: "4821", mode: "create" }) });
+  const pg = await device(); await pg.goto(PAGE); await pg.waitForTimeout(500);
+  await typePin(pg, 1, "4821"); await settle(pg, 1500);
+  /* this device answers ch2; before it uploads, another device answers ch3 #0 and uploads an older-stamped copy */
+  await pg.evaluate(() => { show("ch2"); document.querySelector("#ch2 .quiz > .qitem .opt").click(); });
+  await pg.waitForTimeout(300);
+  const name = Object.keys(gist.files).find(n => n.endsWith("--meta.json")).replace("meta", KEY);
+  const now = Date.now();
+  gist.files[name] = { filename: name, content: JSON.stringify({ updatedAt: now - 60000, data: { quiz: { ch3: { 0: 1 } }, qat: { ch3: { 0: now - 60000 } } } }) };
+  await pg.click("#ezOut"); await pg.click("#ezask .yes"); await pg.waitForTimeout(2500);
+  const up = JSON.parse(gist.files[name].content).data;
+  assert(up.quiz.ch2 && up.quiz.ch3 && up.quiz.ch3[0] === 1, "lost the other device's answer: " + JSON.stringify(up.quiz));
   await pg.ctx.close();
 });
 await check("merge: per question, the later answer wins", async () => {

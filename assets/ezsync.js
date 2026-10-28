@@ -187,7 +187,12 @@
           if(n<2){sessionStorage.setItem("ezsync-reload",String(n+1));location.reload();return;}
         }
         sessionStorage.removeItem("ezsync-reload");
-      }else if(localAt>(remote.updatedAt||0)){await push(key);}
+      }else if(localAt>(remote.updatedAt||0)){
+        /* this device is newer, but the cloud may still hold answers from another device that this one never saw
+           (or the two clocks disagree): merge question by question before uploading instead of overwriting */
+        const local=localStr?JSON.parse(localStr):null;
+        if(local&&sub.merge){const merged=sub.merge(local,remote.data);if(sub.sig(merged)!==sub.sig(local))set(key,JSON.stringify(merged));}
+        await push(key);}
       else{set(LS.last,String(Date.now()));emit("ok","已同步");okNow();sessionStorage.removeItem("ezsync-reload");}
     }catch(e){failed(e,"pull");retryLater(key,e);}
   }
@@ -216,7 +221,17 @@
     emit("sync","同步中…");
     try{
       set(LASTK,String(Date.now()));   /* claim the slot before sending, so another tab waits its turn */
-      await writeRemote(key,{updatedAt:at,data:JSON.parse(data)},keepalive);
+      let up=JSON.parse(data);
+      /* read the cloud copy first and merge question by question, so an upload never wipes out answers another
+         device made since this one last synced. A page that is closing (keepalive) has no time to read first;
+         the next visit's pull merges whatever that upload missed. */
+      const sub=subjects[key];
+      if(!keepalive&&sub&&sub.merge){
+        const raw=await readRemote(key);
+        if(raw){const remote=JSON.parse(raw);if(remote&&remote.data){const merged=sub.merge(up,remote.data);
+          if(sub.sig(merged)!==sub.sig(up)){up=merged;if(get(key)===data)set(key,JSON.stringify(merged));}}}
+      }
+      await writeRemote(key,{updatedAt:at,data:up},keepalive);
       if((+get(metaKey(key))||0)<=at)delete dirty[key];
       set(LS.last,String(Date.now()));emit("ok","已同步");okNow();
     }catch(e){failed(e,"push");retryLater(key,e);}

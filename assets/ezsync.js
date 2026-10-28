@@ -1,24 +1,23 @@
 /* EZSync: keeps each subject's progress in the cloud so every device sees the same state.
-   Two ways to connect (stored in this browser's localStorage, shared by all EZexams pages on this site):
-   - a sync code (default): devices that enter the same code share progress. The EZexams Worker
-     (tools/ezexams-worker.js) stores it in a private Gist with its own GitHub token, so nobody needs a token.
-   - a GitHub token (older setup): progress goes straight to a private Gist in that GitHub account.
+   Devices that sign in with the same 4-digit PIN share progress. The EZexams Worker (tools/ezexams-worker.js)
+   stores it in a private Gist with its own GitHub token, so nobody needs a token of their own.
    Each subject stores one file = {updatedAt, data}.
 
    Hooking up a subject page takes one line, placed before the page's own script:
      <script src="../../assets/ezsync.js" data-key="<the page's localStorage key>"></script>
    It watches writes to that key, merges with the cloud copy on load, and adds a sync chip to the top bar. */
 (function(){
-  const API="https://api.github.com", MARK="ezexams-progress.json";
-  const LS={tok:"ezsync-token",gist:"ezsync-gist",user:"ezsync-user",last:"ezsync-last",code:"ezsync-code",sess:"ezsync-sess"};
+  const LS={last:"ezsync-last",code:"ezsync-code",sess:"ezsync-sess"};
   const WORKER="https://ezexams-ai.ta77199ta.workers.dev";
   /* the sync code is kept for this browser tab only (sessionStorage): closing the site signs this device out, and the
      next visit asks for the code again. Progress itself stays in localStorage. */
   const store=k=>(k===LS.code||k===LS.sess)?sessionStorage:localStorage;
+  /* the old GitHub-token mode is gone: forget anything it left in this browser */
+  try{["ezsync-token","ezsync-gist","ezsync-user"].forEach(k=>localStorage.removeItem(k));}catch(e){}
   try{const old=localStorage.getItem(LS.code);if(old){if(!sessionStorage.getItem(LS.code))sessionStorage.setItem(LS.code,old);localStorage.removeItem(LS.code);}}catch(e){}
   const get=k=>{try{return store(k).getItem(k);}catch(e){return null;}};
   let internal=false;
-  const on=()=>!!(get(LS.code)||get(LS.tok));
+  const on=()=>!!get(LS.code);
   const set=(k,v)=>{internal=true;try{v==null?store(k).removeItem(k):store(k).setItem(k,v);}catch(e){}internal=false;};
   /* each PIN is its own progress: a new PIN starts from zero, and signing in with a different PIN than last time on
      this browser replaces the local progress with that PIN's (the same PIN as last time keeps local answers that
@@ -38,26 +37,9 @@
     set("ezsync-who",w);
   }
   const listeners=new Set();
-  let status={state:(get(LS.code)||get(LS.tok))?"idle":"off",msg:""};
+  let status={state:get(LS.code)?"idle":"off",msg:""};
   function emit(state,msg,code){status={state,msg:msg||"",code:code||""};listeners.forEach(f=>{try{f(status);}catch(e){}});}
 
-  async function gh(path,opt={}){
-    const tok=get(LS.tok);if(!tok)throw Object.assign(new Error("no token"),{code:"off"});
-    let r;
-    try{r=await fetch(API+path,Object.assign({},opt,{headers:Object.assign({"Authorization":"Bearer "+tok,"Accept":"application/vnd.github+json","Content-Type":"application/json"},opt.headers||{})}));}
-    catch(e){throw Object.assign(new Error(String(e&&e.message||e)),{code:"net"});}
-    if(r.ok)return r.status===204?null:r.json();
-    /* keep GitHub's own reason so the chip can say what went wrong */
-    let why="";try{const b=await r.json();why=b&&b.message||"";}catch(e){}
-    const wait=+r.headers.get("retry-after")||0,left=r.headers.get("x-ratelimit-remaining"),reset=+r.headers.get("x-ratelimit-reset")||0;
-    const err=(code)=>Object.assign(new Error(why||("HTTP "+r.status)),{code,status:r.status,why,wait:wait?wait*1000:(left==="0"&&reset?Math.max(0,reset*1000-Date.now()):0)});
-    if(r.status===401)throw err("auth");
-    if(r.status===429||(r.status===403&&(/rate limit|abuse/i.test(why)||left==="0")))throw err("rate");
-    if(r.status===403)throw err("scope");   /* the token works but may not use gists */
-    if(r.status===404)throw err("404");
-    if(r.status===422&&/too large|size/i.test(why))throw err("big");
-    throw err("http");
-  }
   /* sync code: the Worker reads and writes the Gist for us */
   /* text/plain keeps the request "simple" (no CORS preflight), which also lets a keepalive upload leave with the page */
   async function px(method,path,body){
@@ -90,46 +72,21 @@
     catch(e){if(e.code!=="login")throw e;return await fn(await session(true));}
   }
   async function readRemote(key){   /* the subject's cloud copy as a string, or null */
-    if(get(LS.code)){const t=await authed(tk=>px("GET","/sync?key="+encodeURIComponent(key)+"&t="+encodeURIComponent(tk)));return t&&t.trim()!=="{}"?t:null;}
-    const g=await readGist();return fileContent(g.files[key+".json"]);
+    if(!get(LS.code))throw Object.assign(new Error("off"),{code:"off"});
+    const t=await authed(tk=>px("GET","/sync?key="+encodeURIComponent(key)+"&t="+encodeURIComponent(tk)));return t&&t.trim()!=="{}"?t:null;
   }
   async function writeRemote(key,payload,keepalive){
-    if(get(LS.code)){await authed(async tk=>{px.keepalive=keepalive;try{await px("POST","/sync",JSON.stringify({t:tk,key,payload}));}finally{px.keepalive=false;}});return;}
-    const id=await gistId();
-    const body=JSON.stringify({files:{[key+".json"]:{content:JSON.stringify(payload)}}});
-    /* the browser refuses a keepalive request over 64 KB, so a big progress file is sent normally */
-    await gh("/gists/"+id,{method:"PATCH",keepalive:keepalive&&body.length<60000,body});
-  }
-  async function gistId(){
-    let id=get(LS.gist);if(id)return id;
-    for(let page=1;page<=10;page++){
-      const list=await gh("/gists?per_page=100&page="+page);
-      const g=list.find(x=>x.files&&x.files[MARK]);if(g){set(LS.gist,g.id);return g.id;}
-      if(list.length<100)break;
-    }
-    const g=await gh("/gists",{method:"POST",body:JSON.stringify({public:false,description:"EZexams 讀書進度（自動同步，請勿刪除）",files:{[MARK]:{content:JSON.stringify({app:"EZexams",note:"Each <key>.json file holds one subject's progress."},null,2)}}})});
-    set(LS.gist,g.id);return g.id;
-  }
-  async function readGist(){
-    let id=await gistId(),g;
-    try{g=await gh("/gists/"+id);}catch(e){if(e.code==="404"){set(LS.gist,null);id=await gistId();g=await gh("/gists/"+id);}else throw e;}
-    return g;
-  }
-  async function fileContent(f){
-    if(!f)return null;
-    if(f.truncated&&f.raw_url){const r=await fetch(f.raw_url);return r.text();}
-    return f.content;
+    if(!get(LS.code))throw Object.assign(new Error("off"),{code:"off"});
+    await authed(async tk=>{px.keepalive=keepalive;try{await px("POST","/sync",JSON.stringify({t:tk,key,payload}));}finally{px.keepalive=false;}});
   }
   function errMsg(e){
-    const c=e&&e.code,why=e&&e.why?"（GitHub："+e.why+"）":"";
-    if(c==="auth")return "金鑰無效或過期，請到首頁重新連結。";
+    const c=e&&e.code;
     if(c==="badcode")return "PIN 碼是 4 位數字。";
     if(c==="locked"){const m=Math.max(1,Math.ceil((e.wait||0)/60000));return "PIN 碼輸入錯太多次，請 "+m+" 分鐘後再試。";}
     if(c==="login")return "登入已過期，請重新輸入 PIN 碼。";
     if(c==="server")return "同步伺服器設定有問題（"+(e.why||"")+"）。作答先存在這台裝置。";
-    if(c==="scope")return "這把金鑰沒有 gist 權限"+why+"。請到首頁換一把有勾 gist 的金鑰。";
     if(c==="rate")return "同步伺服器暫時忙碌。作答已存在這台裝置，稍後會自動上傳。";
-    if(c==="big")return "進度資料太大，GitHub 拒收"+why+"。";
+    if(c==="big")return "進度資料太大，同步伺服器拒收。";
     if(c==="net")return "暫時連不上網路。作答已存在這台裝置，恢復連線後會自動上傳。";
     return "暫時無法同步"+(e&&e.status?"（HTTP "+e.status+"）":"")+"。作答已存在這台裝置，稍後會自動再試。";
   }
@@ -138,7 +95,7 @@
   /* after a failure (offline, GitHub busy or rate-limited) try again by itself: 30 s, 1, 2, 4 … up to 15 minutes */
   let retryT=null,retryN=0;
   function retryLater(key,e){
-    if(!e||e.code==="auth"||e.code==="scope"||e.code==="off"||e.code==="badcode"||e.code==="server"||e.code==="nocode"||e.code==="locked")return;
+    if(!e||e.code==="off"||e.code==="badcode"||e.code==="server"||e.code==="nocode"||e.code==="locked")return;
     clearTimeout(retryT);const ms=Math.max(e.wait||0,Math.min(15*60000,30000*Math.pow(2,retryN++)));
     retryT=setTimeout(()=>{retryT=null;pull(key,{reloadOnChange:false});},ms);
   }
@@ -150,7 +107,7 @@
   function failed(e,what){
     fails++;
     if(e.code==="off")emit("off","");
-    else if(fails<3&&!["auth","scope","badcode","server","locked"].includes(e.code))emit("dirty","同步暫時沒成功，作答已存在這台裝置，稍後會自動再試…",e.code);
+    else if(fails<3&&!["badcode","server","locked"].includes(e.code))emit("dirty","同步暫時沒成功，作答已存在這台裝置，稍後會自動再試…",e.code);
     else emit("err",errMsg(e),e.code);
     try{console.warn("[EZSync] "+what,e);}catch(_){}
     const k=what+":"+e.code+":"+(e.status||"");
@@ -259,12 +216,6 @@
       const go=()=>{const w=lastAny()+GAP-Date.now();if(w>0){sub.timer=setTimeout(go,w+Math.random()*500);return;}sub.timer=null;push(key);};   /* another tab may have uploaded meanwhile */
       sub.timer=setTimeout(go,wait()+Math.random()*500);   /* a little jitter so two tabs do not wake at the same moment */
     },
-    async connect(token){
-      token=(token||"").trim();if(!token)throw Object.assign(new Error("empty"),{code:"empty"});
-      const old=get(LS.tok);set(LS.tok,token);set(LS.gist,null);
-      try{const u=await gh("/user");set(LS.user,u.login);await gistId();emit("ok","已連結");return u.login;}
-      catch(e){set(LS.tok,old);throw e;}
-    },
     /* sync code: devices with the same code share progress; replaces a GitHub token set up before */
     /* mode "create": the code must be new; "join": it must already hold progress */
     async connectCode(code,opts={}){
@@ -280,13 +231,12 @@
       const n=this.wouldClear(code,mode);
       if(n&&opts.confirm&&!(await opts.confirm(n))){set(LS.sess,oldS);throw Object.assign(new Error("cancelled"),{code:"cancel"});}
       set(LS.code,code);
-      [LS.tok,LS.gist,LS.user].forEach(k=>set(k,null));
       startFor(code,mode==="create");
       emit("ok","已連結");return code;
     },
-    mode:()=>get(LS.code)?"code":get(LS.tok)?"token":"off",
+    mode:()=>get(LS.code)?"code":"off",
     codeHint:()=>{const c=get(LS.code)||"";return c?c.slice(0,2)+"••••":"";},
-    disconnect(){[LS.tok,LS.gist,LS.user,LS.last,LS.code,LS.sess].forEach(k=>set(k,null));emit("off","");},
+    disconnect(){[LS.last,LS.code,LS.sess].forEach(k=>set(k,null));emit("off","");},
     /* upload whatever is still waiting (used before signing out) */
     async flush(){
       const ks=Object.keys(subjects).filter(k=>dirty[k]||subjects[k].timer);
@@ -311,9 +261,8 @@
     async syncNow(){
       for(const k of Object.keys(subjects)){const sub=subjects[k];if(sub.timer){clearTimeout(sub.timer);sub.timer=null;}await pull(k);}
     },
-    async syncAll(){const ks=Object.keys(subjects);for(const k of ks)await pull(k,{reloadOnChange:false});if(!ks.length){emit("sync","同步中…");try{if(get(LS.code))await session(true);else await readGist();set(LS.last,String(Date.now()));emit("ok","已同步");}catch(e){emit("err",errMsg(e));}}},
+    async syncAll(){const ks=Object.keys(subjects);for(const k of ks)await pull(k,{reloadOnChange:false});if(!ks.length){emit("sync","同步中…");try{if(get(LS.code))await session(true);set(LS.last,String(Date.now()));emit("ok","已同步");}catch(e){emit("err",errMsg(e));}}},
     connected:()=>on(),
-    user:()=>get(LS.user),
     lastSync:()=>+get(LS.last)||0,
     status:()=>status,
     onStatus(f){listeners.add(f);f(status);return ()=>listeners.delete(f);},
@@ -415,8 +364,7 @@
       const on=window.EZSync.connected();
       a.dataset.state=on?s.state:"off";
       a.querySelector(".synclab").textContent=!on?"未同步":s.state==="sync"?"同步中":s.state==="dirty"?"待同步":s.state==="err"?"暫時離線":"已同步";
-      const needKey=s.state==="err"&&s.code==="auth";
-      a.title=!on?"只存在這台裝置。點這裡輸入 PIN 碼。":needKey?"同步失敗，點一下再試一次。":(s.msg&&s.state==="err"?s.msg+"（點一下可以馬上再試）":s.msg&&s.state==="dirty"?s.msg+"（點一下馬上上傳）":(window.EZSync.mode()==="code"?"已同步（PIN 碼 "+window.EZSync.codeHint()+"）":"已同步到 GitHub"+(window.EZSync.user()?"（@"+window.EZSync.user()+"）":""))+"。點一下立即同步。");
+      a.title=!on?"只存在這台裝置。點這裡輸入 PIN 碼。":(s.msg&&s.state==="err"?s.msg+"（點一下可以馬上再試）":s.msg&&s.state==="dirty"?s.msg+"（點一下馬上上傳）":"已同步（PIN 碼 "+window.EZSync.codeHint()+"）"+"。點一下立即同步。");
     });
   }
   function updateNote(){

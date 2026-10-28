@@ -99,7 +99,9 @@
   function fill(g,from,digits,gi){const c=cells(g);let i=from;for(const d of digits){if(i>=6)break;c[i].value=d;c[i].classList.add("on");i++;}
     if(i>=6&&gi===0&&ticket.dataset.mode==="create")cells(cellsets[1])[0].focus();else c[Math.min(i,5)].focus();}
   function say(t,cls){const m=$("#egMsg");m.className="eg-msg"+(cls?" "+cls:"");m.textContent=t;}
-  function bad(g,t){g.classList.remove("bad");void g.offsetWidth;g.classList.add("bad");say(t,"err");}
+  /* a rejected code: shake, show why, then empty the boxes so the next try starts from the first box */
+  function bad(g,t){g.classList.remove("bad");void g.offsetWidth;g.classList.add("bad");say(t,"err");
+    setTimeout(()=>{cellsets.forEach(r=>cells(r).forEach(x=>{x.value="";x.classList.remove("on");}));try{cells(cellsets[0])[0].focus();}catch(e){}},380);}
   function setMode(m,animate){
     const apply=()=>{ticket.dataset.mode=m;const t=TEXT[m];
       $("#egPrompt").textContent=t.prompt;$("#egH").innerHTML=t.h;$("#egP").textContent=t.p;$("#egGoT").textContent=t.btn;

@@ -187,6 +187,18 @@ await check("AI explanation: the right option is green even if the AI marks it w
   assert(/\bok\b/.test(r) && /mine/.test(r), "li class: " + r);
   await pg.ctx.close();
 });
+await check("章末練習 pill: shown while reading notes, jumps to the first unanswered question, hidden at the exercises", async () => {
+  const pg = await device({ skipGate: true }); await pg.goto(U + "operating-systems/midterm/#ch5"); await pg.waitForTimeout(800);
+  await pg.evaluate(() => { const its = [...document.querySelectorAll("#ch5 .quiz > .qitem")]; its.slice(0, 3).forEach(it => it.querySelector(".opt").click()); scrollTo(0, 0); });
+  await pg.waitForTimeout(400);
+  const lab = await pg.evaluate(() => { const b = document.querySelector(".ezgo"); return b && !b.hidden ? b.textContent : "hidden"; });
+  assert(/還有 \d+ 題/.test(lab), "pill: " + lab);
+  await pg.screenshot({ path: process.env.SHOT2 || "/dev/null" }).catch(() => {});
+  await pg.click(".ezgo"); await pg.waitForTimeout(500);
+  const r = await pg.evaluate(() => { const t = EZtodo("ch5"); const rc = t.getBoundingClientRect(); return [rc.top > 0 && rc.bottom < innerHeight + 200, document.querySelector(".ezgo").hidden]; });
+  assert(r[0] && r[1], "after click: " + r.join(","));
+  await pg.ctx.close();
+});
 await check("keyboard: A–D answers the question on screen, ← → moves between tabs; 減少動畫 switch works", async () => {
   const pg = await device({ skipGate: true }); await pg.goto(U + "operating-systems/midterm/#ch2"); await pg.waitForTimeout(700);
   await pg.evaluate(() => { const q = document.querySelector("#ch2 .quiz > .qitem"); q.scrollIntoView({ block: "center" }); });

@@ -218,8 +218,13 @@ document.querySelectorAll(".exam").forEach(ex=>{
     btns.forEach(b=>b.disabled=true);stat.textContent="批改中…";
     try{
       const out=await SAMPLE.json(rubricPrompt(list),{modelTier:"default"});
-      const arr=Array.isArray(out)?out:(out&&Array.isArray(out.items)?out.items:[]);
+      const arr=(Array.isArray(out)?out:(out&&Array.isArray(out.items)?out.items:[])).slice();
       let n=0;
+      /* items the reply left out are asked for once more; any still missing get keyword grading */
+      let miss=list.filter(it=>!arr.some(x=>x&&String(x.id)===it.id));
+      if(miss.length&&miss.length<list.length+1){try{const o2=await SAMPLE.json(rubricPrompt(miss),{modelTier:"default"});const a2=Array.isArray(o2)?o2:(o2&&Array.isArray(o2.items)?o2.items:[]);arr.push(...a2);}catch(e2){}}
+      miss=list.filter(it=>!arr.some(x=>x&&String(x.id)===it.id));
+      if(miss.length)kwGrade(miss);
       list.forEach(it=>{
         const r=arr.find(x=>x&&String(x.id)===it.id);if(!r)return;
         let sc=Math.max(0,Math.min(it.pts,Number(r.score)||0));sc=Math.round(sc*2)/2;
@@ -228,7 +233,7 @@ document.querySelectorAll(".exam").forEach(ex=>{
         render(document.getElementById(it.id));
       });
       save();upd();
-      stat.textContent=n?"批改完成。":"批改結果讀取失敗，請再按一次。";
+      stat.textContent=miss.length?(n?"批改完成（"+miss.length+" 題 AI 沒有回覆，改用關鍵字批改）。":"AI 沒有回覆結果，這次先用關鍵字批改。"):"批改完成。";
     }catch(e){if(window.EZAI&&EZAI.isOwn(SAMPLE)){/* keep grades Gemini already gave for unchanged answers */kwGrade(list.filter(it=>!(st.grade[it.id]&&st.grade[it.id].ai&&st.grade[it.id].ans===it.ans)));stat.textContent=EZAI.errText(e)+"這次先用關鍵字比對。";return;}SAMPLE=null;setGradingMode();kwGrade(list);stat.textContent="批改完成（關鍵字比對）。";}
     finally{btns.forEach(b=>b.disabled=false);}
   }

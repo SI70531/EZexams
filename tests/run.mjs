@@ -199,6 +199,19 @@ await check("章末練習 pill: shown while reading notes, jumps to the first un
   assert(r[0] && r[1], "after click: " + r.join(","));
   await pg.ctx.close();
 });
+await check("AI grading: an unreadable reply is retried automatically, never shown as 讀不懂", async () => {
+  resetWorker(); let n = 0;
+  setGemini(body => { n++; const txt = JSON.stringify(body); const id = (txt.match(/ch1w-\d+/) || ["?"])[0];
+    return { candidates: [{ content: { parts: [{ text: n === 1 ? "Sorry, here is my grading: {score: maybe" : "```json\n[{\"id\":\"" + id + "\",\"score\":2,\"verdict\":\"correct\",\"feedback\":\"好\",\"missing\":[]},]\n```" }] } }] }; });
+  const pg = await device(); await pg.goto(U + "operating-systems/midterm/"); await pg.waitForTimeout(500);
+  await pg.click("#egSw"); await pg.waitForTimeout(800); await typePin(pg, 1, "6194"); await typePin(pg, 2, "6194"); await settle(pg, 1500);
+  const r = await pg.evaluate(async () => { show("ch1"); await new Promise(z => setTimeout(z, 200)); const q = document.querySelector("#ch1 .chw .exq"); const ta = q.querySelector("textarea");
+    ta.value = "request, use, release"; ta.dispatchEvent(new Event("input")); q.querySelector(".grade").click();
+    for (let i = 0; i < 80 && !/完成|關鍵字/.test(q.querySelector(".gstat").textContent); i++) await new Promise(z => setTimeout(z, 100));
+    return q.querySelector(".gstat").textContent; });
+  assert(r === "批改完成。" && n === 2, `status "${r}", Gemini calls ${n}`);
+  await pg.ctx.close();
+});
 await check("keyboard: A–D answers the question on screen, ← → moves between tabs; 減少動畫 switch works", async () => {
   const pg = await device({ skipGate: true }); await pg.goto(U + "operating-systems/midterm/#ch2"); await pg.waitForTimeout(700);
   await pg.evaluate(() => { const q = document.querySelector("#ch2 .quiz > .qitem"); q.scrollIntoView({ block: "center" }); });

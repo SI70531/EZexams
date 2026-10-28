@@ -47,16 +47,16 @@
   }
   /* grading (stable) asks for the most deterministic answer Google offers: temperature 0, the single most likely
      token, a fixed seed. Explanations keep a little variety. */
-  async function call(key,model,prompt,json,stable,force){
+  async function call(key,model,prompt,json,stable,force,attempt){
     const px=viaProxy(key),q=!px&&get(LS_AUTH)==="query";
     const base=px?PROXY+"/v1beta/models/":API;
     const qs=px?"?t="+encodeURIComponent(await proxyToken(force)):q?"?key="+encodeURIComponent(key):"";
     const r=await fetchT(base+encodeURIComponent(model)+":generateContent"+qs,{method:"POST",
         headers:Object.assign({"Content-Type":"application/json"},(q||px)?{}:{"x-goog-api-key":key}),
         body:JSON.stringify({contents:[{role:"user",parts:[{text:prompt}]}],
-          generationConfig:Object.assign(stable?{temperature:0,topK:1,topP:1,seed:7}:{temperature:0.2},json?{responseMimeType:"application/json"}:{})})},120000);
+          generationConfig:Object.assign(stable?{temperature:0,topK:1,topP:1,seed:7+(attempt||0)}:{temperature:0.2},json?{responseMimeType:"application/json"}:{})})},120000);
     let body=null;try{body=await r.json();}catch(e){}
-    if(px&&r.status===401&&!force)return call(key,model,prompt,json,stable,true);   /* token expired: renew once */
+    if(px&&r.status===401&&!force)return call(key,model,prompt,json,stable,true,attempt);   /* token expired: renew once */
     if(px&&r.status===401)throw fail("login","登入已過期，請重新輸入 PIN 碼");
     if(!r.ok)throw httpErr(r,body);
     const c=body&&body.candidates&&body.candidates[0];
@@ -68,14 +68,15 @@
   /* try the remembered model first, then the others: a retired name moves on for good, an overloaded model (503)
      or one whose free quota is used up (429) only for this request. If every model is busy, wait a moment and go round once more. */
   const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-  async function run(key,prompt,json,stable){
+  async function run(key,prompt,json,stable,attempt){
     let saved=get(LS_MODEL);
     let last;
     for(let round=0;round<2;round++){
       if(round)await sleep(4000);
-      const order=saved?[saved,...MODELS.filter(m=>m!==saved)]:MODELS;
+      let order=saved?[saved,...MODELS.filter(m=>m!==saved)]:MODELS;
+      if(attempt)order=order.slice(attempt%order.length).concat(order.slice(0,attempt%order.length));   /* a retry starts on another model */
       for(const m of order){
-        try{const t=await call(key,m,prompt,json,stable);return t;}
+        try{const t=await call(key,m,prompt,json,stable,false,attempt);return t;}
         catch(e){
           last=e;
           if(e.code==="no_model"){if(m===saved){saved=null;set(LS_MODEL,null);}continue;}
@@ -89,13 +90,28 @@
     }
     throw last||fail("network");
   }
+  /* read the JSON out of a reply even when it comes wrapped in a code fence, with words around it, curly quotes
+     or trailing commas */
   function parse(text){
-    let t=text.trim().replace(/^```(?:json)?\s*/i,"").replace(/```\s*$/,"");
-    try{return JSON.parse(t);}catch(e){}
-    const a=t.indexOf("["),o=t.indexOf("{");const s=a<0?o:o<0?a:Math.min(a,o);
+    let t=String(text||"").replace(/^\uFEFF/,"").trim();
+    const fence=t.match(/```(?:json)?\s*([\s\S]*?)```/i);if(fence)t=fence[1].trim();
+    const tries=[t];
+    const a=t.indexOf("["),o=t.indexOf("{");const st=a<0?o:o<0?a:Math.min(a,o);
     const end=Math.max(t.lastIndexOf("]"),t.lastIndexOf("}"));
-    if(s>=0&&end>s){try{return JSON.parse(t.slice(s,end+1));}catch(e){}}
+    if(st>=0&&end>st)tries.push(t.slice(st,end+1));
+    for(const x of tries.slice()){tries.push(x.replace(/[\u201C\u201D]/g,'"').replace(/,\s*([\]}])/g,"$1"));}
+    for(const x of tries){try{return JSON.parse(x);}catch(e){}}
     throw fail("invalid_json");
+  }
+  /* a reply that cannot be read is asked for again (up to 3 times, the later tries on another model with another
+     seed), so 「AI 回覆的格式讀不懂」 practically never reaches the page */
+  async function runJson(key,p,stable){
+    let last;
+    for(let at=0;at<3;at++){
+      try{return parse(await run(key,p,true,stable,at));}
+      catch(e){last=e;if(e.code!=="invalid_json"&&e.code!=="empty_completion")throw e;}
+    }
+    throw last;
   }
 
   const OWN=new WeakSet();
@@ -124,7 +140,7 @@
     sampler(opt={}){
       const key=myKey();   /* "" = go through the proxy */
       const hi=fn=>async p=>{busyHi++;try{return await fn(p);}finally{busyHi--;lastHi=Date.now();}};
-      const st=!opt.low,j=p=>run(key,p,true,st).then(parse),t=p=>run(key,p,false,st);
+      const st=!opt.low,j=p=>runJson(key,p,st),t=p=>run(key,p,false,st);
       const s=opt.low?{json:j,text:t}:{json:hi(j),text:hi(t)};
       OWN.add(s);return s;
     },
@@ -137,7 +153,7 @@
       if(c==="region")return "Google 不提供這個地區使用 Gemini API。";
       if(c==="busy")return "Gemini 的免費模型現在都太忙（Google 端暫時滿載），過幾分鐘再按一次。";
       if(c==="rate_limited")return "免費額度暫時用完（每分鐘約 10 次），過一兩分鐘再按。";
-      if(c==="invalid_json"||c==="empty_completion")return "AI 回覆的格式讀不懂，再按一次通常就好。";
+      if(c==="invalid_json"||c==="empty_completion")return "AI 連續三次都沒有給出完整的結果。";
       if(c==="empty")return "請先貼上金鑰。";
       if(c==="login")return (e.message&&e.message!==c?e.message:"先登入 PIN 碼才能使用 AI 批改")+"（右上角「登入」）。";
       if(c==="timeout")return "連線逾時，Google 一直沒有回應。可能是網路不穩、VPN，或學校／公司網路、擋廣告外掛擋掉了 Google API。換個網路（例如手機熱點）再試一次。";

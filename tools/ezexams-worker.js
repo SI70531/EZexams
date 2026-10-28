@@ -6,8 +6,8 @@
       Each file is "<first 24 hex of SHA-256(code)>--<subject key>.json", so the codes themselves are never stored.
    Only pages from ALLOWED may use it.
    Secrets (Settings → Variables and Secrets): GEMINI_KEY, GITHUB_TOKEN; optional GIST_ID to pin the Gist.
-   Deployed by .github/workflows/worker.yml with tools/wrangler.toml, which places it in a US region:
-   Google does not offer Gemini in Hong Kong, where Taiwanese visitors are often served from. */
+   Deployed by .github/workflows/worker.yml with tools/wrangler.toml. Google does not offer Gemini in Hong Kong, where
+   Taiwanese visitors are often served from, so the Gemini call goes through the GeminiRelay Durable Object in North America. */
 const ALLOWED = ["https://si70531.github.io"];
 const MAX_BODY = 1000000;
 const MARK = "ezexams-sync-codes.json";
@@ -39,10 +39,15 @@ export default {
       if (!env.GEMINI_KEY) return fail(500, "INTERNAL", "The Worker has no GEMINI_KEY secret yet");
       const body = await req.text();
       if (body.length > 200000) return fail(413, "INVALID_ARGUMENT", "Request too large");
-      const r = await fetch("https://generativelanguage.googleapis.com/v1beta/models/" + m[1] + ":generateContent", {
-        method: "POST", headers: { "Content-Type": "application/json", "x-goog-api-key": env.GEMINI_KEY }, body,
-      });
-      return new Response(r.body, { status: r.status, headers: { ...cors, "Content-Type": r.headers.get("Content-Type") || "application/json" } });
+      const target = "https://generativelanguage.googleapis.com/v1beta/models/" + m[1] + ":generateContent";
+      /* Google refuses Gemini to some places (e.g. Hong Kong, where Taiwanese visitors are often served from),
+         so the call to Google is made from a Durable Object pinned to North America. */
+      let r;
+      if (env.RELAY) {
+        const stub = env.RELAY.get(env.RELAY.idFromName("gemini-relay-us"), { locationHint: "enam" });
+        r = await stub.fetch("https://relay/" + encodeURIComponent(target), { method: "POST", body });
+      } else r = await callGemini(env, target, body);
+      return new Response(r.body, { status: r.status, headers: { ...cors, "Content-Type": r.headers.get("Content-Type") || "application/json", "X-EZ-Colo": (req.cf && req.cf.colo) || "" } });
     }
 
     /* ---------- 2. Sync ---------- */
@@ -82,6 +87,19 @@ export default {
     return fail(404, "NOT_FOUND", "Unknown path");
   },
 };
+
+function callGemini(env, target, body) {
+  return fetch(target, { method: "POST", headers: { "Content-Type": "application/json", "x-goog-api-key": env.GEMINI_KEY }, body });
+}
+/* Durable Object that makes the Gemini call from North America (see wrangler.toml for the binding) */
+export class GeminiRelay {
+  constructor(state, env) { this.env = env; }
+  async fetch(req) {
+    const target = decodeURIComponent(new URL(req.url).pathname.slice(1));
+    if (!target.startsWith("https://generativelanguage.googleapis.com/")) return new Response("bad target", { status: 400 });
+    return callGemini(this.env, target, await req.text());
+  }
+}
 
 async function sha(s) {
   const d = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));

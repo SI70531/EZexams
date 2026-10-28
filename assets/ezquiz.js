@@ -180,3 +180,30 @@
   document.querySelectorAll("section.view").forEach(v=>new MutationObserver(later).observe(v,{attributes:true,attributeFilter:["hidden"]}));
   later();
 })();
+
+/* home progress table: past-exam / mock-exam / assignment rows get the same status line as chapter rows
+   (written d/n, ✓ 完成 or 未完成), so a finished one turns green too */
+(function(){
+  const t=document.getElementById("progTable");if(!t)return;
+  function count(v){
+    let n=0,d=0;
+    v.querySelectorAll(".quiz[data-quiz] > .qitem, .exambody > .qitem").forEach(it=>{n++;if(it.querySelector(".opt.right,.opt.wrong,.opt.pick"))d++;});
+    v.querySelectorAll(".exq").forEach(q=>{n++;const g=q.querySelector(".gres");const cb=q.querySelector(".self input");if((g&&!g.hidden&&!g.classList.contains("stale"))||(cb&&cb.checked))d++;});
+    return {n,d};
+  }
+  let busy=false;
+  function deco(){
+    if(busy)return;busy=true;
+    try{t.querySelectorAll("tr").forEach(tr=>{
+      const b=tr.querySelector("td button[data-go]");if(!b||/^ch\d+$/.test(b.dataset.go))return;
+      const v=document.getElementById(b.dataset.go);if(!v||!v.classList.contains("view"))return;
+      const td=tr.children[1];if(!td||td.querySelector(".pxsub"))return;
+      const {n,d}=count(v);if(!n)return;
+      const s=document.createElement("span");s.className="psub pxsub";
+      s.innerHTML='<span>已寫 '+d+'/'+n+' 題</span>'+(d>=n?'<span class="pok">✓ 完成</span>':'<span class="ptodo">未完成</span>');
+      td.appendChild(s);
+    });}finally{busy=false;}
+  }
+  new MutationObserver(()=>deco()).observe(t,{childList:true,subtree:true});
+  deco();
+})();

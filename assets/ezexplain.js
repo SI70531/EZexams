@@ -124,10 +124,11 @@ x.q.e?"TEACHER'S SHORT NOTE (use it as the ground truth): "+x.q.e:"",
     let sig,html;
     if(c){
       const os=[...it.querySelectorAll(".opt[data-oi]")];
-      sig="r:"+x.id+":"+os.map(o=>o.dataset.oi+o.querySelector(".ab").textContent).join("");
+      sig="r2:"+x.id+":"+os.map(o=>o.dataset.oi+o.querySelector(".ab").textContent).join("");
       html='<div class="aih">AI 解析</div>'+(c.mistake?'<p class="aimis"><b>你選 ('+letterOf(it,x.pick)+') 錯在：</b>'+esc(c.mistake)+'</p>':'')+
-        '<ul>'+os.map(o=>{const a=c.opts[o.dataset.oi];if(!a)return "";const L=o.querySelector(".ab").textContent.trim();
-          return '<li class="'+(a.ok?"ok":"no")+(o.dataset.oi===String(x.pick)?" mine":"")+'"><span class="ab">'+L+'</span><span>'+(a.ok?"<b>正確。</b>":"")+esc(a.why)+'</span></li>';}).join("")+'</ul>'+
+        /* right or wrong comes from the answer key, not from the AI's own "correct" flag (it sometimes gets it wrong) */
+        '<ul>'+os.map(o=>{const a=c.opts[o.dataset.oi];if(!a)return "";const L=o.querySelector(".ab").textContent.trim(),ok=o.dataset.oi===String(x.q.a);
+          return '<li class="'+(ok?"ok":"no")+(o.dataset.oi===String(x.pick)?" mine":"")+'"><span class="ab">'+L+'</span><span>'+(ok?"<b>正確。</b>":"")+esc(a.why)+'</span></li>';}).join("")+'</ul>'+
         (c.point?'<p class="aipt">重點：'+esc(c.point)+'</p>':'');
     }else if(PEND[x.id]){sig="p:"+x.id;html='<div class="aih">AI 解析</div><span class="aimsg">AI 分析中…</span>';}
     else if(QD.has(x.id)){const m=WAITMSG&&Q[0]&&Q[0].x.id===x.id?WAITMSG:"排隊中，前面的題目分析完就輪到這題…";sig="q:"+x.id+m;html='<div class="aih">AI 解析</div><span class="aimsg">'+m+'</span>';}

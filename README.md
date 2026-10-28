@@ -19,6 +19,7 @@ assets/
   ezbase.css    styles shared by all subject pages
   ezsync.js     cross-device sync (4-digit PIN through the Worker, or an older GitHub token)
   ezgate.js     entry gate that asks for the 4-digit PIN before the site opens
+  ezfx.js       interaction layer (UI only): reveal on scroll, ripples, answer feedback, confetti
   ezai.js       free AI grading with a Gemini API key
   ezexplain.js  AI explanation for multiple-choice answers (what went wrong + all four options)
   ezplan.js     N-day study plan

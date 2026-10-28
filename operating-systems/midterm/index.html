@@ -2336,6 +2336,11 @@ function rubricPrompt(items){
   return [
 "You are grading answers to an Operating Systems midterm exam (Silberschatz, Operating System Concepts). The exam is normally answered by hand in English.",
 "The student may answer in English OR Traditional Chinese, or a mix. Both are fully acceptable: judge only the concepts, keywords, numbers and steps, never the language, spelling or grammar.",
+"Scoring procedure (follow it the same way every time, so the same answer always gets the same score):",
+"1. Split the reference answer into its key points (ideas, keywords, numbers, steps) and give each an equal share of the item's points.",
+"2. For each key point decide only: present and correct (full share), partly there or vaguely stated (half share), missing or wrong (0).",
+"3. Add the shares and round DOWN to the nearest 0.5. Do not add credit for effort, length or style, and do not take off for extra correct details.",
+"4. Example: a 4-point item whose reference has 4 key points, with 3 correct and 1 missing, scores 3; with 2 correct and 2 vaguely stated, scores 3; with 1 correct, scores 1.",
 "Grading rules:",
 "- Compare against the reference answer. Award points for each key idea/keyword present and correct; deduct for missing or wrong ones.",
 "- List questions: give proportional credit per correct item.",

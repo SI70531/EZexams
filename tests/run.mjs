@@ -151,6 +151,19 @@ await check("AI grading without signing in falls back to keyword grading", async
   await pg.ctx.close();
 });
 
+await check("AI grading when signed in: goes through the Worker with temperature 0 and a fixed seed", async () => {
+  resetWorker(); let seen = null;
+  setGemini(body => { seen = body; return { candidates: [{ content: { parts: [{ text: JSON.stringify([{ id: "x", score: 1 }]) }] } }] }; });
+  const pg = await device(); await pg.goto(U + "operating-systems/midterm/"); await pg.waitForTimeout(500);
+  await pg.click("#egSw"); await pg.waitForTimeout(800); await typePin(pg, 1, "3917"); await typePin(pg, 2, "3917"); await settle(pg, 1500);
+  await pg.evaluate(async () => { show("ch1"); const q = document.querySelector("#ch1 .chw .exq"); const ta = q.querySelector("textarea");
+    ta.value = "resource allocator and control program"; ta.dispatchEvent(new Event("input")); q.querySelector(".grade").click();
+    for (let i = 0; i < 50 && !/完成/.test(q.querySelector(".gstat").textContent); i++) await new Promise(z => setTimeout(z, 100)); });
+  const g = seen && seen.generationConfig || {};
+  assert(g.temperature === 0 && g.seed === 7 && g.topK === 1, "generationConfig " + JSON.stringify(g));
+  assert(/Scoring procedure/.test(JSON.stringify(seen)), "rubric procedure missing from the prompt");
+  await pg.ctx.close();
+});
 await check("keyboard: A–D answers the question on screen, ← → moves between tabs; 減少動畫 switch works", async () => {
   const pg = await device({ skipGate: true }); await pg.goto(U + "operating-systems/midterm/#ch2"); await pg.waitForTimeout(700);
   await pg.evaluate(() => { const q = document.querySelector("#ch2 .quiz > .qitem"); q.scrollIntoView({ block: "center" }); });

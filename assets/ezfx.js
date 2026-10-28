@@ -88,8 +88,11 @@
     if(!el||el.dataset.fxTyped)return;el.dataset.fxTyped=1;
     const full=el.textContent;if(!full.trim()||full.length>60)return;
     el.textContent="";el.classList.add("fx-typing");let i=0;
-    const step=()=>{el.textContent=full.slice(0,++i);if(i<full.length)setTimeout(step,28+Math.random()*40);else setTimeout(()=>el.classList.remove("fx-typing"),500);};
-    setTimeout(step,250);
+    /* about a person's typing pace: 90–170 ms a key, a short pause after a space or punctuation, the caret
+       blinking a moment before and after */
+    const gap=ch=>90+Math.random()*80+(/[\s·,.:/~-]/.test(ch)?110:0);
+    const step=()=>{el.textContent=full.slice(0,++i);if(i<full.length)setTimeout(step,gap(full[i-1]));else setTimeout(()=>el.classList.remove("fx-typing"),1200);};
+    setTimeout(step,500);
   }
   document.querySelectorAll(".hero .prompt").forEach(type);
 

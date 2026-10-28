@@ -1,12 +1,13 @@
 """Self-host the web fonts: downloads the Google Fonts CSS and every font file it points to into assets/fonts/,
-writes assets/fonts/fonts.css with local URLs (keeping each file's unicode-range, so a page still downloads only the
+(Iansui 芫荽 is the display font: a handwriting-style font that follows Taiwan's standard character forms,
+unlike LXGW WenKai TC, which drew e.g. 輸 with the 刂 form.) Writes assets/fonts/fonts.css with local URLs (keeping each file's unicode-range, so a page still downloads only the
 slices of the Chinese fonts it actually uses), and points every page at it instead of fonts.googleapis.com.
 Run by .github/workflows/fonts.yml (needs network access to Google Fonts). Re-running is safe."""
 import hashlib, os, re, sys, urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "assets", "fonts")
-FAMILIES = ("family=Noto+Sans+TC:wght@400;500;700&family=LXGW+WenKai+TC:wght@400;700"
+FAMILIES = ("family=Noto+Sans+TC:wght@400;500;700&family=Iansui"
             "&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap")
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
 PAGES = ["index.html", "statistics/midterm/index.html", "operating-systems/midterm/index.html",

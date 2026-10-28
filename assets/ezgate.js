@@ -25,7 +25,7 @@
 .eg-prompt::after{content:"";display:inline-block;width:.55em;height:1.05em;margin-left:4px;vertical-align:-2px;background:var(--brass);animation:egblink 1.1s steps(1) infinite}
 @keyframes egblink{50%{opacity:0}}
 .eg-h{font-family:var(--f-display);font-weight:700;font-size:clamp(28px,6vw,38px);line-height:1.2;margin:10px 0 6px}
-.eg-h em{font-style:normal;color:var(--seal)}
+.eg-h em{font-style:normal;color:var(--seal)}.eg-h em.ok{color:var(--ok)}
 .eg-p{margin:0 0 18px;color:var(--ink70);font-size:14.5px;line-height:1.7}
 .eg-lab{display:flex;justify-content:space-between;align-items:center;font-family:var(--f-mono);font-size:12px;color:var(--muted);margin:0 0 6px;letter-spacing:.04em}
 .eg-eye{border:0;background:none;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:4px;font:inherit;padding:2px}
@@ -76,8 +76,8 @@
 `;
 
   const TEXT={
-    join:{prompt:"ezexams --sync",h:"輸入 <em>PIN 碼</em>",p:"輸入你的 4 位數 PIN 碼，就會載入這組 PIN 碼的進度：每一科的作答、分數和錯題。",btn:"進入 EZexams",sw:"第一次使用？",swb:"建立 PIN 碼"},
-    create:{prompt:"ezexams --new",h:"建立 <em>PIN 碼</em>",p:"自己設定一組 4 位數 PIN 碼，輸入兩次確認。新的 PIN 碼從 0 開始；之後每台裝置輸入同一組，進度就會同步。避開 1234、0000 這種好猜的。",btn:"建立並進入",sw:"已經有 PIN 碼？",swb:"輸入 PIN 碼"}
+    join:{prompt:"ezexams --sync",h:"輸入 PIN 碼",p:"輸入你的 4 位數 PIN 碼，就會載入這組 PIN 碼的進度：每一科的作答、分數和錯題。",btn:"進入 EZexams",sw:"第一次使用？",swb:"建立 PIN 碼"},
+    create:{prompt:"ezexams --new",h:"建立 PIN 碼",p:"自己設定一組 4 位數 PIN 碼，輸入兩次確認。新的 PIN 碼從 0 開始；之後每台裝置輸入同一組，進度就會同步。避開 1234、0000 這種好猜的。",btn:"建立並進入",sw:"已經有 PIN 碼？",swb:"輸入 PIN 碼"}
   };
   let root=null,ticket=null,cellsets=[],opened=false,opts={};
   const $=s=>root.querySelector(s);
@@ -190,7 +190,7 @@ $("#egSwT").textContent=t.sw;$("#egSw").textContent=t.swb;
     box.innerHTML='<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
     ticket.appendChild(box);
     const glow=$(".eg-glow");glow.style.setProperty("--gx",(cx-tr.left)+"px");glow.style.setProperty("--gy",(cy-tr.top)+"px");
-    swap($("#egH"),mode==="create"?"PIN 碼<em>建立好了</em>":"登入<em>成功</em>");
+    swap($("#egH"),mode==="create"?"PIN 碼<em class=\"ok\">建立好了</em>":"登入<em class=\"ok\">成功</em>");
     swap($("#egP"),mode==="create"?"全新的進度，從 0 開始。之後每台裝置輸入同一組 PIN 碼，進度就會同步。":"已載入這組 PIN 碼的進度，馬上進入。");
     if(RM()||!box.animate){all.forEach(x=>x.style.visibility="hidden");box.style.opacity=1;box.style.borderColor="var(--ok)";box.querySelector("path").style.strokeDashoffset=0;glow.style.opacity=1;await wait(900);return;}
     await wait(160);

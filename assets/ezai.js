@@ -87,6 +87,7 @@
   }
 
   const OWN=new WeakSet();
+  let busyHi=0,lastHi=0;
   window.EZAI={
     key:()=>get(LS_KEY),
     connected:()=>true,   /* always: the proxy works without a key */
@@ -106,11 +107,17 @@
     },
     disconnect(){set(LS_KEY,null);set(LS_MODEL,null);set(LS_AUTH,null);set(LS_BAD,null);},
     rejected:()=>!!get(LS_BAD),
-    sampler(){
+    /* sampler({low:true}) is for background work (multiple-choice explanations): it waits while written answers
+       are being graded. Grading itself (the default) goes first. */
+    sampler(opt={}){
       const key=myKey();   /* "" = go through the proxy */
-      const s={json:async(prompt)=>parse(await run(key,prompt,true)),text:(prompt)=>run(key,prompt,false)};
+      const hi=fn=>async p=>{busyHi++;try{return await fn(p);}finally{busyHi--;lastHi=Date.now();}};
+      const j=p=>run(key,p,true).then(parse),t=p=>run(key,p,false);
+      const s=opt.low?{json:j,text:t}:{json:hi(j),text:hi(t)};
       OWN.add(s);return s;
     },
+    /* true while a grading request is running, and for 3 s after (a 批改全部 may send the next one) */
+    gradingBusy:()=>busyHi>0||Date.now()-lastHi<3000,
     isOwn:s=>!!s&&OWN.has(s),
     errText(e){
       const c=e&&e.code,why=e&&e.message&&e.message!==c?"（"+e.message.slice(0,160)+"）":"";

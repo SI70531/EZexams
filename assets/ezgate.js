@@ -11,10 +11,10 @@
   font-family:var(--f-body);color:var(--ink);transition:opacity .45s ease,transform .45s ease}
 #ezgate.out{opacity:0;transform:translateY(-14px);pointer-events:none}
 #ezgate *{box-sizing:border-box}
-.eg-wrap{width:min(100%,640px);perspective:1400px}
+.eg-wrap{width:min(100%,520px);perspective:1400px}
 .eg-brand{display:flex;align-items:center;gap:10px;margin:0 0 18px;font-family:var(--f-mono);font-size:13px;font-weight:600;color:var(--ink)}
 .eg-brand .mk{display:grid;place-items:center;width:32px;height:32px;border-radius:7px;background:var(--ink);color:var(--bg);font-size:12px}
-.eg-ticket{position:relative;display:grid;grid-template-columns:1fr 132px;background:var(--paper);border:1.5px solid var(--ink);border-radius:12px;box-shadow:6px 6px 0 var(--hard);
+.eg-ticket{position:relative;display:block;background:var(--paper);border:1.5px solid var(--ink);border-radius:12px;box-shadow:6px 6px 0 var(--hard);
   transition:transform .32s ease;transform-style:preserve-3d}
 .eg-ticket.flip{transform:rotateY(90deg)}
 .eg-main{padding:24px 26px 20px;min-width:0}
@@ -25,7 +25,6 @@
 .eg-h{font-family:var(--f-display);font-weight:700;font-size:clamp(28px,6vw,38px);line-height:1.2;margin:10px 0 6px}
 .eg-h em{font-style:normal;color:var(--seal)}
 .eg-p{margin:0 0 18px;color:var(--ink70);font-size:14.5px;line-height:1.7}
-.eg-legacy{margin:-8px 0 16px;padding:8px 12px;border-left:3px solid var(--warn);background:var(--warn-soft);color:var(--ink70);font-size:13px}
 .eg-lab{display:flex;justify-content:space-between;align-items:center;font-family:var(--f-mono);font-size:12px;color:var(--muted);margin:0 0 6px;letter-spacing:.04em}
 .eg-eye{border:0;background:none;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:4px;font:inherit;padding:2px}
 .eg-eye svg{width:16px;height:16px}.eg-eye[aria-pressed="true"]{color:var(--indigo)}
@@ -47,33 +46,21 @@
 .eg-links{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 14px;margin:14px 0 0;padding-top:12px;border-top:1.5px dashed var(--line);font-size:13px;color:var(--muted)}
 .eg-link{border:0;background:none;padding:0;font:inherit;font-weight:600;color:var(--indigo);cursor:pointer;text-decoration:underline;text-decoration-color:var(--line-strong);text-underline-offset:3px}
 .eg-link:hover{color:var(--seal);text-decoration-color:var(--seal)}
-.eg-stub{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:16px 8px;border-left:2px dashed var(--line-strong);background:var(--indigo-soft);border-radius:0 11px 11px 0;font-family:var(--f-mono);text-align:center}
-.eg-stub::before,.eg-stub::after{content:"";position:absolute;left:-12px;width:22px;height:22px;border-radius:50%;background:var(--bg);border:1.5px solid var(--ink)}
-.eg-stub::before{top:-12px;clip-path:inset(50% 0 0 0)}.eg-stub::after{bottom:-12px;clip-path:inset(0 0 50% 0)}
-.eg-stub .k{font-size:10.5px;color:var(--muted);letter-spacing:.1em}
-.eg-stub .v{font-size:40px;font-weight:700;color:var(--indigo);line-height:1}
-.eg-stub .s{font-size:11px;color:var(--muted)}
-.eg-stub .bar{margin-top:12px;width:70%;height:34px;background:repeating-linear-gradient(90deg,var(--ink) 0 2px,transparent 2px 4px,var(--ink) 4px 5px,transparent 5px 8px);opacity:.55}
-.eg-seal{position:absolute;right:22px;top:50%;width:104px;height:104px;margin-top:-52px;border:3px double var(--seal);border-radius:50%;display:grid;place-items:center;
+.eg-seal{position:absolute;right:22px;top:18px;width:104px;height:104px;border:3px double var(--seal);border-radius:50%;display:grid;place-items:center;
   font-family:var(--f-display);font-weight:700;font-size:22px;color:var(--seal);background:color-mix(in srgb,var(--paper) 70%,transparent);opacity:0;transform:scale(2.2) rotate(-28deg);pointer-events:none}
 .eg-seal small{display:block;font-family:var(--f-mono);font-size:9.5px;font-weight:600;letter-spacing:.12em;margin-top:2px;text-align:center}
 .eg-ticket.stamped .eg-seal{animation:egstamp .42s cubic-bezier(.2,1.4,.4,1) forwards}
 @keyframes egstamp{to{opacity:.92;transform:scale(1) rotate(-14deg)}}
 .eg-foot{margin:16px 2px 0;font-family:var(--f-mono);font-size:11.5px;color:var(--muted);text-align:center}
 @media (max-width:560px){
-  .eg-ticket{grid-template-columns:1fr}
-  .eg-stub{order:-1;flex-direction:row;gap:10px;padding:10px 14px;border-left:0;border-bottom:2px dashed var(--line-strong);border-radius:11px 11px 0 0;justify-content:flex-start}
-  .eg-stub::before,.eg-stub::after{left:auto;top:auto;bottom:-12px}
-  .eg-stub::before{left:-12px;clip-path:inset(0 0 0 50%)}.eg-stub::after{right:-12px;clip-path:inset(0 50% 0 0)}
-  .eg-stub .v{font-size:24px}.eg-stub .bar{margin:0 0 0 auto;width:72px;height:22px}
   .eg-main{padding:18px 16px 16px}.eg-cells{gap:6px}.eg-cell input{font-size:20px}
-  .eg-seal{right:14px;top:auto;bottom:90px;width:88px;height:88px;margin:0;font-size:19px}
+  .eg-seal{right:12px;top:12px;width:84px;height:84px;font-size:18px}
 }
 @media (prefers-reduced-motion:reduce){#ezgate,.eg-ticket{transition:none}.eg-prompt::after{animation:none}.eg-ticket.stamped .eg-seal{animation:none;opacity:.92;transform:rotate(-14deg)}}`;
 
   const TEXT={
-    join:{prompt:"ezexams --sync",h:"輸入<em>同步碼</em>",p:"輸入你在其他裝置設定的 6 位數同步碼，就會載入同一份進度：每一科的作答、分數和錯題。",btn:"進入 EZexams",k:"SYNC",v:"6",s:"位數字",sw:"第一次使用？",swb:"建立同步碼"},
-    create:{prompt:"ezexams --new",h:"建立<em>同步碼</em>",p:"自己設定一組 6 位數同步碼，輸入兩次確認。之後每台裝置輸入同一組，進度就會同步。避開 123456、生日這種好猜的。",btn:"建立並進入",k:"NEW",v:"6",s:"位數字",sw:"已經有同步碼？",swb:"輸入同步碼"}
+    join:{prompt:"ezexams --sync",h:"輸入<em>同步碼</em>",p:"輸入你在其他裝置設定的 6 位數同步碼，就會載入同一份進度：每一科的作答、分數和錯題。",btn:"進入 EZexams",sw:"第一次使用？",swb:"建立同步碼"},
+    create:{prompt:"ezexams --new",h:"建立<em>同步碼</em>",p:"自己設定一組 6 位數同步碼，輸入兩次確認。之後每台裝置輸入同一組，進度就會同步。避開 123456、生日這種好猜的。",btn:"建立並進入",sw:"已經有同步碼？",swb:"輸入同步碼"}
   };
   let root=null,ticket=null,cellsets=[],opened=false,opts={};
   const $=s=>root.querySelector(s);
@@ -86,13 +73,12 @@
     root.innerHTML='<div class="eg-wrap"><div class="eg-brand"><span class="mk">EZ</span>EZexams 考試衝刺</div>'+
       '<form class="eg-ticket" data-mode="join" novalidate autocomplete="off"><div class="eg-main">'+
         '<div class="eg-prompt" id="egPrompt"></div><h1 class="eg-h" id="egH"></h1><p class="eg-p" id="egP"></p>'+
-        '<p class="eg-legacy" id="egLegacy" hidden>這台裝置之前用 GitHub 金鑰同步。設定同步碼之後會改用同步碼，這台裝置的進度會一起帶過去。</p>'+
         '<div class="eg-lab"><span>同步碼</span><button type="button" class="eg-eye" id="egEye" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span>顯示</span></button></div>'+
         row(1)+'<div class="eg-confirm"><div class="eg-lab"><span>再輸入一次</span></div>'+row(2)+'</div>'+
         '<button class="eg-go" type="submit" id="egGo"><span id="egGoT"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>'+
         '<p class="eg-msg" id="egMsg" role="status"></p>'+
         '<div class="eg-links"><span><span id="egSwT"></span> <button type="button" class="eg-link" id="egSw"></button></span><button type="button" class="eg-link" id="egForgot">忘記同步碼？</button></div>'+
-      '</div><div class="eg-stub" aria-hidden="true"><span class="k" id="egK"></span><span class="v" id="egV"></span><span class="s" id="egS"></span><span class="bar"></span></div>'+
+      '</div>'+
       '<div class="eg-seal" aria-hidden="true"><span>已同步<small>EZEXAMS</small></span></div></form>'+
       '<p class="eg-foot"><button type="button" class="eg-link" id="egSkip">先不同步，只用這台裝置</button></p></div>';
     document.body.appendChild(root);
@@ -117,7 +103,7 @@
   function setMode(m,animate){
     const apply=()=>{ticket.dataset.mode=m;const t=TEXT[m];
       $("#egPrompt").textContent=t.prompt;$("#egH").innerHTML=t.h;$("#egP").textContent=t.p;$("#egGoT").textContent=t.btn;
-      $("#egK").textContent=t.k;$("#egV").textContent=t.v;$("#egS").textContent=t.s;$("#egSwT").textContent=t.sw;$("#egSw").textContent=t.swb;
+$("#egSwT").textContent=t.sw;$("#egSw").textContent=t.swb;
       cellsets.forEach(g=>{cells(g).forEach(x=>{x.value="";x.classList.remove("on");});g.classList.remove("bad");});say("");};
     if(!animate||matchMedia("(prefers-reduced-motion: reduce)").matches){apply();return;}
     ticket.classList.add("flip");setTimeout(()=>{apply();ticket.classList.remove("flip");setTimeout(()=>cells(cellsets[0])[0].focus(),330);},320);
@@ -146,7 +132,6 @@
   }
   function open(o={}){
     opts=o;if(!root)build();
-    $("#egLegacy").hidden=!(window.EZSync&&EZSync.mode&&EZSync.mode()==="token");
     $("#egSkip").textContent=o.change?"取消":"先不同步，只用這台裝置";
     setMode(o.mode||"join",false);root.classList.remove("out");root.hidden=false;opened=true;
     document.documentElement.classList.add("ezgate-on");document.documentElement.classList.remove("ezlock");

@@ -148,6 +148,54 @@ code{font-family:var(--f-mono);font-size:.9em;background:var(--indigo-soft);padd
 .themebtn.wide .lab::before{content:"外觀：";color:var(--muted)}
 @media (max-width:520px){.ticket{grid-template-columns:1fr 84px}.stub .v{font-size:18px}.hero{padding-block:36px 28px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ---------- 跨裝置同步：glass PIN card ---------- */
+.pinstage{position:relative;max-width:720px;padding:34px 22px;border-radius:14px;overflow:hidden;overflow:clip;contain:paint;border:1.5px solid var(--ink);box-shadow:5px 5px 0 var(--hard);
+  background:radial-gradient(120% 70% at 85% 10%,rgba(120,170,205,.35),transparent 60%),radial-gradient(90% 60% at 10% 95%,rgba(90,140,180,.28),transparent 60%),
+  linear-gradient(160deg,#0b1a24 0%,#11212d 45%,#0a161e 100%)}
+.pinstage::before,.pinstage::after{content:"";position:absolute;inset:-40%;pointer-events:none;
+  background:repeating-linear-gradient(115deg,transparent 0 46px,rgba(150,195,225,.10) 46px 49px,transparent 49px 120px);filter:blur(1.5px);transform:rotate(-8deg)}
+.pinstage::after{background:linear-gradient(120deg,transparent 40%,rgba(160,210,240,.22) 48%,transparent 56%);animation:pinsweep 9s ease-in-out infinite}
+@keyframes pinsweep{0%,100%{transform:translateX(-18%) rotate(-8deg)}50%{transform:translateX(18%) rotate(-8deg)}}
+.pincard{--cut:26px;position:relative;margin:0 auto;max-width:440px;color:#e8f0f5}
+.pincard .pinface,.pincard .pinorb{clip-path:polygon(var(--cut) 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%,0 var(--cut))}
+.pinface{position:relative;z-index:1;padding:26px 26px 18px;background:linear-gradient(160deg,rgba(255,255,255,.13),rgba(255,255,255,.04));backdrop-filter:blur(16px) saturate(1.2);-webkit-backdrop-filter:blur(16px) saturate(1.2);
+  box-shadow:inset 0 0 0 1px rgba(200,225,240,.22);transition:opacity .28s ease,transform .32s ease,filter .32s ease}
+.shard{position:absolute;z-index:0;width:58px;height:58px;background:linear-gradient(135deg,rgba(190,225,245,.45),rgba(190,225,245,.06));box-shadow:inset 0 0 0 1px rgba(200,230,245,.35);backdrop-filter:blur(6px);transition:transform .45s ease}
+.shard.s1{left:-16px;top:-16px;clip-path:polygon(0 0,100% 0,0 100%)}
+.shard.s2{right:-16px;bottom:-16px;clip-path:polygon(100% 0,100% 100%,0 100%)}
+.pinstate{color:rgba(232,240,245,.8);font-size:12px;margin-bottom:6px}.pinstate .small{color:rgba(232,240,245,.55)}
+.pinh{margin:4px 0 2px;font-family:var(--f-display);font-size:28px;font-weight:700;letter-spacing:.02em}
+.pinh b{background:linear-gradient(90deg,#9fd0f0,#4f9fd4);-webkit-background-clip:text;background-clip:text;color:transparent}
+.pinsub{margin:0 0 14px;font-size:13.5px;line-height:1.6;color:rgba(232,240,245,.66)}
+.pinlegacy{color:#f0c98a}
+.pinfield{margin:10px 0}
+.pinlab{display:flex;align-items:center;justify-content:space-between;font-size:13px;color:rgba(232,240,245,.82);margin-bottom:6px}
+.pineye{border:0;background:none;color:rgba(232,240,245,.6);cursor:pointer;padding:2px;display:flex}.pineye svg{width:18px;height:18px}.pineye[aria-pressed="true"]{color:#9fd0f0}
+.pinboxes{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.pinboxes input{width:100%;min-width:0;aspect-ratio:1/1.12;text-align:center;font:700 22px/1 var(--f-mono);color:#f4f9fc;caret-color:#9fd0f0;
+  background:rgba(4,14,20,.45);border:1px solid rgba(190,220,240,.22);border-radius:10px;outline:none;transition:border-color .15s,box-shadow .15s,background .15s}
+.pinboxes input:focus{border-color:#7fc0ea;box-shadow:0 0 0 3px rgba(127,192,234,.22);background:rgba(4,14,20,.6)}
+.pinboxes input.on{border-color:rgba(127,192,234,.55)}
+.pinboxes.bad input{border-color:#e07a5f;animation:pinshake .35s}
+@keyframes pinshake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.pinconfirm{display:none}.pincard[data-mode="create"] .pinconfirm{display:block}
+.pinrow{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:10px 0 14px;font-size:12.5px;color:rgba(232,240,245,.6)}
+.pinlink{border:0;background:none;padding:0;font:inherit;color:#8fc8ee;cursor:pointer;font-weight:600}.pinlink:hover{text-decoration:underline}
+.pinbtn{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:11px 16px;border:0;border-radius:10px;cursor:pointer;
+  font:700 15px var(--f-body);color:#06141b;background:linear-gradient(180deg,#9fd5f5,#4f9fd4);box-shadow:0 8px 22px rgba(79,159,212,.35),inset 0 1px 0 rgba(255,255,255,.5);transition:transform .12s,filter .15s}
+.pinbtn svg{width:18px;height:18px}.pinbtn:hover{filter:brightness(1.06)}.pinbtn:active{transform:translateY(1px)}.pinbtn:disabled{filter:grayscale(.4) brightness(.8);cursor:wait}
+.pinmsg{margin:10px 0 0;font-size:13px;color:rgba(232,240,245,.8)}.pinmsg.err{color:#f2a08a}.pinmsg.ok{color:#8fdca0}
+.pinswitch{margin:12px 0 0;text-align:center;font-size:13px;color:rgba(232,240,245,.6)}
+/* switching between 輸入 and 建立: the card folds into a glowing orb and opens again */
+.pinorb{position:absolute;inset:0;z-index:2;display:grid;place-items:center;opacity:0;pointer-events:none;transition:opacity .25s ease;
+  background:radial-gradient(circle at 50% 50%,rgba(120,190,235,.25),rgba(10,24,34,.85) 60%);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.pinorb span{width:64px;height:64px;border-radius:16px;background:linear-gradient(135deg,#9fd5f5,#2f78ad);box-shadow:0 0 0 18px rgba(127,192,234,.10),0 0 0 44px rgba(127,192,234,.06),0 0 60px rgba(127,192,234,.6);transform:scale(.6) rotate(-20deg);transition:transform .45s cubic-bezier(.3,1.4,.5,1)}
+.pincard.morph .pinorb{opacity:1}.pincard.morph .pinorb span{transform:scale(1) rotate(0)}
+.pincard.morph .pinface{opacity:0;transform:scale(.94);filter:blur(4px)}
+.pincard.morph .shard.s1{transform:translate(22px,22px)}.pincard.morph .shard.s2{transform:translate(-22px,-22px)}
+@media (max-width:480px){.pinstage{padding:26px 12px}.pinface{padding:22px 16px 16px}.pinh{font-size:24px}.pinboxes{gap:6px}.pinboxes input{font-size:19px}}
+@media (prefers-reduced-motion:reduce){.pinstage::after{animation:none}.pinface,.pinorb,.pinorb span,.shard{transition:none}}
 </style>
 </head>
 <body>
@@ -237,19 +285,29 @@ code{font-family:var(--f-mono);font-size:.9em;background:var(--indigo-soft);padd
   </div>
   <section class="sync" id="sync">
     <div class="subj"><h2>跨裝置同步</h2><span class="en">sync/</span></div>
-    <div class="syncbox">
-      <div class="syncstate"><span class="led" id="syncLed"></span><b id="syncTitle">只存在這台裝置</b><span class="small" id="syncSub"></span></div>
-      <div id="syncOff">
-        <p>所有科目的作答、分數和選擇題進度都可以存到雲端。自己取一個<b>同步代碼</b>（像 PIN 碼，至少 6 個字，英文或數字都可以），每台裝置輸入<b>同一個代碼</b>，打開哪一科都是同樣的進度。不用申請任何帳號或金鑰。</p>
-        <p class="small" id="syncLegacy" hidden>這台裝置目前用 GitHub 金鑰同步。輸入同步代碼後會改用代碼，這台裝置的進度會一起帶過去。</p>
-        <form class="tokrow" id="codeForm" autocomplete="off">
-          <label for="codeInput" class="sr">同步代碼</label>
-          <input id="codeInput" type="text" placeholder="同步代碼（至少 6 個字）" spellcheck="false" autocapitalize="off" minlength="6" maxlength="40">
-          <button class="btn primary" type="submit" id="codeBtn">開始同步</button>
+    <div class="pinstage">
+      <div class="pincard" id="pinCard" data-mode="join">
+        <i class="shard s1" aria-hidden="true"></i><i class="shard s2" aria-hidden="true"></i>
+        <div class="pinorb" aria-hidden="true"><span></span></div>
+        <form class="pinface" id="pinForm" autocomplete="off" novalidate>
+          <div class="syncstate pinstate"><span class="led" id="syncLed"></span><b id="syncTitle">只存在這台裝置</b><span class="small" id="syncSub"></span></div>
+          <h3 class="pinh"><span id="pinH1">輸入</span> <b>同步碼</b></h3>
+          <p class="pinsub" id="pinSub">輸入你在其他裝置用的 6 位數同步碼，這台裝置就會載入同樣的進度。</p>
+          <p class="pinsub pinlegacy" id="syncLegacy" hidden>這台裝置目前用 GitHub 金鑰同步。設定同步碼後會改用同步碼，這台裝置的進度會一起帶過去。</p>
+          <div class="pinfield">
+            <div class="pinlab"><span>同步碼</span><button type="button" class="pineye" id="pinEye" aria-label="顯示數字" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+            <div class="pinboxes" data-pin="1" role="group" aria-label="6 位數同步碼"></div>
+          </div>
+          <div class="pinfield pinconfirm">
+            <div class="pinlab"><span>再輸入一次</span></div>
+            <div class="pinboxes" data-pin="2" role="group" aria-label="再輸入一次同步碼"></div>
+          </div>
+          <div class="pinrow"><span class="pinhint" id="pinHint">每台裝置輸入一次就好</span><button type="button" class="pinlink" id="pinForgot">忘記同步碼？</button></div>
+          <button class="pinbtn" type="submit" id="pinBtn"><span id="pinBtnTxt">開始同步</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+          <p class="msg pinmsg" id="syncMsg" role="status"></p>
+          <p class="pinswitch"><span id="pinSwTxt">第一次使用？</span> <button type="button" class="pinlink" id="pinSwitch">建立同步碼</button></p>
         </form>
-        <p class="small">代碼就是你的進度的鑰匙：知道代碼的人就能看到、改到這份進度，所以別用太簡單的（例如 123456），也不要告訴別人。忘記代碼的話，之前的雲端進度就找不回來（每台裝置自己的進度還在）。</p>
       </div>
-      <p class="msg" id="syncMsg" role="status"></p>
     </div>
   </section>
   <section class="sync" id="ai">
@@ -288,7 +346,7 @@ code{font-family:var(--f-mono);font-size:.9em;background:var(--indigo-soft);padd
   done.forEach(t=>terms.appendChild(t));
 })();
 </script>
-<script src="assets/ezsync.js?v=81957c64"></script>
+<script src="assets/ezsync.js?v=781286e7"></script>
 <script>
 (function(){
   const $=id=>document.getElementById(id);
@@ -300,19 +358,56 @@ code{font-family:var(--f-mono);font-size:.9em;background:var(--indigo-soft);padd
     $("sync").hidden=on&&EZSync.mode()==="code"&&!keepSync&&st.state!=="err"&&location.hash!=="#sync";   /* a GitHub-token device sees the panel until it switches to a code */
     $("syncLed").className="led "+(on?(st.state==="dirty"?"sync":st.state):"");
     const mode=EZSync.mode();
-    $("syncTitle").textContent=mode==="code"?"已開啟同步（代碼 "+EZSync.codeHint()+"）":mode==="token"?("已連結 GitHub"+(EZSync.user()?" @"+EZSync.user():"")):"只存在這台裝置";
+    $("syncTitle").textContent=mode==="code"?"已開啟同步（同步碼 "+EZSync.codeHint()+"）":mode==="token"?("已連結 GitHub"+(EZSync.user()?" @"+EZSync.user():"")):"只存在這台裝置";
     $("syncLegacy").hidden=mode!=="token";
     $("syncSub").textContent=on?(st.state==="sync"?"同步中…":fmt(EZSync.lastSync())):"";
-    if(st.state==="err"){$("syncMsg").textContent=st.msg;$("syncMsg").className="msg err";}
+    if(st.state==="err"){$("syncMsg").textContent=st.msg;$("syncMsg").className="msg pinmsg err";}
   }
   EZSync.onStatus(render);
-  $("codeForm").addEventListener("submit",async e=>{
-    e.preventDefault();const b=$("codeBtn"),m=$("syncMsg");
-    b.disabled=true;m.className="msg";m.textContent="連線中…";
-    try{await EZSync.connectCode($("codeInput").value);$("codeInput").value="";keepSync=true;m.className="msg ok";m.textContent="同步已開啟。打開任何一科，進度就會自動上傳；其他裝置輸入同一個代碼就會看到同樣的進度。";render(EZSync.status());}
-    catch(err){m.className="msg err";m.textContent=err.code==="empty"?"請先輸入同步代碼。":EZSync.errMsg(err);}
+  /* ---------- 6-digit PIN boxes ---------- */
+  const card=$("pinCard"),boxes=[...card.querySelectorAll(".pinboxes")];
+  boxes.forEach(g=>{for(let i=0;i<6;i++){const x=document.createElement("input");x.type="password";x.inputMode="numeric";x.maxLength=1;x.autocomplete="off";x.setAttribute("aria-label","第 "+(i+1)+" 位");g.appendChild(x);}});
+  const cells=g=>[...g.querySelectorAll("input")];
+  const val=g=>cells(g).map(x=>x.value).join("");
+  function fill(g,from,digits){const c=cells(g);let i=from;for(const d of digits){if(i>=6)break;c[i].value=d;c[i].classList.add("on");i++;}(c[Math.min(i,5)]).focus();}
+  boxes.forEach((g,gi)=>cells(g).forEach((x,i)=>{
+    x.addEventListener("input",()=>{const d=x.value.replace(/\D/g,"");x.value="";x.classList.remove("on");g.classList.remove("bad");
+      if(d){fill(g,i,d);if(i+d.length>=6){const next=boxes[gi+1];if(next&&card.dataset.mode==="create"&&gi===0)cells(next)[0].focus();}}});
+    x.addEventListener("keydown",e=>{const c=cells(g);
+      if(e.key==="Backspace"&&!x.value&&i>0){e.preventDefault();c[i-1].value="";c[i-1].classList.remove("on");c[i-1].focus();}
+      else if(e.key==="ArrowLeft"&&i>0)c[i-1].focus();else if(e.key==="ArrowRight"&&i<5)c[i+1].focus();});
+    x.addEventListener("paste",e=>{const d=(e.clipboardData||window.clipboardData).getData("text").replace(/\D/g,"");if(d){e.preventDefault();fill(g,i,d);}});
+  }));
+  $("pinEye").addEventListener("click",e=>{const b=e.currentTarget,on=b.getAttribute("aria-pressed")!=="true";b.setAttribute("aria-pressed",on);b.setAttribute("aria-label",on?"隱藏數字":"顯示數字");card.querySelectorAll(".pinboxes input").forEach(x=>x.type=on?"text":"password");});
+  /* ---------- 輸入 ⇄ 建立 ---------- */
+  const TEXT={join:{h:"輸入",sub:"輸入你在其他裝置用的 6 位數同步碼，這台裝置就會載入同樣的進度。",btn:"開始同步",sw:"第一次使用？",swb:"建立同步碼",hint:"每台裝置輸入一次就好"},
+    create:{h:"建立",sub:"自己設定一組 6 位數同步碼（避開 123456、生日這種好猜的），之後每台裝置輸入同一組就會同步。",btn:"建立並開始同步",sw:"已經有同步碼？",swb:"輸入同步碼",hint:"請記下來，忘記就找不回雲端進度"}};
+  function setMode(m,animate){
+    const apply=()=>{card.dataset.mode=m;const t=TEXT[m];$("pinH1").textContent=t.h;$("pinSub").textContent=t.sub;$("pinBtnTxt").textContent=t.btn;$("pinSwTxt").textContent=t.sw;$("pinSwitch").textContent=t.swb;$("pinHint").textContent=t.hint;
+      boxes.forEach(g=>{cells(g).forEach(x=>{x.value="";x.classList.remove("on");});g.classList.remove("bad");});$("syncMsg").textContent="";$("syncMsg").className="msg pinmsg";};
+    if(!animate||matchMedia("(prefers-reduced-motion: reduce)").matches){apply();return;}
+    card.classList.add("morph");setTimeout(()=>{apply();setTimeout(()=>{card.classList.remove("morph");cells(boxes[0])[0].focus();},380);},320);
+  }
+  $("pinSwitch").addEventListener("click",()=>setMode(card.dataset.mode==="join"?"create":"join",true));
+  $("pinForgot").addEventListener("click",()=>{const m=$("syncMsg");m.className="msg pinmsg";m.textContent="同步碼沒有存在任何地方，所以找不回來。每台裝置自己的進度都還在：按下面「建立同步碼」設一組新的，再到每台裝置輸入新的同步碼，大家的進度會合併在一起。";});
+  const bad=(g,msg)=>{g.classList.remove("bad");void g.offsetWidth;g.classList.add("bad");const m=$("syncMsg");m.className="msg pinmsg err";m.textContent=msg;};
+  $("pinForm").addEventListener("submit",async e=>{
+    e.preventDefault();const b=$("pinBtn"),m=$("syncMsg"),mode=card.dataset.mode;
+    const c1=val(boxes[0]),c2=val(boxes[1]);
+    if(!/^\d{6}$/.test(c1))return bad(boxes[0],"同步碼是 6 位數字。");
+    if(mode==="create"&&c1!==c2)return bad(boxes[1],"兩次輸入的同步碼不一樣。");
+    if(mode==="create"&&/^(\d)\1{5}$|^(012345|123456|234567|345678|456789|987654|876543|654321|543210)$/.test(c1))return bad(boxes[0],"這組太好猜了，換一組吧。");
+    b.disabled=true;m.className="msg pinmsg";m.textContent="連線中…";
+    try{await EZSync.connectCode(c1,{mode});keepSync=true;m.className="msg pinmsg ok";
+      m.textContent=mode==="create"?"同步碼建立好了。打開任何一科，進度就會自動上傳；其他裝置輸入同一組同步碼就會看到同樣的進度。":"同步已開啟，打開任何一科就會載入這組同步碼的進度。";render(EZSync.status());}
+    catch(err){
+      if(err.code==="taken")bad(boxes[0],"這組同步碼已經有人在用了，換一組吧。");
+      else if(err.code==="nocode"){bad(boxes[0],"找不到這組同步碼的進度。");m.innerHTML="";m.append("找不到這組同步碼的進度。是第一次用嗎？ ");const l=document.createElement("button");l.type="button";l.className="pinlink";l.textContent="用它建立同步碼";l.onclick=()=>{setMode("create",true);setTimeout(()=>{fill(boxes[0],0,c1);fill(boxes[1],0,c1);},720);};m.append(l);}
+      else{m.className="msg pinmsg err";m.textContent=EZSync.errMsg(err);}
+    }
     finally{b.disabled=false;}
   });
+  setMode("join",false);
 
   addEventListener("hashchange",()=>render(EZSync.status()));
   render(EZSync.status());

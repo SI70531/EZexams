@@ -58,7 +58,7 @@ Script and stylesheet links carry `?v=<content hash>` so browsers pick up change
 
 ## Cross-Device Sync
 
-Progress syncs by **sync code**: in the cross-device sync section on the main page, type a code of your choice (6-40 characters, like a PIN) once per device; devices with the same code share progress. Nobody needs a GitHub account or token. The pages talk to the EZexams Worker (`tools/ezexams-worker.js`), which keeps all progress in one private Gist of the GitHub account behind its secret `GITHUB_TOKEN` (a classic token with only the `gist` scope). Each file is named `<first 24 hex of SHA-256(code)>--<STORAGE_KEY>.json`, so the codes themselves are never stored. Anyone who knows a code can read and change that progress, so codes should not be trivial.
+Progress syncs by a 6-digit **sync code** (like a PIN): in the cross-device sync section on the main page, set one up on the first device and enter the same code once on every other device; devices with the same code share progress. Nobody needs a GitHub account or token. The pages talk to the EZexams Worker (`tools/ezexams-worker.js`), which keeps all progress in one private Gist of the GitHub account behind its secret `GITHUB_TOKEN` (a classic token with only the `gist` scope). Each file is named `<first 24 hex of SHA-256(code)>--<STORAGE_KEY>.json`, so the codes themselves are never stored. Anyone who knows a code can read and change that progress, so codes should not be trivial.
 
 Devices that were linked with a GitHub token before keep working that way until a sync code is entered. Sync logic is handled by `assets/ezsync.js`; uploads are spread to at most one every 7.2 s per browser (GitHub allows about 500 gist revisions an hour).
 

@@ -52,7 +52,7 @@
 .ticket:hover .fx-shine{opacity:1}
 .totop{transition:transform .2s,opacity .25s}
 .totop .fx-ring{position:absolute;inset:-5px;pointer-events:none}
-.totop .fx-ring rect{fill:none;stroke:var(--seal);stroke-width:2.5;stroke-linecap:round}
+.totop .fx-ring path{fill:none;stroke:var(--seal);stroke-width:2.5;stroke-linecap:round}
 @media print{#fxbar{display:none}.fx-rv{opacity:1;transform:none}}`;
   const st=document.createElement("style");st.id="ezfx-css";st.textContent=css;document.head.appendChild(st);
   const raf=f=>{let q=false;return(...a)=>{if(q)return;q=true;requestAnimationFrame(()=>{q=false;f(...a);});};};
@@ -66,13 +66,21 @@
 
   /* back-to-top ring */
   let ringC=null;
+  /* drawn in real pixels (the button's own size), so the share of the ring that is filled matches how far down
+     the page you are; the ring starts at the top middle and runs clockwise */
+  let ringS=null,ringLen=0,ringWH="";
   function ring(p){
     const t=document.getElementById("toTop");if(!t)return;
-    if(!ringC){const s=document.createElementNS("http://www.w3.org/2000/svg","svg");s.setAttribute("class","fx-ring");s.setAttribute("viewBox","0 0 50 50");
-      s.setAttribute("preserveAspectRatio","none");ringC=document.createElementNS("http://www.w3.org/2000/svg","rect");
-      [["x","2"],["y","2"],["width","46"],["height","46"],["rx","11"],["vector-effect","non-scaling-stroke"]].forEach(([k,v])=>ringC.setAttribute(k,v));
-      ringC.setAttribute("pathLength","100");ringC.setAttribute("stroke-dasharray","100");s.appendChild(ringC);t.appendChild(s);}
-    ringC.setAttribute("stroke-dashoffset",String(100-p*100));
+    const NS="http://www.w3.org/2000/svg";
+    if(!ringC){ringS=document.createElementNS(NS,"svg");ringS.setAttribute("class","fx-ring");ringC=document.createElementNS(NS,"path");ringS.appendChild(ringC);t.appendChild(ringS);}
+    const W=t.offsetWidth+10,H=t.offsetHeight+10;if(W<12||H<12)return;
+    if(ringWH!==W+"x"+H){ringWH=W+"x"+H;
+      ringS.setAttribute("viewBox","0 0 "+W+" "+H);ringS.setAttribute("width",W);ringS.setAttribute("height",H);
+      const x=1.5,y=1.5,w=W-3,h=H-3,r=Math.min(11,w/2,h/2),cx=x+w/2;
+      ringC.setAttribute("d","M"+cx+" "+y+"H"+(x+w-r)+"A"+r+" "+r+" 0 0 1 "+(x+w)+" "+(y+r)+"V"+(y+h-r)+"A"+r+" "+r+" 0 0 1 "+(x+w-r)+" "+(y+h)+
+        "H"+(x+r)+"A"+r+" "+r+" 0 0 1 "+x+" "+(y+h-r)+"V"+(y+r)+"A"+r+" "+r+" 0 0 1 "+(x+r)+" "+y+"Z");
+      ringLen=ringC.getTotalLength();ringC.setAttribute("stroke-dasharray",String(ringLen));}
+    ringC.setAttribute("stroke-dashoffset",String(ringLen*(1-p)));
   }
 
   /* typed prompt lines ($ ls ~/exams, $ Operating Systems · Midterm, ...) */

@@ -99,14 +99,19 @@
     "nav.tabs .tarr[hidden]{display:none}"+
     "nav.tabs .tarr.l{left:0;justify-content:flex-start;padding-left:2px;background:linear-gradient(90deg,var(--bg) 55%,transparent)}"+
     "nav.tabs .tarr.r{right:0;justify-content:flex-end;padding-right:2px;background:linear-gradient(270deg,var(--bg) 55%,transparent)}"+
-    "nav.tabs .tarr:hover{color:var(--indigo)}";
+    "nav.tabs .tarr:hover{color:var(--indigo)}"+
+    /* 首頁 stays pinned at the left edge while the other tabs scroll under it */
+    "#tabs [data-go=\"home\"]{position:sticky;left:0;z-index:3}"+
+    "#tabs.scrolled [data-go=\"home\"]{box-shadow:6px 0 8px -6px rgba(6,20,27,.45)}";
   document.head.appendChild(tst);
   function tabBar(){
     document.querySelectorAll("nav.tabs").forEach(nav=>{
       const row=nav.querySelector(".row");if(!row||nav.querySelector(".tarr"))return;
       const mk=(c,t,lab)=>{const a=document.createElement("div");a.className="tarr "+c;a.textContent=t;a.setAttribute("role","button");a.setAttribute("aria-label",lab);a.hidden=true;nav.appendChild(a);return a;};
       const L=mk("l","‹","往左捲動分頁"),R=mk("r","›","往右捲動分頁");
-      const upd=()=>{const max=row.scrollWidth-row.clientWidth;const hl=!(row.scrollLeft>2),hr=!(row.scrollLeft<max-2);if(L.hidden!==hl)L.hidden=hl;if(R.hidden!==hr)R.hidden=hr;};
+      const home=row.querySelector('[data-go="home"]');
+      const upd=()=>{const max=row.scrollWidth-row.clientWidth;const hl=!(row.scrollLeft>2),hr=!(row.scrollLeft<max-2);if(L.hidden!==hl)L.hidden=hl;if(R.hidden!==hr)R.hidden=hr;
+        row.classList.toggle("scrolled",!hl);const h=home&&home.isConnected?home:(row.querySelector('[data-go="home"]'));const lx=h?h.offsetWidth+"px":"0px";if(L.style.left!==lx)L.style.left=lx;};   /* ‹ sits just right of the pinned 首頁 */
       const by=d=>row.scrollBy({left:d*Math.max(160,row.clientWidth*0.7),behavior:"smooth"});
       L.addEventListener("click",()=>by(-1));R.addEventListener("click",()=>by(1));
       row.addEventListener("scroll",upd,{passive:true});window.addEventListener("resize",upd);
@@ -116,7 +121,8 @@
       let last=null;
       const follow=()=>{const cur=row.querySelector('[aria-current="true"]');if(cur&&cur!==last){last=cur;
         const r=cur.getBoundingClientRect(),b=row.getBoundingClientRect();
-        if(r.left<b.left+30||r.right>b.right-30)row.scrollLeft+=(r.left+r.right)/2-(b.left+b.right)/2;}upd();};
+        const hw=(row.querySelector('[data-go="home"]')||{offsetWidth:0}).offsetWidth;
+        if(r.left<b.left+hw+30||r.right>b.right-30)row.scrollLeft+=(r.left+r.right)/2-(b.left+hw+b.right)/2;}upd();};
       new MutationObserver(follow).observe(row,{attributes:true,attributeFilter:["aria-current"],subtree:true,childList:true});
       setTimeout(follow,50);upd();
     });

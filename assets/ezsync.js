@@ -26,7 +26,11 @@
   const who=c=>{let h=2166136261;for(const ch of "ezexams:"+c){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);}return (h>>>0).toString(36);};
   function startFor(code,fresh){
     const w=who(code),prev=get("ezsync-who");
-    if(fresh||(prev&&prev!==w)){
+    /* moving from the old 6-digit codes: this browser's progress belongs to the person setting up their 4-digit PIN,
+       so it is kept (and uploaded to the new PIN) instead of starting from zero */
+    let legacy=!prev;
+    if(prev){legacy=true;for(let i=0;i<10000;i++)if(who(String(i).padStart(4,"0"))===prev){legacy=false;break;}}
+    if(!legacy&&(fresh||prev!==w)){
       Object.values(subjects).forEach(s=>{clearTimeout(s.timer);s.timer=null;});
       const drop=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(/-midterm-v1$|^ezsync-at:|^ezopt:|^eznum:/.test(k))drop.push(k);}
       drop.forEach(k=>set(k,null));[LS.last,"ezsync-lastpush"].forEach(k=>set(k,null));
@@ -101,7 +105,7 @@
   function errMsg(e){
     const c=e&&e.code,why=e&&e.why?"（GitHub："+e.why+"）":"";
     if(c==="auth")return "金鑰無效或過期，請到首頁重新連結。";
-    if(c==="badcode")return "PIN 碼是 6 位數字。";
+    if(c==="badcode")return "PIN 碼是 4 位數字。";
     if(c==="server")return "同步伺服器還沒設定好（"+(e.why||"")+"）。";
     if(c==="scope")return "這把金鑰沒有 gist 權限"+why+"。請到首頁換一把有勾 gist 的金鑰。";
     if(c==="rate")return "GitHub 暫時限制次數"+why+"，會自動再試。";
@@ -212,7 +216,7 @@
     async connectCode(code,{mode}={}){
       code=(code||"").trim();
       if(!code)throw Object.assign(new Error("empty"),{code:"empty"});
-      if(!/^\d{6}$/.test(code))throw Object.assign(new Error("bad code"),{code:"badcode"});
+      if(!/^\d{4}$/.test(code))throw Object.assign(new Error("bad code"),{code:"badcode"});
       const old=get(LS.code);set(LS.code,code);
       try{
         const r=JSON.parse(await px("GET","/sync?"+codeQ()+"&key=ping")||"{}");

@@ -292,6 +292,7 @@
     theme.parentNode.insertBefore(a,theme);
     a.addEventListener("click",e=>{
       const s=window.EZSync.status();
+      if(window.EZGate&&(!window.EZSync.connected()||window.EZSync.mode()!=="code")){e.preventDefault();window.EZGate.open();return;}   /* set up a sync code right here */
       if(!window.EZSync.connected()||(s.state==="err"&&s.code==="auth"))return; /* go to the home page to set up / re-link */
       e.preventDefault();
       if(s.state==="sync")return;
@@ -302,7 +303,7 @@
       a.dataset.state=on?s.state:"off";
       a.querySelector(".synclab").textContent=!on?"未同步":s.state==="sync"?"同步中":s.state==="dirty"?"待同步":s.state==="err"?"同步失敗":"已同步";
       const needKey=s.state==="err"&&s.code==="auth";
-      a.title=!on?"只存在這台裝置。點這裡到首頁設定跨裝置同步。":needKey?"GitHub 金鑰失效了，點這裡到首頁重新連結。":(s.msg&&s.state==="err"?s.msg+" 點一下再同步一次。":(window.EZSync.mode()==="code"?"已同步（同步代碼 "+window.EZSync.codeHint()+"）":"已同步到 GitHub"+(window.EZSync.user()?"（@"+window.EZSync.user()+"）":""))+"。點一下立即同步。");
+      a.title=!on?"只存在這台裝置。點這裡輸入同步碼。":needKey?"GitHub 金鑰失效了，點這裡到首頁重新連結。":(s.msg&&s.state==="err"?s.msg+" 點一下再同步一次。":(window.EZSync.mode()==="code"?"已同步（同步代碼 "+window.EZSync.codeHint()+"）":"已同步到 GitHub"+(window.EZSync.user()?"（@"+window.EZSync.user()+"）":""))+"。點一下立即同步。");
     });
   }
   function updateNote(){

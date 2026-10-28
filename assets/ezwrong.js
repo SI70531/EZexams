@@ -32,6 +32,8 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
 .wcard .wbar{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
 .wgroup h3{margin-top:28px;scroll-margin-top:80px}
 .wnotes{display:block;margin-top:10px}
+.wrongblock{margin:8px 0 44px;padding-bottom:28px;border-bottom:2px solid var(--ink,#06141b)}
+.wrongblock .wrongh{margin-top:0}
 .ezback{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 18px);z-index:40;font:inherit;font-weight:700;font-size:15px;padding:11px 20px;border-radius:999px;border:1.5px solid var(--bad,#c62828);background:var(--paper,#fff);color:var(--bad,#c62828);box-shadow:0 6px 18px rgba(0,0,0,.18);cursor:pointer;max-width:calc(100vw - 32px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ezback:hover{background:var(--bad,#c62828);color:var(--paper,#fff)}
 .wback{display:block;margin-top:12px;border-color:var(--bad,#c62828)!important;color:var(--bad,#c62828)!important;font-weight:700}
@@ -158,15 +160,24 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
   /* group key: the section, else the known chapter, else "other" */
   const gkey=w=>w.m.s?w.m.s.key:w.ch?"_"+w.ch:"_";
 
-  /* ---------- tab + view ---------- */
-  const ri=VIEWS.findIndex(v=>v[0]==="review");
-  if(!VIEWS.some(v=>v[0]==="wrong"))VIEWS.splice(ri>=0?ri+1:VIEWS.length,0,["wrong","錯題區"]);
-  const views=document.querySelectorAll(".view");const last=views[views.length-1];
-  const view=document.createElement("section");view.className="view";view.id="wrong";view.hidden=true;view.setAttribute("role","tabpanel");
-  const pcb=document.querySelector(".pcb[data-pcb]")?'<div class="pcb" data-pcb="wrong" role="img"></div>':"";
-  view.innerHTML='<div class="vhead">'+pcb+'<div class="eyebrow">Mistakes</div><h1>錯題區</h1><p>章末選擇題、考古題、模擬試題答錯的題目會自動收進來，按講義段落分組。展開「相關觀念」就是講義那一段的完整內容。手寫題沒拿滿分也算錯；重做答對就會自動移出。</p></div><div id="wrongList"></div>';
-  last.after(view);
-  if(typeof PID!=="undefined"&&PID.wrong===undefined)PID.wrong=Object.keys(PID).length;
+  /* ---------- the 錯題區 lives at the top of 總複習 ---------- */
+  /* host: the subject's review tab (總複習 / 考前總整理); a subject without one gets a 總複習 tab for it */
+  let host=document.getElementById("review")||document.getElementById("sheet");
+  if(!host){
+    if(!VIEWS.some(v=>v[0]==="review"))VIEWS.push(["review","總複習"]);
+    const views=document.querySelectorAll(".view");const last=views[views.length-1];
+    host=document.createElement("section");host.className="view";host.id="review";host.hidden=true;host.setAttribute("role","tabpanel");
+    const pcb=document.querySelector(".pcb[data-pcb]")?'<div class="pcb" data-pcb="review" role="img"></div>':"";
+    host.innerHTML='<div class="vhead">'+pcb+'<div class="eyebrow">Review</div><h1>總複習</h1><p>考前先把錯題清掉：答錯的題目都在這裡，按講義段落分組。</p></div>';
+    last.after(host);
+    if(typeof PID!=="undefined"&&PID.review===undefined)PID.review=Object.keys(PID).length;
+  }
+  const HOST=host.id;
+  const view=document.createElement("div");view.id="wrongArea";view.className="wrongblock";   /* not "wrong": that id would make the page treat it as a tab */
+  view.innerHTML='<h2 class="wrongh">錯題區</h2><p class="small">章末選擇題、考古題、模擬試題答錯的題目會自動收進來，按講義段落分組。展開「相關觀念」就是講義那一段的完整內容。手寫題沒拿滿分也算錯；重做答對就會自動移出。</p><div id="wrongList"></div>';
+  const vh=host.querySelector(":scope > .vhead");if(vh)vh.after(view);else host.prepend(view);
+  /* open 總複習 at the 錯題區 (a pending card or section scrolls further once the list is drawn) */
+  function showWrong(){show(HOST);setTimeout(()=>{if(!pendingCard&&!pendingSec)view.scrollIntoView({block:"start"});},40);}
 
   /* the original question on the page, and a stable id for its card */
   function locate(w){
@@ -184,7 +195,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
     const el=locate(w);if(!el)return;
     document.querySelectorAll(".wback").forEach(b=>b.remove());
     const b=document.createElement("button");b.type="button";b.className="btn wback";b.textContent="← 回錯題區（回到這題）";
-    b.addEventListener("click",()=>{b.remove();pendingCard=wid(w);pendingSec=w.m.s?w.m.s.key:null;show("wrong");});
+    b.addEventListener("click",()=>{b.remove();pendingCard=wid(w);pendingSec=w.m.s?w.m.s.key:null;showWrong();});
     el.appendChild(b);
     flash(el,"center");
   }
@@ -226,7 +237,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
     SECS.forEach(s=>{
       const n=(by.get(s.key)||[]).length;s.h.classList.toggle("missed",n>0);
       let b=s.h.querySelector(".missbadge");
-      if(n){if(!b){b=document.createElement("button");b.type="button";b.className="missbadge";b.dataset.go="wrong";b.dataset.wsec=s.key;s.h.appendChild(b);}b.textContent="✗ 錯 "+n+" 題 → 錯題區";}
+      if(n){if(!b){b=document.createElement("button");b.type="button";b.className="missbadge";b.dataset.go=HOST;b.dataset.wsec=s.key;s.h.appendChild(b);}b.textContent="✗ 錯 "+n+" 題 → 錯題區";}
       else if(b)b.remove();
     });
     const box=document.getElementById("wrongList");box.innerHTML="";
@@ -246,7 +257,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
         add("src",w.src);add("wq2",w.q);add("yours","你的答案："+w.yours);add("right","正確答案："+w.right);if(w.e)add("",w.e);
         const bar=document.createElement("div");bar.className="wbar";
         bar.appendChild(btn("回原題",()=>goto(w)));
-        if(s)bar.appendChild(btn("回講義這一段",()=>{show(s.ch);setTimeout(()=>s.h.scrollIntoView({block:"start"}),30);offerBack("↩ 回錯題區（回到這張卡）",()=>{pendingCard=wid(w);show("wrong");later();});}));
+        if(s)bar.appendChild(btn("回講義這一段",()=>{show(s.ch);setTimeout(()=>s.h.scrollIntoView({block:"start"}),30);offerBack("↩ 回錯題區（回到這張卡）",()=>{pendingCard=wid(w);showWrong();later();});}));
         else if(w.ch)bar.appendChild(btn("回 "+(NAME[w.ch]||w.ch)+" 講義",()=>show(w.ch)));
         c.appendChild(bar);
         if(s){
@@ -278,7 +289,8 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
     .observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:["hidden","class"]});
   render();
   try{renderTabs(S.last);}catch(e){}
-  if(location.hash==="#wrong")try{show("wrong");}catch(e){}
+  try{if(window.EZ_WANT_WRONG||location.hash==="#wrong")showWrong();}catch(e){}
+  addEventListener("hashchange",e=>{if(/#wrong$/.test(e.newURL||""))showWrong();});   /* old links and a last visit to the former 錯題區 tab */
 
   /* for checking how questions are matched: EZWrong.report() lists every question with its section */
   window.EZWrong={match,sections:SECS,report(){

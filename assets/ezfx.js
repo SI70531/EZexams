@@ -120,8 +120,9 @@
 
   /* ripple */
   const RIP=".btn,.opt,.ezout,.syncchip,.themebtn,#tabs [data-go],.eg-go,.rvgo,.missbadge,.ticket";
+  const calm=()=>document.documentElement.classList.contains("ezcalm");
   document.addEventListener("pointerdown",e=>{
-    const b=e.target.closest&&e.target.closest(RIP);if(!b||b.disabled)return;
+    if(calm())return;const b=e.target.closest&&e.target.closest(RIP);if(!b||b.disabled)return;
     if(getComputedStyle(b).position==="static")b.classList.add("fx-host");
     let h=b.querySelector(":scope > .fx-rip");if(!h){h=document.createElement("span");h.className="fx-rip";b.appendChild(h);}
     const r=b.getBoundingClientRect(),d=Math.max(r.width,r.height)*2.2,i=document.createElement("i");
@@ -134,7 +135,7 @@
     const c=e.target.closest&&e.target.closest(".qitem,.rvsec,.syncbox,.ticket");if(!c)return;
     const r=c.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;
     c.style.setProperty("--mx",x+"px");c.style.setProperty("--my",y+"px");
-    if(c.classList.contains("ticket")&&matchMedia("(hover:hover)").matches){
+    if(c.classList.contains("ticket")&&matchMedia("(hover:hover)").matches&&!calm()){
       if(!c.querySelector(".fx-shine")){const s=document.createElement("span");s.className="fx-shine";c.appendChild(s);}
       const rx=((y/r.height)-.5)*-7,ry=((x/r.width)-.5)*9;
       c.classList.add("fx-tilt");c.style.transform="perspective(900px) rotateX("+rx+"deg) rotateY("+ry+"deg) translate(-2px,-3px)";
@@ -156,7 +157,7 @@
     const right=p.q.querySelector(".opt.right"),wrong=p.q.querySelector(".opt.wrong");
     if(right){right.classList.remove("fx-good");void right.offsetWidth;right.classList.add("fx-good");setTimeout(()=>right.classList.remove("fx-good"),800);}
     if(wrong){wrong.classList.remove("fx-bad");void wrong.offsetWidth;wrong.classList.add("fx-bad");setTimeout(()=>wrong.classList.remove("fx-bad"),600);}
-    else if(right){const ab=right.querySelector(".ab")||right,r=ab.getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2);}
+    else if(right&&!calm()){const ab=right.querySelector(".ab")||right,r=ab.getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2);}
   }
   function burst(x,y){
     const cols=[tok("--ok"),tok("--brass"),tok("--indigo")];

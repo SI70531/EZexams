@@ -2,7 +2,7 @@
    Each subject page loads this first, then keeps only its own rules in an inline <style>. */
 :root{
   --bg:#dde1e0; --paper:#f3f5f5; --paper2:#e8ebeb;
-  --ink:#06141b; --ink70:rgba(6,20,27,.76); --muted:rgba(6,20,27,.56); --line:#c2c9ca; --line-strong:#9ba8ab;
+  --ink:#06141b; --ink70:rgba(6,20,27,.76); --muted:rgba(6,20,27,.64); --line:#c2c9ca; --line-strong:#9ba8ab;
   --indigo:#253745; --indigo-soft:rgba(37,55,69,.08); --indigo-mid:rgba(37,55,69,.18);
   --seal:#c4472a; --seal-soft:rgba(196,71,42,.06); --seal-line:rgba(196,71,42,.3);
   --brass:#4a5c6a; --brass-soft:rgba(74,92,106,.08); --brass-line:rgba(74,92,106,.3);

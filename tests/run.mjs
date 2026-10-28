@@ -151,6 +151,20 @@ await check("AI grading without signing in falls back to keyword grading", async
   await pg.ctx.close();
 });
 
+await check("keyboard: A–D answers the question on screen, ← → moves between tabs; 減少動畫 switch works", async () => {
+  const pg = await device({ skipGate: true }); await pg.goto(U + "operating-systems/midterm/#ch2"); await pg.waitForTimeout(700);
+  await pg.evaluate(() => { const q = document.querySelector("#ch2 .quiz > .qitem"); q.scrollIntoView({ block: "center" }); });
+  await pg.waitForTimeout(200); await pg.keyboard.press("b"); await pg.waitForTimeout(200);
+  const picked = await pg.evaluate(() => { const q = document.querySelector("#ch2 .quiz > .qitem"); return [...q.querySelectorAll(".opt")].findIndex(o => o.classList.contains("right") || o.classList.contains("wrong")); });
+  assert(picked >= 0, "no option chosen by key B");
+  await pg.focus('#tabs [data-go="ch2"]'); await pg.keyboard.press("ArrowRight"); await pg.waitForTimeout(200);
+  assert(await pg.evaluate(() => !document.getElementById("ch3").hidden), "ArrowRight did not open Ch3");
+  await pg.click("#themeBtn"); await pg.click('#themeMenu [data-m="calm"]');
+  assert(await pg.evaluate(() => document.documentElement.classList.contains("ezcalm") && localStorage.getItem("ezexams-motion") === "calm"), "calm not applied");
+  assert(!pg.errs.length, pg.errs.join(" | "));
+  await pg.ctx.close();
+});
+
 await closeBrowser(); site.close();
 console.log(`\n${results.length - failed}/${results.length} passed`);
 process.exit(failed);

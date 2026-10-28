@@ -17,8 +17,8 @@
 <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/icon-180.png">
 <link rel="manifest" href="manifest.webmanifest">
-<script src="assets/ezcore.js?v=6dfbe681"></script>
-<script src="assets/ezfx.js?v=640bfb32" defer></script>
+<script src="assets/ezcore.js?v=e51cdc1b"></script>
+<script src="assets/ezfx.js?v=fb75c106" defer></script>
 <script src="assets/ezai.js?v=276e7c2a"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,7 +27,7 @@
 /* Layout: an exam-room noticeboard. Each exam is an admission ticket with a tear-off stub; handwritten titles, mono metadata. */
 :root{
   --bg:#dde1e0; --paper:#f3f5f5; --paper2:#e8ebeb;
-  --ink:#06141b; --ink70:rgba(6,20,27,.76); --muted:rgba(6,20,27,.56); --line:#c2c9ca; --line-strong:#9ba8ab;
+  --ink:#06141b; --ink70:rgba(6,20,27,.76); --muted:rgba(6,20,27,.64); --line:#c2c9ca; --line-strong:#9ba8ab;
   --indigo:#253745; --indigo-soft:rgba(37,55,69,.08); --indigo-mid:rgba(37,55,69,.18);
   --seal:#c4472a; --seal-soft:rgba(196,71,42,.06); --seal-line:rgba(196,71,42,.3);
   --brass:#4a5c6a; --brass-soft:rgba(74,92,106,.08); --brass-line:rgba(74,92,106,.3);
@@ -42,7 +42,7 @@
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#11212d; --paper:#1c2e3b; --paper2:#172835;
-  --ink:#ccd0cf; --ink70:rgba(204,208,207,.82); --muted:rgba(204,208,207,.56); --line:#2f4352; --line-strong:#4a5c6a;
+  --ink:#ccd0cf; --ink70:rgba(204,208,207,.82); --muted:rgba(204,208,207,.66); --line:#2f4352; --line-strong:#4a5c6a;
   --indigo:#9ba8ab; --indigo-soft:rgba(155,168,171,.1); --indigo-mid:rgba(155,168,171,.22);
   --seal:#ff7d5a; --seal-soft:rgba(255,125,90,.08); --seal-line:rgba(255,125,90,.34);
   --brass:#a9bccb; --brass-soft:rgba(169,188,203,.08); --brass-line:rgba(169,188,203,.3);
@@ -53,7 +53,7 @@
   color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#11212d; --paper:#1c2e3b; --paper2:#172835;
-  --ink:#ccd0cf; --ink70:rgba(204,208,207,.82); --muted:rgba(204,208,207,.56); --line:#2f4352; --line-strong:#4a5c6a;
+  --ink:#ccd0cf; --ink70:rgba(204,208,207,.82); --muted:rgba(204,208,207,.66); --line:#2f4352; --line-strong:#4a5c6a;
   --indigo:#9ba8ab; --indigo-soft:rgba(155,168,171,.1); --indigo-mid:rgba(155,168,171,.22);
   --seal:#ff7d5a; --seal-soft:rgba(255,125,90,.08); --seal-line:rgba(255,125,90,.34);
   --brass:#a9bccb; --brass-soft:rgba(169,188,203,.08); --brass-line:rgba(169,188,203,.3);
@@ -287,7 +287,7 @@ code{font-family:var(--f-mono);font-size:.9em;background:var(--indigo-soft);padd
 })();
 </script>
 <script src="assets/ezsync.js?v=e194a383"></script>
-<script src="assets/ezgate.js?v=be7c157e"></script>
+<script src="assets/ezgate.js?v=cdb3a761"></script>
 <script>
 (function(){
   const $=id=>document.getElementById(id);

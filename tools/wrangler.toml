@@ -8,3 +8,13 @@ workers_dev = true
 
 [placement]
 region = "gcp:us-central1"
+
+# The call to Google goes through this Durable Object, created in North America (locationHint "enam"),
+# so it never leaves from a place where Gemini is not offered.
+[[durable_objects.bindings]]
+name = "RELAY"
+class_name = "GeminiRelay"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["GeminiRelay"]

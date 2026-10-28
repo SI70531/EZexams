@@ -223,7 +223,7 @@ $("#egSwT").textContent=t.sw;$("#egSw").textContent=t.swb;
     const draw=()=>{const on=!!(window.EZSync&&EZSync.connected());
       b.innerHTML=on?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg><span>登出</span>'
         :'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5M15 12H3"/></svg><span>登入</span>';
-      b.title=on?"登出這個 PIN 碼（輸入錯了可以重新登入）":"輸入 PIN 碼登入";b.setAttribute("aria-label",on?"登出":"登入");};
+      b.title=on?"登出這個 PIN 碼":"輸入 PIN 碼登入";b.setAttribute("aria-label",on?"登出":"登入");};
     draw();if(window.EZSync&&EZSync.onStatus)EZSync.onStatus(draw);
     b.addEventListener("click",()=>{
       if(window.EZSync&&EZSync.connected())EZSync.disconnect();

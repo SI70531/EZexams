@@ -10,11 +10,11 @@
    It watches writes to that key, merges with the cloud copy on load, and adds a sync chip to the top bar. */
 (function(){
   const API="https://api.github.com", MARK="ezexams-progress.json";
-  const LS={tok:"ezsync-token",gist:"ezsync-gist",user:"ezsync-user",last:"ezsync-last",code:"ezsync-code"};
+  const LS={tok:"ezsync-token",gist:"ezsync-gist",user:"ezsync-user",last:"ezsync-last",code:"ezsync-code",sess:"ezsync-sess"};
   const WORKER="https://ezexams-ai.ta77199ta.workers.dev";
   /* the sync code is kept for this browser tab only (sessionStorage): closing the site signs this device out, and the
      next visit asks for the code again. Progress itself stays in localStorage. */
-  const store=k=>k===LS.code?sessionStorage:localStorage;
+  const store=k=>(k===LS.code||k===LS.sess)?sessionStorage:localStorage;
   try{const old=localStorage.getItem(LS.code);if(old){if(!sessionStorage.getItem(LS.code))sessionStorage.setItem(LS.code,old);localStorage.removeItem(LS.code);}}catch(e){}
   const get=k=>{try{return store(k).getItem(k);}catch(e){return null;}};
   let internal=false;
@@ -59,24 +59,42 @@
     throw err("http");
   }
   /* sync code: the Worker reads and writes the Gist for us */
+  /* text/plain keeps the request "simple" (no CORS preflight), which also lets a keepalive upload leave with the page */
   async function px(method,path,body){
     let r;
-    try{r=await fetch(WORKER+path,{method,headers:body?{"Content-Type":"application/json"}:{},body,keepalive:!!(body&&body.length<60000&&px.keepalive)});}
+    try{r=await fetch(WORKER+path,{method,headers:body?{"Content-Type":"text/plain;charset=UTF-8"}:{},body,keepalive:!!(body&&body.length<60000&&px.keepalive)});}
     catch(e){throw Object.assign(new Error(String(e&&e.message||e)),{code:"net"});}
     const text=await r.text();
     if(r.ok)return text;
     let er={};try{er=JSON.parse(text).error||{};}catch(e){}
     const why=er.message||("HTTP "+r.status),wait=(+r.headers.get("retry-after")||0)*1000;
-    const code=r.status===429?"rate":er.status==="BAD_CODE"?"badcode":er.status==="TOO_BIG"?"big":(er.status==="NO_TOKEN"||er.status==="BAD_TOKEN")?"server":"http";
+    const code=er.status==="LOCKED"?"locked":er.status==="NEED_LOGIN"?"login":er.status==="NO_SUCH_CODE"?"nocode":er.status==="TAKEN"?"taken":
+      r.status===429?"rate":er.status==="BAD_CODE"?"badcode":er.status==="TOO_BIG"?"big":(er.status==="NO_TOKEN"||er.status==="BAD_TOKEN")?"server":"http";
     throw Object.assign(new Error(why),{code,status:r.status,why,wait});
   }
-  const codeQ=()=>"code="+encodeURIComponent(get(LS.code));
+  /* sign-in token from the Worker (12 hours). It is renewed quietly with the PIN kept for this tab. */
+  const tokExp=t=>{try{return JSON.parse(atob(t.split(".")[0].replace(/-/g,"+").replace(/_/g,"/"))).exp||0;}catch(e){return 0;}};
+  async function login(code,mode){
+    const t=JSON.parse(await px("POST","/login",JSON.stringify({code,mode})));
+    set(LS.sess,t.token);return t;
+  }
+  async function session(force){
+    const t=get(LS.sess);
+    if(!force&&t&&tokExp(t)>Date.now()+60000)return t;
+    if(!get(LS.code))return null;
+    return (await login(get(LS.code),"join")).token;
+  }
+  /* a Worker call that needs the token: renewed once if the Worker says it expired */
+  async function authed(fn){
+    try{return await fn(await session());}
+    catch(e){if(e.code!=="login")throw e;return await fn(await session(true));}
+  }
   async function readRemote(key){   /* the subject's cloud copy as a string, or null */
-    if(get(LS.code)){const t=await px("GET","/sync?"+codeQ()+"&key="+encodeURIComponent(key));return t&&t.trim()!=="{}"?t:null;}
+    if(get(LS.code)){const t=await authed(tk=>px("GET","/sync?key="+encodeURIComponent(key)+"&t="+encodeURIComponent(tk)));return t&&t.trim()!=="{}"?t:null;}
     const g=await readGist();return fileContent(g.files[key+".json"]);
   }
   async function writeRemote(key,payload,keepalive){
-    if(get(LS.code)){px.keepalive=keepalive;try{await px("POST","/sync",JSON.stringify({code:get(LS.code),key,payload}));}finally{px.keepalive=false;}return;}
+    if(get(LS.code)){await authed(async tk=>{px.keepalive=keepalive;try{await px("POST","/sync",JSON.stringify({t:tk,key,payload}));}finally{px.keepalive=false;}});return;}
     const id=await gistId();
     const body=JSON.stringify({files:{[key+".json"]:{content:JSON.stringify(payload)}}});
     /* the browser refuses a keepalive request over 64 KB, so a big progress file is sent normally */
@@ -106,6 +124,8 @@
     const c=e&&e.code,why=e&&e.why?"（GitHub："+e.why+"）":"";
     if(c==="auth")return "金鑰無效或過期，請到首頁重新連結。";
     if(c==="badcode")return "PIN 碼是 4 位數字。";
+    if(c==="locked"){const m=Math.max(1,Math.ceil((e.wait||0)/60000));return "PIN 碼輸入錯太多次，請 "+m+" 分鐘後再試。";}
+    if(c==="login")return "登入已過期，請重新輸入 PIN 碼。";
     if(c==="server")return "同步伺服器還沒設定好（"+(e.why||"")+"）。";
     if(c==="scope")return "這把金鑰沒有 gist 權限"+why+"。請到首頁換一把有勾 gist 的金鑰。";
     if(c==="rate")return "GitHub 暫時限制次數"+why+"，會自動再試。";
@@ -118,7 +138,7 @@
   /* after a failure (offline, GitHub busy or rate-limited) try again by itself: 30 s, 1, 2, 4 … up to 15 minutes */
   let retryT=null,retryN=0;
   function retryLater(key,e){
-    if(!e||e.code==="auth"||e.code==="scope"||e.code==="off"||e.code==="badcode"||e.code==="server")return;
+    if(!e||e.code==="auth"||e.code==="scope"||e.code==="off"||e.code==="badcode"||e.code==="server"||e.code==="nocode"||e.code==="locked")return;
     clearTimeout(retryT);const ms=Math.max(e.wait||0,Math.min(15*60000,30000*Math.pow(2,retryN++)));
     retryT=setTimeout(()=>{retryT=null;pull(key,{reloadOnChange:false});},ms);
   }
@@ -157,7 +177,7 @@
     }catch(e){emit(e.code==="off"?"off":"err",errMsg(e),e.code);try{console.warn("[EZSync] pull",key,e);}catch(_){}retryLater(key,e);}
   }
   /* every upload waits for its turn: at most one every 7.2 s from this browser (about 500 an hour) */
-  const busyPush={};
+  const busyPush={},dirty={};
   async function push(key,{keepalive=false}={}){
     if(!on())return;
     if(busyPush[key]){busyPush[key]="again";return;}   /* one upload per subject at a time; a newer change rides on the next one */
@@ -182,7 +202,7 @@
     try{
       set(LASTK,String(Date.now()));   /* claim the slot before sending, so another tab waits its turn */
       await writeRemote(key,{updatedAt:at,data:JSON.parse(data)},keepalive);
-
+      if((+get(metaKey(key))||0)<=at)delete dirty[key];
       set(LS.last,String(Date.now()));emit("ok","已同步");okNow();
     }catch(e){emit(e.code==="off"?"off":"err",errMsg(e),e.code);try{console.warn("[EZSync] push",key,e);}catch(_){}retryLater(key,e);}
   }
@@ -192,11 +212,14 @@
       subjects[key]={merge:opts.merge||null,sig:opts.sig||(o=>JSON.stringify(o)),timer:null};
       if(on()){
         pull(key);
-        document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")pull(key);else if(subjects[key].timer){clearTimeout(subjects[key].timer);subjects[key].timer=null;push(key,{keepalive:true});}});
+        /* leaving or hiding the page: send what is waiting right away (keepalive lets it finish after the tab closes) */
+        const leave=()=>{const sub=subjects[key];if(!(dirty[key]||sub.timer)||!on())return;clearTimeout(sub.timer);sub.timer=null;pushNow(key,true);};
+        document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")pull(key);else leave();});
+        addEventListener("pagehide",leave);
       }
     },
     changed(key){
-      set(metaKey(key),String(Date.now()));
+      set(metaKey(key),String(Date.now()));dirty[key]=true;
       const sub=subjects[key];if(!sub||!on())return;
       clearTimeout(sub.timer);emit("dirty","有變更，準備同步…");
       /* every upload is a new gist revision and GitHub limits those to about 500 an hour: upload soon,
@@ -213,31 +236,51 @@
     },
     /* sync code: devices with the same code share progress; replaces a GitHub token set up before */
     /* mode "create": the code must be new; "join": it must already hold progress */
-    async connectCode(code,{mode}={}){
+    async connectCode(code,opts={}){
+      const mode=opts.mode;
       code=(code||"").trim();
       if(!code)throw Object.assign(new Error("empty"),{code:"empty"});
       if(!/^\d{4}$/.test(code))throw Object.assign(new Error("bad code"),{code:"badcode"});
-      const old=get(LS.code);set(LS.code,code);
-      try{
-        const r=JSON.parse(await px("GET","/sync?"+codeQ()+"&key=ping")||"{}");
-        if(mode==="create"&&r.exists)throw Object.assign(new Error("taken"),{code:"taken"});
-        if(mode==="join"&&r.exists===false)throw Object.assign(new Error("no such code"),{code:"nocode"});
-      }
-      catch(e){set(LS.code,old);throw e;}
-      /* a new code is claimed right away, so another device can join it before any subject is opened */
-      if(mode==="create"){try{await px("POST","/sync",JSON.stringify({code,key:"meta",payload:{createdAt:Date.now()}}));}catch(e){}}
+      /* the Worker checks the PIN (counting wrong ones) and, for a new PIN, claims it right away */
+      const oldS=get(LS.sess);
+      try{await login(code,mode==="create"?"create":"join");}
+      catch(e){set(LS.sess,oldS);throw e;}
+      /* the PIN is right; if switching would clear answers on this device, ask first (opts.confirm(n) → true to go on) */
+      const n=this.wouldClear(code,mode);
+      if(n&&opts.confirm&&!(await opts.confirm(n))){set(LS.sess,oldS);throw Object.assign(new Error("cancelled"),{code:"cancel"});}
+      set(LS.code,code);
       [LS.tok,LS.gist,LS.user].forEach(k=>set(k,null));
       startFor(code,mode==="create");
       emit("ok","已連結");return code;
     },
     mode:()=>get(LS.code)?"code":get(LS.tok)?"token":"off",
     codeHint:()=>{const c=get(LS.code)||"";return c?c.slice(0,2)+"••••":"";},
-    disconnect(){[LS.tok,LS.gist,LS.user,LS.last,LS.code].forEach(k=>set(k,null));emit("off","");},
+    disconnect(){[LS.tok,LS.gist,LS.user,LS.last,LS.code,LS.sess].forEach(k=>set(k,null));emit("off","");},
+    /* upload whatever is still waiting (used before signing out) */
+    async flush(){
+      const ks=Object.keys(subjects).filter(k=>dirty[k]||subjects[k].timer);
+      for(const k of ks){const sub=subjects[k];clearTimeout(sub.timer);sub.timer=null;await pushNow(k,false);}
+      return ks.length;
+    },
+    pending:()=>Object.keys(subjects).some(k=>dirty[k]||subjects[k].timer),
+    /* sign-in token for other Worker services (the AI grading proxy); null when not signed in */
+    session:f=>session(!!f).catch(()=>null),
+    /* how many answers this browser holds that signing in with this PIN would clear (0 if none would be) */
+    wouldClear(code,mode){
+      const w=who(code),prev=get("ezsync-who");
+      let legacy=!prev;if(prev){legacy=true;for(let i=0;i<10000;i++)if(who(String(i).padStart(4,"0"))===prev){legacy=false;break;}}
+      if(legacy||!(mode==="create"||prev!==w))return 0;
+      let n=0;
+      for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(!/-midterm-v1$/.test(k))continue;
+        try{const d=JSON.parse(localStorage.getItem(k))||{};Object.values(d.quiz||{}).forEach(c=>n+=Object.keys(c||{}).length);
+          Object.values(d.ex2||{}).forEach(x=>n+=Object.keys((x&&x.ans)||{}).filter(q=>(x.ans[q]||"").trim()).length);}catch(e){}}
+      return n;
+    },
     /* sync this page's subject right now: upload pending answers, then download (reloads if another device changed something) */
     async syncNow(){
       for(const k of Object.keys(subjects)){const sub=subjects[k];if(sub.timer){clearTimeout(sub.timer);sub.timer=null;}await pull(k);}
     },
-    async syncAll(){const ks=Object.keys(subjects);for(const k of ks)await pull(k,{reloadOnChange:false});if(!ks.length){emit("sync","同步中…");try{if(get(LS.code))await px("GET","/sync?"+codeQ()+"&key=ping");else await readGist();set(LS.last,String(Date.now()));emit("ok","已同步");}catch(e){emit("err",errMsg(e));}}},
+    async syncAll(){const ks=Object.keys(subjects);for(const k of ks)await pull(k,{reloadOnChange:false});if(!ks.length){emit("sync","同步中…");try{if(get(LS.code))await session(true);else await readGist();set(LS.last,String(Date.now()));emit("ok","已同步");}catch(e){emit("err",errMsg(e));}}},
     connected:()=>on(),
     user:()=>get(LS.user),
     lastSync:()=>+get(LS.last)||0,
@@ -249,6 +292,7 @@
   /* ---------- default merge for EZexams pages: {quiz, quizReset, ex2:{id:{ans,grade,self,resetAt}}, last} ---------- */
   function defaultMerge(local,remote){
     const out=JSON.parse(JSON.stringify(remote||{}));
+    const rQat=JSON.parse(JSON.stringify((remote&&remote.qat)||{})),rEx=JSON.parse(JSON.stringify((remote&&remote.ex2)||{}));
     out.quiz=out.quiz||{};
     const rr=out.quizReset||{},lr=local.quizReset||{},lq=local.quiz||{};
     Object.keys(lq).forEach(ch=>{if((rr[ch]||0)>(lr[ch]||0))return;out.quiz[ch]=Object.assign({},lq[ch],out.quiz[ch]||{});});
@@ -287,6 +331,23 @@
         });
       });
     }
+    /* question by question: an answer given later on this device beats an older one from another device */
+    const lQat=local.qat||{},cl=out.qclr||{},rr2=out.quizReset||{},lr2=local.quizReset||{};
+    Object.keys(local.quiz||{}).forEach(ch=>{
+      if((rr2[ch]||0)>(lr2[ch]||0))return;
+      Object.keys(local.quiz[ch]||{}).forEach(i=>{
+        const la=(lQat[ch]||{})[i]||0,ra=(rQat[ch]||{})[i]||0;
+        if(la>ra&&la>((cl[ch]||{})[i]||0)){out.quiz[ch]=out.quiz[ch]||{};out.quiz[ch][i]=local.quiz[ch][i];}
+      });
+    });
+    Object.keys(local.ex2||{}).forEach(id=>{
+      const L=local.ex2[id]||{},R=out.ex2&&out.ex2[id];if(!R)return;
+      const ra=(rEx[id]&&rEx[id].at)||{},clr=R.clr||{};
+      Object.keys(L.at||{}).forEach(q=>{
+        if((L.at[q]||0)>(ra[q]||0)&&(L.at[q]||0)>(clr[q]||0))["ans","grade","self"].forEach(f=>{
+          if(L[f]&&L[f][q]!==undefined){R[f]=R[f]||{};R[f][q]=L[f][q];}else if(R[f])delete R[f][q];});
+      });
+    });
     if("last" in local)out.last=local.last;
     return out;
   }

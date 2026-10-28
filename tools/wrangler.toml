@@ -18,3 +18,17 @@ class_name = "GeminiRelay"
 [[migrations]]
 tag = "v1"
 new_sqlite_classes = ["GeminiRelay"]
+
+
+# Per-visitor counters (wrong PINs, new PINs, error reports) and the list of recent page errors.
+[[durable_objects.bindings]]
+name = "GUARD"
+class_name = "Guard"
+
+[[durable_objects.bindings]]
+name = "ERRLOG"
+class_name = "ErrLog"
+
+[[migrations]]
+tag = "v2"
+new_sqlite_classes = ["Guard", "ErrLog"]

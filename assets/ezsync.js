@@ -291,13 +291,12 @@
     const st=document.createElement("style");
     st.textContent='.syncchip{flex:0 0 auto;display:flex;align-items:center;gap:6px;height:36px;padding:0 10px;border:1.5px solid var(--ink);border-radius:8px;background:var(--paper);color:var(--muted);font-family:var(--f-mono,monospace);font-size:12px;text-decoration:none;white-space:nowrap}.syncchip svg{width:16px;height:16px}.syncchip::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--muted)}.syncchip[data-state="ok"]{color:var(--ok)}.syncchip[data-state="ok"]::before{background:var(--ok)}.syncchip[data-state="sync"],.syncchip[data-state="dirty"]{color:var(--warn)}.syncchip[data-state="sync"]::before,.syncchip[data-state="dirty"]::before{background:var(--warn)}.syncchip[data-state="err"]{color:var(--seal)}.syncchip[data-state="err"]::before{background:var(--seal)}.syncchip:hover{background:var(--indigo-soft)}@media (max-width:1200px){.syncchip .synclab{display:none}}@media (max-width:640px){.syncchip{height:32px;padding:0 8px}}';
     document.head.appendChild(st);
-    const a=document.createElement("a");a.className="syncchip";a.id="syncChip";a.href="../../#sync";a.dataset.state="off";a.setAttribute("role","button");
+    const a=document.createElement("a");a.className="syncchip";a.id="syncChip";a.href="../../";a.dataset.state="off";a.setAttribute("role","button");
     a.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 9a4 4 0 0 1 .5 8"/><path d="M12 12v7M9 16l3 3 3-3"/></svg><span class="synclab">未同步</span>';
     theme.parentNode.insertBefore(a,theme);
     a.addEventListener("click",e=>{
       const s=window.EZSync.status();
       if(window.EZGate&&(!window.EZSync.connected()||window.EZSync.mode()!=="code")){e.preventDefault();window.EZGate.open();return;}   /* set up a sync code right here */
-      if(!window.EZSync.connected()||(s.state==="err"&&s.code==="auth"))return; /* go to the home page to set up / re-link */
       e.preventDefault();
       if(s.state==="sync")return;
       window.EZSync.syncNow();
@@ -307,13 +306,13 @@
       a.dataset.state=on?s.state:"off";
       a.querySelector(".synclab").textContent=!on?"未同步":s.state==="sync"?"同步中":s.state==="dirty"?"待同步":s.state==="err"?"同步失敗":"已同步";
       const needKey=s.state==="err"&&s.code==="auth";
-      a.title=!on?"只存在這台裝置。點這裡輸入同步碼。":needKey?"GitHub 金鑰失效了，點這裡到首頁重新連結。":(s.msg&&s.state==="err"?s.msg+" 點一下再同步一次。":(window.EZSync.mode()==="code"?"已同步（同步代碼 "+window.EZSync.codeHint()+"）":"已同步到 GitHub"+(window.EZSync.user()?"（@"+window.EZSync.user()+"）":""))+"。點一下立即同步。");
+      a.title=!on?"只存在這台裝置。點這裡輸入同步碼。":needKey?"同步失敗，點一下再試一次。":(s.msg&&s.state==="err"?s.msg+" 點一下再同步一次。":(window.EZSync.mode()==="code"?"已同步（同步代碼 "+window.EZSync.codeHint()+"）":"已同步到 GitHub"+(window.EZSync.user()?"（@"+window.EZSync.user()+"）":""))+"。點一下立即同步。");
     });
   }
   function updateNote(){
     let n=document.getElementById("storeNote");
     if(!n)n=[...document.querySelectorAll("p.small")].find(p=>/只存在這台裝置/.test(p.textContent));
-    if(n){const c=window.EZSync.connected();n.hidden=c;if(!c)n.textContent="目前只存在這台裝置。到 EZexams 首頁的「跨裝置同步」貼一次金鑰，所有裝置就會同步。";}
+    if(n){const c=window.EZSync.connected();n.hidden=c;if(!c)n.textContent="目前只存在這台裝置。點右上角的同步按鈕輸入同步碼，所有裝置就會同步。";}
   }
   window.addEventListener("load",()=>setTimeout(()=>{
     let cur=null;try{cur=localStorage.getItem(autoKey);}catch(e){}

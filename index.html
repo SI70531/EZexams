@@ -237,19 +237,6 @@ code{font-family:var(--f-mono);font-size:.9em;background:var(--indigo-soft);padd
   <div class="subjgrid"><p class="empty">還沒有科目。</p></div>
   </section>
   </div>
-  <section class="sync" id="sync">
-    <div class="subj"><h2>跨裝置同步</h2><span class="en">sync/</span></div>
-    <div class="syncbox">
-      <div class="syncstate"><span class="led" id="syncLed"></span><b id="syncTitle">只存在這台裝置</b><span class="small" id="syncSub"></span></div>
-      <p id="syncNote"></p>
-      <div class="syncbtns">
-        <button class="btn primary" type="button" id="syncMain">輸入同步碼</button>
-        <button class="btn" type="button" id="syncChange" hidden>更換同步碼</button>
-        <button class="btn" type="button" id="syncOut" hidden>登出這台裝置</button>
-      </div>
-      <p class="msg" id="syncMsg" role="status"></p>
-    </div>
-  </section>
   <section class="sync" id="ai">
     <div class="subj"><h2>AI Correcting</h2><span class="en">grading/</span></div>
     <div class="syncbox">
@@ -286,36 +273,8 @@ code{font-family:var(--f-mono);font-size:.9em;background:var(--indigo-soft);padd
   done.forEach(t=>terms.appendChild(t));
 })();
 </script>
-<script src="assets/ezsync.js?v=0487d604"></script>
+<script src="assets/ezsync.js?v=e096f5ea"></script>
 <script src="assets/ezgate.js?v=b3ea47b5"></script>
-<script>
-(function(){
-  const $=id=>document.getElementById(id);
-  function fmt(t){if(!t)return "";const d=new Date(t);return "最後同步 "+d.toLocaleString("zh-TW",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"});}
-  /* status of this device; setting up, changing or leaving a sync code goes through the entry gate (ezgate.js) */
-  function render(st){
-    const mode=EZSync.mode(),on=mode==="code";
-    $("syncLed").className="led "+(on?(st.state==="dirty"?"sync":st.state):mode==="token"?"err":"");
-    $("syncTitle").textContent=on?"已開啟同步（同步碼 "+EZSync.codeHint()+"）":mode==="token"?"這台裝置還在用舊的 GitHub 金鑰同步":"只存在這台裝置";
-    $("syncSub").textContent=on?(st.state==="sync"?"同步中…":fmt(EZSync.lastSync())):"";
-    $("syncNote").textContent=on?"所有科目的作答、分數和錯題都會自動同步。其他裝置輸入同一組同步碼，就會看到同樣的進度。":
-      mode==="token"?"請改用 6 位數同步碼：輸入之後，這台裝置的進度會一起帶過去。":"進度目前只存在這台裝置。輸入同步碼後，每台裝置都會是同一份進度。";
-    $("syncMain").textContent=on?"立即同步":"輸入同步碼";
-    $("syncChange").hidden=$("syncOut").hidden=!on;
-    if(st.state==="err"&&on){$("syncMsg").textContent=st.msg;$("syncMsg").className="msg err";}
-    else if(st.state==="ok"&&$("syncMsg").classList.contains("err")){$("syncMsg").textContent="";$("syncMsg").className="msg";}
-  }
-  EZSync.onStatus(render);
-  $("syncMain").addEventListener("click",()=>{if(EZSync.mode()==="code"){$("syncMsg").className="msg";$("syncMsg").textContent="同步中…";EZSync.syncAll().then(()=>{if(EZSync.status().state==="ok"){$("syncMsg").className="msg ok";$("syncMsg").textContent="已同步。";}});}else if(window.EZGate)EZGate.open();});
-  $("syncChange").addEventListener("click",()=>window.EZGate&&EZGate.open({mode:"join",change:true}));
-  $("syncOut").addEventListener("click",e=>{const b=e.currentTarget;
-    if(b.dataset.armed!=="1"){b.dataset.armed="1";b.textContent="確定登出？（這台裝置的進度會留著）";setTimeout(()=>{b.dataset.armed="";b.textContent="登出這台裝置";},4000);return;}
-    EZSync.disconnect();location.reload();});
-
-  addEventListener("hashchange",()=>render(EZSync.status()));
-  render(EZSync.status());
-})();
-</script>
 <script>
 (function(){
   const $=id=>document.getElementById(id);

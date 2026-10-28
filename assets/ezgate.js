@@ -142,7 +142,7 @@ $("#egSwT").textContent=t.sw;$("#egSw").textContent=t.swb;
     if(!window.EZSync){say("同步功能還在載入，請再按一次。","err");return;}
     busy=true;go.disabled=true;ticket.classList.remove("retry");say("連線中…");cellsets[0].classList.add("wait");
     try{
-      await EZSync.connectCode(c1,{mode});
+      await EZSync.connectCode(c1,{mode,confirm:askClear});
       cellsets[0].classList.remove("wait");
       try{sessionStorage.removeItem("ezgate-skip");}catch(_){}
       say(mode==="create"?"PIN 碼建立好了，從 0 開始。":"已載入這組 PIN 碼的進度。","ok");
@@ -150,7 +150,9 @@ $("#egSwT").textContent=t.sw;$("#egSw").textContent=t.swb;
       root.classList.add("out");setTimeout(()=>location.reload(),420);   /* reload so this page syncs right away */
     }catch(err){
       busy=false;go.disabled=false;cellsets[0].classList.remove("wait");
-      if(err.code==="taken")bad(cellsets[0],"這組 PIN 碼已經有人在用了，換一組吧。");
+      if(err.code==="cancel"){bad(cellsets[0],"已取消，這台裝置的作答都還在。");}
+      else if(err.code==="locked"){bad(cellsets[0],EZSync.errMsg(err));}
+      else if(err.code==="taken")bad(cellsets[0],"這組 PIN 碼已經有人在用了，換一組吧。");
       else if(err.code==="nocode"){bad(cellsets[0],"");const m=$("#egMsg");m.textContent="找不到這組 PIN 碼的進度。是第一次使用嗎？ ";
         const l=document.createElement("button");l.type="button";l.className="eg-link";l.textContent="用它建立 PIN 碼";
         l.onclick=()=>{setMode("create",true);setTimeout(()=>{fill(cellsets[0],0,c1,1);fill(cellsets[1],0,c1,1);},700);};m.appendChild(l);}
@@ -158,6 +160,18 @@ $("#egSwT").textContent=t.sw;$("#egSw").textContent=t.swb;
     }
   }
   const wait=ms=>new Promise(r=>setTimeout(r,ms));
+  /* switching PINs would clear the answers kept on this device: ask before doing it */
+  function askClear(n){
+    cellsets[0].classList.remove("wait");
+    return new Promise(res=>{
+      const m=$("#egMsg");m.className="eg-msg err eg-ask";
+      m.textContent=(ticket.dataset.mode==="create"?"新的 PIN 碼會從 0 開始，":"換成這組 PIN 碼的進度，")+"這台裝置上的 "+n+" 題作答會被清掉。確定嗎？ ";
+      const y=document.createElement("button"),c=document.createElement("button");
+      y.type=c.type="button";y.className="eg-link";c.className="eg-link";y.textContent="確定，清掉並登入";c.textContent="取消";
+      y.onclick=()=>{say("連線中…");res(true);};c.onclick=()=>res(false);
+      m.append(y," ",c);y.focus();
+    });
+  }
   /* blur the old text out, the new text in */
   function swap(el,html){
     if(RM()||!el.animate){el.innerHTML=html;return;}
@@ -225,7 +239,14 @@ $("#egSwT").textContent=t.sw;$("#egSw").textContent=t.swb;
         :'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5M15 12H3"/></svg><span>登入</span>';
       b.title=on?"登出這個 PIN 碼":"輸入 PIN 碼登入";b.setAttribute("aria-label",on?"登出":"登入");};
     draw();if(window.EZSync&&EZSync.onStatus)EZSync.onStatus(draw);
-    b.addEventListener("click",()=>{
+    b.addEventListener("click",async()=>{
+      if(b.disabled)return;
+      /* upload answers that are still waiting before letting go of the PIN (at most 8 s) */
+      if(window.EZSync&&EZSync.connected()&&EZSync.pending&&EZSync.pending()){
+        b.disabled=true;b.querySelector("span").textContent="上傳中…";
+        try{await Promise.race([EZSync.flush(),new Promise(r=>setTimeout(r,8000))]);}catch(e){}
+        b.disabled=false;
+      }
       if(window.EZSync&&EZSync.connected())EZSync.disconnect();
       try{sessionStorage.removeItem("ezgate-skip");}catch(e){}
       draw();open();

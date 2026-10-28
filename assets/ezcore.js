@@ -109,3 +109,20 @@
     }catch(e){}
   }
 })();
+
+/* page errors are reported to the EZexams Worker (message, file:line, page; no answers or PIN), at most 5 per page;
+   .github/workflows/health.yml turns them into the GitHub issue 「網站錯誤回報」 */
+(function(){
+  let n=0;const seen=new Set();
+  function send(msg,src){
+    try{
+      msg=String(msg||"").slice(0,300);if(!msg||/^Script error\.?$/.test(msg)||n>=5)return;
+      const k=msg+"|"+src;if(seen.has(k))return;seen.add(k);n++;
+      if(location.hostname!=="si70531.github.io")return;
+      fetch("https://ezexams-ai.ta77199ta.workers.dev/log",{method:"POST",keepalive:true,headers:{"Content-Type":"text/plain;charset=UTF-8"},
+        body:JSON.stringify({msg,src:String(src||"").slice(0,200),page:location.pathname+location.hash})}).catch(()=>{});
+    }catch(e){}
+  }
+  addEventListener("error",e=>{if(e&&e.filename&&!/si70531\.github\.io|localhost/.test(e.filename))return;send(e&&e.message,(e.filename||"").replace(/^.*\/EZexams\//,"")+":"+(e.lineno||0));});
+  addEventListener("unhandledrejection",e=>{const r=e&&e.reason;send("Unhandled: "+(r&&(r.message||r.code)||r),"promise");});
+})();

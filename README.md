@@ -54,6 +54,14 @@ Answers are saved by chapter and question position. In a `quiz.js`, fix typos in
 
 A weak match is shown in an "unmatched" group instead of under a wrong section. In the browser console, `EZWrong.report()` lists where every question goes.
 
+### Tests
+
+`node tests/run.mjs` (after `npm i playwright && npx playwright install chromium`) opens every page in a headless browser and runs the real Worker code in Node with GitHub, Gemini and the Durable Objects faked in memory: tabs, phone layout, the PIN gate (new PIN, wrong-PIN lockout, switching PINs), syncing between two devices, merging, upload on sign-out, the review page and AI fallback. `.github/workflows/tests.yml` runs it on every push.
+
+### Health and error reports
+
+`.github/workflows/health.yml` runs every morning: it fails (GitHub emails you) when the Worker's `GITHUB_TOKEN` is invalid or expires within 14 days, or `GEMINI_KEY` stops working, and it collects errors that visitors' browsers reported to the Worker (`POST /log`, sent by `assets/ezcore.js`; message, file and page only) into the issue 「網站錯誤回報」.
+
 ### Cache versions
 
 Script and stylesheet links carry `?v=<content hash>` so browsers pick up changes right away. A GitHub Action (`.github/workflows/stamp.yml`) refreshes these on every push; to do it by hand, run `python3 tools/stamp.py`.
@@ -61,6 +69,10 @@ Script and stylesheet links carry `?v=<content hash>` so browsers pick up change
 ## Cross-Device Sync
 
 Progress syncs by a 4-digit **PIN** (the Worker still accepts the older 6-digit codes; a browser that last used one keeps its progress when it first sets up a 4-digit PIN). The PIN is asked for every time the site is opened (closing the site signs out), and a newly created PIN starts from zero progress. Opening the site without one shows an entry gate (`assets/ezgate.js`, styled as an admission ticket in the site's own light/dark theme): set a code up on the first device and enter the same code once on every other device (or choose to use this device only for the session); devices with the same code share progress. Nobody needs a GitHub account or token. The pages talk to the EZexams Worker (`tools/ezexams-worker.js`), which keeps all progress in one private Gist of the GitHub account behind its secret `GITHUB_TOKEN` (a classic token with only the `gist` scope). Each file is named `<first 24 hex of SHA-256(code)>--<STORAGE_KEY>.json`, so the codes themselves are never stored. Anyone who knows a code can read and change that progress, so codes should not be trivial.
+
+Signing in goes through `POST /login`, which returns a signed session token (12 hours); syncing and the Gemini proxy only work with that token, so the Worker URL alone is no way into the Gemini quota. Wrong PINs are counted per visitor (IP): five misses within 15 minutes lock that visitor out for the rest of the window, and one visitor can set up at most five new PINs an hour (counters live in the `Guard` Durable Object).
+
+Answers are merged question by question: the later answer (by its timestamp) wins, so two devices answering at the same time do not overwrite each other. Leaving the page or pressing 登出 uploads anything still waiting first. Signing in with a different PIN asks before it clears the answers kept on that device.
 
 Devices that were linked with a GitHub token before keep working that way until a PIN is entered. Sync logic is handled by `assets/ezsync.js`; uploads are spread to at most one every 7.2 s per browser (GitHub allows about 500 gist revisions an hour).
 
@@ -72,7 +84,7 @@ To enable sync for a new subject page, include this script tag right before your
 
 ## AI Grading (free)
 
-AI grading works out of the box. The pages call a small Cloudflare Worker (`tools/ezexams-worker.js`, deployed at `https://ezexams-ai.ta77199ta.workers.dev`) that forwards requests to Google Gemini and adds the API key on its side, so the key never appears on the website. The Worker only serves pages from `https://si70531.github.io` and only forwards `generateContent` calls; the key is stored in the Worker as the secret `GEMINI_KEY` (Settings → Variables and Secrets). If the proxy ever stops working, the **AI Correcting** section on the main page reappears and you can paste your own free key (from https://aistudio.google.com/apikey); a pasted key stays in that browser only and is used directly. If the free quota runs out or Gemini is unreachable, grading falls back to keyword matching automatically. Logic is in `assets/ezai.js`.
+AI grading works out of the box. The pages call a small Cloudflare Worker (`tools/ezexams-worker.js`, deployed at `https://ezexams-ai.ta77199ta.workers.dev`) that forwards requests to Google Gemini and adds the API key on its side, so the key never appears on the website. The Worker only serves pages from `https://si70531.github.io` and only forwards `generateContent` calls; the key is stored in the Worker as the secret `GEMINI_KEY` (Settings → Variables and Secrets). If the proxy ever stops working, the **AI Correcting** section on the main page reappears and you can paste your own free key (from https://aistudio.google.com/apikey); a pasted key stays in that browser only and is used directly. If the free quota runs out or Gemini is unreachable, grading falls back to keyword matching automatically. Logic is in `assets/ezai.js`. Grading requests use temperature 0, top-k 1 and a fixed seed, so the same answer gets the same score as far as Gemini allows.
 
 The same connection powers the multiple-choice explanations (`assets/ezexplain.js`): after you answer, Gemini explains your mistake and why each option is right or wrong. Results are cached in the browser so each question is only asked once.
 

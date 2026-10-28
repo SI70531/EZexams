@@ -17,6 +17,13 @@
 const ALLOWED = ["https://si70531.github.io"];
 const MAX_BODY = 1000000;
 const MARK = "ezexams-sync-codes.json";
+/* only these Gemini models may be called through the Worker (the site's own list in assets/ezai.js, plus the
+   model-list lookup), so a signed-in visitor cannot spend the key on a more expensive model */
+const MODELS = ["gemini-flash-latest", "gemini-2.5-flash", "gemini-flash-lite-latest", "gemini-2.5-flash-lite", "gemini-2.0-flash"];
+/* AI calls per PIN: generous enough for heavy grading sessions, but a stranger's PIN cannot drain the key */
+const AI_HOUR = 600, AI_DAY = 3000;
+/* wrong PINs from everywhere together: changing IP does not give a fresh 10,000-PIN search */
+const GLOBAL_FAIL_MAX = 200, GLOBAL_FAIL_WIN = 60 * 60 * 1000;
 let cachedGist = null;
 
 export default {
@@ -47,7 +54,9 @@ export default {
     }
 
     if (!ok) return fail(403, "PERMISSION_DENIED", "This service only serves " + ALLOWED.join(", "));
-    const ip = req.headers.get("CF-Connecting-IP") || "anon";
+    /* IPv6 visitors are counted per /64 (one home or phone gets a whole /64, so rotating addresses inside it is free) */
+    const rawIp = req.headers.get("CF-Connecting-IP") || "anon";
+    const ip = rawIp.includes(":") ? rawIp.split(":").slice(0, 4).join(":") + "::/64" : rawIp;
 
     /* ---------- page errors ---------- */
     if (url.pathname === "/log" && req.method === "POST") {
@@ -58,7 +67,7 @@ export default {
       let e; try { e = JSON.parse(text); } catch (x) { return json({ ok: false }); }
       await env.ERRLOG.get(env.ERRLOG.idFromName("errors")).fetch("https://log/add", { method: "POST", body: JSON.stringify({
         msg: String(e.msg || "").slice(0, 300), src: String(e.src || "").slice(0, 200), page: String(e.page || "").slice(0, 120),
-        ua: (req.headers.get("User-Agent") || "").slice(0, 120) }) });
+        ua: (req.headers.get("User-Agent") || "").slice(0, 120) }) });   /* kept inside; /errors does not show it */
       return json({ ok: true });
     }
 
@@ -69,15 +78,23 @@ export default {
       const code = String(b.code || "").trim(), mode = b.mode === "create" ? "create" : "join";
       if (!/^\d{4}(\d{2})?$/.test(code)) return fail(400, "BAD_CODE", "The PIN must be 4 digits");
       const g0 = await guard(env, ip, "check");
+      const gAll = await guard(env, "*", "gcheck");
+      if (mode === "join" && gAll.glocked) return fail(429, "LOCKED", "Too many wrong PINs on the site right now; try again later", { "Retry-After": String(gAll.gwait) });
       if (g0.locked) return fail(429, "LOCKED", "Too many wrong PINs; try again later", { "Retry-After": String(g0.wait) });
+      if (mode === "create" && gAll.glocked) return fail(429, "LOCKED", "Too many wrong PINs on the site right now; try again later", { "Retry-After": String(gAll.gwait) });
       if (mode === "create" && g0.creates >= 5) return fail(429, "LOCKED", "Too many new PINs from here; try again later", { "Retry-After": String(g0.createWait) });
       const h = (await sha(code)).slice(0, 24);
       try {
         const id = await gistId(env);
         const gist = await gh(env, "/gists/" + id);
-        const exists = Object.keys(gist.files || {}).some(n => n.startsWith(h + "--"));
-        if (mode === "join" && !exists) { const g = await guard(env, ip, "fail"); return fail(404, "NO_SUCH_CODE", "No progress under this PIN", g.locked ? { "Retry-After": String(g.wait) } : {}); }
-        if (mode === "create" && exists) { const g = await guard(env, ip, "fail"); return fail(409, "TAKEN", "This PIN is already in use", g.locked ? { "Retry-After": String(g.wait) } : {}); }
+        const listed = Object.keys(gist.files || {}).some(n => n.startsWith(h + "--"));
+        /* GitHub lists at most 300 files of a gist; past that, look the PIN's marker file up directly */
+        const exists = listed || (Object.keys(gist.files || {}).length >= 300 && (await rawFile(gist, h + "--meta.json")) != null);
+        /* every PIN gets a marker file, so it can still be found once the gist holds more than 300 files */
+        if (mode === "join" && listed && !gist.files[h + "--meta.json"])
+          await gh(env, "/gists/" + id, { method: "PATCH", body: JSON.stringify({ files: { [h + "--meta.json"]: { content: JSON.stringify({ createdAt: Date.now() }) } } }) }).catch(() => {});
+        if (mode === "join" && !exists) { await guard(env, "*", "gfail"); const g = await guard(env, ip, "fail"); return fail(404, "NO_SUCH_CODE", "No progress under this PIN", g.locked ? { "Retry-After": String(g.wait) } : {}); }
+        if (mode === "create" && exists) { await guard(env, "*", "gfail"); const g = await guard(env, ip, "fail"); return fail(409, "TAKEN", "This PIN is already in use", g.locked ? { "Retry-After": String(g.wait) } : {}); }
         if (mode === "create") {
           await guard(env, ip, "create");
           await gh(env, "/gists/" + id, { method: "PATCH", body: JSON.stringify({ files: { [h + "--meta.json"]: { content: JSON.stringify({ createdAt: Date.now() }) } } }) });
@@ -105,6 +122,9 @@ export default {
     const m = url.pathname.match(/^\/v1beta\/models\/([\w.-]+):generateContent$/);
     if (m && req.method === "POST") {
       if (!env.GEMINI_KEY) return fail(500, "INTERNAL", "The Worker has no GEMINI_KEY secret yet");
+      if (!MODELS.includes(m[1])) return fail(404, "NOT_FOUND", "Model not available here: " + m[1]);   /* 404 makes the site move on to the next model */
+      const q = await guard(env, "pin:" + who, "ai");
+      if (q.blocked) return fail(429, "RESOURCE_EXHAUSTED", "AI limit for this PIN reached; try again later", { "Retry-After": String(q.aiWait || 60) });
       const body = await req.text();
       if (body.length > 200000) return fail(413, "INVALID_ARGUMENT", "Request too large");
       const target = "https://generativelanguage.googleapis.com/v1beta/models/" + m[1] + ":generateContent";
@@ -134,10 +154,13 @@ export default {
         if (req.method === "GET") {
           const g = await gh(env, "/gists/" + id);
           /* ping: does this code already hold any progress? (setting up a new code vs joining one) */
-          if (key === "ping") return json({ ok: true, exists: Object.keys(g.files || {}).some(n => n.startsWith(name.split("--")[0] + "--")) });
+          const many = Object.keys(g.files || {}).length >= 300;
+          if (key === "ping") return json({ ok: true, exists: Object.keys(g.files || {}).some(n => n.startsWith(who + "--")) || (many && (await rawFile(g, who + "--meta.json")) != null) });
           const f = g.files && g.files[name];
-          if (!f) return json({});
-          const content = f.truncated ? await (await fetch(f.raw_url)).text() : f.content;
+          let content;
+          if (f) content = f.truncated ? await (await fetch(f.raw_url)).text() : f.content;
+          else if (many) content = await rawFile(g, name);
+          if (content == null) return json({});
           return new Response(content, { status: 200, headers: { ...cors, "Content-Type": "application/json" } });
         }
         await gh(env, "/gists/" + id, { method: "PATCH", body: JSON.stringify({ files: { [name]: { content: JSON.stringify(payload) } } }) });
@@ -166,6 +189,13 @@ export class GeminiRelay {
   }
 }
 
+/* one file of a secret gist read straight from its raw URL (works for files past the 300 GitHub lists); null if absent */
+async function rawFile(gist, name) {
+  const owner = gist.owner && gist.owner.login;
+  if (!owner) return null;
+  const r = await fetch("https://gist.githubusercontent.com/" + owner + "/" + gist.id + "/raw/" + encodeURIComponent(name) + "?t=" + Date.now(), { headers: { "User-Agent": "ezexams-sync" } });
+  return r.ok ? r.text() : null;
+}
 async function sha(s) {
   const d = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
   return [...new Uint8Array(d)].map(b => b.toString(16).padStart(2, "0")).join("");
@@ -224,7 +254,7 @@ async function verify(env, t) {
 /* ---------- per-visitor counters (wrong PINs, new PINs, error reports) in a Durable Object ---------- */
 async function guard(env, ip, op) {
   if (!env.GUARD) return { locked: false, creates: 0 };
-  const r = await env.GUARD.get(env.GUARD.idFromName("ip:" + ip)).fetch("https://guard/" + op, { method: "POST" });
+  const r = await env.GUARD.get(env.GUARD.idFromName(ip === "*" ? "global" : ip.startsWith("pin:") ? ip : "ip:" + ip)).fetch("https://guard/" + op, { method: "POST" });
   return r.json();
 }
 const FAIL_WIN = 15 * 60 * 1000, FAIL_MAX = 5, CREATE_WIN = 60 * 60 * 1000, LOG_MAX = 20;
@@ -234,7 +264,18 @@ export class Guard {
     const op = new URL(req.url).pathname.slice(1), now = Date.now();
     const d = (await this.state.storage.get("d")) || { fails: [], creates: [], logs: [] };
     d.fails = d.fails.filter(t => now - t < FAIL_WIN); d.creates = d.creates.filter(t => now - t < CREATE_WIN); d.logs = (d.logs || []).filter(t => now - t < CREATE_WIN);
-    let blocked = false;
+    d.gfails = (d.gfails || []).filter(t => now - t < GLOBAL_FAIL_WIN);
+    /* AI calls per PIN: a running count per hour and per day (counts, not timestamps, to stay small) */
+    const hr = Math.floor(now / 3600000), day = Math.floor(now / 86400000);
+    if (!d.ai || d.ai.hr !== hr) d.ai = { hr, n: 0, day: d.ai && d.ai.day === day ? d.ai.day : day, dn: d.ai && d.ai.day === day ? d.ai.dn : 0 };
+    if (d.ai.day !== day) { d.ai.day = day; d.ai.dn = 0; }
+    let blocked = false, aiWait = 0;
+    if (op === "gfail") d.gfails.push(now);
+    if (op === "ai") {
+      if (d.ai.n >= AI_HOUR) { blocked = true; aiWait = Math.ceil(((hr + 1) * 3600000 - now) / 1000); }
+      else if (d.ai.dn >= AI_DAY) { blocked = true; aiWait = Math.ceil(((day + 1) * 86400000 - now) / 1000); }
+      else { d.ai.n++; d.ai.dn++; }
+    }
     if (op === "fail") d.fails.push(now);
     if (op === "create") d.creates.push(now);
     if (op === "log") { if (d.logs.length >= LOG_MAX) blocked = true; else d.logs.push(now); }
@@ -242,7 +283,9 @@ export class Guard {
     const locked = d.fails.length >= FAIL_MAX;
     const wait = locked ? Math.ceil((d.fails[d.fails.length - FAIL_MAX] + FAIL_WIN - now) / 1000) : 0;
     const createWait = d.creates.length ? Math.ceil((d.creates[0] + CREATE_WIN - now) / 1000) : 0;
-    return Response.json({ locked, wait, left: Math.max(0, FAIL_MAX - d.fails.length), creates: d.creates.length, createWait, blocked });
+    const glocked = d.gfails.length >= GLOBAL_FAIL_MAX;
+    const gwait = glocked ? Math.ceil((d.gfails[d.gfails.length - GLOBAL_FAIL_MAX] + GLOBAL_FAIL_WIN - now) / 1000) : 0;
+    return Response.json({ glocked, gwait, aiWait, locked, wait, left: Math.max(0, FAIL_MAX - d.fails.length), creates: d.creates.length, createWait, blocked });
   }
 }
 
@@ -262,7 +305,7 @@ export class ErrLog {
       return Response.json({ ok: true });
     }
     const since = +u.searchParams.get("since") || 0;
-    return Response.json({ errors: list.filter(x => x.last > since).map(({ k, ...x }) => x) });
+    return Response.json({ errors: list.filter(x => x.last > since).map(({ k, ua, ...x }) => x) });
   }
 }
 
@@ -274,7 +317,7 @@ async function health(env) {
     out.github.ok = r.ok; out.github.status = r.status;
     const exp = r.headers.get("github-authentication-token-expiration");
     if (exp) { out.github.expires = exp; out.github.daysLeft = Math.floor((Date.parse(exp.replace(" UTC", "Z").replace(" ", "T")) - Date.now()) / 864e5); }
-    out.github.scopes = r.headers.get("x-oauth-scopes") || "";
+    /* scopes are not reported: /health is public */
   } catch (e) { out.github.error = String(e.message || e); }
   try {
     const target = "https://generativelanguage.googleapis.com/v1beta/models?pageSize=1";

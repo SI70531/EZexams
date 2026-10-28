@@ -87,7 +87,7 @@
   function build(){
     const st=document.createElement("style");st.textContent=css;document.head.appendChild(st);
     root=document.createElement("div");root.id="ezgate";root.setAttribute("role","dialog");root.setAttribute("aria-modal","true");root.setAttribute("aria-labelledby","egH");
-    const row=n=>'<div class="eg-cells" data-row="'+n+'">'+[1,2,3,4].map(i=>'<div class="eg-cell" data-n="'+i+'"><input type="password" inputmode="numeric" maxlength="1" autocomplete="off" aria-label="PIN 碼第 '+i+' 位"></div>').join("")+'</div>';
+    const row=n=>'<div class="eg-cells" data-row="'+n+'">'+[1,2,3,4].map(i=>'<div class="eg-cell" data-n="'+i+'"><input type="password" inputmode="numeric" pattern="[0-9]*" enterkeyhint="go" maxlength="1" autocomplete="off" aria-label="PIN 碼第 '+i+' 位"></div>').join("")+'</div>';
     root.innerHTML='<div class="eg-wrap"><div class="eg-brand"><span class="mk">EZ</span>EZexams 考試衝刺</div>'+
       '<form class="eg-ticket" data-mode="join" novalidate autocomplete="off"><div class="eg-main">'+
         '<div class="eg-prompt" id="egPrompt"></div><h1 class="eg-h" id="egH"></h1><p class="eg-p" id="egP"></p>'+

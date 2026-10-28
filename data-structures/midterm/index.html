@@ -1430,6 +1430,11 @@ function rubricPrompt(items){
   return [
 "You are grading answers to a Data and File Structures midterm exam (Gilberg & Forouzan, Data Structures: A Pseudocode Approach; chapters: introduction/pseudocode/ADT/Big-O, searching and hashing, linked lists).",
 "The student may answer in English OR Traditional Chinese, or a mix. Judge only the concepts, numbers, pseudocode statements and steps, never the language, spelling or grammar.",
+"Scoring procedure (follow it the same way every time, so the same answer always gets the same score):",
+"1. Split the reference answer into its key points (ideas, keywords, numbers, steps) and give each an equal share of the item's points.",
+"2. For each key point decide only: present and correct (full share), partly there or vaguely stated (half share), missing or wrong (0).",
+"3. Add the shares and round DOWN to the nearest 0.5. Do not add credit for effort, length or style, and do not take off for extra correct details.",
+"4. Example: a 4-point item whose reference has 4 key points, with 3 correct and 1 missing, scores 3; with 2 correct and 2 vaguely stated, scores 3; with 1 correct, scores 1.",
 "Grading rules:",
 "- Compare against the reference answer. Fill-in blanks labeled (a)-(e): give proportional credit per correct blank; equivalent pseudocode (e.g. '->' vs '.', '==' vs 'equal') is fine.",
 "- Hashing calculations: credit correct folded sums, home addresses, collision counts and final addresses; key offset uses the folded sum divided by the list size.",

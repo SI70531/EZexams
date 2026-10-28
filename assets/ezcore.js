@@ -102,7 +102,9 @@
     "nav.tabs .tarr:hover{color:var(--indigo)}"+
     /* 首頁 stays pinned at the left edge while the other tabs scroll under it */
     "#tabs [data-go=\"home\"]{position:sticky;left:0;z-index:3}"+
-    "#tabs.scrolled [data-go=\"home\"]{box-shadow:6px 0 8px -6px rgba(6,20,27,.45)}";
+    "#tabs.scrolled [data-go=\"home\"]{box-shadow:6px 0 8px -6px rgba(6,20,27,.45);border-right-width:1.5px!important}"+
+    /* the hover tint is see-through: lay it over the paper colour so tabs scrolling under 首頁 never show through */
+    "#tabs [data-go=\"home\"]:hover:not([aria-current=\"true\"]){background:linear-gradient(var(--indigo-soft),var(--indigo-soft)),var(--paper)}";
   document.head.appendChild(tst);
   function tabBar(){
     document.querySelectorAll("nav.tabs").forEach(nav=>{

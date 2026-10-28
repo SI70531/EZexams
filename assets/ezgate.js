@@ -46,17 +46,31 @@
 .eg-links{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 14px;margin:14px 0 0;padding-top:12px;border-top:1.5px dashed var(--line);font-size:13px;color:var(--muted)}
 .eg-link{border:0;background:none;padding:0;font:inherit;font-weight:600;color:var(--indigo);cursor:pointer;text-decoration:underline;text-decoration-color:var(--line-strong);text-underline-offset:3px}
 .eg-link:hover{color:var(--seal);text-decoration-color:var(--seal)}
-.eg-seal{position:absolute;right:22px;top:18px;width:104px;height:104px;border:3px double var(--seal);border-radius:50%;display:grid;place-items:center;
-  font-family:var(--f-display);font-weight:700;font-size:22px;color:var(--seal);background:color-mix(in srgb,var(--paper) 70%,transparent);opacity:0;transform:scale(2.2) rotate(-28deg);pointer-events:none}
-.eg-seal small{display:block;font-family:var(--f-mono);font-size:9.5px;font-weight:600;letter-spacing:.12em;margin-top:2px;text-align:center}
-.eg-ticket.stamped .eg-seal{animation:egstamp .42s cubic-bezier(.2,1.4,.4,1) forwards}
-@keyframes egstamp{to{opacity:.92;transform:scale(1) rotate(-14deg)}}
+/* success: the boxes lock, slide together into one stack, and turn into a check (motion only; colours are the theme's) */
+@property --eg-a{syntax:"<angle>";inherits:false;initial-value:0deg}
+.eg-cell input{display:block}
+.eg-cells.wait .eg-cell::after{content:"";position:absolute;inset:0;border-radius:8px;padding:2px;pointer-events:none;
+  background:conic-gradient(from var(--eg-a),var(--seal) 0 22%,transparent 22% 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);
+  animation:egtrace .9s linear infinite}
+.eg-cells.wait .eg-cell:nth-child(2)::after{animation-delay:-.15s}.eg-cells.wait .eg-cell:nth-child(3)::after{animation-delay:-.3s}
+.eg-cells.wait .eg-cell:nth-child(4)::after{animation-delay:-.45s}.eg-cells.wait .eg-cell:nth-child(5)::after{animation-delay:-.6s}.eg-cells.wait .eg-cell:nth-child(6)::after{animation-delay:-.75s}
+@keyframes egtrace{to{--eg-a:360deg}}
+.eg-cells.lock .eg-cell input{border-color:var(--seal);border-bottom-width:1.5px;transition:color .18s,border-color .18s}
+.eg-cells.lock .eg-cell::before{opacity:0;transition:opacity .15s}
+.eg-cells.lock .eg-cell input.fade{color:transparent;caret-color:transparent}
+.eg-ticket.done .eg-go,.eg-ticket.done .eg-links,.eg-ticket.done .eg-lab{opacity:.25;transition:opacity .3s}
+.eg-glow{position:absolute;inset:0;border-radius:inherit;overflow:hidden;pointer-events:none;opacity:0}
+.eg-glow::before{content:"";position:absolute;left:var(--gx,50%);top:var(--gy,50%);width:560px;height:560px;margin:-280px 0 0 -280px;border-radius:50%;
+  background:radial-gradient(closest-side,color-mix(in srgb,var(--ok) 34%,transparent),transparent)}
+.eg-done{position:absolute;display:grid;place-items:center;border:2px solid var(--seal);border-radius:9px;background:var(--paper2);pointer-events:none;z-index:2}
+.eg-done svg{width:52%;height:52%;overflow:visible}
+.eg-done path{fill:none;stroke:var(--ok);stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:24;stroke-dashoffset:24}
 .eg-foot{margin:16px 2px 0;font-family:var(--f-mono);font-size:11.5px;color:var(--muted);text-align:center}
 @media (max-width:560px){
   .eg-main{padding:18px 16px 16px}.eg-cells{gap:6px}.eg-cell input{font-size:20px}
-  .eg-seal{right:12px;top:12px;width:84px;height:84px;font-size:18px}
 }
-@media (prefers-reduced-motion:reduce){#ezgate,.eg-ticket{transition:none}.eg-prompt::after{animation:none}.eg-ticket.stamped .eg-seal{animation:none;opacity:.92;transform:rotate(-14deg)}}`;
+@media (prefers-reduced-motion:reduce){#ezgate,.eg-ticket{transition:none}.eg-prompt::after,.eg-cells.wait .eg-cell::after{animation:none}}`;
 
   const TEXT={
     join:{prompt:"ezexams --sync",h:"輸入<em>同步碼</em>",p:"輸入你在其他裝置設定的 6 位數同步碼，就會載入同一份進度：每一科的作答、分數和錯題。",btn:"進入 EZexams",sw:"第一次使用？",swb:"建立同步碼"},
@@ -79,7 +93,7 @@
         '<p class="eg-msg" id="egMsg" role="status"></p>'+
         '<div class="eg-links"><span><span id="egSwT"></span> <button type="button" class="eg-link" id="egSw"></button></span><button type="button" class="eg-link" id="egForgot">忘記同步碼？</button></div>'+
       '</div>'+
-      '<div class="eg-seal" aria-hidden="true"><span>已同步<small>EZEXAMS</small></span></div></form>'+
+      '<div class="eg-glow" aria-hidden="true"></div></form>'+
       '<p class="eg-foot"><button type="button" class="eg-link" id="egSkip">先不同步，只用這台裝置</button></p></div>';
     document.body.appendChild(root);
     ticket=$(".eg-ticket");cellsets=[...root.querySelectorAll(".eg-cells")];
@@ -96,7 +110,9 @@
     $("#egSkip").addEventListener("click",()=>{try{sessionStorage.setItem("ezgate-skip","1");}catch(e){}close();});
     ticket.addEventListener("submit",submit);
   }
-  function fill(g,from,digits,gi){const c=cells(g);let i=from;for(const d of digits){if(i>=6)break;c[i].value=d;c[i].classList.add("on");i++;}
+  const RM=()=>matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const pop=x=>{if(!RM()&&x.animate)x.animate([{transform:"scale(.86)"},{transform:"scale(1.07)",offset:.6},{transform:"none"}],{duration:200,easing:"ease-out"});};
+  function fill(g,from,digits,gi){const c=cells(g);let i=from;for(const d of digits){if(i>=6)break;c[i].value=d;c[i].classList.add("on");pop(c[i]);i++;}
     if(i>=6&&gi===0&&ticket.dataset.mode==="create")cells(cellsets[1])[0].focus();else c[Math.min(i,5)].focus();}
   function say(t,cls){const m=$("#egMsg");m.className="eg-msg"+(cls?" "+cls:"");m.textContent=t;}
   /* a rejected code: shake, show why, then empty the boxes so the next try starts from the first box */
@@ -116,21 +132,65 @@ $("#egSwT").textContent=t.sw;$("#egSw").textContent=t.swb;
     if(mode==="create"&&c1!==c2)return bad(cellsets[1],"兩次輸入的同步碼不一樣。");
     if(mode==="create"&&/^(\d)\1{5}$|^(012345|123456|234567|345678|456789|987654|876543|654321|543210)$/.test(c1))return bad(cellsets[0],"這組太好猜了，換一組吧。");
     if(!window.EZSync){say("同步功能還在載入，請再按一次。","err");return;}
-    go.disabled=true;say("連線中…");
+    go.disabled=true;say("連線中…");cellsets[0].classList.add("wait");
     try{
       await EZSync.connectCode(c1,{mode});
+      cellsets[0].classList.remove("wait");
       try{sessionStorage.removeItem("ezgate-skip");}catch(_){}
       say(mode==="create"?"同步碼建立好了，其他裝置輸入同一組就會同步。":"已載入這組同步碼的進度。","ok");
-      ticket.classList.add("stamped");
-      setTimeout(()=>{root.classList.add("out");setTimeout(()=>location.reload(),420);},950);   /* reload so this page syncs right away */
+      await celebrate(mode);
+      root.classList.add("out");setTimeout(()=>location.reload(),420);   /* reload so this page syncs right away */
     }catch(err){
-      go.disabled=false;
+      go.disabled=false;cellsets[0].classList.remove("wait");
       if(err.code==="taken")bad(cellsets[0],"這組同步碼已經有人在用了，換一組吧。");
       else if(err.code==="nocode"){bad(cellsets[0],"");const m=$("#egMsg");m.textContent="找不到這組同步碼的進度。是第一次使用嗎？ ";
         const l=document.createElement("button");l.type="button";l.className="eg-link";l.textContent="用它建立同步碼";
         l.onclick=()=>{setMode("create",true);setTimeout(()=>{fill(cellsets[0],0,c1,1);fill(cellsets[1],0,c1,1);},700);};m.appendChild(l);}
       else say(window.EZSync.errMsg?EZSync.errMsg(err):"連不上同步伺服器，請稍後再試。","err");
     }
+  }
+  const wait=ms=>new Promise(r=>setTimeout(r,ms));
+  /* blur the old text out, the new text in */
+  function swap(el,html){
+    if(RM()||!el.animate){el.innerHTML=html;return;}
+    el.animate([{filter:"blur(0)",opacity:1},{filter:"blur(8px)",opacity:0}],{duration:260,easing:"ease-in",fill:"forwards"}).finished.then(()=>{
+      el.innerHTML=html;el.animate([{filter:"blur(8px)",opacity:0,transform:"translateY(5px)"},{filter:"blur(0)",opacity:1,transform:"none"}],{duration:420,easing:"cubic-bezier(.2,.8,.2,1)",fill:"forwards"});});
+  }
+  /* the code was accepted: lock the boxes, slide them into one stack, morph it into a check, glow */
+  async function celebrate(mode){
+    ticket.classList.add("done");
+    const rows=cellsets.filter(g=>g.offsetParent),all=rows.flatMap(g=>cells(g));
+    rows.forEach(g=>g.classList.add("lock"));
+    const tr=ticket.getBoundingClientRect(),r0=rows[0].getBoundingClientRect(),r1=rows[rows.length-1].getBoundingClientRect(),c0=all[0].getBoundingClientRect();
+    const cx=r0.left+r0.width/2,cy=(r0.top+r1.bottom)/2;   /* the middle of all visible rows */
+    const box=document.createElement("div");box.className="eg-done";box.setAttribute("aria-hidden","true");
+    box.style.cssText="left:"+(cx-tr.left-c0.width/2)+"px;top:"+(cy-tr.top-c0.height/2)+"px;width:"+c0.width+"px;height:"+c0.height+"px;opacity:0";
+    box.innerHTML='<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+    ticket.appendChild(box);
+    const glow=$(".eg-glow");glow.style.setProperty("--gx",(cx-tr.left)+"px");glow.style.setProperty("--gy",(cy-tr.top)+"px");
+    swap($("#egH"),mode==="create"?"同步碼<em>建立好了</em>":"同步<em>成功</em>");
+    swap($("#egP"),mode==="create"?"其他裝置輸入同一組同步碼，進度就會同步。":"已載入這組同步碼的進度，馬上進入。");
+    if(RM()||!box.animate){all.forEach(x=>x.style.visibility="hidden");box.style.opacity=1;box.style.borderColor="var(--ok)";box.querySelector("path").style.strokeDashoffset=0;glow.style.opacity=1;await wait(900);return;}
+    await wait(160);
+    all.forEach(x=>x.classList.add("fade"));                       /* digits fade out */
+    await wait(180);
+    const n=all.length;
+    await Promise.all(all.map((x,i)=>{                             /* slide together, fanned like a deck */
+      const r=x.getBoundingClientRect(),dx=cx-(r.left+r.width/2),dy=cy-(r.top+r.height/2),k=i%6,rot=(k-2.5)*5;
+      return x.animate([{transform:"none"},
+        {transform:"translate("+(dx*.78+k*3)+"px,"+dy+"px) rotate("+rot+"deg)",offset:.65},
+        {transform:"translate("+(dx+k*1.5)+"px,"+dy+"px) rotate("+(rot*.35)+"deg) scale(.97)"}],
+        {duration:560,delay:(n>6?(i%6):i)*22,easing:"cubic-bezier(.65,0,.25,1)",fill:"forwards"}).finished;}));
+    box.style.opacity=1;all.forEach(x=>x.style.visibility="hidden");
+    await box.animate([                                            /* the stack wobbles into one box and turns green */
+      {transform:"rotate(-7deg) scale(1.04)",borderRadius:"14px 6px 12px 7px",borderColor:"var(--seal)"},
+      {transform:"rotate(5deg) scale(.96)",borderRadius:"7px 13px 6px 12px",offset:.4},
+      {transform:"rotate(-2deg) scale(1.02)",borderRadius:"10px",offset:.7,borderColor:"var(--ok)"},
+      {transform:"none",borderRadius:"9px",borderColor:"var(--ok)"}],{duration:520,easing:"ease-out",fill:"forwards"}).finished;
+    box.querySelector("path").animate([{strokeDashoffset:24},{strokeDashoffset:0}],{duration:380,easing:"cubic-bezier(.3,.7,.2,1)",fill:"forwards"});
+    box.animate([{boxShadow:"0 0 0 0 color-mix(in srgb,var(--ok) 0%,transparent)"},{boxShadow:"0 0 26px 4px color-mix(in srgb,var(--ok) 45%,transparent)"}],{duration:700,easing:"ease-out",fill:"forwards"});
+    glow.animate([{opacity:0,transform:"scale(.6)"},{opacity:1,transform:"none"}],{duration:900,easing:"cubic-bezier(.2,.8,.2,1)",fill:"forwards"});
+    await wait(1100);
   }
   function open(o={}){
     opts=o;if(!root)build();

@@ -77,10 +77,12 @@ x.q.e?"TEACHER'S SHORT NOTE (use it as the ground truth): "+x.q.e:"",
     try{
       while(Q.length){
         const wait=lastStart+6800-Date.now();if(wait>0){await sleep(wait);if(!Q.length)break;}   /* pick the job only after waiting, so a fresh answer can still jump ahead */
+        /* written answers being graded go first: wait until grading is done */
+        if(window.EZAI&&EZAI.gradingBusy&&EZAI.gradingBusy()){WAITMSG="手寫題批改中，批改完就接著分析…";if(Q[0])redraw(Q[0].x.id);while(EZAI.gradingBusy())await sleep(1000);WAITMSG="";if(!Q.length)break;}
         const job=Q.shift(),x=job.x;
         if(CACHE[x.id]){QD.delete(x.id);continue;}
         const it=findItem(x.id)||job.it;if(!it||!it.isConnected){QD.delete(x.id);continue;}
-        const s=window.EZAI&&EZAI.sampler();if(!s){QD.delete(x.id);continue;}
+        const s=window.EZAI&&EZAI.sampler({low:true});if(!s){QD.delete(x.id);continue;}
         lastStart=Date.now();QD.delete(x.id);PEND[x.id]=true;redraw(x.id);
         const optsOi=[...it.querySelectorAll(".opt[data-oi]")].map(o=>({oi:o.dataset.oi,L:o.querySelector(".ab").textContent.trim()}));
         try{

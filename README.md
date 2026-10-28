@@ -70,9 +70,9 @@ To enable sync for a new subject page, include this script tag right before your
 
 ## AI Grading (free)
 
-AI grading works out of the box: `assets/ezai.js` carries a built-in Google Gemini API key, so nobody has to set anything up. The key is only lightly scrambled and can be read by anyone, so in Google Cloud it is restricted to HTTP referrers `https://si70531.github.io/*` and to the Generative Language API. If Google ever rejects the built-in key, the **AI Correcting** section on the main page reappears and you can paste your own free key (from https://aistudio.google.com/apikey); a pasted key stays in that browser only and takes priority over the built-in one. If the free quota runs out or Gemini is unreachable, grading falls back to keyword matching automatically.
+AI grading works out of the box. The pages call a small Cloudflare Worker (`tools/gemini-worker.js`, deployed at `https://ezexams-ai.ta77199ta.workers.dev`) that forwards requests to Google Gemini and adds the API key on its side, so the key never appears on the website. The Worker only serves pages from `https://si70531.github.io` and only forwards `generateContent` calls; the key is stored in the Worker as the secret `GEMINI_KEY` (Settings → Variables and Secrets). If the proxy ever stops working, the **AI Correcting** section on the main page reappears and you can paste your own free key (from https://aistudio.google.com/apikey); a pasted key stays in that browser only and is used directly. If the free quota runs out or Gemini is unreachable, grading falls back to keyword matching automatically. Logic is in `assets/ezai.js`.
 
-The same key powers the multiple-choice explanations (`assets/ezexplain.js`): after you answer, Gemini explains your mistake and why each option is right or wrong. Results are cached in the browser so each question is only asked once.
+The same connection powers the multiple-choice explanations (`assets/ezexplain.js`): after you answer, Gemini explains your mistake and why each option is right or wrong. Results are cached in the browser so each question is only asked once.
 
 ## Question Order
 

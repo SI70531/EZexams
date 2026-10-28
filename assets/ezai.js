@@ -7,16 +7,19 @@
    Error messages carry Google's own reason, so errText() can show it. */
 (function(){
   const LS_KEY="ezai-key",LS_MODEL="ezai-model",LS_AUTH="ezai-auth",LS_BAD="ezai-rejected";
-  /* built-in key, so AI grading works without any setup. It is only lightly scrambled (anyone can still read it),
-     so in Google Cloud the key is restricted to requests from si70531.github.io and to the Gemini API.
-     A key pasted on the home page (stored in this browser) takes priority over the built-in one. */
-  const BUILTIN=(()=>{try{return atob("QXAwQko5bzlua2FUOUlnRzNUWlRNb2h1QjhkZUhKSDhPVlFyQWZaaVpoeUs2TlI4YkEuUUE=").split("").reverse().join("");}catch(e){return "";}})();
-  const myKey=()=>get(LS_KEY)||BUILTIN;
+  /* No setup needed: without a key of your own, requests go through the EZexams proxy (a Cloudflare Worker,
+     tools/gemini-worker.js), which adds the Gemini key on its side, so the key never appears on this website.
+     A key pasted on the home page (stored in this browser) is used directly instead. */
+  const PROXY="https://ezexams-ai.ta77199ta.workers.dev";
+  const myKey=()=>get(LS_KEY)||"";
+  const viaProxy=key=>!key;
   /* best first; when one is overloaded or its free quota is used up, the next one is tried */
   const MODELS=["gemini-flash-latest","gemini-2.5-flash","gemini-flash-lite-latest","gemini-2.5-flash-lite","gemini-2.0-flash"];
   const API="https://generativelanguage.googleapis.com/v1beta/models/";
   const get=k=>{try{return localStorage.getItem(k);}catch(e){return null;}};
   const set=(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v);}catch(e){}};
+  /* once: forget keys pasted before the proxy existed (the old shared key is being retired), so everyone uses the proxy */
+  if(!get("ezai-proxy-v1")){set(LS_KEY,null);set(LS_AUTH,null);set(LS_BAD,null);set("ezai-proxy-v1","1");}
   const fail=(code,msg)=>Object.assign(new Error(msg||code),{code});
   /* never wait forever: abort a request that gets no answer in time */
   async function fetchT(url,opt,ms){
@@ -37,9 +40,10 @@
   }
 
   async function call(key,model,prompt,json){
-    const q=get(LS_AUTH)==="query";
-    const r=await fetchT(API+encodeURIComponent(model)+":generateContent"+(q?"?key="+encodeURIComponent(key):""),{method:"POST",
-        headers:Object.assign({"Content-Type":"application/json"},q?{}:{"x-goog-api-key":key}),
+    const px=viaProxy(key),q=!px&&get(LS_AUTH)==="query";
+    const base=px?PROXY+"/v1beta/models/":API;
+    const r=await fetchT(base+encodeURIComponent(model)+":generateContent"+(q?"?key="+encodeURIComponent(key):""),{method:"POST",
+        headers:Object.assign({"Content-Type":"application/json"},(q||px)?{}:{"x-goog-api-key":key}),
         body:JSON.stringify({contents:[{role:"user",parts:[{text:prompt}]}],
           generationConfig:Object.assign({temperature:0.2},json?{responseMimeType:"application/json"}:{})})},120000);
     let body=null;try{body=await r.json();}catch(e){}
@@ -84,9 +88,9 @@
 
   const OWN=new WeakSet();
   window.EZAI={
-    key:()=>myKey(),
-    connected:()=>!!myKey(),
-    builtin:()=>!get(LS_KEY)&&!!BUILTIN,
+    key:()=>get(LS_KEY),
+    connected:()=>true,   /* always: the proxy works without a key */
+    builtin:()=>!get(LS_KEY),
     model:()=>get(LS_MODEL)||MODELS[0],
     /* check a key with a tiny request, and save it if it works */
     async connect(key){
@@ -103,7 +107,7 @@
     disconnect(){set(LS_KEY,null);set(LS_MODEL,null);set(LS_AUTH,null);set(LS_BAD,null);},
     rejected:()=>!!get(LS_BAD),
     sampler(){
-      const key=myKey();if(!key)return null;
+      const key=myKey();   /* "" = go through the proxy */
       const s={json:async(prompt)=>parse(await run(key,prompt,true)),text:(prompt)=>run(key,prompt,false)};
       OWN.add(s);return s;
     },

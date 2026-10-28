@@ -174,6 +174,19 @@ await check("AI grading when signed in: goes through the Worker with temperature
   assert(/Scoring procedure/.test(JSON.stringify(seen)), "rubric procedure missing from the prompt");
   await pg.ctx.close();
 });
+await check("AI explanation: the right option is green even if the AI marks it wrong", async () => {
+  resetWorker();
+  setGemini(() => ({ candidates: [{ content: { parts: [{ text: JSON.stringify({ mistake: "", point: "p", options: ["A", "B", "C", "D"].map(l => ({ letter: l, correct: false, why: "why " + l })) }) }] } }] }));
+  const pg = await device(); await pg.goto(U + "operating-systems/midterm/"); await pg.waitForTimeout(500);
+  await pg.click("#egSw"); await pg.waitForTimeout(800); await typePin(pg, 1, "7351"); await typePin(pg, 2, "7351"); await settle(pg, 1500);
+  const r = await pg.evaluate(async () => { show("ch1"); await new Promise(z => setTimeout(z, 300)); const it = document.querySelector("#ch1 .quiz > .qitem"); const i = +it.dataset.i;
+    const right = [...it.querySelectorAll(".opt")].find(o => +o.dataset.oi === QUIZ.ch1[i].a); right.click();
+    for (let k = 0; k < 60 && !it.querySelector(".aiexp li"); k++) await new Promise(z => setTimeout(z, 100));
+    const L = right.querySelector(".ab").textContent.trim(); const li = [...it.querySelectorAll(".aiexp li")].find(x => x.querySelector(".ab").textContent.trim() === L);
+    return li ? li.className : "no explanation"; });
+  assert(/\bok\b/.test(r) && /mine/.test(r), "li class: " + r);
+  await pg.ctx.close();
+});
 await check("keyboard: A–D answers the question on screen, ← → moves between tabs; 減少動畫 switch works", async () => {
   const pg = await device({ skipGate: true }); await pg.goto(U + "operating-systems/midterm/#ch2"); await pg.waitForTimeout(700);
   await pg.evaluate(() => { const q = document.querySelector("#ch2 .quiz > .qitem"); q.scrollIntoView({ block: "center" }); });

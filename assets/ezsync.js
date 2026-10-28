@@ -126,12 +126,12 @@
     if(c==="badcode")return "PIN 碼是 4 位數字。";
     if(c==="locked"){const m=Math.max(1,Math.ceil((e.wait||0)/60000));return "PIN 碼輸入錯太多次，請 "+m+" 分鐘後再試。";}
     if(c==="login")return "登入已過期，請重新輸入 PIN 碼。";
-    if(c==="server")return "同步伺服器還沒設定好（"+(e.why||"")+"）。";
+    if(c==="server")return "同步伺服器設定有問題（"+(e.why||"")+"）。作答先存在這台裝置。";
     if(c==="scope")return "這把金鑰沒有 gist 權限"+why+"。請到首頁換一把有勾 gist 的金鑰。";
-    if(c==="rate")return "GitHub 暫時限制次數"+why+"，會自動再試。";
+    if(c==="rate")return "同步伺服器暫時忙碌。作答已存在這台裝置，稍後會自動上傳。";
     if(c==="big")return "進度資料太大，GitHub 拒收"+why+"。";
-    if(c==="net")return "連不上 GitHub（"+(e.message||"網路中斷")+"），等有網路會自動再試。";
-    return "同步失敗"+(e&&e.status?"（HTTP "+e.status+"）":"")+why+"，會自動再試。";
+    if(c==="net")return "暫時連不上網路。作答已存在這台裝置，恢復連線後會自動上傳。";
+    return "暫時無法同步"+(e&&e.status?"（HTTP "+e.status+"）":"")+"。作答已存在這台裝置，稍後會自動再試。";
   }
 
   const subjects={};// key -> {merge, timer}
@@ -188,7 +188,7 @@
            if the browser freezes it, the next visit uploads the change (it is newer than the cloud copy) */
         keepalive=false;
       }
-      for(let w;(w=lastAny()+GAP-Date.now())>0;){emit("dirty","等待上傳（每 7.2 秒最多一次）…");await new Promise(r=>setTimeout(r,w+Math.random()*500));}
+      for(let w;(w=lastAny()+GAP-Date.now())>0;){emit("dirty","有新的作答，幾秒後自動上傳…");await new Promise(r=>setTimeout(r,w+Math.random()*500));}
       await pushNow(key,keepalive);
     }finally{
       const again=busyPush[key]==="again";busyPush[key]=false;
@@ -221,7 +221,7 @@
     changed(key){
       set(metaKey(key),String(Date.now()));dirty[key]=true;
       const sub=subjects[key];if(!sub||!on())return;
-      clearTimeout(sub.timer);emit("dirty","有變更，準備同步…");
+      clearTimeout(sub.timer);emit("dirty","有新的作答，幾秒後自動上傳…");
       /* every upload is a new gist revision and GitHub limits those to about 500 an hour: upload soon,
          but never sooner than 7.2 s after the last upload from this browser; leaving the page uploads right away */
       const wait=()=>Math.max(1500,lastAny()+GAP-Date.now());   /* 1.5 s gathers a burst of clicks into one upload */
@@ -383,9 +383,9 @@
     window.EZSync.onStatus(s=>{
       const on=window.EZSync.connected();
       a.dataset.state=on?s.state:"off";
-      a.querySelector(".synclab").textContent=!on?"未同步":s.state==="sync"?"同步中":s.state==="dirty"?"待同步":s.state==="err"?"同步失敗":"已同步";
+      a.querySelector(".synclab").textContent=!on?"未同步":s.state==="sync"?"同步中":s.state==="dirty"?"待同步":s.state==="err"?"暫時離線":"已同步";
       const needKey=s.state==="err"&&s.code==="auth";
-      a.title=!on?"只存在這台裝置。點這裡輸入 PIN 碼。":needKey?"同步失敗，點一下再試一次。":(s.msg&&s.state==="err"?s.msg+" 點一下再同步一次。":(window.EZSync.mode()==="code"?"已同步（PIN 碼 "+window.EZSync.codeHint()+"）":"已同步到 GitHub"+(window.EZSync.user()?"（@"+window.EZSync.user()+"）":""))+"。點一下立即同步。");
+      a.title=!on?"只存在這台裝置。點這裡輸入 PIN 碼。":needKey?"同步失敗，點一下再試一次。":(s.msg&&s.state==="err"?s.msg+"（點一下可以馬上再試）":s.msg&&s.state==="dirty"?s.msg+"（點一下馬上上傳）":(window.EZSync.mode()==="code"?"已同步（PIN 碼 "+window.EZSync.codeHint()+"）":"已同步到 GitHub"+(window.EZSync.user()?"（@"+window.EZSync.user()+"）":""))+"。點一下立即同步。");
     });
   }
   function updateNote(){

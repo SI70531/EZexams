@@ -33,7 +33,7 @@
   const anchor=bar.querySelector(".syncchip")||bar.querySelector(".theme");
   if(anchor)bar.insertBefore(btn,anchor);else bar.appendChild(btn);
   /* the sync chip is added after page load, in front of the theme button: keep search before it */
-  new MutationObserver(()=>{const c=bar.querySelector(".syncchip");if(c&&c.nextElementSibling!==btn&&btn.nextElementSibling!==c)bar.insertBefore(btn,c);}).observe(bar,{childList:true});
+  new MutationObserver(()=>{const c=bar.querySelector(".syncchip");if(c&&c.parentNode===btn.parentNode&&c.nextElementSibling!==btn&&btn.nextElementSibling!==c)c.parentNode.insertBefore(btn,c);}).observe(bar,{childList:true});
 
   const panel=document.createElement("div");panel.className="ezs-panel";panel.hidden=true;panel.setAttribute("role","dialog");panel.setAttribute("aria-label","搜尋");
   panel.innerHTML='<div class="ezs-top"><svg class="ezs-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg><input type="search" placeholder="搜尋講義和題目" aria-label="搜尋關鍵字" autocomplete="off" spellcheck="false"></div><div class="ezs-info"></div><div class="ezs-list" role="listbox"></div>';

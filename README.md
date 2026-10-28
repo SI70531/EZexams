@@ -70,7 +70,7 @@ To enable sync for a new subject page, include this script tag right before your
 
 ## AI Grading (free)
 
-Written questions are graded by keyword matching by default. Under **AI Correcting** on the main page, paste a free Google Gemini API key (from https://aistudio.google.com/apikey, no credit card) to have Gemini grade them with a score and feedback. The key stays in that browser only (it is not synced). If the free quota runs out or Gemini is unreachable, grading falls back to keywords automatically. Logic is in `assets/ezai.js`.
+AI grading works out of the box: `assets/ezai.js` carries a built-in Google Gemini API key, so nobody has to set anything up. The key is only lightly scrambled and can be read by anyone, so in Google Cloud it is restricted to HTTP referrers `https://si70531.github.io/*` and to the Generative Language API. If Google ever rejects the built-in key, the **AI Correcting** section on the main page reappears and you can paste your own free key (from https://aistudio.google.com/apikey); a pasted key stays in that browser only and takes priority over the built-in one. If the free quota runs out or Gemini is unreachable, grading falls back to keyword matching automatically.
 
 The same key powers the multiple-choice explanations (`assets/ezexplain.js`): after you answer, Gemini explains your mistake and why each option is right or wrong. Results are cached in the browser so each question is only asked once.
 

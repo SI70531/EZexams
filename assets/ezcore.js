@@ -175,7 +175,7 @@
   document.addEventListener("keydown",e=>{
     if(e.ctrlKey||e.metaKey||e.altKey||e.defaultPrevented)return;
     const t=e.target;if(t&&(t.isContentEditable||/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)))return;
-    if(document.documentElement.classList.contains("ezgate-on")||document.getElementById("eztour"))return;
+    if(e.isComposing||document.documentElement.classList.contains("ezgate-on")||document.getElementById("eztour")||document.getElementById("ezask"))return;   /* not behind a dialog */
     if((e.key==="ArrowLeft"||e.key==="ArrowRight")&&t&&t.closest&&t.closest("#tabs")){
       const tabs=[...document.querySelectorAll("#tabs [data-go]")];const i=tabs.indexOf(t.closest("[data-go]"));if(i<0)return;
       const n=tabs[(i+(e.key==="ArrowRight"?1:-1)+tabs.length)%tabs.length];e.preventDefault();n.click();n.focus();return;

@@ -198,7 +198,8 @@ body.nograde .nogradenote{display:block}
   .vhead{grid-template-columns:1fr;padding:26px 0 20px}
   .vhead .pcb{order:9;grid-column:1;grid-row:auto;width:100%;max-width:260px;margin-top:8px}
   h1{font-size:29px}
-  h3{font-size:21px}
+  h3{font-size:21px;flex-wrap:wrap;row-gap:4px}
+  h3::after{min-width:0}   /* long headings with ★★★ no longer push the page sideways */
   .day{grid-template-columns:1fr;gap:2px}
   .box.en{font-size:16px}
   .brand .nm{display:none}

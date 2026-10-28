@@ -17,7 +17,7 @@ sw.js, manifest.webmanifest    offline support / install to home screen
 assets/
   ezcore.js     theme switcher + offline registration (every page loads it in <head>)
   ezbase.css    styles shared by all subject pages
-  ezsync.js     cross-device sync (4-digit PIN through the Worker, or an older GitHub token)
+  ezsync.js     cross-device sync (4-digit PIN through the Worker)
   ezgate.js     entry gate that asks for the 4-digit PIN before the site opens
   ezfx.js       interaction layer (UI only): reveal on scroll, ripples, answer feedback
   ezai.js       free AI grading with a Gemini API key
@@ -78,11 +78,11 @@ Script and stylesheet links carry `?v=<content hash>` so browsers pick up change
 
 Progress syncs by a 4-digit **PIN** (the Worker still accepts the older 6-digit codes; a browser that last used one keeps its progress when it first sets up a 4-digit PIN). The PIN is asked for every time the site is opened (closing the site signs out), and a newly created PIN starts from zero progress. Opening the site without one shows an entry gate (`assets/ezgate.js`, styled as an admission ticket in the site's own light/dark theme): set a code up on the first device and enter the same code once on every other device (or choose to use this device only for the session); devices with the same code share progress. Nobody needs a GitHub account or token. The pages talk to the EZexams Worker (`tools/ezexams-worker.js`), which keeps all progress in one private Gist of the GitHub account behind its secret `GITHUB_TOKEN` (a classic token with only the `gist` scope). Each file is named `<first 24 hex of SHA-256(code)>--<STORAGE_KEY>.json`, so the codes themselves are never stored. Anyone who knows a code can read and change that progress, so codes should not be trivial.
 
-Signing in goes through `POST /login`, which returns a signed session token (12 hours); syncing and the Gemini proxy only work with that token, so the Worker URL alone is no way into the Gemini quota. Wrong PINs are counted per visitor (IP): five misses within 15 minutes lock that visitor out for the rest of the window, and one visitor can set up at most five new PINs an hour (counters live in the `Guard` Durable Object).
+Signing in goes through `POST /login`, which returns a signed session token (12 hours); syncing and the Gemini proxy only work with that token, so the Worker URL alone is no way into the Gemini quota. Wrong PINs are counted per visitor (IP): five misses within 15 minutes lock that visitor out for the rest of the window, and one visitor can set up at most five new PINs an hour; IPv6 visitors are counted per /64, and 200 wrong PINs an hour across the whole site pause PIN sign-in until the hour passes, so changing IP does not restart a search of the 10,000 PINs. Each PIN may make 600 AI calls an hour and 3,000 a day, and only the models listed in the Worker can be called (counters live in the `Guard` Durable Object). Every upload first reads the cloud copy and merges it question by question, so a device never overwrites answers another device made in the meantime.
 
 Answers are merged question by question: the later answer (by its timestamp) wins, so two devices answering at the same time do not overwrite each other. Leaving the page or pressing 登出 uploads anything still waiting first. Signing in with a different PIN asks before it clears the answers kept on that device.
 
-Devices that were linked with a GitHub token before keep working that way until a PIN is entered. Sync logic is handled by `assets/ezsync.js`; uploads wait 10 s to gather a burst of answers and are spread to at most one every 30 s per browser; one failed sync shows 待同步 and retries by itself, only three in a row show 暫時離線, and each kind of failure is reported to the daily health issue.
+Sync logic is handled by `assets/ezsync.js`; uploads wait 10 s to gather a burst of answers and are spread to at most one every 30 s per browser; one failed sync shows 待同步 and retries by itself, only three in a row show 暫時離線, and each kind of failure is reported to the daily health issue.
 
 To enable sync for a new subject page, include this script tag right before your main script:
 

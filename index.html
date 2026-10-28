@@ -18,7 +18,7 @@
 <link rel="apple-touch-icon" href="assets/icon-180.png">
 <link rel="manifest" href="manifest.webmanifest">
 <script src="assets/ezcore.js?v=dd182fbb"></script>
-<script src="assets/ezai.js?v=6f14f01f"></script>
+<script src="assets/ezai.js?v=86d43d3a"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=LXGW+WenKai+TC:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
@@ -240,18 +240,14 @@ code{font-family:var(--f-mono);font-size:.9em;background:var(--indigo-soft);padd
     <div class="syncbox">
       <div class="syncstate"><span class="led" id="syncLed"></span><b id="syncTitle">只存在這台裝置</b><span class="small" id="syncSub"></span></div>
       <div id="syncOff">
-        <p>所有科目的作答、分數和選擇題進度，會存到你 GitHub 帳號裡一個私人的 Gist。每台裝置只要貼一次同一把金鑰，打開哪一科都是同樣的進度。</p>
-        <ol class="steps">
-          <li>打開 <a href="https://github.com/settings/tokens/new?scopes=gist&amp;description=EZexams%20sync" target="_blank" rel="noopener">GitHub 建立金鑰頁</a>（已經幫你勾好 <code>gist</code>）。</li>
-          <li>Expiration 選 <b>No expiration</b> 或期末之後的日期，拉到最下面按 <b>Generate token</b>。</li>
-          <li>複製那串 <code>ghp_</code> 開頭的金鑰，貼到下面按「連結」。其他裝置也貼同一串。</li>
-        </ol>
-        <form class="tokrow" id="tokForm" autocomplete="off">
-          <label for="tokInput" class="sr">GitHub 金鑰</label>
-          <input id="tokInput" type="password" placeholder="ghp_…" spellcheck="false">
-          <button class="btn primary" type="submit" id="tokBtn">連結</button>
+        <p>所有科目的作答、分數和選擇題進度都可以存到雲端。自己取一個<b>同步代碼</b>（像 PIN 碼，至少 6 個字，英文或數字都可以），每台裝置輸入<b>同一個代碼</b>，打開哪一科都是同樣的進度。不用申請任何帳號或金鑰。</p>
+        <p class="small" id="syncLegacy" hidden>這台裝置目前用 GitHub 金鑰同步。輸入同步代碼後會改用代碼，這台裝置的進度會一起帶過去。</p>
+        <form class="tokrow" id="codeForm" autocomplete="off">
+          <label for="codeInput" class="sr">同步代碼</label>
+          <input id="codeInput" type="text" placeholder="同步代碼（至少 6 個字）" spellcheck="false" autocapitalize="off" minlength="6" maxlength="40">
+          <button class="btn primary" type="submit" id="codeBtn">開始同步</button>
         </form>
-        <p class="small">金鑰只存在這台裝置的瀏覽器裡，而且只有建立和修改 Gist 的權限，看不到你的程式碼。</p>
+        <p class="small">代碼就是你的進度的鑰匙：知道代碼的人就能看到、改到這份進度，所以別用太簡單的（例如 123456），也不要告訴別人。忘記代碼的話，之前的雲端進度就找不回來（每台裝置自己的進度還在）。</p>
       </div>
       <p class="msg" id="syncMsg" role="status"></p>
     </div>
@@ -292,7 +288,7 @@ code{font-family:var(--f-mono);font-size:.9em;background:var(--indigo-soft);padd
   done.forEach(t=>terms.appendChild(t));
 })();
 </script>
-<script src="assets/ezsync.js?v=9c421ca6"></script>
+<script src="assets/ezsync.js?v=81957c64"></script>
 <script>
 (function(){
   const $=id=>document.getElementById(id);
@@ -301,20 +297,23 @@ code{font-family:var(--f-mono);font-size:.9em;background:var(--indigo-soft);padd
   function render(st){
     const on=EZSync.connected();
     /* once linked the panel is not needed; it comes back for a sync error or when a page links to #sync */
-    $("sync").hidden=on&&!keepSync&&st.state!=="err"&&location.hash!=="#sync";
+    $("sync").hidden=on&&EZSync.mode()==="code"&&!keepSync&&st.state!=="err"&&location.hash!=="#sync";   /* a GitHub-token device sees the panel until it switches to a code */
     $("syncLed").className="led "+(on?(st.state==="dirty"?"sync":st.state):"");
-    $("syncTitle").textContent=on?("已連結 GitHub"+(EZSync.user()?" @"+EZSync.user():"")):"只存在這台裝置";
+    const mode=EZSync.mode();
+    $("syncTitle").textContent=mode==="code"?"已開啟同步（代碼 "+EZSync.codeHint()+"）":mode==="token"?("已連結 GitHub"+(EZSync.user()?" @"+EZSync.user():"")):"只存在這台裝置";
+    $("syncLegacy").hidden=mode!=="token";
     $("syncSub").textContent=on?(st.state==="sync"?"同步中…":fmt(EZSync.lastSync())):"";
     if(st.state==="err"){$("syncMsg").textContent=st.msg;$("syncMsg").className="msg err";}
   }
   EZSync.onStatus(render);
-  $("tokForm").addEventListener("submit",async e=>{
-    e.preventDefault();const b=$("tokBtn"),m=$("syncMsg");
-    b.disabled=true;m.className="msg";m.textContent="檢查金鑰中…";
-    try{const login=await EZSync.connect($("tokInput").value);$("tokInput").value="";keepSync=true;m.className="msg ok";m.textContent="連結成功（@"+login+"）。打開任何一科，進度就會自動同步。下次打開首頁這一區會自動收起。";render(EZSync.status());}
-    catch(err){m.className="msg err";m.textContent=err.code==="empty"?"請先貼上金鑰。":err.code==="auth"?"金鑰不對，或沒有勾 gist 權限。請重新產生一把。":EZSync.errMsg(err);}
+  $("codeForm").addEventListener("submit",async e=>{
+    e.preventDefault();const b=$("codeBtn"),m=$("syncMsg");
+    b.disabled=true;m.className="msg";m.textContent="連線中…";
+    try{await EZSync.connectCode($("codeInput").value);$("codeInput").value="";keepSync=true;m.className="msg ok";m.textContent="同步已開啟。打開任何一科，進度就會自動上傳；其他裝置輸入同一個代碼就會看到同樣的進度。";render(EZSync.status());}
+    catch(err){m.className="msg err";m.textContent=err.code==="empty"?"請先輸入同步代碼。":EZSync.errMsg(err);}
     finally{b.disabled=false;}
   });
+
   addEventListener("hashchange",()=>render(EZSync.status()));
   render(EZSync.status());
 })();

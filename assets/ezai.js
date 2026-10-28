@@ -8,7 +8,7 @@
 (function(){
   const LS_KEY="ezai-key",LS_MODEL="ezai-model",LS_AUTH="ezai-auth",LS_BAD="ezai-rejected";
   /* No setup needed: without a key of your own, requests go through the EZexams proxy (a Cloudflare Worker,
-     tools/gemini-worker.js), which adds the Gemini key on its side, so the key never appears on this website.
+     tools/ezexams-worker.js), which adds the Gemini key on its side, so the key never appears on this website.
      A key pasted on the home page (stored in this browser) is used directly instead. */
   const PROXY="https://ezexams-ai.ta77199ta.workers.dev";
   const myKey=()=>get(LS_KEY)||"";

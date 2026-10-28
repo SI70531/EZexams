@@ -53,7 +53,7 @@
       view.querySelectorAll(SEL).forEach(el=>{
         if(/^H[23]$/.test(el.tagName))sec=el.textContent.replace(/✗ 錯.*$/,"").trim();
         if(el.querySelector(SEL))return;                 /* keep only the innermost blocks */
-        if(el.closest(".ezs-panel,.wback,.missbadge,.pcb")||hiddenInside(el,view))return;
+        if(el.closest(".ezs-panel,.wback,.missbadge,.pcb,.wrongblock")||hiddenInside(el,view))return;
         const text=el.textContent.replace(/\s+/g," ").trim();if(text.length<2)return;
         INDEX.push({el,view:view.id,sec,text,low:text.toLowerCase()});
       });

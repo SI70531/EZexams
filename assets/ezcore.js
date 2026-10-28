@@ -6,6 +6,7 @@
    - Offline: registers sw.js at the site root so pages you have opened keep working without a network. */
 /* entry gate (ezgate.js): without a sync code the page stays hidden until the gate is up, so nothing flashes */
 (function(){
+  if(location.hash==="#wrong")window.EZ_WANT_WRONG=1;   /* the 錯題區 now lives in 總複習; ezwrong.js opens it */
   try{if(!localStorage.getItem("ezsync-code")&&!sessionStorage.getItem("ezgate-skip"))document.documentElement.classList.add("ezlock");}catch(e){}
   const st=document.createElement("style");
   st.textContent="html.ezlock body{visibility:hidden}html.ezlock #ezgate{visibility:visible}html.ezgate-on body{overflow:hidden}";

@@ -18,7 +18,7 @@
 <link rel="icon" href="../../assets/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../../assets/icon-180.png">
 <link rel="manifest" href="../../manifest.webmanifest">
-<script src="../../assets/ezcore.js?v=b8bdaae9"></script>
+<script src="../../assets/ezcore.js?v=2b7c32c5"></script>
 <style>.plansep{border:0;border-top:1px dashed var(--line);margin:10px 0}</style>
 <script src="../../assets/ezplan.js?v=c67a2ffd" defer></script>
 </head>
@@ -154,7 +154,7 @@ body.nozh .zhq,body.nozh .opt .zho{display:none}
 <div class="day"><div class="d">Day 4<br>11/5</div><div class="t">Ch7–Ch8：消費者剩餘、生產者剩餘、無謂損失。圖形題的面積要會自己算。<br><button class="btn" data-go="ch7">Ch7</button><button class="btn" data-go="ch8">Ch8</button></div></div>
 <div class="day"><div class="d">Day 5<br>11/6</div><div class="t">Ch9 國際貿易，然後把每章做錯的題目再做一次。<br><button class="btn" data-go="ch9">Ch9</button></div></div>
 <div class="day"><div class="d">Day 6<br>11/7</div><div class="t">模擬考 1：限時 60 分鐘、先隱藏中文。寫完看最下面的各章答對率，回去補弱的章。<br><button class="btn" data-go="mock-1">模擬考 1</button></div></div>
-<div class="day"><div class="d">Day 7<br>11/8</div><div class="t">模擬考 2 和 3，錯的題目再看一次解析。晚上讀「考前總整理」，早點睡。<br><button class="btn" data-go="mock-2">模擬考 2</button><button class="btn" data-go="mock-3">模擬考 3</button><button class="btn" data-go="sheet">考前總整理</button></div></div>
+<div class="day"><div class="d">Day 7<br>11/8</div><div class="t">模擬考 2 和 3，錯的題目再看一次解析。晚上讀「總複習」，早點睡。<br><button class="btn" data-go="mock-2">模擬考 2</button><button class="btn" data-go="mock-3">模擬考 3</button><button class="btn" data-go="sheet">考前總整理</button></div></div>
 </div>
 <h3>進度</h3>
 <table class="prog" id="progTable"></table>
@@ -889,7 +889,7 @@ DWL = D + F = 125
 <p class="small">國內供需（沒有貿易時 P = 50）。拖曳世界價格：低於 50 會進口，高於 50 會出口。再加關稅看稅收（灰）和無謂損失（黃）。綠色是貿易帶來的總剩餘增加。</p>
 <div class="lab-row"><label>世界價格 <input type="range" class="tr-w" min="10" max="90" value="20" data-pre="$"><b></b></label><label>關稅 <input type="range" class="tr-t" min="0" max="30" value="10" data-pre="$"><b></b></label></div>
 <div class="tr-svg"></div><div class="calc tr-out"></div></div><div class="quiz" data-quiz="ch9"></div></section>
-<section role="tabpanel" class="view" id="sheet" hidden><div class="vhead"><div class="pcb" data-pcb="sheet" role="img"></div><div class="eyebrow">Cheat sheet</div><h1>考前總整理</h1><p>考前一晚和考試當天早上看這一頁就好。</p></div><div class="note">
+<section role="tabpanel" class="view" id="sheet" hidden><div class="vhead"><div class="pcb" data-pcb="sheet" role="img"></div><div class="eyebrow">Cheat sheet</div><h1>總複習</h1><p>先清最上面的錯題，再看考前總整理：考前一晚和考試當天早上看這一頁就好。</p></div><div class="note">
 
 <div class="tbl"><table>
 <tr><th style="width:24%">CH1 <b class="en">opportunity cost</b> (機會成本)</th><td>為了它放棄的最高價值；<b class="en">sunk cost</b> (沉沒成本)不算；$300 利率 5% → $315</td></tr>
@@ -930,7 +930,7 @@ DWL = D + F = 125
   tt.addEventListener("click",()=>scrollTo({top:0,behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"}));
 })();
 const CHN={ch1:"Ch1 十大原理",ch2:"Ch2 像經濟學家思考",ch3:"Ch3 相互依賴與貿易",ch4:"Ch4 供給與需求",ch5:"Ch5 彈性",ch6:"Ch6 政府政策",ch7:"Ch7 消費者與生產者剩餘",ch8:"Ch8 課稅的成本",ch9:"Ch9 國際貿易"};
-const VIEWS=[["home","首頁"],["ch1","Ch1 十大原理"],["ch2","Ch2 思考方式"],["ch3","Ch3 貿易"],["ch4","Ch4 供需"],["ch5","Ch5 彈性"],["ch6","Ch6 政府政策"],["ch7","Ch7 剩餘"],["ch8","Ch8 課稅"],["ch9","Ch9 國際貿易"],["|"],["sheet","考前總整理"],["mock-1","模擬考 1"],["mock-2","模擬考 2"],["mock-3","模擬考 3"]];
+const VIEWS=[["home","首頁"],["ch1","Ch1 十大原理"],["ch2","Ch2 思考方式"],["ch3","Ch3 貿易"],["ch4","Ch4 供需"],["ch5","Ch5 彈性"],["ch6","Ch6 政府政策"],["ch7","Ch7 剩餘"],["ch8","Ch8 課稅"],["ch9","Ch9 國際貿易"],["|"],["sheet","總複習"],["mock-1","模擬考 1"],["mock-2","模擬考 2"],["mock-3","模擬考 3"]];
 const KEY="econ-midterm-v1";
 let S={quiz:{},exam:{}};
 try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(S,JSON.parse(raw));}catch(e){}
@@ -1119,7 +1119,7 @@ function renderHome(){
   t.innerHTML=html;
   const ns=document.getElementById("nextStep");ns.innerHTML="";const p=document.createElement("b");
   if(next){p.textContent="下一步："+next[1];ns.appendChild(p);const b=document.createElement("button");b.className="btn primary";b.style.marginLeft="10px";b.textContent="開始";b.dataset.go=next[0];ns.appendChild(b);}
-  else{p.textContent="全部完成了。考前看一次「考前總整理」，把模擬考錯的題目再做一遍。";ns.appendChild(p);}
+  else{p.textContent="全部完成了。考前看一次「總複習」，先把最上面的錯題清掉。";ns.appendChild(p);}
 }
 applyZh();
 const start=(location.hash||"").slice(1)||S.last||"home";
@@ -1311,8 +1311,8 @@ document.querySelectorAll(".ilab input[type=range]").forEach(r=>{const b=r.paren
 </script>
 <script>window.EZ_MC_PTS=100; /* economics chapters are multiple choice only */</script>
 <script src="../../assets/ezquiz.js?v=3b54c8bc"></script>
-<script src="../../assets/ezwrong.js?v=13f01b2f"></script>
-<script src="../../assets/ezsearch.js?v=e46ca0fc"></script>
+<script src="../../assets/ezwrong.js?v=e25b6aba"></script>
+<script src="../../assets/ezsearch.js?v=e14852bd"></script>
 <script src="../../assets/ezshuffle.js?v=327fea02"></script>
 <script src="../../assets/ezai.js?v=82280bcc"></script>
 <script src="../../assets/ezexplain.js?v=b37b412f"></script>

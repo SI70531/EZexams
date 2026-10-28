@@ -263,11 +263,13 @@ code{font-family:var(--f-mono);font-size:.9em;background:var(--indigo-soft);padd
     </div>
   </section>
 </main>
+<script src="assets/ezdates.js"></script>
 <script>
 /* ---------- subjects ordered by exam date (data-date, earliest first) ---------- */
 (function(){
   /* upcoming exams first by date, finished exams at the bottom; a term whose exams are all over drops below the other term */
   const now=new Date(),today=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0")+"-"+String(now.getDate()).padStart(2,"0");
+  if(window.EZDATES)EZDATES.fill();   /* dates come from assets/ezdates.js */
   const terms=document.getElementById("terms");if(!terms)return;
   const done=[];
   terms.querySelectorAll(".term").forEach(t=>{const g=t.querySelector(".subjgrid");const all=[...g.querySelectorAll(":scope>.exam-subj")];

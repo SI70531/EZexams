@@ -35,6 +35,7 @@
 .eg-cell::before{content:attr(data-n);position:absolute;left:7px;top:4px;font-family:var(--f-mono);font-size:9.5px;color:var(--muted);pointer-events:none}
 .eg-cell input{width:100%;min-width:0;aspect-ratio:1/1.15;text-align:center;padding-top:6px;font:600 30px/1 var(--f-mono);color:var(--ink);caret-color:var(--seal);
   background:var(--paper2);border:1.5px solid var(--line-strong);border-bottom-width:3px;border-radius:8px;outline:none;transition:border-color .15s,background .15s,transform .1s}
+.eg-cell input.mask{-webkit-text-security:disc}
 .eg-cell input:focus{border-color:var(--indigo);background:var(--indigo-soft)}
 .eg-cell input.on{border-color:var(--ink)}
 .eg-cells.bad .eg-cell input{border-color:var(--seal);animation:egshake .35s}
@@ -87,7 +88,11 @@
   function build(){
     const st=document.createElement("style");st.textContent=css;document.head.appendChild(st);
     root=document.createElement("div");root.id="ezgate";root.setAttribute("role","dialog");root.setAttribute("aria-modal","true");root.setAttribute("aria-labelledby","egH");
-    const row=n=>'<div class="eg-cells" data-row="'+n+'">'+[1,2,3,4].map(i=>'<div class="eg-cell" data-n="'+i+'"><input type="password" inputmode="numeric" pattern="[0-9]*" enterkeyhint="go" maxlength="1" autocomplete="off" aria-label="PIN 碼第 '+i+' 位"></div>').join("")+'</div>';
+    /* a text field with masked dots gets the number pad on every phone (some Android keyboards show letters for a
+       password field); browsers that cannot mask a text field keep the password field */
+    const MASK=!!(window.CSS&&CSS.supports&&CSS.supports("-webkit-text-security","disc"));
+    const PIN_T=MASK?"text":"password",PIN_C=MASK?"mask":"";
+    const row=n=>'<div class="eg-cells" data-row="'+n+'">'+[1,2,3,4].map(i=>'<div class="eg-cell" data-n="'+i+'"><input type="'+PIN_T+'" class="'+PIN_C+'" inputmode="numeric" pattern="[0-9]*" enterkeyhint="go" maxlength="1" autocomplete="off" aria-label="PIN 碼第 '+i+' 位"></div>').join("")+'</div>';
     root.innerHTML='<div class="eg-wrap"><div class="eg-brand"><span class="mk">EZ</span>EZexams 考試衝刺</div>'+
       '<form class="eg-ticket" data-mode="join" novalidate autocomplete="off"><div class="eg-main">'+
         '<div class="eg-prompt" id="egPrompt"></div><h1 class="eg-h" id="egH"></h1><p class="eg-p" id="egP"></p>'+
@@ -108,7 +113,7 @@
         else if(e.key==="ArrowLeft"&&i>0)c[i-1].focus();else if(e.key==="ArrowRight"&&i<3)c[i+1].focus();});
       x.addEventListener("paste",e=>{const d=(e.clipboardData||window.clipboardData).getData("text").replace(/\D/g,"");if(d){e.preventDefault();fill(g,i,d,gi);}});
     }));
-    $("#egEye").addEventListener("click",e=>{const b=e.currentTarget,on=b.getAttribute("aria-pressed")!=="true";b.setAttribute("aria-pressed",on);b.querySelector("span").textContent=on?"隱藏":"顯示";root.querySelectorAll(".eg-cell input").forEach(x=>x.type=on?"text":"password");});
+    $("#egEye").addEventListener("click",e=>{const b=e.currentTarget,on=b.getAttribute("aria-pressed")!=="true";b.setAttribute("aria-pressed",on);b.querySelector("span").textContent=on?"隱藏":"顯示";root.querySelectorAll(".eg-cell input").forEach(x=>{if(MASK)x.classList.toggle("mask",!on);else x.type=on?"text":"password";});});
     $("#egSw").addEventListener("click",()=>setMode(ticket.dataset.mode==="join"?"create":"join",true));
     $("#egForgot").addEventListener("click",()=>say("PIN 碼沒有存在任何地方，所以找不回來。可以建立一組新的 PIN 碼，但新的 PIN 碼會從 0 開始。"));
     $("#egSkip").addEventListener("click",()=>{try{sessionStorage.setItem("ezgate-skip","1");}catch(e){}close();});

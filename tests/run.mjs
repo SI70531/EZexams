@@ -83,7 +83,7 @@ await check("gate: a new PIN starts at zero, answers sync to another device", as
   await a.click("#egSw"); await a.waitForTimeout(800); await typePin(a, 1, "4821"); await typePin(a, 2, "4821"); await settle(a);
   assert(!(await gateUp(a)), "still at the gate");
   await a.evaluate(() => { show("ch1"); [...document.querySelectorAll("#ch1 .quiz > .qitem")].slice(0, 3).forEach(it => it.querySelectorAll(".opt")[0].click()); });
-  await a.waitForTimeout(9000);   /* uploads are spaced 7.2 s apart */
+  await a.waitForTimeout(34000);   /* uploads: at most one every 30 s per browser */
   const b = await device(); await b.goto(PAGE); await b.waitForTimeout(500);
   await typePin(b, 1, "4821"); await settle(b, 1800);
   assert(await answered(b, KEY) === 3, "device B has " + await answered(b, KEY));
@@ -176,7 +176,7 @@ await check("chapter-end written: AI grades from the notes, shows its own ANSWER
     const a1 = q1.querySelector(".aians"), a2 = q2.querySelector(".aians");
     return [q1.querySelector(".gstat").textContent, a1 && !a1.hidden && a1.textContent, a2 && !a2.hidden && a2.textContent, !!q1.querySelector(".gres .miss"), q1.id, q2.id]; });
   assert(r[0] === "批改完成。" && new RegExp("ANSWER.*EN " + r[4] + ".*中文.*中 " + r[4]).test(r[1]) && new RegExp("EN " + r[5]).test(r[2]) && !r[3], JSON.stringify(r));
-  assert(prompts.length === 2 && /COURSE NOTES/.test(prompts[0]) && /reference_for_reference_only/.test(prompts[0]) && /student_answer/.test(prompts[0]), "prompt lacks notes/reference");
+  assert(prompts.length === 2 && /COURSE NOTES/.test(prompts[0]) && /reference_for_reference_only/.test(prompts[0]) && /student_answer/.test(prompts[0]), "prompt lacks notes/reference: " + prompts.length + " " + prompts.map(p => p.slice(0, 80)).join(" // "));
   await pg.ctx.close();
 });
 await check("AI grading when signed in: goes through the Worker with temperature 0 and a fixed seed", async () => {

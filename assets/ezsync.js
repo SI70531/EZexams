@@ -142,11 +142,26 @@
     clearTimeout(retryT);const ms=Math.max(e.wait||0,Math.min(15*60000,30000*Math.pow(2,retryN++)));
     retryT=setTimeout(()=>{retryT=null;pull(key,{reloadOnChange:false});},ms);
   }
-  const okNow=()=>{retryN=0;clearTimeout(retryT);retryT=null;};
+  const okNow=()=>{retryN=0;fails=0;clearTimeout(retryT);retryT=null;};
+  /* one failed sync is usually a blip (GitHub busy, a dropped connection): the answers are safe on this device and
+     a retry is already scheduled, so the chip says 待同步; only three failures in a row show 暫時離線.
+     Each kind of failure is also reported once per visit (code and HTTP status only) for the daily health issue. */
+  let fails=0;const told=new Set();
+  function failed(e,what){
+    fails++;
+    if(e.code==="off")emit("off","");
+    else if(fails<3&&!["auth","scope","badcode","server","locked"].includes(e.code))emit("dirty","同步暫時沒成功，作答已存在這台裝置，稍後會自動再試…",e.code);
+    else emit("err",errMsg(e),e.code);
+    try{console.warn("[EZSync] "+what,e);}catch(_){}
+    const k=what+":"+e.code+":"+(e.status||"");
+    if(!told.has(k)&&location.hostname==="si70531.github.io"){told.add(k);
+      try{fetch(WORKER+"/log",{method:"POST",keepalive:true,headers:{"Content-Type":"text/plain;charset=UTF-8"},
+        body:JSON.stringify({msg:"sync "+what+" failed: "+e.code+" "+(e.status||"")+" "+String(e.why||e.message||"").slice(0,120),src:"ezsync.js",page:location.pathname})}).catch(()=>{});}catch(_){}}
+  }
   const metaKey=k=>"ezsync-at:"+k;
   /* GitHub allows about 500 uploads (gist revisions) an hour, so uploads are spread evenly: at most one every
      7.2 s (3600 s / 500), counted across every subject and every open tab in this browser */
-  const GAP=7200,LASTK="ezsync-lastpush";
+  const GAP=30000,LASTK="ezsync-lastpush";   /* at most one upload every 30 s from this browser (about 120 an hour) */
   const lastAny=()=>+get(LASTK)||0;
 
   async function pull(key,{reloadOnChange=true}={}){
@@ -174,7 +189,7 @@
         sessionStorage.removeItem("ezsync-reload");
       }else if(localAt>(remote.updatedAt||0)){await push(key);}
       else{set(LS.last,String(Date.now()));emit("ok","已同步");okNow();sessionStorage.removeItem("ezsync-reload");}
-    }catch(e){emit(e.code==="off"?"off":"err",errMsg(e),e.code);try{console.warn("[EZSync] pull",key,e);}catch(_){}retryLater(key,e);}
+    }catch(e){failed(e,"pull");retryLater(key,e);}
   }
   /* every upload waits for its turn: at most one every 7.2 s from this browser (about 500 an hour) */
   const busyPush={},dirty={};
@@ -204,7 +219,7 @@
       await writeRemote(key,{updatedAt:at,data:JSON.parse(data)},keepalive);
       if((+get(metaKey(key))||0)<=at)delete dirty[key];
       set(LS.last,String(Date.now()));emit("ok","已同步");okNow();
-    }catch(e){emit(e.code==="off"?"off":"err",errMsg(e),e.code);try{console.warn("[EZSync] push",key,e);}catch(_){}retryLater(key,e);}
+    }catch(e){failed(e,"push");retryLater(key,e);}
   }
 
   window.EZSync={
@@ -214,7 +229,8 @@
         pull(key);
         /* leaving or hiding the page: send what is waiting right away (keepalive lets it finish after the tab closes) */
         const leave=()=>{const sub=subjects[key];if(!(dirty[key]||sub.timer)||!on())return;clearTimeout(sub.timer);sub.timer=null;pushNow(key,true);};
-        document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")pull(key);else leave();});
+        let lastPull=Date.now();
+        document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&Date.now()-lastPull>60000){lastPull=Date.now();pull(key);}});
         addEventListener("pagehide",leave);
       }
     },
@@ -224,7 +240,7 @@
       clearTimeout(sub.timer);emit("dirty","有新的作答，幾秒後自動上傳…");
       /* every upload is a new gist revision and GitHub limits those to about 500 an hour: upload soon,
          but never sooner than 7.2 s after the last upload from this browser; leaving the page uploads right away */
-      const wait=()=>Math.max(1500,lastAny()+GAP-Date.now());   /* 1.5 s gathers a burst of clicks into one upload */
+      const wait=()=>Math.max(10000,lastAny()+GAP-Date.now());   /* 10 s gathers a burst of answers into one upload */
       const go=()=>{const w=lastAny()+GAP-Date.now();if(w>0){sub.timer=setTimeout(go,w+Math.random()*500);return;}sub.timer=null;push(key);};   /* another tab may have uploaded meanwhile */
       sub.timer=setTimeout(go,wait()+Math.random()*500);   /* a little jitter so two tabs do not wake at the same moment */
     },

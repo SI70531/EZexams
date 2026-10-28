@@ -82,7 +82,7 @@ Signing in goes through `POST /login`, which returns a signed session token (12 
 
 Answers are merged question by question: the later answer (by its timestamp) wins, so two devices answering at the same time do not overwrite each other. Leaving the page or pressing 登出 uploads anything still waiting first. Signing in with a different PIN asks before it clears the answers kept on that device.
 
-Devices that were linked with a GitHub token before keep working that way until a PIN is entered. Sync logic is handled by `assets/ezsync.js`; uploads are spread to at most one every 7.2 s per browser (GitHub allows about 500 gist revisions an hour).
+Devices that were linked with a GitHub token before keep working that way until a PIN is entered. Sync logic is handled by `assets/ezsync.js`; uploads wait 10 s to gather a burst of answers and are spread to at most one every 30 s per browser; one failed sync shows 待同步 and retries by itself, only three in a row show 暫時離線, and each kind of failure is reported to the daily health issue.
 
 To enable sync for a new subject page, include this script tag right before your main script:
 

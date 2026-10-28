@@ -165,3 +165,102 @@
   }
   onScroll();
 })();
+
+/* ---------- phone top bar: search, sync, 登出 and the theme button fold into one ⋯ menu ---------- */
+(function(){
+  const css=`.ezmore{display:contents}.ezmore-btn{display:none}.ezmore-panel{display:contents}
+@media (max-width:640px){
+  .ezmore{display:block;position:relative;flex:0 0 auto}
+  .ezmore-btn{display:grid;place-items:center;width:34px;height:34px;border:1.5px solid var(--ink);border-radius:8px;background:var(--paper);color:var(--ink);cursor:pointer;font:700 18px/1 var(--f-body);letter-spacing:1px;padding:0 0 6px}
+  .ezmore.open .ezmore-btn{background:var(--ink);color:var(--bg)}
+  .ezmore-panel{display:none;position:absolute;right:0;top:44px;z-index:30;min-width:190px;flex-direction:column;align-items:stretch;gap:8px;padding:10px;
+    background:var(--paper);border:1.5px solid var(--ink);border-radius:10px;box-shadow:4px 4px 0 var(--hard);animation:fxmenu .18s ease-out}
+  .ezmore.open .ezmore-panel{display:flex}
+  @keyframes fxmenu{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+  .ezmore-panel>*{width:100%!important;height:38px!important;justify-content:flex-start!important;padding:0 12px!important;gap:8px!important}
+  .ezmore-panel .ezs-btn{display:flex!important;align-items:center}
+  .ezmore-panel .ezs-btn::after{content:"搜尋";font:600 13px var(--f-body)}
+  .ezmore-panel .ezout span,.ezmore-panel .syncchip .synclab{display:inline!important}
+  .ezmore-panel .theme{display:block;padding:0!important}
+  .ezmore-panel .theme .themebtn{width:100%!important;height:38px!important;display:flex!important;align-items:center;justify-content:flex-start;gap:8px;padding:0 12px}
+  .ezmore-panel .theme .themebtn::after{content:"外觀";font:600 13px var(--f-body)}
+}`;
+  function build(){
+    const bar=document.querySelector(".top .bar");if(!bar||document.querySelector(".ezmore"))return;
+    const items=[".ezs-btn","#syncChip","#ezOut",".theme"].map(s=>bar.querySelector(":scope > "+s)).filter(Boolean);
+    if(items.length<2)return;
+    const st=document.createElement("style");st.textContent=css;document.head.appendChild(st);
+    const box=document.createElement("div");box.className="ezmore";
+    box.innerHTML='<button type="button" class="ezmore-btn" aria-label="更多" aria-expanded="false">⋯</button><div class="ezmore-panel" role="menu"></div>';
+    bar.insertBefore(box,items[0]);
+    const panel=box.lastElementChild,btn=box.firstElementChild;
+    items.forEach(x=>panel.appendChild(x));
+    const setOpen=o=>{box.classList.toggle("open",o);btn.setAttribute("aria-expanded",o);};
+    btn.addEventListener("click",e=>{e.stopPropagation();setOpen(!box.classList.contains("open"));});
+    document.addEventListener("click",e=>{if(!box.classList.contains("open"))return;
+      if(!box.contains(e.target)||(e.target.closest(".ezs-btn,#syncChip,#ezOut")))setOpen(false);});
+    document.addEventListener("keydown",e=>{if(e.key==="Escape")setOpen(false);});
+  }
+  addEventListener("load",()=>setTimeout(build,160));
+})();
+
+/* ---------- first visit: a short tour of the subject page (once per browser) ---------- */
+(function(){
+  const KEY="eztour-v1";
+  let done=false;try{done=!!localStorage.getItem(KEY);}catch(e){done=true;}
+  if(done)return;
+  const css=`#eztour{position:fixed;inset:0;z-index:950;pointer-events:none}
+#eztour .hole{position:fixed;border-radius:10px;box-shadow:0 0 0 9999px rgba(6,20,27,.62);outline:2px solid var(--brass);transition:all .35s cubic-bezier(.2,.8,.2,1)}
+#eztour .tip{position:fixed;pointer-events:auto;width:min(320px,calc(100vw - 32px));background:var(--paper);color:var(--ink);border:1.5px solid var(--ink);border-radius:12px;
+  box-shadow:5px 5px 0 var(--hard);padding:16px 18px 14px;font:15px/1.7 var(--f-body);transition:top .35s cubic-bezier(.2,.8,.2,1),left .35s cubic-bezier(.2,.8,.2,1)}
+#eztour .tip b{display:block;font-size:16px;margin-bottom:4px}
+#eztour .row{display:flex;justify-content:space-between;align-items:center;margin-top:12px;font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+#eztour .row>span:last-child{display:flex;gap:8px;align-items:center}#eztour .row button{display:inline-block;width:auto;font:600 13.5px var(--f-body);border-radius:7px;padding:6px 14px;cursor:pointer;white-space:nowrap}
+#eztour .skip{border:0;background:none;color:var(--muted)}
+#eztour .next{border:1.5px solid var(--ink);background:var(--ink);color:var(--bg)}`;
+  function steps(){
+    const tabsEl=document.querySelector("nav.tabs")||document.getElementById("tabs");
+    const rv=document.querySelector('#tabs [data-go="review"],#tabs [data-go="sheet"]');
+    const prog=document.querySelector("#progTable");
+    const more=document.querySelector(".ezmore-btn");const right=(more&&more.offsetParent)?more:document.querySelector(".ezs-btn");
+    return [
+      tabsEl&&{el:tabsEl,t:"章節分頁",d:"每一章先讀白話講義，最下面是章末練習：選擇題寫完馬上對答案，手寫題按「批改」就有 AI 打分。"},
+      prog&&{el:prog,t:"進度表",d:"每章的分數和完成度都在這裡。點「ChN 章末練習」會直接跳到還沒寫的那一題。"},
+      rv&&{el:rv,t:"總複習",d:"一段一張重點卡，按講義順序排。答錯的題目會自動接在那一段後面，考前看這頁就好。"},
+      right&&{el:right,t:more&&more.offsetParent?"更多功能":"搜尋",d:"搜尋整科內容（快捷鍵 /）。右上角還有同步狀態、登出和深淺色切換。"}
+    ].filter(x=>x&&x.el.getBoundingClientRect().width>0);
+  }
+  function start(){
+    if(document.getElementById("eztour"))return;
+    const g=document.getElementById("ezgate");if(g&&!g.hidden&&!g.classList.contains("out"))return setTimeout(start,1500);
+    const S=steps();if(S.length<2)return;
+    const st=document.createElement("style");st.textContent=css;document.head.appendChild(st);
+    const root=document.createElement("div");root.id="eztour";root.setAttribute("role","dialog");root.setAttribute("aria-label","使用導覽");
+    root.innerHTML='<div class="hole"></div><div class="tip"><div class="body"></div><div class="row"><span class="cnt"></span><span><button type="button" class="skip">略過</button> <button type="button" class="next">下一步</button></span></div></div>';
+    document.body.appendChild(root);
+    const hole=root.querySelector(".hole"),tip=root.querySelector(".tip");let i=0;
+    const finish=()=>{try{localStorage.setItem(KEY,"1");}catch(e){}root.remove();removeEventListener("resize",place);removeEventListener("scroll",place,true);};
+    function place(){
+      const s=S[i];const r=s.el.getBoundingClientRect(),p=6;
+      hole.style.cssText="left:"+(r.left-p)+"px;top:"+(r.top-p)+"px;width:"+(r.width+p*2)+"px;height:"+(r.height+p*2)+"px";
+      const tw=tip.offsetWidth,th=tip.offsetHeight;
+      let top=r.bottom+14;if(top+th>innerHeight-10)top=Math.max(10,r.top-th-14);
+      const left=Math.min(innerWidth-tw-16,Math.max(16,r.left+r.width/2-tw/2));
+      tip.style.top=top+"px";tip.style.left=left+"px";
+    }
+    function go(){
+      const s=S[i];
+      tip.querySelector(".body").innerHTML="<b>"+s.t+"</b>"+s.d;
+      tip.querySelector(".cnt").textContent=(i+1)+" / "+S.length;
+      tip.querySelector(".next").textContent=i===S.length-1?"開始使用":"下一步";
+      const r=s.el.getBoundingClientRect();if(r.top<60||r.bottom>innerHeight-60)s.el.scrollIntoView({block:"center"});
+      requestAnimationFrame(place);
+    }
+    tip.querySelector(".next").addEventListener("click",()=>{if(++i>=S.length)finish();else go();});
+    tip.querySelector(".skip").addEventListener("click",finish);
+    addEventListener("resize",place);addEventListener("scroll",place,true);
+    go();
+  }
+  /* subject pages only (they have chapter tabs), once the gate is gone */
+  addEventListener("load",()=>{if(document.getElementById("tabs"))setTimeout(start,1200);});
+})();

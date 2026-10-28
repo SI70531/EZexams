@@ -18,7 +18,7 @@
 <link rel="apple-touch-icon" href="assets/icon-180.png">
 <link rel="manifest" href="manifest.webmanifest">
 <script src="assets/ezcore.js?v=6dfbe681"></script>
-<script src="assets/ezfx.js?v=a1070772" defer></script>
+<script src="assets/ezfx.js?v=640bfb32" defer></script>
 <script src="assets/ezai.js?v=276e7c2a"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -86,6 +86,11 @@ main{padding-block:36px 72px}
 .termh{font-family:var(--f-display);font-size:clamp(26px,4vw,34px);margin:0 0 24px;padding-bottom:10px;border-bottom:2px solid var(--ink)}
 .subjgrid .empty{color:var(--muted);margin:0}
 .exam-subj.past{opacity:.6}
+.pastbox{margin:26px 0 0;border-top:1.5px dashed var(--line-strong);padding-top:14px}
+.pastbox>summary{cursor:pointer;font-family:var(--f-mono);font-size:13.5px;font-weight:600;color:var(--muted);list-style:none;display:inline-flex;align-items:center;gap:8px}
+.pastbox>summary::-webkit-details-marker{display:none}
+.pastbox>summary::before{content:"▸";transition:transform .2s}.pastbox[open]>summary::before{transform:rotate(90deg)}
+.pastbox .pastgrid{margin-top:16px}
 .exam-subj.past .subj h2::after{content:"（已考完）";font-size:.55em;color:var(--muted);margin-left:6px}
 #subjects .slot{min-height:258px}
 @media (max-width:760px){.subjgrid{grid-template-columns:1fr;gap:36px}}
@@ -270,11 +275,18 @@ code{font-family:var(--f-mono);font-size:.9em;background:var(--indigo-soft);padd
   terms.querySelectorAll(".term").forEach(t=>{const g=t.querySelector(".subjgrid");const all=[...g.querySelectorAll(":scope>.exam-subj")];
     all.forEach(el=>el.classList.toggle("past",el.dataset.date<today));
     all.sort((a,b)=>(a.classList.contains("past")-b.classList.contains("past"))||(a.classList.contains("past")?b.dataset.date.localeCompare(a.dataset.date):a.dataset.date.localeCompare(b.dataset.date))).forEach(el=>g.appendChild(el));
-    if(all.length&&all.every(el=>el.classList.contains("past")))done.push(t);});
+    if(all.length&&all.every(el=>el.classList.contains("past")))done.push(t);
+    /* finished exams fold into one closed box at the bottom of the term */
+    const past=all.filter(el=>el.classList.contains("past"));
+    if(past.length&&past.length<all.length){
+      const d=document.createElement("details");d.className="pastbox";
+      d.innerHTML='<summary>已考完的科目（'+past.length+'）</summary><div class="subjgrid pastgrid"></div>';
+      past.forEach(el=>d.lastElementChild.appendChild(el));g.after(d);
+    }});
   done.forEach(t=>terms.appendChild(t));
 })();
 </script>
-<script src="assets/ezsync.js?v=bc700b76"></script>
+<script src="assets/ezsync.js?v=e194a383"></script>
 <script src="assets/ezgate.js?v=be7c157e"></script>
 <script>
 (function(){

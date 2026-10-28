@@ -70,6 +70,7 @@ export async function closeBrowser() { if (browser) await browser.close(); brows
 export async function device(opts = {}) {
   const b = await launch();
   const ctx = await b.newContext(Object.assign({ serviceWorkers: "block", viewport: { width: 1100, height: 850 } }, opts.ctx || {}));
+  if (!opts.tour) await ctx.addInitScript(() => { try { localStorage.setItem("eztour-v1", "1"); } catch (e) {} });
   if (opts.skipGate) await ctx.addInitScript(() => { try { sessionStorage.setItem("ezgate-skip", "1"); } catch (e) {} });
   await ctx.route(/workers\.dev/, async r => {
     const q = r.request(); const h = Object.assign({}, q.headers(), { origin: "https://si70531.github.io" });

@@ -27,15 +27,22 @@ assets/
   ezquiz.js     multiple-choice score bar, per-question "clear answer" button, answer timestamps
   ezshuffle.js  shuffles questions and options each time a tab is opened (answered ones stay on top)
   ezsearch.js   keyword search in the top bar of every subject page (/ or Ctrl+K)
+  ezpage.js     page functions every subject shares (save, show, tabs, chapter scores, written-answer helpers)
+  fonts/        self-hosted web fonts (tools/fonts.py)
   icon*, og.png favicon and link-preview image
 <subject>/<exam>/
-  index.html    notes, exams, page-specific styles and code
+  index.html    content only: notes, exams, page-specific styles
+  app.js        that page's code (quiz rendering, grading prompts, progress); loaded after assets/ezpage.js
   quiz.js       the multiple-choice question bank (QUIZ, plus MOCK for economics)
-tools/stamp.py  updates the ?v=<hash> on script/style links
+tools/
+  stamp.py      updates the ?v=<hash> on script/style links
+  fonts.py      downloads the fonts into assets/fonts (.github/workflows/fonts.yml)
+  ezexams-worker.js, wrangler.toml   the Cloudflare Worker (AI proxy, PIN sign-in, sync, health, error log)
+tests/          node tests/run.mjs: headless-browser checks with the Worker faked in memory
 ```
 
 When adding a new subject:
-1. Create `subject-name/exam-type/index.html` (copy an existing subject as a template) with its questions in `quiz.js` next to it.
+1. Create `subject-name/exam-type/index.html` (copy an existing subject as a template) with its code in `app.js` and its questions in `quiz.js` next to it.
 2. Append a `<section class="exam-subj" data-date="YYYY-MM-DD">` inside `#subjects` in the root `index.html`.
 3. Add a corresponding row to the markdown table above.
 

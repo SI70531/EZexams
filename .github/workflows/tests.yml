@@ -1,10 +1,13 @@
-# Runs tests/run.mjs (site + Worker checks in a headless browser, no network) on every push and pull request.
+# Runs tests/run.mjs (site + Worker checks in a headless browser, no network) only when started by hand (Actions > Tests > Run workflow),
+# so a push never sends a failure e-mail. Optional input `only` runs just the checks whose name matches it.
 name: Tests
 on:
-  push:
-    branches: [main]
-  pull_request:
   workflow_dispatch:
+    inputs:
+      only:
+        description: "Only run checks whose name matches this regex (empty = all)"
+        required: false
+        default: ""
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -20,4 +23,6 @@ jobs:
           npm install --no-save playwright@1.63.0
           npx playwright install --with-deps chromium
       - name: Run checks
+        env:
+          ONLY: ${{ inputs.only }}
         run: node tests/run.mjs

@@ -1,6 +1,6 @@
 /* EZexams checks. Run:  node tests/run.mjs        (needs: npm i playwright && npx playwright install chromium)
    Each check prints ✓ or ✗; the exit code is the number of failed checks. Nothing here touches the network. */
-import { serve, device, closeBrowser, typePin, settle, gateUp, worker, resetWorker, gist, calls, setGemini } from "./harness.mjs";
+import { serve, device, closeBrowser, typePin, settle, gateUp, worker, env, resetWorker, gist, calls, setGemini, sbs, supabase, SECRET, MAIL, signUp, signIn, addUser } from "./harness.mjs";
 
 const PORT = +process.env.PORT || 8871;
 const site = serve(PORT), U = site.url;
@@ -8,6 +8,7 @@ const SUBJECTS = { statistics: "stats-midterm-v1", "operating-systems": "os-midt
 let failed = 0;
 const results = [];
 async function check(name, fn) {
+  if (process.env.ONLY && !new RegExp(process.env.ONLY).test(name)) return;   /* ONLY="device PIN" node tests/run.mjs runs just those checks */
   const t0 = Date.now();
   try { await fn(); results.push(["✓", name]); console.log("✓", name, `(${Date.now() - t0} ms)`); }
   catch (e) { failed++; results.push(["✗", name]); console.log("✗", name, "\n   ", (e && e.message || e).split("\n").join("\n    ")); }
@@ -80,73 +81,216 @@ for (const [sub] of Object.entries(SUBJECTS)) {
 
 /* ---------- PIN gate, sync, merge ---------- */
 const PAGE = U + "statistics/midterm/", KEY = SUBJECTS.statistics;
-await check("gate: a new PIN starts at zero, answers sync to another device", async () => {
+/* ---------- accounts: sign-in, device PIN, sync, import ---------- */
+/* wait (up to 10 s) until the gate's message line matches; a fixed sleep is flaky on a slow machine */
+const msgIs = (pg, re) => pg.waitForFunction(src => new RegExp(src).test(document.getElementById("egMsg").textContent), re.source, { timeout: 10000 });
+const modeIs = (pg, m) => pg.waitForFunction(m => (document.querySelector("#ezgate .eg-ticket") || {}).dataset && document.querySelector("#ezgate .eg-ticket").dataset.mode === m, m, { timeout: 10000 });
+const flip = pg => pg.waitForTimeout(800);   /* the ticket flips between screens */
+const gateMode = pg => pg.evaluate(() => { const t = document.querySelector("#ezgate .eg-ticket"); return t && t.dataset.mode; });
+const uidOf = name => [...sbs.users.values()].find(u => u.email === name + MAIL).id;
+const rowOf = (name, key) => sbs.rows.get(uidOf(name) + "|" + key);
+await check("accounts: sign up, answers upload to Supabase and a second device signs in with the password and sees them", async () => {
   resetWorker();
   const a = await device(); await a.goto(PAGE); await a.waitForTimeout(500);
-  assert(await gateUp(a), "gate not shown");
-  await a.click("#egSw"); await a.waitForTimeout(800); await typePin(a, 1, "4821"); await typePin(a, 2, "4821"); await settle(a);
-  assert(!(await gateUp(a)), "still at the gate");
+  assert(await gateUp(a) && await gateMode(a) === "login", "gate not shown on the login screen");
+  await signUp(a, "alice");
+  assert(!(await gateUp(a)) && await a.evaluate(() => EZSync.mode() === "acct" && EZSync.account().username === "alice"), "not signed in");
   await a.evaluate(() => { show("ch1"); [...document.querySelectorAll("#ch1 .quiz > .qitem")].slice(0, 3).forEach(it => it.querySelectorAll(".opt")[0].click()); });
   await a.waitForTimeout(34000);   /* uploads: at most one every 30 s per browser */
+  assert(rowOf("alice", KEY) && Object.keys(rowOf("alice", KEY).data.quiz.ch1).length === 3, "nothing uploaded: " + JSON.stringify(rowOf("alice", KEY)));
   const b = await device(); await b.goto(PAGE); await b.waitForTimeout(500);
-  await typePin(b, 1, "4821"); await settle(b, 1800);
+  await signIn(b, "alice");
   assert(await answered(b, KEY) === 3, "device B has " + await answered(b, KEY));
   assert(!a.errs.length && !b.errs.length, [...a.errs, ...b.errs].join(" | "));
   await a.ctx.close(); await b.ctx.close();
 });
-await check("gate: wrong PIN shakes and clears; 5 wrong ones lock with a message", async () => {
-  const pg = await device({ ip: "5.5.5.5" }); await pg.goto(PAGE); await pg.waitForTimeout(500);
-  for (const c of ["1357", "2468", "3579", "1470", "2580"]) { await typePin(pg, 1, c); await pg.waitForTimeout(700); }
-  await typePin(pg, 1, "9753"); await pg.waitForTimeout(700);
-  const msg = await pg.textContent("#egMsg"), cells = await pg.evaluate(() => [...document.querySelectorAll('.eg-cells[data-row="1"] input')].map(x => x.value).join(""));
-  assert(/錯太多次/.test(msg), "message: " + msg); assert(cells === "", "cells not cleared: " + cells);
+await check("accounts: wrong password, taken name and short password say what is wrong; nothing is signed in", async () => {
+  resetWorker(); addUser("frank");
+  const pg = await device(); await pg.goto(PAGE); await pg.waitForTimeout(500);
+  await pg.fill("#egUser", "frank"); await pg.fill("#egPass", "wrongpass1"); await pg.click("#egGo"); await msgIs(pg, /不對/);
+  assert(/不對/.test(await pg.textContent("#egMsg")), "wrong password: " + await pg.textContent("#egMsg"));
+  await pg.click("#egSw"); await flip(pg);
+  await pg.fill("#egUser", "frank"); await pg.fill("#egPass", "password1"); await pg.fill("#egPass2", "password1"); await pg.click("#egGo"); await msgIs(pg, /已經有人用/);
+  assert(/已經有人用/.test(await pg.textContent("#egMsg")), "taken: " + await pg.textContent("#egMsg"));
+  await pg.fill("#egUser", "Bad Name!"); await pg.click("#egGo"); await pg.waitForTimeout(300);
+  assert(/3 到 20/.test(await pg.textContent("#egMsg")), "bad name: " + await pg.textContent("#egMsg"));
+  await pg.fill("#egUser", "gina"); await pg.fill("#egPass", "short"); await pg.fill("#egPass2", "short"); await pg.click("#egGo"); await pg.waitForTimeout(300);
+  assert(/至少要 8/.test(await pg.textContent("#egMsg")), "short: " + await pg.textContent("#egMsg"));
+  assert(await gateUp(pg) && !(await pg.evaluate(() => EZSync.connected())), "signed in anyway");
   await pg.ctx.close();
 });
-await check("gate: switching to another PIN asks before clearing this device's answers", async () => {
-  const pg = await device(); await pg.goto(PAGE); await pg.waitForTimeout(500);
+await check("device PIN: after signing out this device asks for the PIN only; wrong ones count down, the right one signs in", async () => {
+  resetWorker();
+  const pg = await device({ ip: "5.5.5.5" }); await pg.goto(PAGE); await pg.waitForTimeout(500);
+  await signUp(pg, "bob", { pin: "4821" });
+  assert(!/4821/.test(JSON.stringify([...sbs.users.values()])) && !(await pg.evaluate(() => JSON.stringify(localStorage)).then(t => t.includes("4821"))), "the PIN is stored in the clear");
+  await pg.click("#ezOut"); await pg.click("#ezask .yes"); await flip(pg);
+  assert(await gateMode(pg) === "pin" && /bob/.test(await pg.textContent("#egP")), "no PIN screen for bob: " + await gateMode(pg));
+  for (const [i, c] of ["1357", "2468", "3579", "1470"].entries()) { await typePin(pg, 1, c); await msgIs(pg, new RegExp("還剩 " + (4 - i) + " 次")); await pg.waitForTimeout(450); }   /* (the boxes clear a moment after the message) */
+  assert(await pg.evaluate(() => [...document.querySelectorAll('.eg-cells[data-row="1"] input')].map(x => x.value).join("") === ""), "cells not cleared");
   await typePin(pg, 1, "4821"); await settle(pg, 1500);
-  const n0 = await answered(pg, KEY); assert(n0 === 3, "expected 3 answers, got " + n0);
-  await pg.click("#ezOut"); await pg.click("#ezask .yes"); await pg.waitForTimeout(600);
-  await pg.click("#egSw"); await pg.waitForTimeout(800); await typePin(pg, 1, "6283"); await typePin(pg, 2, "6283"); await pg.waitForTimeout(1500);
-  const msg = await pg.textContent("#egMsg"); assert(/會被清掉/.test(msg), "no question: " + msg);
-  await pg.click("#egMsg >> text=取消"); await pg.waitForTimeout(600);
-  assert(await answered(pg, KEY) === 3, "answers gone after cancel");
+  assert(!(await gateUp(pg)) && await pg.evaluate(() => EZSync.account() && EZSync.account().username === "bob"), "right PIN did not sign in");
+  assert(!pg.errs.length, pg.errs.join(" | "));
+  await pg.ctx.close();
+});
+await check("device PIN: 5 wrong ones remove it, and the password is needed again", async () => {
+  resetWorker();
+  const pg = await device({ ip: "5.5.6.6" }); await pg.goto(PAGE); await pg.waitForTimeout(500);
+  await signUp(pg, "cara", { pin: "4821" });
+  await pg.click("#ezOut"); await pg.click("#ezask .yes"); await flip(pg);
+  for (const [i, c] of ["1357", "2468", "3579", "1470"].entries()) { await typePin(pg, 1, c); await msgIs(pg, new RegExp("還剩 " + (4 - i) + " 次")); await pg.waitForTimeout(450); }
+  await typePin(pg, 1, "2580"); await modeIs(pg, "login"); await flip(pg);
+  const m5 = await pg.evaluate(() => [document.querySelector(".eg-ticket").dataset.mode, document.getElementById("egMsg").textContent]);
+  assert(m5[0] === "login" && /已移除/.test(m5[1]), "after 5 wrong: " + m5.join(" / "));
+  const dev = await pg.evaluate(() => JSON.parse(localStorage.getItem("ezsync-dev")));
+  assert(dev.pin === false, "the device still thinks it has a PIN");
+  const r = await W("/pin/login", { method: "POST", body: JSON.stringify({ uid: dev.uid, deviceId: dev.dev, pin: "4821" }) }, "7.7.7.7");
+  assert(r.status === 404, "the removed PIN still works on the Worker: " + r.status);
+  await pg.fill("#egPass", "password1"); await pg.click("#egGo"); await settle(pg, 1500);   /* signs in, then the page reloads */
+  assert(await pg.evaluate(() => EZSync.mode() === "acct"), "the password did not sign in");
+  await pg.ctx.close();
+});
+await check("accounts: signing in as another account asks before it clears this device's answers", async () => {
+  resetWorker(); addUser("dave");
+  const pg = await device(); await pg.goto(PAGE); await pg.waitForTimeout(500);
+  await signUp(pg, "erin");
+  await pg.evaluate(() => { show("ch1"); [...document.querySelectorAll("#ch1 .quiz > .qitem")].slice(0, 3).forEach(it => it.querySelectorAll(".opt")[0].click()); });
+  await pg.waitForTimeout(400); await pg.click("#ezOut"); await pg.click("#ezask .yes"); await pg.waitForTimeout(2500); await flip(pg);
+  assert(await answered(pg, KEY) === 3, "answers should still be here after signing out");
+  await pg.fill("#egUser", "dave"); await pg.fill("#egPass", "password1"); await pg.click("#egGo"); await msgIs(pg, /會被清掉/);
+  assert(/會被清掉/.test(await pg.textContent("#egMsg")), "no question: " + await pg.textContent("#egMsg"));
+  await pg.click("#egMsg >> text=取消"); await pg.waitForTimeout(500);
+  assert(await answered(pg, KEY) === 3 && !(await pg.evaluate(() => EZSync.connected())), "cancel did not keep answers / stay signed out");
+  await pg.fill("#egPass", "password1"); await pg.click("#egGo"); await msgIs(pg, /會被清掉/);
+  await pg.click("#egMsg button:nth-of-type(1)"); await pg.waitForSelector('.eg-ticket[data-mode="import"]', { timeout: 8000 }); await flip(pg);
+  await pg.click("#egAlt"); await pg.waitForSelector('.eg-ticket[data-mode="setpin"]'); await flip(pg); await pg.click("#egAlt"); await settle(pg, 1500);
+  assert(await answered(pg, KEY) === 0 && await pg.evaluate(() => EZSync.account().username === "dave"), "answers not cleared for the other account");
   await pg.ctx.close();
 });
 await check("登出 asks first; 取消 keeps you signed in", async () => {
+  resetWorker();
   const pg = await device(); await pg.goto(PAGE); await pg.waitForTimeout(500);
-  await typePin(pg, 1, "4821"); await settle(pg, 1500);
+  await signUp(pg, "hank");
   await pg.click("#ezOut"); await pg.waitForTimeout(200);
   assert(await pg.locator("#ezask").count() === 1, "no confirm dialog");
-  await pg.screenshot({ path: process.env.SHOT || "/dev/null" }).catch(() => {});
+  assert(await pg.locator("#ezask .pin").count() === 1, "no 設定 PIN 碼 button in the dialog");
   await pg.click("#ezask .no"); await pg.waitForTimeout(300);
   assert(await pg.evaluate(() => EZSync.connected()) && !(await gateUp(pg)), "signed out after cancel");
   await pg.ctx.close();
 });
-await check("sync: logging out right after answering still uploads the answer", async () => {
+await check("device PIN: 設定 PIN 碼 in the logout dialog sets one later; 取消 leaves things as they were", async () => {
+  resetWorker();
   const pg = await device(); await pg.goto(PAGE); await pg.waitForTimeout(500);
-  await typePin(pg, 1, "4821"); await settle(pg, 1500);
+  await signUp(pg, "ivy");
+  await pg.click("#ezOut"); await pg.click("#ezask .pin"); await flip(pg);
+  assert(await gateMode(pg) === "setpin" && await gateUp(pg), "setpin screen not shown");
+  await pg.click("#egAlt"); await pg.waitForTimeout(700);
+  assert(!(await gateUp(pg)) && await pg.evaluate(() => EZSync.connected() && !EZSync.device().pin), "cancel changed something");
+  await pg.click("#ezOut"); await pg.click("#ezask .pin"); await flip(pg); await typePin(pg, 1, "6283"); await typePin(pg, 2, "6283"); await pg.waitForTimeout(2500);
+  assert(await pg.evaluate(() => EZSync.device().pin === true && EZSync.connected()), "PIN not set / signed out by it");
+  await pg.ctx.close();
+});
+await check("sync: logging out right after answering still uploads the answer", async () => {
+  resetWorker();
+  const pg = await device(); await pg.goto(PAGE); await pg.waitForTimeout(500);
+  await signUp(pg, "jack");
   await pg.evaluate(() => { show("ch2"); document.querySelector("#ch2 .quiz > .qitem .opt").click(); });
   await pg.waitForTimeout(300); await pg.click("#ezOut"); await pg.click("#ezask .yes"); await pg.waitForTimeout(2500);
-  const f = Object.entries(gist.files).find(([n]) => n.endsWith("--" + KEY + ".json"));
-  const data = JSON.parse(f[1].content).data;
-  assert(data.quiz && data.quiz.ch2 && Object.keys(data.quiz.ch2).length === 1, "ch2 not uploaded: " + JSON.stringify(data.quiz));
+  const data = (rowOf("jack", KEY) || {}).data;
+  assert(data && data.quiz && data.quiz.ch2 && Object.keys(data.quiz.ch2).length === 1, "ch2 not uploaded: " + JSON.stringify(data));
   await pg.ctx.close();
 });
 await check("sync: an upload keeps answers another device made in the meantime", async () => {
-  resetWorker(); await W("/login", { method: "POST", body: JSON.stringify({ code: "4821", mode: "create" }) });
+  resetWorker();
   const pg = await device(); await pg.goto(PAGE); await pg.waitForTimeout(500);
-  await typePin(pg, 1, "4821"); await settle(pg, 1500);
+  await signUp(pg, "kim");
   /* this device answers ch2; before it uploads, another device answers ch3 #0 and uploads an older-stamped copy */
   await pg.evaluate(() => { show("ch2"); document.querySelector("#ch2 .quiz > .qitem .opt").click(); });
   await pg.waitForTimeout(300);
-  const name = Object.keys(gist.files).find(n => n.endsWith("--meta.json")).replace("meta", KEY);
   const now = Date.now();
-  gist.files[name] = { filename: name, content: JSON.stringify({ updatedAt: now - 60000, data: { quiz: { ch3: { 0: 1 } }, qat: { ch3: { 0: now - 60000 } } } }) };
+  sbs.rows.set(uidOf("kim") + "|" + KEY, { updatedAt: now - 60000, data: { quiz: { ch3: { 0: 1 } }, qat: { ch3: { 0: now - 60000 } } } });
   await pg.click("#ezOut"); await pg.click("#ezask .yes"); await pg.waitForTimeout(2500);
-  const up = JSON.parse(gist.files[name].content).data;
+  const up = rowOf("kim", KEY).data;
   assert(up.quiz.ch2 && up.quiz.ch3 && up.quiz.ch3[0] === 1, "lost the other device's answer: " + JSON.stringify(up.quiz));
   await pg.ctx.close();
+});
+await check("sync: an expired access token is renewed by itself; a revoked session asks to sign in again", async () => {
+  resetWorker(); sbs.ttl = 1;   /* sessions last 1 s: every call must refresh first */
+  const pg = await device(); await pg.goto(PAGE); await pg.waitForTimeout(500);
+  await signUp(pg, "liam"); await pg.waitForTimeout(1500);
+  const r = await pg.evaluate(async () => { const t1 = await EZSync.session(); await new Promise(z => setTimeout(z, 1300)); const t2 = await EZSync.session(); return [!!t1, !!t2, t1 !== t2, EZSync.connected()]; });
+  assert(r[0] && r[1] && r[2] && r[3], "no renewal: " + r.join(","));
+  sbs.refresh.clear(); sbs.tokens.clear();   /* the server forgot every session */
+  const t3 = await pg.evaluate(async () => { await new Promise(z => setTimeout(z, 1300)); return [await EZSync.session(), EZSync.connected()]; });
+  assert(t3[0] === null && t3[1] === false, "dead session still looks signed in: " + JSON.stringify(t3));
+  await pg.ctx.close();
+});
+await check("old PIN: still signs in (progress from before accounts is not lost) and the AI proxy takes its token", async () => {
+  resetWorker();
+  const t = (await (await W("/login", { method: "POST", body: JSON.stringify({ code: "4821", mode: "create" }) })).json()).token;
+  await W("/sync", { method: "POST", body: JSON.stringify({ t, key: KEY, payload: { updatedAt: 5, data: { quiz: { ch1: { 0: 1, 1: 2 } }, qat: { ch1: { 0: 5, 1: 5 } } } } }) });
+  const pg = await device(); await pg.goto(PAGE); await pg.waitForTimeout(500);
+  await pg.click("#egAlt"); await flip(pg);
+  assert(await gateMode(pg) === "legacy", "legacy screen missing");
+  const x = await pg.evaluate(() => { const c = document.querySelector("#ezgate .eg-cell input"); return [c.type, c.inputMode, getComputedStyle(c).webkitTextSecurity]; });
+  assert(x[1] === "numeric" && (x[0] === "text" ? x[2] === "disc" : x[0] === "password"), "PIN cells: " + x);
+  await typePin(pg, 1, "4821"); await settle(pg, 1800);
+  assert(await pg.evaluate(() => EZSync.mode()) === "code" && await answered(pg, KEY) === 2, "old PIN did not load the progress");
+  const ai = await pg.evaluate(async () => { const t = await EZSync.session(); const r = await fetch("https://ezexams-ai.ta77199ta.workers.dev/v1beta/models/gemini-flash-latest:generateContent?t=" + encodeURIComponent(t), { method: "POST", body: "{}" }); return r.status; });
+  assert(ai === 200, "AI proxy with the old token: " + ai);
+  await pg.ctx.close();
+});
+await check("import: a new account can pull in the progress kept under an old PIN, merged with what this device has", async () => {
+  resetWorker();
+  const t = (await (await W("/login", { method: "POST", body: JSON.stringify({ code: "4821", mode: "create" }) })).json()).token;
+  await W("/sync", { method: "POST", body: JSON.stringify({ t, key: KEY, payload: { updatedAt: 5, data: { quiz: { ch1: { 0: 1, 1: 2 } }, qat: { ch1: { 0: 5, 1: 5 } } } } }) });
+  const pg = await device(); await pg.goto(PAGE); await pg.waitForTimeout(500);
+  await pg.click("#egSw"); await flip(pg);
+  await pg.fill("#egUser", "mona"); await pg.fill("#egPass", "password1"); await pg.fill("#egPass2", "password1"); await pg.click("#egGo");
+  await pg.waitForSelector('.eg-ticket[data-mode="import"]', { timeout: 10000 }); await flip(pg);
+  await typePin(pg, 1, "9999"); await msgIs(pg, /找不到/);
+  assert(/找不到/.test(await pg.textContent("#egMsg")), "wrong old PIN: " + await pg.textContent("#egMsg"));
+  await typePin(pg, 1, "4821"); await pg.waitForSelector('.eg-ticket[data-mode="setpin"]', { timeout: 10000 }); await flip(pg);
+  await pg.click("#egAlt"); await settle(pg, 1500);
+  assert(await answered(pg, KEY) === 2, "imported answers not on this device: " + await answered(pg, KEY));
+  assert(rowOf("mona", KEY) && Object.keys(rowOf("mona", KEY).data.quiz.ch1).length === 2, "not uploaded to the account: " + JSON.stringify(rowOf("mona", KEY)));
+  assert(await pg.evaluate(() => EZSync.device().imported === true), "import not remembered");
+  await pg.ctx.close();
+});
+await check("Worker: a Supabase sign-in opens the Gemini proxy (counted per account); junk, expired and old-PIN-only routes are refused", async () => {
+  resetWorker();
+  const sess = supabase("POST", "https://jyfmolrqxypufwjqexan.supabase.co/auth/v1/signup", {}, JSON.stringify({ email: "w1" + MAIL, password: "password1" }));
+  const tok = JSON.parse(sess.body).access_token;
+  const call = t => W("/v1beta/models/gemini-flash-latest:generateContent?t=" + encodeURIComponent(t), { method: "POST", body: "{}" });
+  assert((await call(tok)).status === 200 && calls.gemini === 1, "account token refused");
+  assert((await call(tok.slice(0, -2) + "xx")).status === 401, "forged token accepted");
+  assert((await call("a.b.c")).status === 401 && (await call("garbage")).status === 401, "junk accepted");
+  const sy = await W("/sync?key=" + KEY + "&t=" + encodeURIComponent(tok)); assert(sy.status === 403, "old PIN sync took an account token: " + sy.status);
+  const t2 = JSON.parse(supabase("POST", "https://jyfmolrqxypufwjqexan.supabase.co/auth/v1/token?grant_type=password", {}, JSON.stringify({ email: "w1" + MAIL, password: "password1" })).body).access_token;
+  assert((await call(t2)).status === 200, "a fresh sign-in was refused");
+});
+await check("Worker: device PIN — set needs a sign-in, the right PIN returns a one-time link, 5 wrong ones delete it, other devices and accounts cannot use it", async () => {
+  resetWorker();
+  const mk = n => JSON.parse(supabase("POST", "https://jyfmolrqxypufwjqexan.supabase.co/auth/v1/signup", {}, JSON.stringify({ email: n + MAIL, password: "password1" })).body);
+  const a = mk("p1"), b = mk("p2"), dev = "a".repeat(32), dev2 = "b".repeat(32);
+  const post = (path, body, ip) => W(path, { method: "POST", body: JSON.stringify(body) }, ip);
+  assert((await post("/pin/set", { t: "nope.nope.nope", deviceId: dev, pin: "4821" })).status === 401, "set without a sign-in");
+  assert((await post("/pin/set", { t: a.access_token, deviceId: dev, pin: "48" })).status === 400, "short PIN accepted");
+  assert((await post("/pin/set", { t: a.access_token, deviceId: dev, pin: "4821" })).status === 200, "set failed");
+  const stored = JSON.stringify([...env.GUARD.mems.values()].map(m => [...m]));
+  assert(!stored.includes("4821") && stored.includes("\"h\""), "the PIN is kept in the clear (or not stored): " + stored.slice(0, 200));
+  assert((await post("/pin/login", { uid: a.user.id, deviceId: dev2, pin: "4821" })).status === 404, "another device used the PIN");
+  assert((await post("/pin/login", { uid: b.user.id, deviceId: dev, pin: "4821" })).status === 404, "another account used the PIN");
+  const ok = await post("/pin/login", { uid: a.user.id, deviceId: dev, pin: "4821" });
+  const link = (await ok.json()).token_hash; assert(ok.status === 200 && link, "right PIN: " + ok.status);
+  const ses = JSON.parse(supabase("POST", "https://jyfmolrqxypufwjqexan.supabase.co/auth/v1/verify", {}, JSON.stringify({ type: "magiclink", token_hash: link })).body);
+  assert(ses.user && ses.user.id === a.user.id, "the link did not sign in the right account");
+  assert(supabase("POST", "https://jyfmolrqxypufwjqexan.supabase.co/auth/v1/verify", {}, JSON.stringify({ type: "magiclink", token_hash: link })).status === 403, "link works twice");
+  const codes = []; for (const c of ["1111", "2222", "3333", "4444", "5555"]) { const r = await post("/pin/login", { uid: a.user.id, deviceId: dev, pin: c }, "3.3.3." + codes.length); codes.push(r.status); }
+  assert(codes.join() === "401,401,401,401,403", "wrong-PIN statuses " + codes.join());
+  assert((await post("/pin/login", { uid: a.user.id, deviceId: dev, pin: "4821" }, "3.3.3.9")).status === 404, "the PIN survived 5 wrong tries");
+  await post("/pin/set", { t: a.access_token, deviceId: dev, pin: "4821" });
+  assert((await post("/pin/clear", { t: a.access_token, deviceId: dev })).status === 200 && (await post("/pin/login", { uid: a.user.id, deviceId: dev, pin: "4821" }, "3.3.3.10")).status === 404, "clear did not remove it");
 });
 await check("exam dates: every page takes them from assets/ezdates.js", async () => {
   const pg = await device({ skipGate: true }); await pg.goto(U); await pg.waitForTimeout(500);
@@ -158,14 +302,6 @@ await check("exam dates: every page takes them from assets/ezdates.js", async ()
     const r = await pg.evaluate(() => [EZDATES.md(), [...document.querySelectorAll("[data-examdate]")].map(e => e.textContent), document.querySelector("#home .vhead .eyebrow").textContent]);
     assert(r[0] && r[1].every(t => t === r[0]) && r[2].endsWith("· " + r[0]), sub + " " + JSON.stringify(r));
   }
-  await pg.ctx.close();
-});
-await check("PIN cells: number pad (masked text field), 顯示 reveals the digits", async () => {
-  const pg = await device(); await pg.goto(PAGE); await pg.waitForTimeout(500);
-  await typePin(pg, 1, "12");
-  const r = await pg.evaluate(() => { const x = document.querySelector("#ezgate .eg-cell input"); const a = [x.type, x.inputMode, getComputedStyle(x).webkitTextSecurity];
-    document.getElementById("egEye").click(); return a.concat(getComputedStyle(x).webkitTextSecurity, x.value); });
-  assert(r[0] === "text" && r[1] === "numeric" && r[2] === "disc" && r[3] === "none" && r[4] === "1", JSON.stringify(r));
   await pg.ctx.close();
 });
 await check("merge: per question, the later answer wins", async () => {
@@ -205,7 +341,7 @@ await check("chapter-end written: AI grades from the notes, shows its own ANSWER
     const grading = /student_answer/.test(t);
     return { candidates: [{ content: { parts: [{ text: JSON.stringify(ids.map(id => grading ? { id, score: 1, verdict: "partial", feedback: "部分", missing: [], answer_en: "EN " + id, answer_zh: "中 " + id } : { id, answer_en: "EN " + id, answer_zh: "中 " + id })) }] } }] }; });
   const pg = await device(); await pg.goto(U + "operating-systems/midterm/"); await pg.waitForTimeout(500);
-  await pg.click("#egSw"); await pg.waitForTimeout(800); await typePin(pg, 1, "8462"); await typePin(pg, 2, "8462"); await settle(pg, 1500);
+  await signUp(pg, "ai" + Math.random().toString(36).slice(2, 8)); await settle(pg, 1500);
   const r = await pg.evaluate(async () => { show("ch1"); await new Promise(z => setTimeout(z, 300));
     const [q1, q2] = document.querySelectorAll("#ch1 .chw .exq"); const ta = q1.querySelector("textarea");
     ta.value = "it is a software interrupt"; ta.dispatchEvent(new Event("input")); q1.querySelector(".grade").click();
@@ -224,7 +360,7 @@ await check("AI grading: a correct verdict is never shown as 0 points (score 0, 
     setGemini(body => { const t = JSON.stringify(body); const ids = [...new Set(t.match(/ch1w-\d+/g) || [])];
       return { candidates: [{ content: { parts: [{ text: JSON.stringify(ids.map(id => ({ id, score, verdict: "correct", feedback: "完全正確", missing: [], answer_en: "e", answer_zh: "z" }))) }] } }] }; });
     const pg = await device(); await pg.goto(U + "operating-systems/midterm/"); await pg.waitForTimeout(500);
-    await pg.click("#egSw"); await pg.waitForTimeout(800); await typePin(pg, 1, "8462"); await typePin(pg, 2, "8462"); await settle(pg, 1500);
+    await signUp(pg, "ai" + Math.random().toString(36).slice(2, 8)); await settle(pg, 1500);
     const r = await pg.evaluate(async () => { show("ch1"); await new Promise(z => setTimeout(z, 300));
       const q = document.querySelector("#ch1 .chw .exq"); const ta = q.querySelector("textarea");
       ta.value = "a full answer"; ta.dispatchEvent(new Event("input")); q.querySelector(".grade").click();
@@ -238,7 +374,7 @@ await check("AI grading when signed in: goes through the Worker with temperature
   resetWorker(); let seen = null;
   setGemini(body => { seen = body; return { candidates: [{ content: { parts: [{ text: JSON.stringify([{ id: "x", score: 1 }]) }] } }] }; });
   const pg = await device(); await pg.goto(U + "operating-systems/midterm/"); await pg.waitForTimeout(500);
-  await pg.click("#egSw"); await pg.waitForTimeout(800); await typePin(pg, 1, "3917"); await typePin(pg, 2, "3917"); await settle(pg, 1500);
+  await signUp(pg, "ai" + Math.random().toString(36).slice(2, 8)); await settle(pg, 1500);
   await pg.evaluate(async () => { show("ch1"); const q = document.querySelector("#ch1 .chw .exq"); const ta = q.querySelector("textarea");
     ta.value = "resource allocator and control program"; ta.dispatchEvent(new Event("input")); q.querySelector(".grade").click();
     for (let i = 0; i < 50 && !/完成/.test(q.querySelector(".gstat").textContent); i++) await new Promise(z => setTimeout(z, 100)); });
@@ -251,7 +387,7 @@ await check("AI explanation: the right option is green even if the AI marks it w
   resetWorker();
   setGemini(() => ({ candidates: [{ content: { parts: [{ text: JSON.stringify({ mistake: "", point: "p", options: ["A", "B", "C", "D"].map(l => ({ letter: l, correct: false, why: "why " + l })) }) }] } }] }));
   const pg = await device(); await pg.goto(U + "operating-systems/midterm/"); await pg.waitForTimeout(500);
-  await pg.click("#egSw"); await pg.waitForTimeout(800); await typePin(pg, 1, "7351"); await typePin(pg, 2, "7351"); await settle(pg, 1500);
+  await signUp(pg, "ai" + Math.random().toString(36).slice(2, 8)); await settle(pg, 1500);
   const r = await pg.evaluate(async () => { show("ch1"); await new Promise(z => setTimeout(z, 300)); const it = document.querySelector("#ch1 .quiz > .qitem"); const i = +it.dataset.i;
     const right = [...it.querySelectorAll(".opt")].find(o => +o.dataset.oi === QUIZ.ch1[i].a); right.click();
     for (let k = 0; k < 60 && !it.querySelector(".aiexp li"); k++) await new Promise(z => setTimeout(z, 100));
@@ -277,7 +413,7 @@ await check("AI grading: an unreadable reply is retried automatically, never sho
   setGemini(body => { n++; const txt = JSON.stringify(body); const id = (txt.match(/ch1w-\d+/) || ["?"])[0];
     return { candidates: [{ content: { parts: [{ text: n === 1 ? "Sorry, here is my grading: {score: maybe" : "```json\n[{\"id\":\"" + id + "\",\"score\":2,\"verdict\":\"correct\",\"feedback\":\"好\",\"missing\":[]},]\n```" }] } }] }; });
   const pg = await device(); await pg.goto(U + "operating-systems/midterm/"); await pg.waitForTimeout(500);
-  await pg.click("#egSw"); await pg.waitForTimeout(800); await typePin(pg, 1, "6194"); await typePin(pg, 2, "6194"); await settle(pg, 1500);
+  await signUp(pg, "ai" + Math.random().toString(36).slice(2, 8)); await settle(pg, 1500);
   const r = await pg.evaluate(async () => { show("ch1"); await new Promise(z => setTimeout(z, 200)); const q = document.querySelector("#ch1 .chw .exq"); const ta = q.querySelector("textarea");
     ta.value = "request, use, release"; ta.dispatchEvent(new Event("input")); q.querySelector(".grade").click();
     for (let i = 0; i < 80 && !/完成|關鍵字/.test(q.querySelector(".gstat").textContent); i++) await new Promise(z => setTimeout(z, 100));

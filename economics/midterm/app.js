@@ -52,11 +52,11 @@ window.addEventListener("hashchange",()=>{const h=location.hash.slice(1);if(h&&h
 
 /* ---------- question markup ---------- */
 function stemHTML(it,i){
-  return (it.fig?'<div class="qfig">'+it.fig+'</div>':'')+'<div class="stem"><span class="num">'+(i+1)+'.</span>'+(it.hw?'<span class="hwtag">'+esc(it.hw)+'</span>':'')+esc(it.q)+'</div>';
+  return (it.fig?'<div class="qfig">'+it.fig+'</div>':'')+'<div class="stem"><span class="num">'+(i+1)+'.</span>'+(it.hw?'<span class="hwtag">'+esc(it.hw)+'</span>':'')+EZT.html(it.q)+'</div>';
 }
 function optHTML(it,oi,k){
   const z=null; /* questions are English only; 中文 only in the explanation */
-  return '<span class="ab">'+ABCD[k]+'</span><span class="ot"><span class="oe">'+esc(it.o[oi])+'</span>'+(z?'<span class="zho">'+esc(z)+'</span>':'')+'</span>';
+  return '<span class="ab">'+ABCD[k]+'</span><span class="ot"><span class="oe">'+EZT.html(it.o[oi])+'</span>'+(z?'<span class="zho">'+esc(z)+'</span>':'')+'</span>';
 }
 function answerLine(it){
   const k=it.a,z=null;

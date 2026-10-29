@@ -32,6 +32,8 @@ assets/             Shared code and styles used by every page
   ezpage.js         Shared page features (saving, tabs, chapter scores)
   ezcore.js         Theme switching and offline support
   ezfx.js           Animations and answer feedback
+  ezjoy.js          Combo chip and chapter-clear card
+  ezmotion.js       Tab glide, page slide, theme reveal, review motion
 subject/exam/       One folder per exam
   index.html        Notes and exam content for that page
   app.js            Code for that page

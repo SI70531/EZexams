@@ -19,8 +19,8 @@ EZexams is a study site with notes, practice questions, and mock exams for each 
 index.html          Home page (exam list, sync sign-in, AI grading setup)
 assets/             Shared code and styles used by every page
   ezbase.css        Shared styles
-  ezsync.js         Saves progress across devices with a 4-digit PIN
-  ezgate.js         PIN screen shown before the site opens
+  ezsync.js         Accounts and saving progress across devices (Supabase)
+  ezgate.js         Sign-in screen shown before the site opens
   ezai.js           AI grading for short answers
   ezexplain.js      AI explanations for wrong multiple-choice answers
   ezchw.js          AI grading for written questions
@@ -65,13 +65,20 @@ Saved answers are matched to questions by their position in `quiz.js`. So:
 
 Answers that don't match clearly go into an "unmatched" group. To see where every question ended up, run `EZWrong.report()` in the browser console.
 
-## Syncing Progress Across Devices
+## Accounts and Syncing Progress
 
-- Set a 4-digit PIN on your first device. On any other device, enter the same PIN to share your progress.
-- You need to enter the PIN each time you open the site.
-- Your answers are merged question by question, so two devices answering at the same time won't erase each other's work.
-- If a sync fails, the site retries by itself.
-- No GitHub account is needed to use the site.
+- **Sign up** with a username and a password (8+ characters). There is no email, so a forgotten password cannot be recovered.
+- **Device PIN (optional):** after signing in you can set a 4-digit PIN for *that device only*. Next time that device asks for the PIN instead of the password. The Worker checks it (stored only as a keyed hash); 5 wrong tries delete it and the password is needed again.
+- Closing the site signs you out. Progress is stored in Supabase, one row per account and subject, and Row Level Security means an account can only ever read or write its own rows.
+- Answers are merged question by question, and every upload first reads the cloud copy, so two devices answering at the same time won't erase each other's work. If a sync fails, the site retries by itself.
+- **Old PIN codes** (the 4-digit PINs from before accounts) still work through 舊 PIN 碼登入. A new account offers 匯入舊 PIN 進度 once, which copies that progress into the account. Remove the old PIN code (Worker `/login`, `/sync`, `GITHUB_TOKEN`, the Gist) when everyone has moved.
+
+### One-time setup (Supabase + Worker)
+
+1. Supabase → **SQL Editor**: run `tools/supabase.sql` (creates the `progress` table with Row Level Security).
+2. Supabase → Authentication → Sign In / Providers → Email: turn **Confirm email** off, set minimum password length 8. (Authentication → Sessions → *JWT expiry* of 86400 s keeps a study session signed in all day.)
+3. Cloudflare → Workers → `ezexams-ai` → Settings → Variables and Secrets: add the secret **`SUPABASE_SECRET_KEY`** (Supabase → Project Settings → API Keys → *Secret keys*). It is only used to log a device in after a right PIN.
+4. The project URL and the publishable key are in `assets/ezsync.js` and `tools/ezexams-worker.js` (they are public by design). A username becomes `<username>@…` using `MAIL` in `ezsync.js` and `tests/harness.mjs`; nothing is ever sent to it.
 
 To turn on sync for a new subject page, add this line just before the page's main script:
 
@@ -81,7 +88,7 @@ To turn on sync for a new subject page, add this line just before the page's mai
 
 ## AI Grading (Free)
 
-AI grading works without any setup. The pages send requests through a small Cloudflare Worker (`tools/ezexams-worker.js`), which talks to Google Gemini. The API key stays on the server, so it never appears on the website.
+AI grading works without any setup once you are signed in. The pages send requests through a small Cloudflare Worker (`tools/ezexams-worker.js`), which talks to Google Gemini. The API key stays on the server, so it never appears on the website.
 
 - If the proxy stops working, the **AI Correcting** section on the home page lets you paste your own free key from https://aistudio.google.com/apikey. That key stays in your browser only.
 - If the free quota runs out or Gemini can't be reached, short answers are graded by keyword matching instead.
@@ -101,7 +108,7 @@ npm i playwright && npx playwright install chromium
 node tests/run.mjs
 ```
 
-The tests open every page in a headless browser and check things like tabs, the phone layout, the PIN screen, and syncing between two devices. They also run automatically on every push.
+The tests run against a fake Supabase, GitHub and Gemini. They open every page in a headless browser and check things like tabs, the phone layout, signing up and in, device PINs, importing old progress, and syncing between two devices. `ONLY="device PIN" node tests/run.mjs` runs just the checks whose name matches. They also run automatically on every push.
 
 ## Health Checks and Error Reports
 

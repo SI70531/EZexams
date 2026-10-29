@@ -4,11 +4,9 @@
 name: Deploy Worker
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths: ["tools/ezexams-worker.js", "tools/wrangler.toml", ".github/workflows/worker.yml"]
 jobs:
   deploy:
+    continue-on-error: true
     runs-on: ubuntu-latest
     env:
       HAS_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}

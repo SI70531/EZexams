@@ -4,7 +4,7 @@ import { serve, device, closeBrowser, typePin, settle, gateUp, worker, resetWork
 
 const PORT = +process.env.PORT || 8871;
 const site = serve(PORT), U = site.url;
-const SUBJECTS = { statistics: "stats-midterm-v1", "operating-systems": "os-midterm-v1", "data-structures": "ds-midterm-v1", economics: "econ-midterm-v1" };
+const SUBJECTS = { statistics: "stats-midterm-v1", "operating-systems": "os-midterm-v1", "data-structures": "ds-midterm-v1", economics: "econ-midterm-v2" };
 let failed = 0;
 const results = [];
 async function check(name, fn) {

@@ -7,13 +7,16 @@
 })();
 const CHN={ch1:"Ch1 十大原理",ch2:"Ch2 像經濟學家思考",ch3:"Ch3 相互依賴與貿易",ch4:"Ch4 供給與需求",ch5:"Ch5 彈性",ch6:"Ch6 政府政策",ch7:"Ch7 消費者與生產者剩餘",ch8:"Ch8 課稅的成本",ch9:"Ch9 國際貿易"};
 const VIEWS=[["home","首頁"],["ch1","Ch1 十大原理"],["ch2","Ch2 思考方式"],["ch3","Ch3 貿易"],["ch4","Ch4 供需"],["ch5","Ch5 彈性"],["ch6","Ch6 政府政策"],["ch7","Ch7 剩餘"],["ch8","Ch8 課稅"],["ch9","Ch9 國際貿易"],["|"],["sheet","總複習"],["mock-1","模擬考 1"],["mock-2","模擬考 2"],["mock-3","模擬考 3"]];
-const KEY="econ-midterm-v1";
+const KEY="econ-midterm-v2"; /* v2 (2026-10-29): notes rewritten; each chapter = 第一大題 作業 (QUIZ.hwN) + 第二大題 25 題 (QUIZ.chN) */
 let S={quiz:{},exam:{}};
-try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(S,JSON.parse(raw));}catch(e){}
+try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(S,JSON.parse(raw));
+  else{const o=JSON.parse(localStorage.getItem("econ-midterm-v1")||"null"); /* keep mock-exam answers and settings from v1 */
+    if(o){S.hideZh=o.hideZh;["mock1mc","mock2mc","mock3mc"].forEach(k=>{if(o.quiz&&o.quiz[k])S.quiz[k]=o.quiz[k];if(o.qat&&o.qat[k]){S.qat=S.qat||{};S.qat[k]=o.qat[k];}});}}}catch(e){}
 S.quiz=S.quiz||{};S.exam=S.exam||{};
 const tabs=document.getElementById("tabs");
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const ABCD="ABCD";
+const CHS=Object.keys(QUIZ).filter(k=>/^ch\d+$/.test(k));
 
 /* ---------- Chinese toggle ---------- */
 function applyZh(){document.body.classList.toggle("nozh",!!S.hideZh);document.querySelectorAll(".zhbtn").forEach(b=>{b.textContent=S.hideZh?"顯示中文翻譯":"隱藏中文翻譯（模擬真實考試）";b.setAttribute("aria-pressed",String(!!S.hideZh));});}
@@ -27,9 +30,9 @@ const MKEY=id=>id.replace("-","")+"mc";
 function examStat(id){const a=S.quiz[MKEY(id)]||{},qs=MOCK[id];const k=Object.keys(a).filter(i=>qs[i]).length;const r=qs.filter((q,i)=>a[i]===q.a).length;return {k,r,n:qs.length,done:k>=qs.length};}
 (function(){let ch=false;Object.keys(MOCK).forEach(id=>{const e=S.exam[id];if(e&&e.ans&&Object.keys(e.ans).length&&!S.quiz[MKEY(id)]){S.quiz[MKEY(id)]=Object.assign({},e.ans);ch=true;}});if(ch)save();})(); /* answers from the old 交卷 version */
 function procState(id){
-  if(QUIZ[id]){const s=quizStat(id);return {state:s.k===0?"new":s.k<s.n?"running":"terminated",done:s.k,n:s.n};}
+  if(QUIZ[id]){const s=quizStat(id),h=QUIZ["hw"+id.slice(2)]?quizStat("hw"+id.slice(2)):{k:0,n:0};const k=s.k+h.k,n=s.n+h.n;return {state:k===0?"new":k<n?"running":"terminated",done:k,n};}
   if(MOCK[id]){const s=examStat(id);return {state:s.done?"terminated":s.k?"running":"new",done:s.done?s.n:s.k,n:s.n};}
-  if(id==="home"){const c=Object.keys(QUIZ).filter(c=>quizStat(c).k>=QUIZ[c].length).length;return {state:"running",done:c,n:9};}
+  if(id==="home"){const c=CHS.filter(c=>quizStat(c).k>=QUIZ[c].length).length;return {state:"running",done:c,n:9};}
   return {state:"ready",done:0,n:0};
 }
 function refreshPCB(){
@@ -67,7 +70,9 @@ function renderQuiz(ch){
   const box=document.querySelector('[data-quiz="'+ch+'"]');if(!box)return;
   const qs=QUIZ[ch];
   const nh=qs.filter(q=>q.h).length;
-  box.innerHTML='<h2>Multiple-choice question（'+qs.length+' 題，共 100 分）</h2><p class="small">題目和考試一樣是英文，下面灰字是中文翻譯。點選項就會對答案並顯示中文解析。標「作業」的是你們作業原題。</p><p><button class="btn zhbtn" type="button"></button></p>';
+  const isHw=/^hw/.test(ch);
+  box.innerHTML=isHw?'<h2>作業選擇題（'+qs.length+' 題）</h2><p class="small">老師出的作業原題。點選項就會對答案並顯示中文解析。</p><p><button class="btn zhbtn" type="button"></button></p>':
+    '<h2>Multiple-choice question（'+qs.length+' 題，共 100 分）</h2><p class="small">題目和考試一樣是英文，下面灰字是中文翻譯。點選項就會對答案並顯示中文解析。</p><p><button class="btn zhbtn" type="button"></button></p>';
   qs.forEach((it,i)=>{
     const d=document.createElement("div");d.className="qitem";d.innerHTML=stemHTML(it,i);
     const os=document.createElement("div");os.className="opts";const btns=[];
@@ -92,7 +97,8 @@ function renderQuiz(ch){
     const t=document.createElement("span");t.textContent=s.k<s.n?("已作答 "+s.k+" / "+s.n+"，目前答對 "+s.r+" 題"):("完成！答對 "+s.r+" / "+s.n+(s.r>=s.n*0.8?"，這章很穩。":"，錯的題目回上面找對應段落再讀一次。"));sc.appendChild(t);
     const rb=document.createElement("button");rb.className="btn";rb.type="button";rb.textContent="重做這章";rb.addEventListener("click",()=>{delete S.quiz[ch];S.quizReset=S.quizReset||{};S.quizReset[ch]=Date.now();save();renderQuiz(ch);renderTabs(ch);refreshPCB();applyZh();});sc.appendChild(rb);
     const idx=VIEWS.findIndex(v=>v[0]===ch);const nx=VIEWS[idx+1];
-    if(s.k>=s.n){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";if(nx&&nx[0]!=="|"){nb.textContent="下一章："+CHN[nx[0]];nb.dataset.go=nx[0];}else{nb.textContent="開始模擬考 1";nb.dataset.go="mock-1";}sc.appendChild(nb);}
+    if(isHw&&s.k>=s.n){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";nb.textContent="接著寫第二大題 25 題";nb.addEventListener("click",()=>{const t=document.getElementById("ch"+ch.slice(2)+"-mc");if(t){t.scrollIntoView({block:"start"});scrollBy(0,-76);}});sc.appendChild(nb);}
+    else if(s.k>=s.n){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";if(nx&&nx[0]!=="|"){nb.textContent="下一章："+CHN[nx[0]];nb.dataset.go=nx[0];}else{nb.textContent="開始模擬考 1";nb.dataset.go="mock-1";}sc.appendChild(nb);}
   }
   renderScore();
 }
@@ -163,9 +169,9 @@ document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest
 function renderHome(){
   const t=document.getElementById("progTable");
   let html='<tr><th class="l">項目</th><th>狀態</th></tr>';let next=null;
-  Object.keys(QUIZ).forEach(c=>{const s=quizStat(c);
+  CHS.forEach(c=>{const s=quizStat(c);const hk="hw"+c.slice(2),h=QUIZ[hk]?quizStat(hk):null;
     const sc=Math.round(s.r*100/s.n*10)/10; /* a chapter is 25 multiple-choice questions, 100 分 */
-    html+='<tr><td class="l"><button class="btn" data-go="'+c+'" data-goend="'+c+'">'+c.replace("ch","Ch")+' 章末練習</button></td><td>'+(s.k?('<b class="pscore">得分 '+sc+' / 100 分</b><span class="psub"><span>選擇 '+(s.k?s.r+'/'+s.k:'還沒寫')+'（共 '+s.n+' 題）</span>'+(s.k>=s.n?'<span class="pok">✓ 完成</span>':'<span class="ptodo">未完成</span>')+'</span>'):"還沒做")+'</td></tr>';
+    html+='<tr><td class="l"><button class="btn" data-go="'+c+'" data-goend="'+c+'">'+c.replace("ch","Ch")+' 章末練習</button></td><td>'+(s.k?('<b class="pscore">得分 '+sc+' / 100 分</b><span class="psub"><span>選擇 '+(s.k?s.r+'/'+s.k:'還沒寫')+'（共 '+s.n+' 題）</span>'+(h?'<span>作業 '+(h.k?h.r+'/'+h.k:'還沒寫')+'（共 '+h.n+' 題）</span>':'')+(s.k>=s.n?'<span class="pok">✓ 完成</span>':'<span class="ptodo">未完成</span>')+'</span>'):(h&&h.k?'作業 '+h.r+'/'+h.k+'，25 題還沒做':"還沒做"))+'</td></tr>';
     if(!next&&s.k<s.n)next=[c,"讀 "+CHN[c]+"，再做章末練習"];});
   Object.keys(MOCK).forEach((id,j)=>{const e=examStat(id);
     html+='<tr><td class="l"><button class="btn" data-go="'+id+'">模擬考 '+(j+1)+'</button></td><td>'+(e.k?('<b class="pscore">得分 '+Math.round(e.r/e.n*1000)/10+' / 100 分</b><span class="psub"><span>選擇 '+(e.k?e.r+'/'+e.k:'還沒寫')+'（共 '+e.n+' 題）</span>'+(e.done?'<span class="pok">✓ 完成</span>':'<span class="ptodo">未完成</span>')+'</span>'):"還沒寫")+'</td></tr>';
@@ -356,6 +362,119 @@ document.querySelectorAll(".w-tax").forEach(taxLab);
   $(el,".tr-svg").innerHTML=svg(g);$(el,".tr-out").textContent=msg;
  }
  [wS,tS].forEach(i=>i.addEventListener("input",draw));draw();
+})();
+
+
+/* ---------- v2 labs ---------- */
+/* Ch1 marginal decision */
+(function(){const el=document.getElementById("w-marg");if(!el)return;
+ const [s,c,a,b]=[".mg-s",".mg-c",".mg-a",".mg-b"].map(k=>$(el,k));
+ function draw(){const sv=+s.value||0,cv=+c.value||0,av=+a.value||0,bv=+b.value||0;const mb=av-bv;
+  $(el,".mg-out").textContent="沉沒成本 $"+f(sv,0)+"：已經花掉、拿不回來 → 不列入計算。\n邊際利益 MB = 做了之後的價值 − 不做的價值 = "+f(av,0)+" − "+f(bv,0)+" = $"+f(mb,0)+"\n邊際成本 MC = $"+f(cv,0)+"\n"+(mb>cv?"MB > MC → 應該做（多賺 $"+f(mb-cv,0)+"）":mb<cv?"MB < MC → 不要做（做了會少 $"+f(cv-mb,0)+"）":"MB = MC → 做不做都一樣")+"\n最多願意為這件事付：$"+f(mb,0);}
+ [s,c,a,b].forEach(i=>i.addEventListener("input",draw));
+ $$(el,".mg-ex").forEach(btn=>btn.addEventListener("click",()=>{btn.dataset.v.split(",").forEach((v,k)=>[s,c,a,b][k].value=v);draw();}));draw();
+})();
+
+/* Ch2 circular flow */
+(function(){const el=document.getElementById("w-cf");if(!el)return;
+ const EV={a:["g","牛奶","$1","Selena 付雜貨店 $1 買牛奶"],b:["f","1 小時勞動","$8 工資","Stuart 在速食店工作一小時賺 $8"],c:["g","剪髮服務","$40","Shanna 花 $40 剪頭髮"],d:["f","Acme 的資本（10% 股權）","$20,000 利潤","Salma 持有 Acme 10% 股份賺 $20,000"]};
+ let cur="a";
+ function draw(){const e=EV[cur],g=e[0]==="g";
+  const box=(x,y,w,h,t,on)=>'<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="8" fill="'+(on?"var(--indigo-mid)":"var(--paper2)")+'" stroke="var(--ink)" stroke-width="1.4"/><text x="'+(x+w/2)+'" y="'+(y+h/2+5)+'" text-anchor="middle">'+t+'</text>';
+  let s='<svg viewBox="0 0 380 280" role="img"><defs><marker id="cfa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0L10,5L0,10z" fill="var(--ink)"/></marker><marker id="cfm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0L10,5L0,10z" fill="var(--seal)"/></marker></defs>';
+  s+=box(10,115,80,44,"Firms 廠商",true)+box(290,115,80,44,"家計單位",true)+box(120,12,140,44,"商品與服務市場",g)+box(120,222,140,44,"生產要素市場",!g);
+  if(g){s+='<path d="M90,130 L190,130 L190,58" stroke="var(--indigo)" stroke-width="2.5" fill="none" marker-end="url(#cfa)"/><path d="M262,34 L330,34 L330,113" stroke="var(--indigo)" stroke-width="2.5" fill="none" marker-end="url(#cfa)"/>';
+   s+='<path d="M350,113 L350,20 L262,20" stroke="var(--seal)" stroke-width="2.5" stroke-dasharray="6 3" fill="none" marker-end="url(#cfm)"/><path d="M118,20 L30,20 L30,113" stroke="var(--seal)" stroke-width="2.5" stroke-dasharray="6 3" fill="none" marker-end="url(#cfm)"/>';
+   s+='<text x="195" y="100" class="t-ink">'+e[1]+' →</text><text x="190" y="85" text-anchor="middle" class="t-seal">← '+e[2]+'</text>';}
+  else{s+='<path d="M330,161 L330,244 L262,244" stroke="var(--indigo)" stroke-width="2.5" fill="none" marker-end="url(#cfa)"/><path d="M118,244 L50,244 L50,161" stroke="var(--indigo)" stroke-width="2.5" fill="none" marker-end="url(#cfa)"/>';
+   s+='<path d="M30,161 L30,262 L118,262" stroke="var(--seal)" stroke-width="2.5" stroke-dasharray="6 3" fill="none" marker-end="url(#cfm)"/><path d="M262,262 L350,262 L350,161" stroke="var(--seal)" stroke-width="2.5" stroke-dasharray="6 3" fill="none" marker-end="url(#cfm)"/>';
+   s+='<text x="190" y="190" text-anchor="middle" class="t-ink">← '+e[1]+'</text><text x="190" y="208" text-anchor="middle" class="t-seal">'+e[2]+' →</text>';}
+  $(el,".cf-svg").innerHTML=s+'</svg>';
+  $(el,".cf-out").textContent=e[3]+"\n市場："+(g?"商品與服務市場（家計是買方、廠商是賣方）":"生產要素市場（家計是賣方、廠商是買方）")+"\n實物（藍）："+e[1]+(g?"：廠商 → 家計":"：家計 → 廠商")+"\n金錢（紅虛線）："+e[2]+(g?"：家計 → 廠商（家計的支出 = 廠商的收入）":"：廠商 → 家計（廠商付出 = 家計的所得）");
+  $$(el,".cf-ev").forEach(b=>b.classList.toggle("primary",b.dataset.e===cur));}
+ $$(el,".cf-ev").forEach(b=>b.addEventListener("click",()=>{cur=b.dataset.e;draw();}));draw();
+})();
+
+/* Ch2 homework: Larry, Moe, Curly */
+(function(){const el=document.getElementById("w-lmc");if(!el)return;
+ const r=[".lm-l",".lm-m",".lm-c"].map(k=>$(el,k));const PR=[[1,1],[1,2],[2,1]];
+ const XX=x=>L+(R-L)*x/45,YY=y=>B-(B-T)*y/45;
+ function draw(){const h=r.map(i=>+i.value);let lawn=0,car=0;h.forEach((v,k)=>{lawn+=v*PR[k][0];car+=(10-v)*PR[k][1];});
+  const ppf=[[0,40],[20,30],[30,20],[40,0]];const maxCar=lawn<=20?40-lawn/2:lawn<=30?30-(lawn-20):20-2*(lawn-30);
+  let g=axes("割草（片）","洗車（台）")+'<polyline class="line" points="'+ppf.map(p=>XX(p[0]).toFixed(1)+","+YY(p[1]).toFixed(1)).join(" ")+'"/>';
+  ppf.forEach(p=>g+='<circle class="dot0" cx="'+XX(p[0])+'" cy="'+YY(p[1])+'" r="3"/>');
+  g+='<circle class="dotp" cx="'+XX(lawn)+'" cy="'+YY(car)+'" r="6"/><text class="t-ink" x="'+(XX(lawn)+8)+'" y="'+(YY(car)-8)+'">('+lawn+', '+car+')</text>';
+  [10,20,30,40].forEach(v=>{g+='<text x="'+XX(v)+'" y="'+(B+14)+'" text-anchor="middle" font-size="11">'+v+'</text><text x="'+(L-4)+'" y="'+(YY(v)+4)+'" text-anchor="end" font-size="11">'+v+'</text>';});
+  $(el,".lm-svg").innerHTML=svg(g);
+  const eff=Math.abs(maxCar-car)<1e-9;
+  $(el,".lm-out").textContent="Larry："+h[0]+" 草、"+(10-h[0])+" 車；Moe："+h[1]+" 草、"+(10-h[1])*2+" 車；Curly："+h[2]*2+" 草、"+(10-h[2])+" 車\n合計："+lawn+" 片草、"+car+" 台車\n"+(eff?"在 PPF 上 → 有效率。":"在 PPF 內 → 沒效率：同樣割 "+lawn+" 片草，最多可以洗 "+maxCar+" 台車（多 "+(maxCar-car)+" 台）。")+"\n機會成本（1 片草 = 幾台車）：Curly 0.5、Larry 1、Moe 2 → 要割草時先派 Curly、再 Larry、最後 Moe，PPF 才會往外凸。";}
+ r.forEach(i=>i.addEventListener("input",draw));
+ $$(el,".lm-ex").forEach(b=>b.addEventListener("click",()=>{b.dataset.v.split(",").forEach((v,k)=>{r[k].value=v;r[k].dispatchEvent(new Event("input"));});draw();}));draw();
+})();
+
+/* Ch4 latte market from the slides */
+(function(){const el=document.getElementById("w-lat");if(!el)return;
+ const P=$(el,".la-p");const XX=q=>L+(R-L)*q/35,YY=p=>B-(B-T)*p/7;
+ function draw(){const p=+P.value;const sam=16-2*p,dean=8-p,qd=sam+dean,sb=3*p,pe=2*p,qs=sb+pe;
+  let g=axes("Q 杯","P");
+  g+='<line class="line" x1="'+XX(24)+'" y1="'+YY(0)+'" x2="'+XX(6)+'" y2="'+YY(6)+'"/><line class="line2" x1="'+XX(0)+'" y1="'+YY(0)+'" x2="'+XX(30)+'" y2="'+YY(6)+'"/>';
+  g+='<text class="t-ink" x="'+XX(6)+'" y="'+(YY(6)-6)+'">D</text><text class="t-seal" x="'+XX(30)+'" y="'+(YY(6)-6)+'">S</text>';
+  g+='<line class="ctrl" x1="'+L+'" y1="'+YY(p)+'" x2="'+R+'" y2="'+YY(p)+'"/>';
+  if(qd!==qs)g+='<line class="gap" x1="'+XX(Math.min(qd,qs))+'" y1="'+YY(p)+'" x2="'+XX(Math.max(qd,qs))+'" y2="'+YY(p)+'"/>';
+  g+='<circle class="dot0" cx="'+XX(15)+'" cy="'+YY(3)+'" r="4"/>';
+  [0,1,2,3,4,5,6].forEach(v=>g+='<text x="'+(L-4)+'" y="'+(YY(v)+4)+'" text-anchor="end" font-size="11">$'+v+'</text>');
+  [5,10,15,20,25,30].forEach(v=>g+='<text x="'+XX(v)+'" y="'+(B+14)+'" text-anchor="middle" font-size="11">'+v+'</text>');
+  $(el,".la-svg").innerHTML=svg(g);
+  $(el,".la-out").textContent="P = $"+f(p,2)+"\n需求量 QD = Sam "+f(sam)+" + Dean "+f(dean)+" = "+f(qd)+"\n供給量 QS = Starbucks "+f(sb)+" + Peet's "+f(pe)+" = "+f(qs)+"\n"+(qd===qs?"QD = QS → 均衡！均衡價格 $3、均衡數量 15 杯。":qs>qd?"QS > QD → 過剩 (surplus) "+f(qs-qd)+" 杯 → 賣方降價，價格往 $3 走。":"QD > QS → 短缺 (shortage) "+f(qd-qs)+" 杯 → 價格上漲，往 $3 走。");}
+ P.addEventListener("input",draw);draw();
+})();
+
+
+/* Ch5 elasticity decides who changes more */
+(function(){const el=document.getElementById("w-es");if(!el)return;
+ const K=$(el,".es-k"),wr=$$(el,"input[name=es-w]");
+ function draw(){const k=+K.value/10,dem=wr[0].checked;let g=axes("Q","P");
+  let db,sb,dd=0,ds=0;if(dem){db=0.7;sb=k;dd=15;}else{db=k;sb=0.7;ds=-15;}
+  const q2=50+(dd+ds)/(db+sb),p2=50+dd-db*(q2-50);
+  g+=lin("line",50+50*db,-db)+lin("line2",50-50*sb,sb);
+  if(dd)g+=lin("line dash",50+50*db+dd,-db);if(ds)g+=lin("line2 dash",50-50*sb-ds,sb);
+  g+=line("gl",0,p2,q2,p2)+line("gl",q2,0,q2,p2)+'<circle class="dot0" cx="'+X(50)+'" cy="'+Y(50)+'" r="4"/><circle class="dotp" cx="'+X(q2)+'" cy="'+Y(p2)+'" r="5"/>';
+  $(el,".es-svg").innerHTML=svg(g);
+  const dp=(p2-50)/50*100,dq=(q2-50)/50*100;
+  $(el,".es-out").textContent=(dem?"需求增加（D 往上移 15）；供給線斜率 = "+f(k,1)+(k>1?"（陡 → 缺乏彈性）":"（平 → 有彈性）"):"供給減少（S 往上移 15）；需求線斜率 = "+f(k,1)+(k>1?"（陡 → 缺乏彈性）":"（平 → 有彈性）"))+"\n價格 50 → "+f(p2)+"（"+f(dp)+"%），數量 50 → "+f(q2)+"（"+f(dq)+"%）\n總收益 TR = P×Q：2,500 → "+f(p2*q2,0)+"\n"+(dem?(k>1?"供給缺乏彈性：需求增加主要推高價格（海濱房地產）。":"供給有彈性：需求增加主要讓數量增加（新車）。"):(k>1?"需求缺乏彈性：供給減少讓價格大漲、總收益上升（OPEC 短期）。":"需求有彈性：價格只小漲、數量大減（OPEC 長期）。"));}
+ K.addEventListener("input",draw);wr.forEach(r=>r.addEventListener("change",draw));
+ $$(el,".es-ex").forEach(b=>b.addEventListener("click",()=>{const[v,w]=b.dataset.v.split(",");K.value=v;wr[+w].checked=true;K.dispatchEvent(new Event("input"));draw();}));draw();
+})();
+
+/* Ch7 consumer and producer surplus on the shoe market: D P=60-2Q, S P=15+Q */
+(function(){const el=document.getElementById("w-sur");if(!el)return;
+ const P=$(el,".su-p");const XX=q=>L+(R-L)*q/32,YY=p=>B-(B-T)*p/65;const pp=(a)=>a.map(v=>XX(v[0]).toFixed(1)+","+YY(v[1]).toFixed(1)).join(" ");
+ function draw(){const p=+P.value,qd=(60-p)/2,qs=p-15,q=Math.max(0,Math.min(qd,qs));
+  const wtp=60-2*q,mc=15+q;
+  let g=axes("Q 雙","P");
+  g+='<polygon class="cs" points="'+pp([[0,60],[0,p],[q,p],[q,wtp]])+'"/><polygon class="ps" points="'+pp([[0,p],[0,15],[q,mc],[q,p]])+'"/>';
+  if(Math.abs(q-15)>0.01)g+='<polygon class="dwl" points="'+pp([[q,wtp],[15,30],[q,mc]])+'"/>';
+  g+='<line class="line" x1="'+XX(0)+'" y1="'+YY(60)+'" x2="'+XX(30)+'" y2="'+YY(0)+'"/><line class="line2" x1="'+XX(0)+'" y1="'+YY(15)+'" x2="'+XX(32)+'" y2="'+YY(47)+'"/>';
+  g+='<line class="ctrl" x1="'+L+'" y1="'+YY(p)+'" x2="'+R+'" y2="'+YY(p)+'"/><circle class="dot0" cx="'+XX(15)+'" cy="'+YY(30)+'" r="4"/>';
+  [10,20,30,40,50,60].forEach(v=>g+='<text x="'+(L-4)+'" y="'+(YY(v)+4)+'" text-anchor="end" font-size="11">'+v+'</text>');[5,10,15,20,25,30].forEach(v=>g+='<text x="'+XX(v)+'" y="'+(B+14)+'" text-anchor="middle" font-size="11">'+v+'</text>');
+  $(el,".su-svg").innerHTML=svg(g);
+  const cs=q*(60-p)-q*q,ps=q*(p-15)-q*q/2,ts=cs+ps;
+  $(el,".su-out").textContent="P = $"+p+"：QD = "+f(qd)+"，QS = "+f(qs)+" → 成交量 Q = "+f(q)+"\nCS（藍）= "+f(cs,1)+"，PS（紅）= "+f(ps,1)+"，總剩餘 = "+f(ts,1)+"（最大 337.5）\n"+(Math.abs(p-30)<0.01?"均衡：總剩餘最大 → 有效率。CS = ½×15×30 = 225、PS = ½×15×15 = 112.5":"價格不是均衡（像價格管制）→ 成交量少於 15，黃色 = 損失的總剩餘 "+f(337.5-ts,1)+"。"+(p>30?"價格高，CS 變小、PS 一開始可能變大。":"價格低，PS 變小、CS 一開始可能變大。"));}
+ P.addEventListener("input",draw);draw();
+})();
+
+/* Ch8 Laffer: Qs=2P, Qd=300-(P+T) */
+(function(){const el=document.getElementById("w-laf");if(!el)return;
+ const Tt=$(el,".lf-t");const XX=t=>L+(R-L)*t/300,YY=v=>B-(B-T)*v/31000;
+ function draw(){const t=+Tt.value,q=200-2*t/3,rev=t*q,dwl=t*t/3;
+  let g=axes("稅 T","$");let r=[],d=[];for(let x=0;x<=300;x+=5){r.push(XX(x).toFixed(1)+","+YY(x*(200-2*x/3)).toFixed(1));d.push(XX(x).toFixed(1)+","+YY(x*x/3).toFixed(1));}
+  g+='<polyline class="line" points="'+r.join(" ")+'"/><polyline class="line2" points="'+d.join(" ")+'"/>';
+  g+='<line class="gl" x1="'+XX(t)+'" y1="'+B+'" x2="'+XX(t)+'" y2="'+T+'"/><circle class="dotp" cx="'+XX(t)+'" cy="'+YY(rev)+'" r="5"/><circle class="dot0" cx="'+XX(t)+'" cy="'+YY(dwl)+'" r="4"/>';
+  g+='<text class="t-ink" x="'+XX(150)+'" y="'+(YY(15000)-8)+'" text-anchor="middle">稅收</text><text class="t-seal" x="'+XX(270)+'" y="'+(YY(24300)-8)+'" text-anchor="middle">DWL</text>';
+  [100,200,300].forEach(v=>g+='<text x="'+XX(v)+'" y="'+(B+14)+'" text-anchor="middle" font-size="11">'+v+'</text>');[10000,20000,30000].forEach(v=>g+='<text x="'+(L-4)+'" y="'+(YY(v)+4)+'" text-anchor="end" font-size="11">'+v/1000+'k</text>');
+  $(el,".lf-svg").innerHTML=svg(g);
+  $(el,".lf-out").textContent="T = $"+t+"：Q = 200 − 2T/3 = "+f(q)+"，買方付 "+f(100+2*t/3)+"、賣方拿 "+f(100-t/3)+"\n稅收 R = T × Q = "+f(rev,0)+"\nDWL = T²/3 = "+f(dwl,0)+"\n"+(t<150?"在拉弗曲線左側：提高稅收會增加。":t===150?"T = 150：稅收最大（15,000）。":"在拉弗曲線右側：降稅反而能收到更多稅、DWL 也更小。"+(t===200?"（作業 e：$200 是壞政策）":""));}
+ Tt.addEventListener("input",draw);draw();
 })();
 
 /* slider value labels */

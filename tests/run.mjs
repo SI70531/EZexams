@@ -420,7 +420,7 @@ await check("Worker: 200 wrong PINs across the whole site pause the PIN sign-in 
 await check("Worker: one account gets 600 AI calls an hour and 3000 a day, then 429; another account is unaffected", async () => {
   resetWorker();
   sbs.ttl = 3 * 86400;   /* the account token must outlive the simulated days */
-  const a = mkAcct("ai1").access_token, b = mkAcct("ai2").access_token, real = Date.now; let t = real();
+  const a = mkAcct("ai1").access_token, b = mkAcct("ai2").access_token, real = Date.now; let t = Math.floor(real() / 86400e3) * 86400e3 + 3600e3;   /* start of a UTC day so the 5 simulated hours never cross midnight */
   Date.now = () => t;
   try {
     for (let i = 0; i < 600; i++) assert((await aiCall(a)).status === 200, "call " + (i + 1) + " refused");

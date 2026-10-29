@@ -58,6 +58,24 @@
 .eg-links{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 14px;margin:14px 0 0;padding-top:12px;border-top:1.5px dashed var(--line);font-size:13px;color:var(--muted)}
 .eg-link{border:0;background:none;padding:0;font:inherit;font-weight:600;color:var(--indigo);cursor:pointer;text-decoration:underline;text-decoration-color:var(--line-strong);text-underline-offset:3px}
 .eg-link:hover{color:var(--seal);text-decoration-color:var(--seal)}
+
+/* entrance: the card drops in on a spring and its lines follow one after another; each screen change re-plays the lines */
+@keyframes egdrop{0%{opacity:0;transform:translateY(-70px) rotateX(-22deg) scale(.88)}55%{opacity:1;transform:translateY(8px) rotateX(3deg) scale(1.015)}78%{transform:translateY(-3px) scale(.998)}100%{transform:none}}
+@keyframes eglines{from{opacity:0;transform:translateY(16px);filter:blur(4px)}to{opacity:1;transform:none;filter:none}}
+@keyframes egbrand{from{opacity:0;transform:translateX(-18px) rotate(-6deg)}to{opacity:1;transform:none}}
+#ezgate:not(.out) .eg-wrap{animation:egdrop .85s cubic-bezier(.2,.9,.25,1) both}
+#ezgate:not(.out) .eg-brand{animation:egbrand .6s .35s cubic-bezier(.2,.8,.2,1) both}
+.eg-ticket:not(.flip):not(.done) .eg-main>*{animation:eglines .55s cubic-bezier(.2,.8,.2,1) both}
+.eg-ticket .eg-main>*:nth-child(2){animation-delay:.06s}.eg-ticket .eg-main>*:nth-child(3){animation-delay:.12s}.eg-ticket .eg-main>*:nth-child(4){animation-delay:.18s}
+.eg-ticket .eg-main>*:nth-child(5){animation-delay:.24s}.eg-ticket .eg-main>*:nth-child(6){animation-delay:.3s}.eg-ticket .eg-main>*:nth-child(7){animation-delay:.36s}
+/* success fireworks: expanding rings, confetti and sparkles fly from the middle of the card (motion only) */
+.eg-fx{position:fixed;left:0;top:0;width:0;height:0;pointer-events:none;z-index:1002}
+.eg-fx i{position:absolute;display:block;will-change:transform,opacity}
+.eg-ring{border:3px solid var(--ok);border-radius:50%}
+.eg-badge{position:absolute;left:50%;top:50%;width:132px;height:132px;margin:-66px 0 0 -66px;z-index:3;pointer-events:none}
+.eg-badge svg{width:100%;height:100%;overflow:visible}
+.eg-badge circle{fill:var(--paper);stroke:var(--ok);stroke-width:4;stroke-dasharray:302;stroke-dashoffset:302;transform-origin:50% 50%;transform:rotate(-90deg)}
+.eg-badge path{fill:none;stroke:var(--ok);stroke-width:7;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:60;stroke-dashoffset:60}
 /* success: the boxes lock, slide together into one stack, and turn into a check (motion only; colours are the theme's) */
 @property --eg-a{syntax:"<angle>";inherits:false;initial-value:0deg}
 .eg-cell input{display:block}
@@ -151,7 +169,7 @@
     if(ticket.dataset.mode==="setpin"&&val(cellsets[1]).length<4)return;submit();}
   function say(t,cls){const m=$("#egMsg");m.className="eg-msg"+(cls?" "+cls:"");m.textContent=t;}
   /* a rejected code: shake, show why, then empty the boxes so the next try starts from the first box */
-  function bad(g,t){g.classList.remove("bad");void g.offsetWidth;g.classList.add("bad");say(t,"err");
+  function bad(g,t){g.classList.remove("bad");void g.offsetWidth;g.classList.add("bad");say(t,"err");shakeCard();
     setTimeout(()=>{cellsets.forEach(r=>cells(r).forEach(x=>{x.value="";x.classList.remove("on");}));try{cells(cellsets[0])[0].focus();}catch(e){}},380);}
   let queue=[];   /* the steps still to show after a sign-in (setpin) */
   const PIN_MODES=["pin","setpin"];
@@ -174,7 +192,7 @@
     if(!animate){apply();focus();return;}
     ticket.classList.add("flip");setTimeout(()=>{apply();ticket.classList.remove("flip");setTimeout(focus,330);},320);
   }
-  const badAcct=t=>{const a=$(".eg-acct");a.classList.remove("bad");void a.offsetWidth;a.classList.add("bad");say(t,"err");};
+  const badAcct=t=>{const a=$(".eg-acct");a.classList.remove("bad");void a.offsetWidth;a.classList.add("bad");say(t,"err");shakeCard();};
   async function submit(e){
     if(e)e.preventDefault();if(busy)return;
     const mode=ticket.dataset.mode;
@@ -259,13 +277,53 @@
       el.innerHTML=html;el.animate([{filter:"blur(8px)",opacity:0,transform:"translateY(5px)"},{filter:"blur(0)",opacity:1,transform:"none"}],{duration:420,easing:"cubic-bezier(.2,.8,.2,1)",fill:"forwards"});});
   }
   /* the code was accepted: lock the boxes, slide them into one stack, morph it into a check, glow */
+  /* ---- fireworks ---- */
+  const tokv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim()||"#888";
+  function burst(cx,cy,big){
+    if(RM()||!document.body.animate)return;
+    const fx=document.createElement("div");fx.className="eg-fx";fx.style.left=cx+"px";fx.style.top=cy+"px";fx.setAttribute("aria-hidden","true");root.appendChild(fx);
+    const cols=[tokv("--ok"),tokv("--brass"),tokv("--indigo"),tokv("--seal"),tokv("--warn")];
+    [0,140,300].forEach((d,k)=>{const r=document.createElement("i");r.className="eg-ring";const z=60+k*26;r.style.cssText="left:"+(-z/2)+"px;top:"+(-z/2)+"px;width:"+z+"px;height:"+z+"px;opacity:0";fx.appendChild(r);
+      r.animate([{transform:"scale(.2)",opacity:.9},{transform:"scale("+(big?7:5.5)+")",opacity:0}],{duration:1000,delay:d,easing:"cubic-bezier(.1,.7,.3,1)",fill:"both"});});
+    const n=big?64:44;
+    for(let i=0;i<n;i++){
+      const e=document.createElement("i"),a=Math.random()*Math.PI*2,v=(big?200:150)+Math.random()*260,dx=Math.cos(a)*v,dy=Math.sin(a)*v-90,grav=260+Math.random()*220,t=1100+Math.random()*900;
+      const kind=i%4,sz=6+Math.random()*7;
+      e.style.cssText="left:-"+sz/2+"px;top:-"+sz/2+"px;width:"+sz+"px;height:"+(kind===1?sz*1.8:sz)+"px;background:"+cols[i%cols.length]+";border-radius:"+(kind===0?"50%":kind===2?"1px":"2px")+(kind===3?";clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);width:"+(sz*2)+"px;height:"+(sz*2)+"px;left:-"+sz+"px;top:-"+sz+"px":"");
+      fx.appendChild(e);
+      const rot=(Math.random()-.5)*1080;
+      e.animate([{transform:"translate(0,0) rotate(0) scale(.3)",opacity:1},
+        {transform:"translate("+dx*.6+"px,"+(dy*.6)+"px) rotate("+rot*.5+"deg) scale(1.1)",opacity:1,offset:.35},
+        {transform:"translate("+dx+"px,"+(dy+grav)+"px) rotate("+rot+"deg) scale(.7)",opacity:0}],{duration:t,delay:Math.random()*120,easing:"cubic-bezier(.2,.6,.4,1)",fill:"both"});
+    }
+    setTimeout(()=>fx.remove(),2300);
+  }
+  function punch(){   /* the whole card squashes, then springs */
+    if(RM()||!ticket.animate)return;
+    ticket.animate([{transform:"scale(1)"},{transform:"scale(.94,1.04)",offset:.2},{transform:"scale(1.07,.96) rotate(-1.2deg)",offset:.5},{transform:"scale(.99,1.01) rotate(.6deg)",offset:.75},{transform:"none"}],{duration:620,easing:"ease-out"});
+  }
+  function shakeCard(){
+    if(RM()||!ticket.animate)return;
+    ticket.animate([{transform:"translateX(0)"},{transform:"translateX(-12px) rotate(-1.2deg)"},{transform:"translateX(10px) rotate(.9deg)"},{transform:"translateX(-7px)"},{transform:"translateX(4px)"},{transform:"none"}],{duration:420,easing:"ease-out"});
+    ticket.animate([{boxShadow:"6px 6px 0 var(--hard),0 0 0 0 transparent"},{boxShadow:"6px 6px 0 var(--seal),0 0 0 6px color-mix(in srgb,var(--seal) 25%,transparent)",offset:.3},{boxShadow:"6px 6px 0 var(--hard),0 0 0 0 transparent"}],{duration:620,easing:"ease-out"});
+  }
+  const mid=()=>{const r=ticket.getBoundingClientRect();return[r.left+r.width/2,r.top+r.height/2];};
   async function celebrate(mode){
     ticket.classList.add("done");
     const rows=cellsets.filter(g=>g.offsetParent),all=rows.flatMap(g=>cells(g));
-    if(!rows.length){   /* account screens have no boxes to animate: just the words */
+    if(!rows.length){   /* account screens have no boxes: a big check badge, fireworks and a punch */
       swap($("#egH"),mode==="register"?"帳號<em class=\"ok\">建立好了</em>":"登入<em class=\"ok\">成功</em>");
       swap($("#egP"),mode==="register"?"全新的進度，從 0 開始。":"已載入你的進度，馬上進入。");
-      await wait(RM()?600:900);return;
+      if(RM()||!ticket.animate){await wait(600);return;}
+      const main=ticket.querySelector(".eg-main");
+      main.animate([{opacity:1,filter:"none"},{opacity:.08,filter:"blur(3px)"}],{duration:380,fill:"forwards",easing:"ease-out"});
+      const bd=document.createElement("div");bd.className="eg-badge";bd.setAttribute("aria-hidden","true");
+      bd.innerHTML='<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="48"/><path d="M28 52l16 16 30-34"/></svg>';ticket.appendChild(bd);
+      bd.animate([{transform:"scale(0) rotate(-200deg)",opacity:0},{transform:"scale(1.25) rotate(8deg)",opacity:1,offset:.6},{transform:"scale(1)"}],{duration:650,easing:"cubic-bezier(.3,1.4,.5,1)",fill:"both"});
+      bd.querySelector("circle").animate([{strokeDashoffset:302},{strokeDashoffset:0}],{duration:520,easing:"ease-out",fill:"forwards"});
+      bd.querySelector("path").animate([{strokeDashoffset:60},{strokeDashoffset:0}],{duration:360,delay:420,easing:"cubic-bezier(.3,.7,.2,1)",fill:"forwards"});
+      await wait(430);punch();const[cx,cy]=mid();burst(cx,cy,true);
+      await wait(1250);return;
     }
     rows.forEach(g=>g.classList.add("lock"));
     const tr=ticket.getBoundingClientRect(),r0=rows[0].getBoundingClientRect(),r1=rows[rows.length-1].getBoundingClientRect(),c0=all[0].getBoundingClientRect();
@@ -297,7 +355,8 @@
     box.querySelector("path").animate([{strokeDashoffset:24},{strokeDashoffset:0}],{duration:380,easing:"cubic-bezier(.3,.7,.2,1)",fill:"forwards"});
     box.animate([{boxShadow:"0 0 0 0 color-mix(in srgb,var(--ok) 0%,transparent)"},{boxShadow:"0 0 26px 4px color-mix(in srgb,var(--ok) 45%,transparent)"}],{duration:700,easing:"ease-out",fill:"forwards"});
     glow.animate([{opacity:0,transform:"scale(.6)"},{opacity:1,transform:"none"}],{duration:900,easing:"cubic-bezier(.2,.8,.2,1)",fill:"forwards"});
-    await wait(1100);
+    punch();{const[bx,by]=mid();burst(bx,by,false);}
+    await wait(1250);
   }
   function open(o={}){
     opts=o;if(!root)build();queue=[];

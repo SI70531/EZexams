@@ -1,6 +1,5 @@
 /* EZexams page-to-page and review motion (UI only: never touches questions, answers or saved progress).
    - the tab bar's underline glides from the old tab to the new one
-   - opening a tab slides the page in from the side you are moving toward (later tab → from the right)
    - section titles draw their underline as they scroll into view
    - switching 淺色 / 深色 spreads the new theme out from the button you pressed (browsers with View Transitions)
    - 總複習: mistake cards rise in one after another the first time the tab opens; clearing a mistake says so
@@ -13,10 +12,6 @@
   const css=`
 #tabs{position:relative}
 .mo-glide{position:absolute;bottom:0;left:0;height:3px;width:0;border-radius:3px 3px 0 0;pointer-events:none;z-index:2;background:var(--brass)}
-@keyframes moR{from{opacity:0;transform:translateX(36px)}to{opacity:1;transform:none}}
-@keyframes moL{from{opacity:0;transform:translateX(-36px)}to{opacity:1;transform:none}}
-.view.mo-r,.view.fx-enter.mo-r{animation:moR .42s cubic-bezier(.2,.8,.2,1)}
-.view.mo-l,.view.fx-enter.mo-l{animation:moL .42s cubic-bezier(.2,.8,.2,1)}
 .mo-draw{background:linear-gradient(var(--brass),var(--brass)) 0 100%/0 3px no-repeat;transition:background-size .9s cubic-bezier(.2,.8,.2,1)}
 .mo-draw.mo-in{background-size:72px 3px}
 @keyframes moroll{from{opacity:0;transform:translateY(55%) scale(.9);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}
@@ -53,21 +48,6 @@ html.mo-theme::view-transition-new(root){animation:motheme .6s cubic-bezier(.4,0
     new MutationObserver(()=>{if(!tabs.querySelector(".mo-glide")||tabs.querySelector('[aria-current="true"]'))place();}).observe(tabs,{childList:true});
     place();
   }
-
-  /* ---- directional page slide ---- */
-  let lastId=null;
-  const viewIds=()=>[...document.querySelectorAll("#tabs [data-go]")].map(b=>b.dataset.go);
-  const onShown=v=>{
-    const ids=viewIds(),a=ids.indexOf(lastId),b=ids.indexOf(v.id);
-    lastId=v.id;
-    if(calm()||a<0||b<0||a===b)return;
-    v.classList.remove("mo-l","mo-r");void v.offsetWidth;v.classList.add(b>a?"mo-r":"mo-l");
-    setTimeout(()=>v.classList.remove("mo-l","mo-r"),600);
-  };
-  const views=()=>[...document.querySelectorAll(".view")];
-  const cur0=views().find(v=>!v.hidden);if(cur0)lastId=cur0.id;
-  const vo=new MutationObserver(ms=>ms.forEach(m=>{const v=m.target;if(v.classList&&v.classList.contains("view")&&!v.hidden&&v.id!==lastId)onShown(v);}));
-  views().forEach(v=>vo.observe(v,{attributes:true,attributeFilter:["hidden"]}));
 
   /* ---- section titles draw their underline ---- */
   if("IntersectionObserver"in window){

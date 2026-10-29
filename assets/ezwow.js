@@ -44,7 +44,7 @@ h3.mo-read::before{content:"✓";flex:0 0 auto;align-self:center;display:grid;pl
 .wow-shard>*{position:absolute!important;inset:0;margin:0!important;transform:none!important;animation:none!important}
 .wow-crack{position:fixed;z-index:78;pointer-events:none}
 .wow-crack path{fill:none;stroke:var(--seal);stroke-width:2.2;stroke-linecap:round;filter:drop-shadow(0 0 3px var(--seal))}
-.wow-sweep{position:fixed;inset:0;z-index:73;pointer-events:none;background:linear-gradient(100deg,transparent 35%,rgba(255,255,255,.22) 50%,transparent 65%);transform:translateX(-110%)}
+.wow-sweep{position:fixed;inset:0;z-index:73;pointer-events:none;background:linear-gradient(100deg,transparent 35%,rgba(255,255,255,.4) 50%,transparent 65%);transform:translateX(-110%)}
 /* a tab is a very tall page: animating the whole of it is slow, so the page turn is done on the blocks of the first screen only */
 .view.fx-enter{animation:none!important}
 .wow-intro{position:fixed;inset:0;z-index:1100;overflow:hidden;color:#eaf4f2;font-family:var(--f-mono)}
@@ -145,7 +145,10 @@ h3.mo-read::before{content:"✓";flex:0 0 auto;align-self:center;display:grid;pl
   });
   function stamp(h){
     if(calm()||!h.animate)return;
-    h.animate([{transform:"scale(1.9) rotate(-3deg)",opacity:0,filter:"blur(4px)"},{transform:"scale(.93) rotate(.6deg)",opacity:1,filter:"none",offset:.55},{transform:"scale(1.03)",offset:.78},{transform:"none"}],{duration:560,easing:"cubic-bezier(.2,.9,.3,1)"});
+    h.style.transformOrigin="0 50%";
+    h.animate([{transform:"scale(2.8) rotate(-5deg)",opacity:0,boxShadow:"0 0 0 0 transparent"},{transform:"scale(.88) rotate(1.2deg)",opacity:1,offset:.45,boxShadow:"0 0 0 10px color-mix(in srgb,var(--brass) 45%,transparent)"},{transform:"scale(1.07) rotate(-.6deg)",offset:.65},{transform:"scale(.98)",offset:.82},{transform:"none",boxShadow:"0 0 0 0 transparent"}],{duration:900,easing:"cubic-bezier(.2,.9,.3,1)"}).onfinish=()=>{h.style.transformOrigin="";};
+    
+    [0,180].forEach(dl=>{const q=document.createElement("div");q.style.cssText="position:fixed;z-index:72;pointer-events:none;left:"+(h.getBoundingClientRect().left+22)+"px;top:"+(h.getBoundingClientRect().top+h.getBoundingClientRect().height/2)+"px;width:36px;height:36px;margin:-18px;border:4px solid var(--brass);border-radius:50%";document.body.appendChild(q);q.animate([{transform:"scale(.3)",opacity:1},{transform:"scale(8)",opacity:0}],{duration:900,delay:260+dl,easing:"ease-out",fill:"both"}).onfinish=()=>q.remove();});
     const r=h.getBoundingClientRect(),d=document.createElement("div");
     d.style.cssText="position:fixed;z-index:72;pointer-events:none;left:"+(r.left+22)+"px;top:"+(r.top+r.height/2)+"px;width:30px;height:30px;margin:-15px;border:3px solid var(--brass);border-radius:50%";
     document.body.appendChild(d);d.animate([{transform:"scale(.3)",opacity:.9},{transform:"scale(4.5)",opacity:0}],{duration:650,delay:260,easing:"ease-out",fill:"both"}).onfinish=()=>d.remove();
@@ -167,7 +170,7 @@ h3.mo-read::before{content:"✓";flex:0 0 auto;align-self:center;display:grid;pl
     }),{rootMargin:"0px 0px -14% 0px",threshold:.02});
     function arm(){
       const vh=innerHeight;
-      document.querySelectorAll(".view h3:not(.missed):not([data-wow])").forEach(h=>{
+      document.querySelectorAll(".view h3:not([data-wow])").forEach(h=>{
         if(h.closest("#ezgate,.wcard,.ezs-panel")||!h.offsetParent)return;h.dataset.wow=1;   /* headings of a tab that is not open yet are armed when it opens */
         if(read.has(hid(h)))h.classList.add("mo-read");
         const top=h.getBoundingClientRect().top;if(top>vh*.9)armed.add(h);   /* only headings that arrive by scrolling are stamped */
@@ -191,10 +194,10 @@ h3.mo-read::before{content:"✓";flex:0 0 auto;align-self:center;display:grid;pl
       const o=ids(),a=o.indexOf(lastId),b=o.indexOf(v.id);lastId=v.id;
       if(calm()||a<0||b<0)return;
       const fw=b>a,vh=innerHeight;busy(1300);
-      [...v.children].filter(c=>!c.matches("script,style")&&c.getBoundingClientRect().top<vh*1.05&&c.getBoundingClientRect().height>0).slice(0,10).forEach((c,i)=>{
+      [...v.children].filter(c=>!c.matches("script,style")&&c.getBoundingClientRect().top<vh*1.05&&c.getBoundingClientRect().height>0).slice(0,14).forEach((c,i)=>{
         if(!c.animate)return;c.style.transformOrigin=fw?"100% 50%":"0 50%";
-        c.animate([{opacity:0,transform:"perspective(1400px) rotateY("+(fw?52:-52)+"deg) translateX("+(fw?11:-11)+"%)"},{opacity:1,transform:"none"}],
-          {duration:850,delay:i*55,easing:"cubic-bezier(.2,.9,.25,1)",fill:"backwards"}).onfinish=()=>{c.style.transformOrigin="";};
+        c.animate([{opacity:0,transform:"perspective(1400px) rotateY("+(fw?78:-78)+"deg) translateX("+(fw?24:-24)+"%) scale(.9)"},{opacity:1,transform:"none"}],
+          {duration:1000,delay:i*70,easing:"cubic-bezier(.2,.9,.25,1)",fill:"backwards"}).onfinish=()=>{c.style.transformOrigin="";};
       });
       const sw=document.createElement("div");sw.className="wow-sweep";document.body.appendChild(sw);
       sw.animate([{transform:b>a?"translateX(-110%)":"translateX(110%)",opacity:.9},{transform:b>a?"translateX(110%)":"translateX(-110%)",opacity:0}],{duration:720,easing:"ease-in-out"}).onfinish=()=>sw.remove();

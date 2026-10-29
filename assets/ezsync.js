@@ -180,7 +180,7 @@
     if(c==="badpin")return "PIN 碼不對"+(e.left!=null?"，還剩 "+e.left+" 次機會":"")+"。";
     if(c==="pinlocked")return "PIN 碼錯太多次，這台裝置的 PIN 已移除，請用帳號和密碼登入。";
     if(c==="taken")return "這個帳號名稱已經有人用了，換一個。";
-    if(c==="weak")return "密碼太短或太好猜，至少要 8 個字。";
+    if(c==="weak")return "密碼太短或太好猜，至少要 6 個字。";
     if(c==="nosignup")return "現在不開放註冊。";
     if(c==="emailinvalid")return "系統暫時不能註冊（帳號格式被拒絕）。請把這句話告訴管理員。";
     if(c==="confirm")return "註冊功能還在設定中（Email 確認沒有關閉），暫時不能註冊。";
@@ -198,7 +198,7 @@
     const u=cleanUser(username);
     if(!/^[a-z0-9_]{1,20}$/.test(u))throw Object.assign(new Error("bad username"),{code:"badname"});
     password=String(password||"");
-    if(password.length<8)throw Object.assign(new Error("short"),{code:"weak"});
+    if(password.length<6)throw Object.assign(new Error("short"),{code:"weak"});
     if(new TextEncoder().encode(password).length>72)throw Object.assign(new Error("long"),{code:"longpass"});
     const body={email:u+MAIL,password};
     const j=kind==="register"?await sb("POST","/auth/v1/signup",{body:Object.assign(body,{data:{username:u}})}):await sb("POST","/auth/v1/token?grant_type=password",{body});

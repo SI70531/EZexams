@@ -115,7 +115,7 @@ await check("accounts: wrong password, taken name and short password say what is
   await pg.fill("#egUser", "Bad Name!"); await pg.click("#egGo"); await pg.waitForTimeout(300);
   assert(/最多 20/.test(await pg.textContent("#egMsg")), "bad name: " + await pg.textContent("#egMsg"));
   await pg.fill("#egUser", "S"); await pg.fill("#egPass", "short"); await pg.fill("#egPass2", "short"); await pg.click("#egGo"); await pg.waitForTimeout(300);
-  assert(/至少要 8/.test(await pg.textContent("#egMsg")), "short: " + await pg.textContent("#egMsg"));
+  assert(/至少要 6/.test(await pg.textContent("#egMsg")), "short: " + await pg.textContent("#egMsg"));
   assert(await gateUp(pg) && !(await pg.evaluate(() => EZSync.connected())), "signed in anyway");
   await pg.ctx.close();
 });

@@ -3,13 +3,11 @@
 name: Self-host fonts
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths: ["tools/fonts.py", ".github/workflows/fonts.yml"]
 permissions:
   contents: write
 jobs:
   fonts:
+    continue-on-error: true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5

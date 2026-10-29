@@ -3,13 +3,12 @@
 # - opens (or adds to) the issue "網站錯誤回報" when pages reported errors in the last 24 hours
 name: Health check
 on:
-  schedule:
-    - cron: "23 1 * * *"   # 09:23 Taipei
   workflow_dispatch:
 permissions:
   issues: write
 jobs:
   health:
+    continue-on-error: true
     runs-on: ubuntu-latest
     env:
       WORKER: https://ezexams-ai.ta77199ta.workers.dev

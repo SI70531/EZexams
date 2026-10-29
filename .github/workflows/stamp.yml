@@ -1,13 +1,12 @@
 # Keeps the ?v=<hash> on script/stylesheet links up to date, so visitors never get a stale cached file.
 name: Stamp asset versions
 on:
-  push:
-    branches: [main]
-    paths: ["**.html", "**.js", "**.css"]
+  workflow_dispatch:
 permissions:
   contents: write
 jobs:
   stamp:
+    continue-on-error: true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

@@ -58,6 +58,7 @@ html.ezcalm .joy-bit,html.ezcalm .joy-shot{display:none}
       document.body.appendChild(b);setTimeout(()=>b.remove(),(t+.5)*1000);}});
   }
   function confetti(n){
+    if(window.EZwowBusy)EZwowBusy(2600);
     const cols=[tok("--ok"),tok("--brass"),tok("--indigo"),tok("--seal"),tok("--warn")];
     for(let i=0;i<n;i++){const b=document.createElement("i");b.className="joy-bit";const t=1.6+Math.random()*1.4;
       b.style.cssText="left:"+(10+Math.random()*80)+"vw;background:"+cols[i%cols.length]+";--t:"+t+"s;--dx:"+((Math.random()-.5)*160)+"px;--r:"+(Math.random()*720-360)+"deg;animation-delay:"+(Math.random()*.25)+"s";

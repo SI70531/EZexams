@@ -14,9 +14,9 @@
 .top{background:color-mix(in srgb,var(--bg) 80%,transparent)!important;-webkit-backdrop-filter:saturate(1.4) blur(12px);backdrop-filter:saturate(1.4) blur(12px)}
 @keyframes fxenter{from{opacity:0;transform:translateY(34px) scale(.985)}60%{opacity:1}to{opacity:1;transform:none}}
 .view.fx-enter{animation:fxenter .6s cubic-bezier(.2,1,.3,1)}
-.fx-rv{opacity:0;transform:translateY(46px) scale(.96) rotate(.6deg);filter:blur(5px);transition:opacity .7s cubic-bezier(.2,.9,.25,1),transform .8s cubic-bezier(.2,1.2,.3,1),filter .6s}
-.fx-rv.fx-in{opacity:1;transform:none;filter:none}
-@keyframes fxrise{from{opacity:0;transform:translateY(34px) scale(.94);filter:blur(10px)}to{opacity:1;transform:none;filter:none}}
+.fx-rv{opacity:0;transform:translateY(46px) scale(.96) rotate(.6deg);transition:opacity .7s cubic-bezier(.2,.9,.25,1),transform .8s cubic-bezier(.2,1.2,.3,1)}
+.fx-rv.fx-in{opacity:1;transform:none}
+@keyframes fxrise{from{opacity:0;transform:translateY(34px) scale(.94)}to{opacity:1;transform:none}}
 .vhead h1,.hero h1{animation:fxrise .95s cubic-bezier(.2,1.1,.3,1) both}
 .vhead p,.hero p{animation:fxrise .95s .16s cubic-bezier(.2,1.1,.3,1) both}
 .fx-typing::after{content:"";display:inline-block;width:.55em;height:1.05em;margin-left:3px;vertical-align:-2px;background:currentColor;animation:fxcaret .8s steps(1) infinite}
@@ -179,6 +179,7 @@
     else if(right&&!calm()){const ab=right.querySelector(".ab")||right,r=ab.getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2);}
   }
   function burst(x,y){
+    if(window.EZwowBusy)EZwowBusy(1500);
     const cols=[tok("--ok"),tok("--brass"),tok("--indigo"),tok("--seal"),tok("--warn")];
     for(let i=0;i<30;i++){const s=document.createElement("span");s.className="fx-spark"+(i%3===0?" star":"");const a=i/30*Math.PI*2+Math.random()*.3,d=50+Math.random()*90;
       s.style.cssText="left:"+x+"px;top:"+y+"px;background:"+cols[i%cols.length]+";--dx:"+Math.cos(a)*d+"px;--dy:"+(Math.sin(a)*d-20)+"px;--sz:"+(6+Math.random()*9)+"px;--t:"+(.7+Math.random()*.6)+"s;--rot:"+((Math.random()-.5)*600)+"deg";

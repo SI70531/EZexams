@@ -8,6 +8,7 @@
    Signed in for this browser tab only: closing the site signs out (ezsync.js keeps the session in sessionStorage).
    EZGate.open({mode, change}) opens it again later. Colours come from the page's theme tokens (light and dark mode). */
 (function(){
+  const BASE=(()=>{try{return new URL("../",document.currentScript.src).href;}catch(e){return null;}})();   /* the site's home page */
   const css=`
 #ezgate{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;overflow:auto;padding:24px max(16px,env(safe-area-inset-left,0px));
   background-color:var(--bg);background-image:radial-gradient(var(--line) 1px,transparent 1.2px);background-size:22px 22px;
@@ -255,7 +256,14 @@
   function next(){const m=queue.shift();if(m){setMode(m,true);return;}celebrate("login").then(()=>finish(true));}
   function finish(reload){
     if(opts.change){close();return;}
-    root.classList.add("out");setTimeout(()=>location.reload(),420);   /* reload so this page syncs right away */
+    root.classList.add("out");
+    /* every sign-in lands on the home page (where the exam cards fly in); a reload would also do for syncing. Automated browsers keep reloading the same page. */
+    setTimeout(()=>{
+      const home=BASE&&!(navigator.webdriver&&!window.EZWOW_FORCE)&&new URL(BASE).pathname!==location.pathname;
+      if(home){try{sessionStorage.setItem("ezwow-cards","1");}catch(e){}location.href=BASE;return;}
+      try{if(BASE&&!navigator.webdriver)sessionStorage.setItem("ezwow-cards","1");}catch(e){}
+      location.reload();
+    },420);
   }
   const wait=ms=>new Promise(r=>setTimeout(r,ms));
   /* switching PINs would clear the answers kept on this device: ask before doing it */
@@ -281,6 +289,7 @@
   const tokv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim()||"#888";
   function burst(cx,cy,big){
     if(RM()||!document.body.animate)return;
+    if(window.EZwowBusy)EZwowBusy(2600);
     const fx=document.createElement("div");fx.className="eg-fx";fx.style.left=cx+"px";fx.style.top=cy+"px";fx.setAttribute("aria-hidden","true");root.appendChild(fx);
     const cols=[tokv("--ok"),tokv("--brass"),tokv("--indigo"),tokv("--seal"),tokv("--warn")];
     [0,110,230,380,560].forEach((d,k)=>{const r=document.createElement("i");r.className="eg-ring";const z=60+k*26;r.style.cssText="left:"+(-z/2)+"px;top:"+(-z/2)+"px;width:"+z+"px;height:"+z+"px;opacity:0";fx.appendChild(r);

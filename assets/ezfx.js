@@ -103,7 +103,7 @@
   document.querySelectorAll(".hero .prompt").forEach(type);
 
   /* scroll reveal: blocks below the fold rise in when they arrive */
-  const SEL=".view>*:not(.vhead):not(script):not(style),.view .note>*,.qitem,.exq,.rvsec,.rvchh,.ticket,.tickets>*,main>section>*,.wrap>section>*";
+  const SEL=".view>*:not(.vhead):not(script):not(style),.view .note>*,.qitem,.exq,.rvchh,.ticket,.tickets>*,main>section>*,.wrap>section>*";
   const io="IntersectionObserver" in window?new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("fx-in");io.unobserve(e.target);}});},{rootMargin:"0px 0px -6% 0px",threshold:.04}):null;
   /* only the tab on screen, and only blocks within a few screens below: farther ones just appear normally.
      All positions are read first and the classes written after, so the browser lays the page out once. */

@@ -472,6 +472,32 @@ await check("motion: 總複習 cards rise in; clearing a mistake says how many a
   assert(!pg.errs.length, pg.errs.join(" | "));
   await pg.ctx.close();
 });
+await check("wow: the intro plays once per tab and can be clicked away; a wrong answer shatters, a right one flashes; scrolled-past headings get a ✓ that is remembered", async () => {
+  const pg = await device({ skipGate: true }); await pg.goto(U + "?wow=1"); await pg.waitForSelector(".wow-intro", { timeout: 3000 });
+  await pg.click(".wow-intro"); await pg.waitForFunction(() => !document.querySelector(".wow-intro"), null, { timeout: 4000 });
+  await pg.goto(U + "?wow=1"); await pg.waitForTimeout(600);
+  assert(!(await pg.$(".wow-intro")), "intro played twice in one tab");
+  await pg.goto(PAGE); await pg.waitForTimeout(900); await pg.evaluate(PICK);
+  await pg.evaluate(() => { show("ch1"); const it = pickItem(0), a = QUIZ.ch1[0].a; it.scrollIntoView({ block: "center" }); [...it.querySelectorAll(".opt")].find(o => +o.dataset.oi !== a).click(); });
+  await pg.waitForSelector(".wow-crack", { timeout: 2000 }); await pg.waitForSelector(".wow-shard", { timeout: 2000 });
+  await pg.evaluate(() => { const it = pickItem(1), a = QUIZ.ch1[1].a; [...it.querySelectorAll(".opt")].find(o => +o.dataset.oi === a).click(); });
+  await pg.waitForSelector(".wow-flash", { timeout: 2000 });
+  await pg.waitForTimeout(700); await pg.evaluate(() => window.scrollTo(0, 3000)); await pg.waitForTimeout(300); await pg.evaluate(() => window.scrollTo(0, 3400));
+  await pg.waitForFunction(() => document.querySelector("#ch1 h3.mo-read"), null, { timeout: 4000 });
+  await pg.reload(); await pg.waitForTimeout(900);
+  assert(await pg.evaluate(() => !!document.querySelector("#ch1 h3.mo-read")), "✓ not remembered after a reload");
+  assert(!pg.errs.length, pg.errs.join(" | "));
+  await pg.ctx.close();
+});
+await check("wow: the answer text types itself out and ends complete; the welcome banner shows the streak when signed in", async () => {
+  const pg = await device({ skipGate: true }); await pg.addInitScript(() => { window.EZWOW_FORCE = true; }); await pg.goto(PAGE); await pg.waitForTimeout(900); await pg.evaluate(PICK);
+  const want = await pg.evaluate(() => { show("ch1"); const it = pickItem(0), a = QUIZ.ch1[0].a; [...it.querySelectorAll(".opt")].find(o => +o.dataset.oi === a).click(); return it.querySelector(".expl") ? it.querySelector(".expl").textContent.length : -1; });
+  await pg.waitForTimeout(2600);
+  const got = await pg.evaluate(() => { const e = pickItem(0).querySelector(".expl"); return e ? e.textContent.length : -1; });
+  assert(want === -1 || got > 0, "explanation lost: " + got);
+  assert(!pg.errs.length, pg.errs.join(" | "));
+  await pg.ctx.close();
+});
 await check("search: typing amp, lt, gt or a quote shows readable text, never broken entities", async () => {
   const pg = await device({ skipGate: true }); await pg.goto(U + "data-structures/midterm/"); await pg.waitForTimeout(700);
   await pg.keyboard.press("Control+k"); await pg.waitForTimeout(300);

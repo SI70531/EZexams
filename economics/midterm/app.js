@@ -52,7 +52,7 @@ window.addEventListener("hashchange",()=>{const h=location.hash.slice(1);if(h&&h
 
 /* ---------- question markup ---------- */
 function stemHTML(it,i){
-  return '<div class="stem"><span class="num">'+(i+1)+'.</span>'+(it.hw?'<span class="hwtag">'+esc(it.hw)+'</span>':'')+esc(it.q)+'</div>'+
+  return (it.fig?'<div class="qfig">'+it.fig+'</div>':'')+'<div class="stem"><span class="num">'+(i+1)+'.</span>'+(it.hw?'<span class="hwtag">'+esc(it.hw)+'</span>':'')+esc(it.q)+'</div>'+
     (it.qz?'<div class="zhq">'+esc(it.qz)+'</div>':'');
 }
 function optHTML(it,oi,k){

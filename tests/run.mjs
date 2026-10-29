@@ -1,6 +1,6 @@
 /* EZexams checks. Run:  node tests/run.mjs        (needs: npm i playwright && npx playwright install chromium)
    Each check prints ✓ or ✗; the exit code is the number of failed checks. Nothing here touches the network. */
-import { serve, device, closeBrowser, typePin, settle, gateUp, worker, env, resetWorker, gist, calls, setGemini, sbs, supabase, SECRET, MAIL, signUp, signIn, addUser } from "./harness.mjs";
+import { serve, device, closeBrowser, typePin, settle, gateUp, worker, env, resetWorker, calls, setGemini, sbs, supabase, SECRET, MAIL, signUp, signIn, addUser } from "./harness.mjs";
 
 const PORT = +process.env.PORT || 8871;
 const site = serve(PORT), U = site.url;
@@ -18,45 +18,45 @@ const answered = (pg, key) => pg.evaluate(k => { const s = JSON.parse(localStora
 const W = (path, init = {}, ip) => worker(new Request("https://w.test" + path, Object.assign({ headers: { origin: "https://si70531.github.io" } }, init)), ip);
 
 /* ---------- Worker ---------- */
-await check("Worker: AI proxy and sync refuse requests without a sign-in token", async () => {
+/* an account made straight in the fake Supabase; returns its session (access_token, user) */
+const mkAcct = n => JSON.parse(supabase("POST", "https://jyfmolrqxypufwjqexan.supabase.co/auth/v1/signup", {}, JSON.stringify({ email: n + MAIL, password: "password1" })).body);
+const post = (path, body, ip) => W(path, { method: "POST", body: JSON.stringify(body) }, ip);
+const devId = i => i.toString(16).padStart(32, "0");
+const setPin = (a, dev, pin = "4821") => post("/pin/set", { t: a.access_token, deviceId: dev, pin });
+const tryPin = (a, dev, pin, ip) => post("/pin/login", { uid: a.user.id, deviceId: dev, pin }, ip);
+
+await check("Worker: the AI proxy refuses requests without a sign-in token, and the old PIN routes are gone", async () => {
   resetWorker();
   const a = await W("/v1beta/models/gemini-flash-latest:generateContent", { method: "POST", body: "{}" });
-  const b = await W("/sync?key=os-midterm-v1");
-  assert(a.status === 401 && b.status === 401, `got ${a.status} / ${b.status}`);
+  assert(a.status === 401, `got ${a.status}`);
+  const t = encodeURIComponent(mkAcct("gone").access_token);
+  assert((await W("/sync?key=os-midterm-v1&t=" + t)).status === 404 && (await post("/login", { code: "4821", mode: "create" })).status === 401, "old routes still answer");
   assert(calls.gemini === 0, "Gemini was called");
-});
-await check("Worker: a signed-in token reaches Gemini and sync", async () => {
-  resetWorker();
-  const r = await (await W("/login", { method: "POST", body: JSON.stringify({ code: "4821", mode: "create" }) })).json();
-  assert(r.token, "no token: " + JSON.stringify(r));
-  const g = await W("/v1beta/models/gemini-flash-latest:generateContent?t=" + encodeURIComponent(r.token), { method: "POST", body: "{}" });
-  assert(g.status === 200 && calls.gemini === 1, "gemini " + g.status);
-  const p = await W("/sync", { method: "POST", body: JSON.stringify({ t: r.token, key: "os-midterm-v1", payload: { updatedAt: 1, data: { quiz: {} } } }) });
-  assert(p.status === 200, "sync post " + p.status);
-  const bad = await W("/sync?key=os-midterm-v1&t=" + encodeURIComponent(r.token.slice(0, -2) + "xx"));
-  assert(bad.status === 401, "tampered token accepted");
 });
 await check("Worker: 5 wrong PINs lock that visitor out, others are unaffected", async () => {
   resetWorker();
-  await W("/login", { method: "POST", body: JSON.stringify({ code: "4821", mode: "create" }) }, "9.9.9.9");
+  const a = mkAcct("lk");
+  for (let i = 0; i < 7; i++) await setPin(a, devId(i));
   const codes = [];
-  for (const c of ["1111", "2222", "3333", "4444", "5555", "4821"]) codes.push((await W("/login", { method: "POST", body: JSON.stringify({ code: c, mode: "join" }) }, "6.6.6.6")).status);
-  assert(codes.slice(0, 5).every(s => s === 404) && codes[5] === 429, "statuses " + codes.join(","));
-  const other = await W("/login", { method: "POST", body: JSON.stringify({ code: "4821", mode: "join" }) }, "7.7.7.7");
+  for (let i = 0; i < 5; i++) codes.push((await tryPin(a, devId(i), "1111", "6.6.6.6")).status);
+  codes.push((await tryPin(a, devId(5), "4821", "6.6.6.6")).status);
+  assert(codes.slice(0, 5).every(s => s === 401) && codes[5] === 429, "statuses " + codes.join(","));
+  const other = await tryPin(a, devId(6), "4821", "7.7.7.7");
   assert(other.status === 200, "other visitor " + other.status);
 });
 await check("Worker: only the site's Gemini models; IPv6 neighbours share one wrong-PIN count", async () => {
   resetWorker();
-  const r = await (await W("/login", { method: "POST", body: JSON.stringify({ code: "4821", mode: "create" }) })).json();
-  const pro = await W("/v1beta/models/gemini-2.5-pro:generateContent?t=" + encodeURIComponent(r.token), { method: "POST", body: "{}" });
+  const a = mkAcct("m1");
+  const pro = await W("/v1beta/models/gemini-2.5-pro:generateContent?t=" + encodeURIComponent(a.access_token), { method: "POST", body: "{}" });
   assert(pro.status === 404 && calls.gemini === 0, "other model " + pro.status);
+  for (let i = 0; i < 7; i++) await setPin(a, devId(i));
   const codes = [];
-  for (let i = 0; i < 6; i++) codes.push((await W("/login", { method: "POST", body: JSON.stringify({ code: "100" + i, mode: "join" }) }, "2001:db8:1:2::" + (i + 1).toString(16))).status);
+  for (let i = 0; i < 6; i++) codes.push((await tryPin(a, devId(i), "1111", "2001:db8:1:2::" + (i + 1).toString(16))).status);
   assert(codes[5] === 429, "IPv6 rotation not counted: " + codes.join(","));
 });
 await check("Worker: /health and /errors answer", async () => {
   const h = await (await W("/health")).json();
-  assert(h.github && h.github.ok && h.github.daysLeft > 1000 && h.gemini && h.gemini.ok, JSON.stringify(h));
+  assert(h.supabase && h.supabase.ok && h.supabase.secret === true && h.gemini && h.gemini.ok && !h.github, JSON.stringify(h));
   await W("/log", { method: "POST", body: JSON.stringify({ msg: "boom", src: "x.js:1", page: "/t" }) });
   const e = await (await W("/errors")).json();
   assert(e.errors.length === 1 && e.errors[0].msg === "boom", JSON.stringify(e));
@@ -162,8 +162,7 @@ await check("accounts: signing in as another account asks before it clears this 
   await pg.click("#egMsg >> text=取消"); await pg.waitForTimeout(500);
   assert(await answered(pg, KEY) === 3 && !(await pg.evaluate(() => EZSync.connected())), "cancel did not keep answers / stay signed out");
   await pg.fill("#egPass", "password1"); await pg.click("#egGo"); await msgIs(pg, /會被清掉/);
-  await pg.click("#egMsg button:nth-of-type(1)"); await pg.waitForSelector('.eg-ticket[data-mode="import"]', { timeout: 8000 }); await flip(pg);
-  await pg.click("#egAlt"); await pg.waitForSelector('.eg-ticket[data-mode="setpin"]'); await flip(pg); await pg.click("#egAlt"); await settle(pg, 1500);
+  await pg.click("#egMsg button:nth-of-type(1)"); await pg.waitForSelector('.eg-ticket[data-mode="setpin"]', { timeout: 8000 }); await flip(pg); await pg.click("#egAlt"); await settle(pg, 1500);
   assert(await answered(pg, KEY) === 0 && await pg.evaluate(() => EZSync.account().username === "dave"), "answers not cleared for the other account");
   await pg.ctx.close();
 });
@@ -225,39 +224,7 @@ await check("sync: an expired access token is renewed by itself; a revoked sessi
   assert(t3[0] === null && t3[1] === false, "dead session still looks signed in: " + JSON.stringify(t3));
   await pg.ctx.close();
 });
-await check("old PIN: still signs in (progress from before accounts is not lost) and the AI proxy takes its token", async () => {
-  resetWorker();
-  const t = (await (await W("/login", { method: "POST", body: JSON.stringify({ code: "4821", mode: "create" }) })).json()).token;
-  await W("/sync", { method: "POST", body: JSON.stringify({ t, key: KEY, payload: { updatedAt: 5, data: { quiz: { ch1: { 0: 1, 1: 2 } }, qat: { ch1: { 0: 5, 1: 5 } } } } }) });
-  const pg = await device(); await pg.goto(PAGE); await pg.waitForTimeout(500);
-  await pg.click("#egAlt"); await flip(pg);
-  assert(await gateMode(pg) === "legacy", "legacy screen missing");
-  const x = await pg.evaluate(() => { const c = document.querySelector("#ezgate .eg-cell input"); return [c.type, c.inputMode, getComputedStyle(c).webkitTextSecurity]; });
-  assert(x[1] === "numeric" && (x[0] === "text" ? x[2] === "disc" : x[0] === "password"), "PIN cells: " + x);
-  await typePin(pg, 1, "4821"); await settle(pg, 1800);
-  assert(await pg.evaluate(() => EZSync.mode()) === "code" && await answered(pg, KEY) === 2, "old PIN did not load the progress");
-  const ai = await pg.evaluate(async () => { const t = await EZSync.session(); const r = await fetch("https://ezexams-ai.ta77199ta.workers.dev/v1beta/models/gemini-flash-latest:generateContent?t=" + encodeURIComponent(t), { method: "POST", body: "{}" }); return r.status; });
-  assert(ai === 200, "AI proxy with the old token: " + ai);
-  await pg.ctx.close();
-});
-await check("import: a new account can pull in the progress kept under an old PIN, merged with what this device has", async () => {
-  resetWorker();
-  const t = (await (await W("/login", { method: "POST", body: JSON.stringify({ code: "4821", mode: "create" }) })).json()).token;
-  await W("/sync", { method: "POST", body: JSON.stringify({ t, key: KEY, payload: { updatedAt: 5, data: { quiz: { ch1: { 0: 1, 1: 2 } }, qat: { ch1: { 0: 5, 1: 5 } } } } }) });
-  const pg = await device(); await pg.goto(PAGE); await pg.waitForTimeout(500);
-  await pg.click("#egSw"); await flip(pg);
-  await pg.fill("#egUser", "mona"); await pg.fill("#egPass", "password1"); await pg.fill("#egPass2", "password1"); await pg.click("#egGo");
-  await pg.waitForSelector('.eg-ticket[data-mode="import"]', { timeout: 10000 }); await flip(pg);
-  await typePin(pg, 1, "9999"); await msgIs(pg, /找不到/);
-  assert(/找不到/.test(await pg.textContent("#egMsg")), "wrong old PIN: " + await pg.textContent("#egMsg"));
-  await typePin(pg, 1, "4821"); await pg.waitForSelector('.eg-ticket[data-mode="setpin"]', { timeout: 10000 }); await flip(pg);
-  await pg.click("#egAlt"); await settle(pg, 1500);
-  assert(await answered(pg, KEY) === 2, "imported answers not on this device: " + await answered(pg, KEY));
-  assert(rowOf("mona", KEY) && Object.keys(rowOf("mona", KEY).data.quiz.ch1).length === 2, "not uploaded to the account: " + JSON.stringify(rowOf("mona", KEY)));
-  assert(await pg.evaluate(() => EZSync.device().imported === true), "import not remembered");
-  await pg.ctx.close();
-});
-await check("Worker: a Supabase sign-in opens the Gemini proxy (counted per account); junk, expired and old-PIN-only routes are refused", async () => {
+await check("Worker: a Supabase sign-in opens the Gemini proxy (counted per account); junk and forged tokens are refused", async () => {
   resetWorker();
   const sess = supabase("POST", "https://jyfmolrqxypufwjqexan.supabase.co/auth/v1/signup", {}, JSON.stringify({ email: "w1" + MAIL, password: "password1" }));
   const tok = JSON.parse(sess.body).access_token;
@@ -265,15 +232,12 @@ await check("Worker: a Supabase sign-in opens the Gemini proxy (counted per acco
   assert((await call(tok)).status === 200 && calls.gemini === 1, "account token refused");
   assert((await call(tok.slice(0, -2) + "xx")).status === 401, "forged token accepted");
   assert((await call("a.b.c")).status === 401 && (await call("garbage")).status === 401, "junk accepted");
-  const sy = await W("/sync?key=" + KEY + "&t=" + encodeURIComponent(tok)); assert(sy.status === 403, "old PIN sync took an account token: " + sy.status);
   const t2 = JSON.parse(supabase("POST", "https://jyfmolrqxypufwjqexan.supabase.co/auth/v1/token?grant_type=password", {}, JSON.stringify({ email: "w1" + MAIL, password: "password1" })).body).access_token;
   assert((await call(t2)).status === 200, "a fresh sign-in was refused");
 });
 await check("Worker: device PIN — set needs a sign-in, the right PIN returns a one-time link, 5 wrong ones delete it, other devices and accounts cannot use it", async () => {
   resetWorker();
-  const mk = n => JSON.parse(supabase("POST", "https://jyfmolrqxypufwjqexan.supabase.co/auth/v1/signup", {}, JSON.stringify({ email: n + MAIL, password: "password1" })).body);
-  const a = mk("p1"), b = mk("p2"), dev = "a".repeat(32), dev2 = "b".repeat(32);
-  const post = (path, body, ip) => W(path, { method: "POST", body: JSON.stringify(body) }, ip);
+  const a = mkAcct("p1"), b = mkAcct("p2"), dev = "a".repeat(32), dev2 = "b".repeat(32);
   assert((await post("/pin/set", { t: "nope.nope.nope", deviceId: dev, pin: "4821" })).status === 401, "set without a sign-in");
   assert((await post("/pin/set", { t: a.access_token, deviceId: dev, pin: "48" })).status === 400, "short PIN accepted");
   assert((await post("/pin/set", { t: a.access_token, deviceId: dev, pin: "4821" })).status === 200, "set failed");
@@ -332,7 +296,7 @@ await check("chapter-end written: no keyword grading — without signing in it s
     ta.value = "an intermediary between the user and the hardware"; ta.dispatchEvent(new Event("input")); q.querySelector(".grade").click();
     for (let i = 0; i < 40 && !/重試/.test(q.querySelector(".gstat").textContent); i++) await new Promise(z => setTimeout(z, 100));
     return [q.querySelector(".gstat").textContent, q.querySelector(".gres").hidden, getComputedStyle(q.querySelector("details.qa")).display]; });
-  assert(/PIN/.test(r[0]) && /重試/.test(r[0]) && r[1] === true && r[2] === "none", JSON.stringify(r));
+  assert(/先登入/.test(r[0]) && /重試/.test(r[0]) && r[1] === true && r[2] === "none", JSON.stringify(r));
   await pg.ctx.close();
 });
 await check("chapter-end written: AI grades from the notes, shows its own ANSWER (EN + 中文); 看 AI 解答 works without answering", async () => {
@@ -444,44 +408,29 @@ await check("keyboard: A–D answers the question on screen, ← → moves betwe
 });
 
 /* ---------- limits and edge cases ---------- */
-const login = async (code, mode, ip) => W("/login", { method: "POST", body: JSON.stringify({ code, mode }) }, ip);
 const aiCall = (tok, ip) => W("/v1beta/models/gemini-flash-latest:generateContent?t=" + encodeURIComponent(tok), { method: "POST", body: "{}" }, ip);
-await check("Worker: 200 wrong PINs across the whole site pause sign-in for everyone, right PIN included", async () => {
+await check("Worker: 200 wrong PINs across the whole site pause the PIN sign-in for everyone, right PIN included", async () => {
   resetWorker();
-  assert((await login("4821", "create", "9.9.9.9")).status === 200, "create failed");
-  for (let i = 0; i < 200; i++) await login(String(1000 + i), "join", `2001:db8:${i.toString(16)}::1`);   /* a different visitor each time */
-  const r = await login("4821", "join", "8.8.8.8");
+  const a = mkAcct("gl");
+  for (let i = 0; i < 201; i++) await setPin(a, devId(i));
+  for (let i = 0; i < 200; i++) await tryPin(a, devId(i), "1111", `2001:db8:${i.toString(16)}::1`);   /* a different visitor each time */
+  const r = await tryPin(a, devId(200), "4821", "8.8.8.8");
   assert(r.status === 429 && (await r.json()).error.status === "LOCKED", "status " + r.status);
-  assert((await login("7777", "create", "8.8.4.4")).status === 429, "creating a PIN was not paused");
 });
-await check("Worker: one PIN gets 600 AI calls an hour and 3000 a day, then 429; another PIN is unaffected", async () => {
+await check("Worker: one account gets 600 AI calls an hour and 3000 a day, then 429; another account is unaffected", async () => {
   resetWorker();
-  const tok = async c => (await (await login(c, "create", "9.9.9.9")).json()).token;
-  const a = await tok("4821"), b = await tok("6283"), real = Date.now; let t = real();
+  sbs.ttl = 3 * 86400;   /* the account token must outlive the simulated days */
+  const a = mkAcct("ai1").access_token, b = mkAcct("ai2").access_token, real = Date.now; let t = real();
   Date.now = () => t;
   try {
     for (let i = 0; i < 600; i++) assert((await aiCall(a)).status === 200, "call " + (i + 1) + " refused");
     const r = await aiCall(a);
     assert(r.status === 429 && +r.headers.get("retry-after") > 0, "601st call: " + r.status);
-    assert((await aiCall(b)).status === 200, "another PIN was blocked");
+    assert((await aiCall(b)).status === 200, "another account was blocked");
     for (let h = 1; h < 5; h++) { t += 3600e3; for (let i = 0; i < 600; i++) await aiCall(a); }   /* 5 hours x 600 = 3000 */
     t += 3600e3;
     assert((await aiCall(a)).status === 429, "daily limit not applied in a fresh hour");
   } finally { Date.now = real; }
-});
-await check("Worker: sign-in and sync still work when the gist holds more than 300 files", async () => {
-  resetWorker();
-  const mk = async (c, ip) => (await (await login(c, "create", ip)).json()).token;
-  const a = await mk("4821", "9.9.9.9");
-  const mine = gist.files, codes = "ezexams-sync-codes.json";
-  gist.files = { [codes]: mine[codes] || { content: "{}" } };
-  for (let i = 0; i < 305; i++) gist.files["zz-filler-" + i + ".json"] = { content: "{}" };   /* GitHub only lists the first 300 files */
-  for (const k of Object.keys(mine)) if (k !== codes) gist.files[k] = mine[k];
-  assert(Object.keys(gist.files).indexOf(Object.keys(mine).find(k => k.endsWith("--meta.json"))) >= 300, "setup: the PIN's files are still listed");
-  const j = await login("4821", "join", "5.5.5.5"); assert(j.status === 200, "join with 300+ files: " + j.status);
-  const tok = (await j.json()).token;
-  const g0 = await W("/sync?key=statistics-x&t=" + encodeURIComponent(tok)); assert(g0.status === 200, "sync read " + g0.status);
-  const dup = await login("4821", "create", "4.4.4.4"); assert(dup.status === 409, "PIN taken not noticed: " + dup.status);
 });
 await check("search: typing amp, lt, gt or a quote shows readable text, never broken entities", async () => {
   const pg = await device({ skipGate: true }); await pg.goto(U + "data-structures/midterm/"); await pg.waitForTimeout(700);

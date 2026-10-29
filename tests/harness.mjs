@@ -87,11 +87,8 @@ export function supabase(method, urlStr, headers = {}, text = "") {
   return out(404, { msg: "no such fake route " + p });
 }
 
-/* ---------- fake GitHub (one gist) and Gemini ---------- */
-export const gist = { id: "G", owner: { login: "test" }, files: {} };
-/* GitHub shows at most 300 files of a gist; the rest can only be read from the raw URL */
-const view = () => ({ ...gist, files: Object.fromEntries(Object.entries(gist.files).slice(0, 300)) });
-export const calls = { gemini: 0, github: 0 };
+/* ---------- fake Gemini ---------- */
+export const calls = { gemini: 0 };
 let geminiReply = () => ({ candidates: [{ content: { parts: [{ text: "[]" }] } }] });
 export function setGemini(fn) { geminiReply = fn; }
 globalThis.fetch = async (u, o = {}) => {
@@ -103,13 +100,6 @@ globalThis.fetch = async (u, o = {}) => {
     let body = {}; try { body = JSON.parse(o.body); } catch (e) {}
     return new Response(JSON.stringify(geminiReply(body)), { status: 200, headers: { "content-type": "application/json" } });
   }
-  calls.github++;
-  if (u.endsWith("/user")) return new Response(JSON.stringify({ login: "test" }), { status: 200, headers: { "github-authentication-token-expiration": "2099-01-01 00:00:00 UTC" } });
-  if (u.includes("/gists?per_page=100")) return new Response(JSON.stringify(gist.files["ezexams-sync-codes.json"] ? [view()] : []), { status: 200 });
-  if (u.endsWith("/gists") && m === "POST") { Object.assign(gist.files, JSON.parse(o.body).files); return new Response(JSON.stringify(view()), { status: 201 }); }
-  if (u.startsWith("https://gist.githubusercontent.com/")) { const f = gist.files[decodeURIComponent(u.split("/raw/")[1].split("?")[0])]; return f ? new Response(f.content, { status: 200 }) : new Response("", { status: 404 }); }
-  if (u.endsWith("/gists/G") && m === "GET") return new Response(JSON.stringify(view()), { status: 200 });
-  if (u.endsWith("/gists/G") && m === "PATCH") { Object.assign(gist.files, JSON.parse(o.body).files); return new Response(JSON.stringify(gist), { status: 200 }); }
   return new Response("{}", { status: 404 });
 };
 
@@ -123,10 +113,10 @@ class FakeNS {
     return { fetch: (u, init) => o.fetch(new Request(u, init)) };
   }
 }
-export const env = { GITHUB_TOKEN: "t", GEMINI_KEY: "k", SUPABASE_SECRET_KEY: SECRET };
+export const env = { GEMINI_KEY: "k", SUPABASE_SECRET_KEY: SECRET };
 env.RELAY = new FakeNS(W.GeminiRelay, env); env.GUARD = new FakeNS(W.Guard, env); env.ERRLOG = new FakeNS(W.ErrLog, env);
 export const worker = (req, ip = "1.2.3.4") => { const h = new Headers(req.headers); h.set("CF-Connecting-IP", ip); return W.default.fetch(new Request(req, { headers: h }), env); };
-export function resetWorker() { for (const m of [sbs.users, sbs.tokens, sbs.refresh, sbs.links, sbs.rows]) m.clear(); sbs.ttl = 3600; sbs.log = []; gist.files = {}; env.GUARD.inst.clear(); env.GUARD.mems.clear(); env.ERRLOG.inst.clear(); calls.gemini = calls.github = 0; }
+export function resetWorker() { for (const m of [sbs.users, sbs.tokens, sbs.refresh, sbs.links, sbs.rows]) m.clear(); sbs.ttl = 3600; sbs.log = []; env.GUARD.inst.clear(); env.GUARD.mems.clear(); env.ERRLOG.inst.clear(); calls.gemini = 0; }
 
 /* ---------- browser ---------- */
 let browser = null;
@@ -161,12 +151,10 @@ export const gateUp = pg => pg.evaluate(() => { const g = document.getElementByI
 
 /* ---------- gate helpers: the account screens ---------- */
 const flip = pg => pg.waitForTimeout(800);   /* the ticket flips between screens */
-/* from the login screen: register, skip (or do) the import step, then set a device PIN or skip it; ends signed in on a reloaded page */
-export async function signUp(pg, user, { pass = "password1", pin = null, importPin = null } = {}) {
+/* from the login screen: register, then set a device PIN or skip it; ends signed in on a reloaded page */
+export async function signUp(pg, user, { pass = "password1", pin = null } = {}) {
   await pg.click("#egSw"); await flip(pg);
   await pg.fill("#egUser", user); await pg.fill("#egPass", pass); await pg.fill("#egPass2", pass); await pg.click("#egGo");
-  await pg.waitForSelector('.eg-ticket[data-mode="import"]', { timeout: 10000 }); await flip(pg);
-  if (importPin) await typePin(pg, 1, importPin); else await pg.click("#egAlt");
   await pg.waitForSelector('.eg-ticket[data-mode="setpin"]', { timeout: 10000 }); await flip(pg);
   if (pin) { await typePin(pg, 1, pin); await typePin(pg, 2, pin); } else await pg.click("#egAlt");
   await settle(pg, 1500);

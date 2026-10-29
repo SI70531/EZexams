@@ -1,10 +1,9 @@
 /* EZexams entry gate: before the site opens, ask who is studying.
    Screens (data-mode on the ticket):
-   - login / register: username + password (Supabase account, ezsync.js). After a new account or first sign-in the gate may
-     offer 匯入舊 PIN 進度 (import) and 設定這台裝置的 PIN (setpin); both can be skipped.
+   - login / register: username + password (Supabase account, ezsync.js). After a sign-in the gate may offer 設定這台裝置的 PIN
+     (setpin); it can be skipped.
    - pin: this device remembers an account with a PIN: the 4 boxes check by themselves (no Enter); a wrong PIN shakes and clears,
      five wrong ones remove the device PIN and ask for the password.
-   - legacy: an old 4-digit PIN code (progress from before accounts), kept so nothing is lost until it has been imported.
    - 先不同步: use this device only, for this browser session.
    Signed in for this browser tab only: closing the site signs out (ezsync.js keeps the session in sessionStorage).
    EZGate.open({mode, change}) opens it again later. Colours come from the page's theme tokens (light and dark mode). */
@@ -45,7 +44,7 @@
 .eg-confirm{display:none}.eg-ticket[data-mode="setpin"] .eg-confirm{display:block}
 .eg-acct,.eg-reg,.eg-pinrow{display:none}
 .eg-ticket[data-mode="login"] .eg-acct,.eg-ticket[data-mode="register"] .eg-acct{display:block}.eg-ticket[data-mode="register"] .eg-reg{display:block}
-.eg-ticket[data-mode="pin"] .eg-pinrow,.eg-ticket[data-mode="legacy"] .eg-pinrow,.eg-ticket[data-mode="setpin"] .eg-pinrow,.eg-ticket[data-mode="import"] .eg-pinrow{display:block}
+.eg-ticket[data-mode="pin"] .eg-pinrow,.eg-ticket[data-mode="setpin"] .eg-pinrow{display:block}
 .eg-in{display:block;width:100%;margin:0 0 12px;padding:11px 12px;font:500 16px var(--f-body);color:var(--ink);background:var(--paper2);border:1.5px solid var(--line-strong);border-bottom-width:3px;border-radius:8px;outline:none}
 .eg-in:focus{border-color:var(--indigo);background:var(--indigo-soft)}
 .eg-acct.bad .eg-in{border-color:var(--seal);animation:egshake .35s}
@@ -87,12 +86,10 @@
 `;
 
   const TEXT={
-    login:{prompt:"ezexams --login",h:"登入",p:"輸入帳號名稱和密碼，就會載入你的進度：每一科的作答、分數和錯題。",btn:"登入",sw:"還沒有帳號？",swb:"註冊",alt:"舊 PIN 碼登入（搬家用）"},
+    login:{prompt:"ezexams --login",h:"登入",p:"輸入帳號名稱和密碼，就會載入你的進度：每一科的作答、分數和錯題。",btn:"登入",sw:"還沒有帳號？",swb:"註冊",alt:""},
     register:{prompt:"ezexams --new",h:"建立帳號",p:"自己取一個帳號名稱和密碼。這裡沒有 Email，所以忘記密碼就找不回來，請記好。新帳號從 0 開始。",btn:"註冊並進入",sw:"已經有帳號？",swb:"登入",alt:""},
     pin:{prompt:"ezexams --pin",h:"輸入 PIN 碼",p:"",btn:"進入 EZexams",sw:"",swb:"改用密碼登入",alt:"換成別的帳號"},
-    legacy:{prompt:"ezexams --sync",h:"舊 PIN 碼登入",p:"這是帳號功能出現以前的 4 位數 PIN 碼。登入後可以先照舊使用，再到帳號登入時把進度搬過去。",btn:"進入 EZexams",sw:"",swb:"回到帳號登入",alt:""},
-    setpin:{prompt:"ezexams --pin set",h:"設定這台裝置的 PIN 碼",p:"設好之後，這台裝置只要輸入 4 位數 PIN 碼就能登入，不用再打密碼。PIN 碼只對這台裝置有效，錯 5 次就會失效。避開 1234、0000 這種好猜的。",btn:"設定",sw:"",swb:"",alt:"先不設定"},
-    import:{prompt:"ezexams --import",h:"匯入舊的進度",p:"之前用 4 位數 PIN 碼記錄過進度嗎？輸入那組舊 PIN 碼一次，進度會搬到這個帳號。沒有的話直接略過。",btn:"匯入",sw:"",swb:"",alt:"沒有，略過"}
+    setpin:{prompt:"ezexams --pin set",h:"設定這台裝置的 PIN 碼",p:"設好之後，這台裝置只要輸入 4 位數 PIN 碼就能登入，不用再打密碼。PIN 碼只對這台裝置有效，錯 5 次就會失效。避開 1234、0000 這種好猜的。",btn:"設定",sw:"",swb:"",alt:"先不設定"}
   };
   let root=null,ticket=null,cellsets=[],opened=false,opts={};
   const $=s=>root.querySelector(s);
@@ -136,10 +133,8 @@
     $("#egSw").addEventListener("click",()=>{const m=ticket.dataset.mode;setMode(m==="login"?"register":"login",true);});
     $("#egAlt").addEventListener("click",()=>{
       const m=ticket.dataset.mode;
-      if(m==="login")setMode("legacy",true);
-      else if(m==="pin"){EZSync.forgetDevice();$("#egUser").value="";setMode("login",true);}
+      if(m==="pin"){EZSync.forgetDevice();$("#egUser").value="";setMode("login",true);}
       else if(m==="setpin"){EZSync.markPinAsked();if(opts.change)close();else next();}
-      else if(m==="import"){EZSync.markImported();next();}
     });
     $("#egSkip").addEventListener("click",()=>{try{sessionStorage.setItem("ezgate-skip","1");}catch(e){}close();});
     ["#egUser","#egPass","#egPass2"].forEach(i=>$(i).addEventListener("input",()=>$(".eg-acct").classList.remove("bad")));
@@ -158,8 +153,8 @@
   /* a rejected code: shake, show why, then empty the boxes so the next try starts from the first box */
   function bad(g,t){g.classList.remove("bad");void g.offsetWidth;g.classList.add("bad");say(t,"err");
     setTimeout(()=>{cellsets.forEach(r=>cells(r).forEach(x=>{x.value="";x.classList.remove("on");}));try{cells(cellsets[0])[0].focus();}catch(e){}},380);}
-  let queue=[],flash="";   /* the steps still to show after a sign-in (import, setpin), and a message to show on the next screen */
-  const PIN_MODES=["pin","legacy","setpin","import"];
+  let queue=[];   /* the steps still to show after a sign-in (setpin) */
+  const PIN_MODES=["pin","setpin"];
   function setMode(m,animate,msg){
     const apply=()=>{ticket.dataset.mode=m;const t=TEXT[m];
       $("#egPrompt").textContent=t.prompt;$("#egH").innerHTML=t.h;
@@ -167,8 +162,8 @@
       const dv=window.EZSync&&EZSync.device?EZSync.device():null;
       if(m==="pin"){p.textContent="歡迎回來，";const b=document.createElement("span");b.className="eg-who";b.textContent=dv?dv.username:"";p.append(b,"。輸入這台裝置的 PIN 碼。");}
       $("#egGoT").textContent=t.btn;$("#egSwT").textContent=t.sw;$("#egSw").textContent=t.swb;$("#egSw").hidden=!t.swb;
-      const alt=$("#egAlt");alt.textContent=opts.change&&(m==="setpin"||m==="import")?"取消":t.alt;alt.hidden=!alt.textContent;
-      $("#egSkip").parentNode.hidden=m==="setpin"||m==="import";
+      const alt=$("#egAlt");alt.textContent=opts.change&&m==="setpin"?"取消":t.alt;alt.hidden=!alt.textContent;
+      $("#egSkip").parentNode.hidden=m==="setpin";
       cellsets.forEach(g=>{cells(g).forEach(x=>{x.value="";x.classList.remove("on");});g.classList.remove("bad","wait");});
       ["#egPass","#egPass2"].forEach(i=>{$(i).value="";});$(".eg-acct").classList.remove("bad");
       if(m==="login"&&dv&&!$("#egUser").value)$("#egUser").value=dv.username;
@@ -217,34 +212,25 @@
     try{const ae=document.activeElement;if(ae&&root.contains(ae))ae.blur();}catch(_){}
     try{
       if(mode==="pin"){await EZSync.pinLogin(c1);}
-      else if(mode==="legacy"){await EZSync.connectCode(c1,{mode:"join",confirm:askClear});}
-      else if(mode==="setpin"){await EZSync.setPin(c1);EZSync.markPinAsked();}
-      else{var n=await EZSync.importLegacy(c1);}
+      else{await EZSync.setPin(c1);EZSync.markPinAsked();}
       cellsets[0].classList.remove("wait");busy=false;go.disabled=false;
       try{sessionStorage.removeItem("ezgate-skip");}catch(_){}
       if(mode==="setpin"){say("這台裝置的 PIN 碼設好了。","ok");await wait(900);return next();}
-      if(mode==="import"){say(n?"已匯入 "+n+" 科的進度。":"這組 PIN 碼沒有進度可以匯入。","ok");await wait(1100);return next();}
-      say(mode==="legacy"?"已載入這組 PIN 碼的進度。":"登入成功。","ok");
+      say("登入成功。","ok");
       await celebrate("login");finish(true);
     }catch(err){
       busy=false;go.disabled=false;cellsets[0].classList.remove("wait");
       if(err.code==="cancel")return bad(cellsets[0],"已取消，這台裝置的作答都還在。");
       if(err.code==="nopin"||err.code==="pinlocked")return setMode("login",true,EZSync.errMsg(err));
       if(err.code==="badpin"||err.code==="locked"||err.code==="badcode")return bad(cellsets[0],EZSync.errMsg(err));
-      if(err.code==="nocode")return bad(cellsets[0],"找不到這組 PIN 碼的進度。");
       say(EZSync.errMsg(err),"err");$("#egGoT").textContent="再試一次";ticket.classList.add("retry");
     }
   }
-  /* after an account sign-in: offer the steps that make sense (import old progress, set a device PIN), then go in */
+  /* after an account sign-in: offer a device PIN once, then go in */
   async function afterAuth(kind){
     queue=[];
     const d=EZSync.device();
-    if(!opts.change&&d){
-      let fresh=kind==="register";
-      if(!fresh&&!d.imported){try{fresh=!(await EZSync.hasRemote());}catch(e){}}
-      if(fresh&&!d.imported)queue.push("import");
-      if(!d.pin&&!d.asked)queue.push("setpin");
-    }
+    if(!opts.change&&d&&!d.pin&&!d.asked)queue.push("setpin");
     if(queue.length){say("");return next();}
     await celebrate(kind);finish(true);
   }
@@ -377,7 +363,7 @@
     });
   }
   addEventListener("load",()=>setTimeout(outButton,30));
-  const go=()=>{let code=null,skip=null;try{code=sessionStorage.getItem("ezsync-code")||sessionStorage.getItem("ezsync-s2")||localStorage.getItem("ezsync-code");skip=sessionStorage.getItem("ezgate-skip");}catch(e){}
+  const go=()=>{let code=null,skip=null;try{code=sessionStorage.getItem("ezsync-s2");skip=sessionStorage.getItem("ezgate-skip");}catch(e){}
     if(!code&&!skip)open();else document.documentElement.classList.remove("ezlock");};
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",go);else go();
 })();

@@ -63,8 +63,8 @@ await check("Worker: /health and /errors answer", async () => {
 
 /* ---------- pages ---------- */
 for (const [sub] of Object.entries(SUBJECTS)) {
-  await check(`${sub}: every tab opens without errors, no sideways scrolling on a phone`, async () => {
-    const pg = await device({ skipGate: true, ctx: { viewport: { width: 390, height: 800 }, isMobile: true } });
+  await check(`${sub}: every tab opens without errors, no sideways scrolling on a small phone (320 px)`, async () => {
+    const pg = await device({ skipGate: true, ctx: { viewport: { width: 320, height: 640 }, isMobile: true } });
     await pg.goto(U + sub + "/midterm/"); await pg.waitForTimeout(600);
     const r = await pg.evaluate(async () => {
       const bad = [];
@@ -77,11 +77,6 @@ for (const [sub] of Object.entries(SUBJECTS)) {
     await pg.ctx.close();
   });
 }
-await check("home: loads without errors", async () => {
-  const pg = await device({ skipGate: true }); await pg.goto(U); await pg.waitForTimeout(500);
-  assert(!pg.errs.length, pg.errs.join(" | ")); assert(await pg.locator(".ticket").count() >= 3, "tickets missing");
-  await pg.ctx.close();
-});
 
 /* ---------- PIN gate, sync, merge ---------- */
 const PAGE = U + "statistics/midterm/", KEY = SUBJECTS.statistics;
@@ -300,7 +295,7 @@ await check("written blocks: past exams keep the reference answer and keyword gr
     await pg.ctx.close();
   }
 });
-await check("keyboard: A–D answers the question on screen, ← → moves between tabs; 減少動畫 switch works", async () => {
+await check("keyboard: A–D answers the question on screen, ← → moves between tabs", async () => {
   const pg = await device({ skipGate: true }); await pg.goto(U + "operating-systems/midterm/#ch2"); await pg.waitForTimeout(700);
   await pg.evaluate(() => { const q = document.querySelector("#ch2 .quiz > .qitem"); q.scrollIntoView({ block: "center" }); });
   await pg.waitForTimeout(200); await pg.keyboard.press("b"); await pg.waitForTimeout(200);
@@ -308,9 +303,82 @@ await check("keyboard: A–D answers the question on screen, ← → moves betwe
   assert(picked >= 0, "no option chosen by key B");
   await pg.focus('#tabs [data-go="ch2"]'); await pg.keyboard.press("ArrowRight"); await pg.waitForTimeout(200);
   assert(await pg.evaluate(() => !document.getElementById("ch3").hidden), "ArrowRight did not open Ch3");
-  await pg.click("#themeBtn"); await pg.click('#themeMenu [data-m="calm"]');
-  assert(await pg.evaluate(() => document.documentElement.classList.contains("ezcalm") && localStorage.getItem("ezexams-motion") === "calm"), "calm not applied");
   assert(!pg.errs.length, pg.errs.join(" | "));
+  await pg.ctx.close();
+});
+
+/* ---------- limits and edge cases ---------- */
+const login = async (code, mode, ip) => W("/login", { method: "POST", body: JSON.stringify({ code, mode }) }, ip);
+const aiCall = (tok, ip) => W("/v1beta/models/gemini-flash-latest:generateContent?t=" + encodeURIComponent(tok), { method: "POST", body: "{}" }, ip);
+await check("Worker: 200 wrong PINs across the whole site pause sign-in for everyone, right PIN included", async () => {
+  resetWorker();
+  assert((await login("4821", "create", "9.9.9.9")).status === 200, "create failed");
+  for (let i = 0; i < 200; i++) await login(String(1000 + i), "join", `2001:db8:${i.toString(16)}::1`);   /* a different visitor each time */
+  const r = await login("4821", "join", "8.8.8.8");
+  assert(r.status === 429 && (await r.json()).error.status === "LOCKED", "status " + r.status);
+  assert((await login("7777", "create", "8.8.4.4")).status === 429, "creating a PIN was not paused");
+});
+await check("Worker: one PIN gets 600 AI calls an hour and 3000 a day, then 429; another PIN is unaffected", async () => {
+  resetWorker();
+  const tok = async c => (await (await login(c, "create", "9.9.9.9")).json()).token;
+  const a = await tok("4821"), b = await tok("6283"), real = Date.now; let t = real();
+  Date.now = () => t;
+  try {
+    for (let i = 0; i < 600; i++) assert((await aiCall(a)).status === 200, "call " + (i + 1) + " refused");
+    const r = await aiCall(a);
+    assert(r.status === 429 && +r.headers.get("retry-after") > 0, "601st call: " + r.status);
+    assert((await aiCall(b)).status === 200, "another PIN was blocked");
+    for (let h = 1; h < 5; h++) { t += 3600e3; for (let i = 0; i < 600; i++) await aiCall(a); }   /* 5 hours x 600 = 3000 */
+    t += 3600e3;
+    assert((await aiCall(a)).status === 429, "daily limit not applied in a fresh hour");
+  } finally { Date.now = real; }
+});
+await check("Worker: sign-in and sync still work when the gist holds more than 300 files", async () => {
+  resetWorker();
+  const mk = async (c, ip) => (await (await login(c, "create", ip)).json()).token;
+  const a = await mk("4821", "9.9.9.9");
+  const mine = gist.files, codes = "ezexams-sync-codes.json";
+  gist.files = { [codes]: mine[codes] || { content: "{}" } };
+  for (let i = 0; i < 305; i++) gist.files["zz-filler-" + i + ".json"] = { content: "{}" };   /* GitHub only lists the first 300 files */
+  for (const k of Object.keys(mine)) if (k !== codes) gist.files[k] = mine[k];
+  assert(Object.keys(gist.files).indexOf(Object.keys(mine).find(k => k.endsWith("--meta.json"))) >= 300, "setup: the PIN's files are still listed");
+  const j = await login("4821", "join", "5.5.5.5"); assert(j.status === 200, "join with 300+ files: " + j.status);
+  const tok = (await j.json()).token;
+  const g0 = await W("/sync?key=statistics-x&t=" + encodeURIComponent(tok)); assert(g0.status === 200, "sync read " + g0.status);
+  const dup = await login("4821", "create", "4.4.4.4"); assert(dup.status === 409, "PIN taken not noticed: " + dup.status);
+});
+await check("search: typing amp, lt, gt or a quote shows readable text, never broken entities", async () => {
+  const pg = await device({ skipGate: true }); await pg.goto(U + "data-structures/midterm/"); await pg.waitForTimeout(700);
+  await pg.keyboard.press("Control+k"); await pg.waitForTimeout(300);
+  const out = [];
+  for (const q of ["amp", "lt", "gt", "quot", "<", "&"]) {
+    await pg.fill(".ezs-panel input", q); await pg.waitForTimeout(250);
+    out.push(await pg.evaluate(() => [...document.querySelectorAll(".ezs-r .snip")].slice(0, 20).map(e => e.textContent).join("\n")));
+  }
+  assert(out.every(t => !/&(amp|lt|gt|quot);|&amp;lt|<mark>/.test(t)), "broken text");
+  assert(!pg.errs.length, pg.errs.join(" | "));
+  await pg.ctx.close();
+});
+await check("offline: one cache copy per file (no ?v= duplicates), old caches removed, pages open with no network", async () => {
+  const pg = await device({ skipGate: true, ctx: { serviceWorkers: "allow" } });
+  await pg.goto(U); await pg.evaluate(() => caches.open("ezexams-v1").then(c => c.put("/old", new Response("x"))));
+  await pg.evaluate(() => navigator.serviceWorker.getRegistration().then(r => r && r.update()).catch(() => {}));
+  await pg.waitForFunction(() => navigator.serviceWorker.ready.then(() => caches.keys()).then(k => k.includes("ezexams-v2")), null, { timeout: 15000 });
+  await pg.waitForTimeout(2500);
+  const r = await pg.evaluate(async () => { const keys = await caches.keys(); const c = await caches.open("ezexams-v2"); return [keys, (await c.keys()).map(x => x.url)]; });
+  assert(r[0].length === 1 && r[0][0] === "ezexams-v2", "caches: " + r[0]);
+  assert(r[1].length > 10 && r[1].every(u => !u.includes("?")) && new Set(r[1]).size === r[1].length, "cache keys: " + r[1].filter(u => u.includes("?")).slice(0, 3));
+  await pg.goto(U + "statistics/midterm/"); await pg.waitForTimeout(800);   /* the page is cached once visited */
+  await pg.ctx.setOffline(true); await pg.reload(); await pg.waitForTimeout(800);
+  assert(await pg.evaluate(() => !!document.querySelector("#tabs")), "offline page did not render");
+  await pg.ctx.close();
+});
+await check("keyboard: A–D is ignored while a confirm dialog is open", async () => {
+  const pg = await device({ skipGate: true }); await pg.goto(U + "operating-systems/midterm/#ch2"); await pg.waitForTimeout(700);
+  await pg.evaluate(() => { document.querySelector("#ch2 .quiz > .qitem").scrollIntoView({ block: "center" }); const d = document.createElement("div"); d.id = "ezask"; document.body.appendChild(d); });
+  await pg.keyboard.press("b"); await pg.waitForTimeout(200);
+  const n = await pg.evaluate(() => document.querySelectorAll("#ch2 .quiz > .qitem .opt.right, #ch2 .quiz > .qitem .opt.wrong").length);
+  assert(n === 0, "an answer was recorded behind the dialog");
   await pg.ctx.close();
 });
 

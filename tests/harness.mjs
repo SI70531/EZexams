@@ -26,7 +26,9 @@ export function serve(port) {
 }
 
 /* ---------- fake GitHub (one gist) and Gemini ---------- */
-export const gist = { id: "G", files: {} };
+export const gist = { id: "G", owner: { login: "test" }, files: {} };
+/* GitHub shows at most 300 files of a gist; the rest can only be read from the raw URL */
+const view = () => ({ ...gist, files: Object.fromEntries(Object.entries(gist.files).slice(0, 300)) });
 export const calls = { gemini: 0, github: 0 };
 let geminiReply = () => ({ candidates: [{ content: { parts: [{ text: "[]" }] } }] });
 export function setGemini(fn) { geminiReply = fn; }
@@ -40,9 +42,10 @@ globalThis.fetch = async (u, o = {}) => {
   }
   calls.github++;
   if (u.endsWith("/user")) return new Response(JSON.stringify({ login: "test" }), { status: 200, headers: { "github-authentication-token-expiration": "2099-01-01 00:00:00 UTC" } });
-  if (u.includes("/gists?per_page=100")) return new Response(JSON.stringify(gist.files["ezexams-sync-codes.json"] ? [gist] : []), { status: 200 });
-  if (u.endsWith("/gists") && m === "POST") { Object.assign(gist.files, JSON.parse(o.body).files); return new Response(JSON.stringify(gist), { status: 201 }); }
-  if (u.endsWith("/gists/G") && m === "GET") return new Response(JSON.stringify(gist), { status: 200 });
+  if (u.includes("/gists?per_page=100")) return new Response(JSON.stringify(gist.files["ezexams-sync-codes.json"] ? [view()] : []), { status: 200 });
+  if (u.endsWith("/gists") && m === "POST") { Object.assign(gist.files, JSON.parse(o.body).files); return new Response(JSON.stringify(view()), { status: 201 }); }
+  if (u.startsWith("https://gist.githubusercontent.com/")) { const f = gist.files[decodeURIComponent(u.split("/raw/")[1].split("?")[0])]; return f ? new Response(f.content, { status: 200 }) : new Response("", { status: 404 }); }
+  if (u.endsWith("/gists/G") && m === "GET") return new Response(JSON.stringify(view()), { status: 200 });
   if (u.endsWith("/gists/G") && m === "PATCH") { Object.assign(gist.files, JSON.parse(o.body).files); return new Response(JSON.stringify(gist), { status: 200 }); }
   return new Response("{}", { status: 404 });
 };

@@ -174,7 +174,7 @@
     const c=e&&e.code;
     if(c==="badcode")return "PIN 碼是 4 位數字。";
     if(c==="badcreds")return "帳號名稱或密碼不對。";
-    if(c==="badname")return "帳號名稱要 3 到 20 個字，只能用英文小寫、數字和底線。";
+    if(c==="badname")return "帳號名稱最多 20 個字，只能用英文、數字和底線。";
     if(c==="longpass")return "密碼太長了（最多約 70 個英文字）。";
     if(c==="nopin")return "這台裝置沒有設定 PIN，請用帳號和密碼登入。";
     if(c==="badpin")return "PIN 碼不對"+(e.left!=null?"，還剩 "+e.left+" 次機會":"")+"。";
@@ -196,7 +196,7 @@
   /* ---- sign in / up, device PIN, importing the old PIN progress ---- */
   async function acctAuth(kind,username,password,opts){
     const u=cleanUser(username);
-    if(!/^[a-z0-9_]{3,20}$/.test(u))throw Object.assign(new Error("bad username"),{code:"badname"});
+    if(!/^[a-z0-9_]{1,20}$/.test(u))throw Object.assign(new Error("bad username"),{code:"badname"});
     password=String(password||"");
     if(password.length<8)throw Object.assign(new Error("short"),{code:"weak"});
     if(new TextEncoder().encode(password).length>72)throw Object.assign(new Error("long"),{code:"longpass"});

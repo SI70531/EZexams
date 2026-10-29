@@ -237,7 +237,7 @@ h3.mo-read::before{content:"✓";flex:0 0 auto;align-self:center;display:grid;pl
       if(!q.querySelector(".opt.right,.opt.wrong"))return;
       const w=q.querySelector(".opt.wrong");
       if(w){streakNow=0;shatter(w);}
-      else{streakNow++;flash(streakNow>=5);}
+      else{streakNow++;flash(streakNow>=5&&streakNow%5===0);}
     },40);
   },true);
 
@@ -291,16 +291,8 @@ h3.mo-read::before{content:"✓";flex:0 0 auto;align-self:center;display:grid;pl
           {duration:950,delay:i*140,easing:"cubic-bezier(.2,.9,.3,1)",fill:"backwards"});
       });
     };
-    const banner=()=>{
-      let acct=null;try{acct=window.EZSync&&EZSync.mode()==="acct"?EZSync.account():null;}catch(e){}
-      if(!acct)return;let shown=false;try{shown=!!sessionStorage.getItem("ezwow-welcome");sessionStorage.setItem("ezwow-welcome","1");}catch(e){}
-      if(shown)return;
-      const b=document.createElement("div");b.className="wow-banner";b.setAttribute("role","status");
-      b.innerHTML="歡迎回來，"+String(acct.username||"").replace(/[<>&]/g,"")+"！　連續第 <b>"+s.n+"</b> 天";document.body.appendChild(b);
-      b.animate([{transform:"translateX(-110%) skewX(-12deg)"},{transform:"translateX(2%) skewX(-3deg)",offset:.18},{transform:"none",offset:.26},{transform:"none",offset:.8},{transform:"translateX(110%) skewX(12deg)"}],{duration:3200,easing:"cubic-bezier(.2,.9,.3,1)",fill:"forwards"}).onfinish=()=>b.remove();
-    };
     let fromLogin=false;try{fromLogin=!!sessionStorage.getItem("ezwow-cards");sessionStorage.removeItem("ezwow-cards");}catch(e){}   /* set by ezgate.js when a sign-in sends you to the home page */
-    if(!first||!document.body.animate){if(fromLogin)setTimeout(cardsFly,350);setTimeout(banner,fromLogin?1500:500);return;}
+    if(!first||!document.body.animate){if(fromLogin)setTimeout(cardsFly,350);return;}
     const el=document.createElement("div");el.className="wow-intro";
     el.innerHTML='<div class="h l"></div><div class="h r"></div><div class="rg"></div><div class="c"><div class="mk">EZ</div><div class="t">'+[..."EZexams"].map(ch=>"<span>"+ch+"</span>").join("")+'</div><div class="s">考前衝刺</div></div><div class="sk">點一下跳過</div>';
     document.body.appendChild(el);
@@ -316,7 +308,7 @@ h3.mo-read::before{content:"✓";flex:0 0 auto;align-self:center;display:grid;pl
       C.animate([{transform:"none",opacity:1},{transform:"scale(1.6)",opacity:0}],{duration:500,easing:"ease-in",fill:"forwards"});
       el.querySelector(".sk").remove();
       l.animate([{transform:"none"},{transform:"translateX(-101%)"}],{duration:750,delay:150,easing:"cubic-bezier(.7,0,.2,1)",fill:"forwards"});
-      r.animate([{transform:"none"},{transform:"translateX(101%)"}],{duration:750,delay:150,easing:"cubic-bezier(.7,0,.2,1)",fill:"forwards"}).onfinish=()=>{el.remove();cardsFly();setTimeout(banner,900);};
+      r.animate([{transform:"none"},{transform:"translateX(101%)"}],{duration:750,delay:150,easing:"cubic-bezier(.7,0,.2,1)",fill:"forwards"}).onfinish=()=>{el.remove();cardsFly();};
     }
     el.addEventListener("click",open);setTimeout(open,2300);
   })();

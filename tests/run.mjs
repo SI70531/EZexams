@@ -498,7 +498,7 @@ await check("wow: signing in sends you to the home page, where the exam cards fl
   await pg.waitForFunction(() => location.pathname.replace(/\/$/, "").split("/").pop() !== "midterm", null, { timeout: 8000 });
   assert(!/midterm/.test(new URL(pg.url()).pathname), "still on a subject page: " + pg.url());
   assert(await pg.evaluate(() => document.querySelectorAll(".exam-subj").length > 0), "home page has no cards");
-  await pg.waitForSelector(".wow-banner", { timeout: 6000 });   /* the cards fly in first, then the welcome banner sweeps across */
+  await pg.waitForTimeout(2500);
   await pg.goto(PAGE); await pg.waitForTimeout(700); await pg.evaluate(() => show("ch1")); await pg.waitForTimeout(400);
   await pg.evaluate(() => document.querySelector("#ch1 h3").click());
   assert(await pg.evaluate(() => document.querySelector("#ch1 h3").classList.contains("mo-read")), "click did not mark the heading");

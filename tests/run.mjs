@@ -432,6 +432,47 @@ await check("Worker: one account gets 600 AI calls an hour and 3000 a day, then 
     assert((await aiCall(a)).status === 429, "daily limit not applied in a fresh hour");
   } finally { Date.now = real; }
 });
+const PICK = "window.pickItem = i => { const l = [...document.querySelectorAll('#ch1 .quiz > .qitem')]; return l.find(x => +x.dataset.i === i) || l[i]; };";
+await check("rewards: 3 right in a row shows the combo chip, a wrong answer hides it, finishing a chapter shows its result card", async () => {
+  const pg = await device({ skipGate: true }); await pg.goto(PAGE); await pg.waitForTimeout(800); await pg.evaluate(PICK);
+  const click = (i, right) => pg.evaluate(([i, right]) => { show("ch1"); const it = pickItem(i), a = QUIZ.ch1[i].a, opts = [...it.querySelectorAll(".opt")];
+    (right ? opts.find(o => +o.dataset.oi === a) : opts.find(o => +o.dataset.oi !== a)).click(); }, [i, right]);
+  for (let i = 0; i < 3; i++) await click(i, true);
+  await pg.waitForSelector("#joyCombo.on", { timeout: 3000 });
+  assert(await pg.textContent("#joyCombo b") === "3", "combo count " + await pg.textContent("#joyCombo b"));
+  await click(3, false); await pg.waitForFunction(() => !document.getElementById("joyCombo").classList.contains("on"), null, { timeout: 3000 });
+  const n = await pg.evaluate(() => QUIZ.ch1.length);
+  for (let i = 4; i < n; i++) await click(i, true);
+  await pg.waitForSelector(".joy-toast.on", { timeout: 3000 });
+  assert(/CHAPTER/.test(await pg.textContent(".joy-toast small")) && /%/.test(await pg.textContent(".joy-toast strong")), "no chapter card");
+  assert(!pg.errs.length, pg.errs.join(" | "));
+  await pg.ctx.close();
+});
+await check("motion: the tab underline follows the active tab, opening a later tab slides it in, 淺色/深色 still switches, 減少動畫 turns it all off", async () => {
+  const pg = await device({ skipGate: true }); await pg.goto(PAGE); await pg.waitForTimeout(900);
+  const under = async () => { await pg.waitForTimeout(550); return pg.evaluate(() => { const g = document.querySelector(".mo-glide"), c = document.querySelector('#tabs [aria-current="true"]'); return g && c ? g.offsetLeft === c.offsetLeft && g.offsetWidth === c.offsetWidth : null; }); };
+  assert(await under() === true, "underline not under the active tab");
+  await pg.evaluate(() => show("ch2")); await pg.waitForFunction(() => document.getElementById("ch2").classList.contains("mo-r"), null, { timeout: 2000 });
+  assert(await under() === true, "underline did not follow to Ch2");
+  await pg.evaluate(() => show("ch1")); await pg.waitForFunction(() => document.getElementById("ch1").classList.contains("mo-l"), null, { timeout: 2000 });
+  await pg.click(".theme button"); await pg.click('.theme [data-t="light"]');
+  await pg.waitForFunction(() => document.documentElement.getAttribute("data-theme") === "light", null, { timeout: 3000 });
+  await pg.evaluate(() => document.documentElement.classList.add("ezcalm")); await pg.evaluate(() => show("ch2")); await pg.waitForTimeout(150);
+  assert(await pg.evaluate(() => !document.getElementById("ch2").classList.contains("mo-r")), "slide ran in 減少動畫 mode");
+  assert(!pg.errs.length, pg.errs.join(" | "));
+  await pg.ctx.close();
+});
+await check("motion: 總複習 cards rise in; clearing a mistake says how many are left", async () => {
+  const pg = await device({ skipGate: true }); await pg.goto(PAGE); await pg.waitForTimeout(800); await pg.evaluate(PICK);
+  await pg.evaluate(() => { show("ch1"); [0, 1].forEach(i => { const it = pickItem(i), a = QUIZ.ch1[i].a; [...it.querySelectorAll(".opt")].find(o => +o.dataset.oi !== a).click(); }); });
+  await pg.waitForTimeout(500); await pg.evaluate(() => show("review"));
+  await pg.waitForFunction(() => document.querySelectorAll("#review .wcard.mo-rise").length >= 2, null, { timeout: 3000 });
+  await pg.evaluate(() => { delete S.quiz.ch1[0]; save(); document.body.click(); });   /* that mistake is gone from the saved answers */
+  await pg.waitForSelector(".mo-toast.on", { timeout: 3000 });
+  assert(/清掉/.test(await pg.textContent(".mo-toast")), "toast: " + await pg.textContent(".mo-toast"));
+  assert(!pg.errs.length, pg.errs.join(" | "));
+  await pg.ctx.close();
+});
 await check("search: typing amp, lt, gt or a quote shows readable text, never broken entities", async () => {
   const pg = await device({ skipGate: true }); await pg.goto(U + "data-structures/midterm/"); await pg.waitForTimeout(700);
   await pg.keyboard.press("Control+k"); await pg.waitForTimeout(300);

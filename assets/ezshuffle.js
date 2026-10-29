@@ -104,7 +104,7 @@
   function shuffleOpts(){
     scopes().flatMap(sc=>[...sc.querySelectorAll(".quiz[data-quiz] .qitem, .exambody .qitem")]).forEach((it,n)=>{
       const os=[...it.querySelectorAll(".opt[data-oi]")];if(os.length<3)return;
-      const wrap=os[0].parentElement;if(os.some(o=>o.parentElement!==wrap)||notCh(it))return;
+      const wrap=os[0].parentElement;if(os.some(o=>o.parentElement!==wrap)||notCh(it)||it.closest(".noshuf"))return;   /* .noshuf: keep the worksheet order (economics homework) */
       const box=it.closest(".quiz[data-quiz], .exambody"),bk=box.dataset.quiz||box.dataset.exam||(box.closest(".view")||{}).id;
       const qi=it.dataset.i!=null?+it.dataset.i:[...box.querySelectorAll(".qitem")].indexOf(it);
       const id=optId(it);let ord=OPTS[id];

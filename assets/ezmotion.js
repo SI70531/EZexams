@@ -11,22 +11,22 @@
   const calm=()=>root.classList.contains("ezcalm")||matchMedia("(prefers-reduced-motion:reduce)").matches;
   const css=`
 #tabs{position:relative}
-.mo-glide{position:absolute;bottom:0;left:0;height:3px;width:0;border-radius:3px 3px 0 0;pointer-events:none;z-index:2;background:var(--brass)}
-.mo-draw{background:linear-gradient(var(--brass),var(--brass)) 0 100%/0 3px no-repeat;transition:background-size .9s cubic-bezier(.2,.8,.2,1)}
-.mo-draw.mo-in{background-size:72px 3px}
-@keyframes moroll{from{opacity:0;transform:translateY(55%) scale(.9);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}
-.stub .v{animation:moroll .7s .25s cubic-bezier(.2,.8,.2,1) backwards}
+.mo-glide{position:absolute;bottom:0;left:0;height:5px;width:0;border-radius:4px 4px 0 0;pointer-events:none;z-index:2;background:linear-gradient(90deg,var(--brass),var(--seal));box-shadow:0 0 14px 2px color-mix(in srgb,var(--brass) 70%,transparent)}
+.mo-draw{background:linear-gradient(var(--brass),var(--brass)) 0 100%/0 5px no-repeat;transition:background-size 1.2s cubic-bezier(.2,1.3,.3,1)}
+.mo-draw.mo-in{background-size:120px 5px}
+@keyframes moroll{from{opacity:0;transform:translateY(120%) scale(.4) rotate(-14deg);filter:blur(6px)}60%{transform:translateY(-8%) scale(1.25) rotate(3deg)}to{opacity:1;transform:none;filter:none}}
+.stub .v{animation:moroll 1s .25s cubic-bezier(.2,.8,.2,1) backwards}
 .exam-subj:nth-child(2) .stub .v{animation-delay:.35s}.exam-subj:nth-child(3) .stub .v{animation-delay:.45s}.exam-subj:nth-child(4) .stub .v{animation-delay:.55s}
-@keyframes morise{from{opacity:0;transform:translateY(16px) scale(.985)}to{opacity:1;transform:none}}
-.wcard.mo-rise{animation:morise .5s var(--d,0s) cubic-bezier(.2,.8,.2,1) backwards}
+@keyframes morise{from{opacity:0;transform:translateX(-60px) translateY(24px) scale(.92) rotate(-2deg)}60%{transform:translateX(6px) scale(1.01)}to{opacity:1;transform:none}}
+.wcard.mo-rise{animation:morise .75s var(--d,0s) cubic-bezier(.2,1.1,.3,1) backwards}
 .mo-toast{position:fixed;left:50%;bottom:max(70px,calc(env(safe-area-inset-bottom,0px) + 64px));z-index:75;transform:translate(-50%,16px);opacity:0;pointer-events:none;
-  padding:9px 18px;border-radius:999px;font:600 13.5px/1.2 var(--f-mono);color:var(--ink);white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis;
+  padding:12px 24px;border-radius:999px;font:700 16px/1.2 var(--f-mono);color:var(--ink);white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis;
   background:color-mix(in srgb,var(--paper) 90%,transparent);border:1px solid var(--ok);box-shadow:var(--shadow);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
-  transition:opacity .25s,transform .4s cubic-bezier(.3,1.5,.5,1)}
-.mo-toast.on{opacity:1;transform:translate(-50%,0)}
+  transition:opacity .25s,transform .6s cubic-bezier(.3,1.9,.5,1)}
+.mo-toast.on{opacity:1;transform:translate(-50%,0) scale(1.08)}
 .mo-toast b{color:var(--ok)}
 ::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal}
-html.mo-theme::view-transition-new(root){animation:motheme .6s cubic-bezier(.4,0,.2,1)}
+html.mo-theme::view-transition-new(root){animation:motheme .95s cubic-bezier(.4,0,.2,1)}
 @keyframes motheme{from{clip-path:circle(0 at var(--mx,50%) var(--my,0))}to{clip-path:circle(150vmax at var(--mx,50%) var(--my,0))}}
 @media print{.mo-glide,.mo-toast{display:none}}`;
   const st=document.createElement("style");st.textContent=css;document.head.appendChild(st);
@@ -42,7 +42,7 @@ html.mo-theme::view-transition-new(root){animation:motheme .6s cubic-bezier(.4,0
       const to={left:cur.offsetLeft,width:cur.offsetWidth};
       bar.style.left=to.left+"px";bar.style.width=to.width+"px";
       if(prev&&!calm()&&(prev.left!==to.left||prev.width!==to.width)&&bar.animate)
-        bar.animate([{left:prev.left+"px",width:prev.width+"px"},{left:to.left+"px",width:to.width+"px"}],{duration:380,easing:"cubic-bezier(.2,.8,.2,1)"});
+        bar.animate([{left:prev.left+"px",width:prev.width+"px"},{left:to.left+"px",width:to.width+"px"}],{duration:620,easing:"cubic-bezier(.3,1.6,.5,1)"});
       prev=to;
     };
     new MutationObserver(()=>{if(!tabs.querySelector(".mo-glide")||tabs.querySelector('[aria-current="true"]'))place();}).observe(tabs,{childList:true});

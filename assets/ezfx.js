@@ -10,45 +10,50 @@
   if(window.__ezfx)return;window.__ezfx=1;
   const css=`
 #fxbar{position:fixed;left:0;top:0;height:3px;width:100%;z-index:60;pointer-events:none;transform-origin:0 50%;transform:scaleX(0);
-  background:linear-gradient(90deg,var(--seal),var(--brass) 55%,var(--indigo));box-shadow:0 0 10px color-mix(in srgb,var(--seal) 55%,transparent)}
+  background:linear-gradient(90deg,var(--seal),var(--brass) 55%,var(--indigo));box-shadow:0 0 16px 2px color-mix(in srgb,var(--seal) 70%,transparent),0 0 30px color-mix(in srgb,var(--brass) 40%,transparent)}
 .top{background:color-mix(in srgb,var(--bg) 80%,transparent)!important;-webkit-backdrop-filter:saturate(1.4) blur(12px);backdrop-filter:saturate(1.4) blur(12px)}
-@keyframes fxenter{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-.view.fx-enter{animation:fxenter .42s cubic-bezier(.2,.8,.2,1)}
-.fx-rv{opacity:0;transform:translateY(22px);transition:opacity .55s cubic-bezier(.2,.8,.2,1),transform .55s cubic-bezier(.2,.8,.2,1)}
-.fx-rv.fx-in{opacity:1;transform:none}
-@keyframes fxrise{from{opacity:0;transform:translateY(18px);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
-.vhead h1,.hero h1{animation:fxrise .7s cubic-bezier(.2,.8,.2,1) both}
-.vhead p,.hero p{animation:fxrise .7s .12s cubic-bezier(.2,.8,.2,1) both}
+@keyframes fxenter{from{opacity:0;transform:translateY(34px) scale(.985)}60%{opacity:1}to{opacity:1;transform:none}}
+.view.fx-enter{animation:fxenter .6s cubic-bezier(.2,1,.3,1)}
+.fx-rv{opacity:0;transform:translateY(46px) scale(.96) rotate(.6deg);filter:blur(5px);transition:opacity .7s cubic-bezier(.2,.9,.25,1),transform .8s cubic-bezier(.2,1.2,.3,1),filter .6s}
+.fx-rv.fx-in{opacity:1;transform:none;filter:none}
+@keyframes fxrise{from{opacity:0;transform:translateY(34px) scale(.94);filter:blur(10px)}to{opacity:1;transform:none;filter:none}}
+.vhead h1,.hero h1{animation:fxrise .95s cubic-bezier(.2,1.1,.3,1) both}
+.vhead p,.hero p{animation:fxrise .95s .16s cubic-bezier(.2,1.1,.3,1) both}
 .fx-typing::after{content:"";display:inline-block;width:.55em;height:1.05em;margin-left:3px;vertical-align:-2px;background:currentColor;animation:fxcaret .8s steps(1) infinite}
 @keyframes fxcaret{50%{opacity:0}}
 .fx-host{position:relative}
 .fx-rip{position:absolute;inset:0;border-radius:inherit;overflow:hidden;pointer-events:none;z-index:0}
-.fx-rip i{position:absolute;border-radius:50%;transform:scale(0);opacity:.18;background:currentColor;animation:fxrip .6s ease-out forwards}
+.fx-rip i{position:absolute;border-radius:50%;transform:scale(0);opacity:.34;background:currentColor;animation:fxrip .85s cubic-bezier(.1,.7,.3,1) forwards}
 @keyframes fxrip{to{transform:scale(1);opacity:0}}
 .btn,.opt,.ezout,.syncchip,.themebtn,#tabs [data-go]{transition:transform .12s ease,box-shadow .2s ease,border-color .15s,background .15s,color .15s}
-.btn:active:not([disabled]),.opt:active:not([disabled]),.ezout:active,.syncchip:active,.themebtn:active{transform:translateY(1px) scale(.985)}
+.btn:active:not([disabled]),.opt:active:not([disabled]),.ezout:active,.syncchip:active,.themebtn:active{transform:translateY(2px) scale(.95)}
+.btn:hover:not([disabled]),.ezout:hover,.themebtn:hover{transform:translateY(-2px) scale(1.04)}
 .btn:hover:not([disabled]){box-shadow:0 3px 10px -4px color-mix(in srgb,var(--ink) 35%,transparent)}
-.opt:hover:not([disabled]){transform:translateX(3px);box-shadow:-3px 0 0 var(--brass)}
+.opt:hover:not([disabled]){transform:translateX(9px);box-shadow:-5px 0 0 var(--brass)}
 .opt:hover:not([disabled]) .ab{border-color:var(--brass);color:var(--seal)}
 .opt .ab{transition:background .2s,border-color .2s,color .2s,transform .25s cubic-bezier(.3,1.6,.5,1)}
-#tabs [data-go]:hover{transform:translateY(-1px)}
+#tabs [data-go]:hover{transform:translateY(-3px) scale(1.06)}
 .qitem,.exq,.rvsec,.syncbox,.plan .day,.next{--mx:-999px;--my:-999px}
 .qitem,.rvsec{transition:border-color .2s,box-shadow .25s,transform .25s}
 .qitem:hover,.rvsec:hover{border-color:var(--line-strong);box-shadow:0 10px 26px -18px color-mix(in srgb,var(--ink) 55%,transparent)}
 .qitem,.rvsec,.syncbox{background-image:radial-gradient(420px circle at var(--mx) var(--my),color-mix(in srgb,var(--indigo) 8%,transparent),transparent 62%)}
-@keyframes fxpop{0%{transform:scale(1)}35%{transform:scale(1.035)}100%{transform:scale(1)}}
-@keyframes fxabpop{0%{transform:scale(.6)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
-@keyframes fxring{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--ok) 60%,transparent)}100%{box-shadow:0 0 0 12px transparent}}
-@keyframes fxshake{15%{transform:translateX(-7px)}35%{transform:translateX(6px)}55%{transform:translateX(-4px)}75%{transform:translateX(2px)}}
-.opt.fx-good{animation:fxpop .45s cubic-bezier(.3,1.5,.5,1),fxring .7s ease-out}
-.opt.fx-good .ab{animation:fxabpop .45s cubic-bezier(.3,1.6,.5,1)}
-.opt.fx-bad{animation:fxshake .45s ease}
-.fx-spark{position:fixed;width:7px;height:7px;border-radius:50%;pointer-events:none;z-index:70;animation:fxspark .65s cubic-bezier(.2,.7,.3,1) forwards}
-@keyframes fxspark{from{transform:translate(-50%,-50%) scale(1);opacity:1}to{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(.3);opacity:0}}
+@keyframes fxpop{0%{transform:scale(1)}30%{transform:scale(1.09) rotate(-.8deg)}55%{transform:scale(.98) rotate(.5deg)}100%{transform:scale(1)}}
+@keyframes fxabpop{0%{transform:scale(.3) rotate(-90deg)}55%{transform:scale(1.7) rotate(12deg)}100%{transform:scale(1)}}
+@keyframes fxring{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--ok) 70%,transparent),0 0 0 0 color-mix(in srgb,var(--ok) 40%,transparent)}100%{box-shadow:0 0 0 26px transparent,0 0 0 52px transparent}}
+@keyframes fxshake{10%{transform:translateX(-16px) rotate(-1.6deg)}25%{transform:translateX(14px) rotate(1.3deg)}40%{transform:translateX(-11px) rotate(-1deg)}55%{transform:translateX(8px)}70%{transform:translateX(-4px)}85%{transform:translateX(2px)}}
+@keyframes fxbad{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--seal) 70%,transparent)}100%{box-shadow:0 0 0 22px transparent}}
+.opt.fx-good{animation:fxpop .6s cubic-bezier(.3,1.5,.5,1),fxring 1s ease-out}
+.opt.fx-good .ab{animation:fxabpop .6s cubic-bezier(.3,1.6,.5,1)}
+.opt.fx-bad{animation:fxshake .6s ease,fxbad .7s ease-out}
+.fx-spark{position:fixed;width:var(--sz,9px);height:var(--sz,9px);border-radius:50%;pointer-events:none;z-index:70;animation:fxspark var(--t,.9s) cubic-bezier(.15,.7,.3,1) forwards}
+.fx-spark.star{border-radius:0;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%)}
+@keyframes fxspark{from{transform:translate(-50%,-50%) scale(1.2) rotate(0);opacity:1}70%{opacity:1}to{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy) + 46px)) scale(.2) rotate(var(--rot,200deg));opacity:0}}
+.fx-pts{position:fixed;z-index:71;pointer-events:none;font:700 17px/1 var(--f-mono);color:var(--ok);text-shadow:0 2px 10px color-mix(in srgb,var(--ok) 50%,transparent);animation:fxpts 1.1s cubic-bezier(.2,.8,.3,1) forwards}
+@keyframes fxpts{from{transform:translate(-50%,0) scale(.4);opacity:0}20%{transform:translate(-50%,-14px) scale(1.4);opacity:1}to{transform:translate(-50%,-70px) scale(1);opacity:0}}
 .ticket{transform-style:preserve-3d;will-change:transform}
 .ticket.fx-tilt{transition:transform .08s linear,box-shadow .2s}
 .ticket .fx-shine{position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:2;opacity:0;transition:opacity .25s;
-  background:radial-gradient(360px circle at var(--mx) var(--my),color-mix(in srgb,#fff 26%,transparent),transparent 55%);mix-blend-mode:soft-light}
+  background:radial-gradient(360px circle at var(--mx) var(--my),color-mix(in srgb,#fff 48%,transparent),transparent 60%);mix-blend-mode:soft-light}
 .ticket:hover .fx-shine{opacity:1}
 .totop{transition:transform .2s,opacity .25s}
 .totop .fx-ring{position:absolute;inset:-5px;pointer-events:none}
@@ -151,8 +156,8 @@
     c.style.setProperty("--mx",x+"px");c.style.setProperty("--my",y+"px");
     if(c.classList.contains("ticket")&&matchMedia("(hover:hover)").matches&&!calm()){
       if(!c.querySelector(".fx-shine")){const s=document.createElement("span");s.className="fx-shine";c.appendChild(s);}
-      const rx=((y/r.height)-.5)*-7,ry=((x/r.width)-.5)*9;
-      c.classList.add("fx-tilt");c.style.transform="perspective(900px) rotateX("+rx+"deg) rotateY("+ry+"deg) translate(-2px,-3px)";
+      const rx=((y/r.height)-.5)*-16,ry=((x/r.width)-.5)*20;
+      c.classList.add("fx-tilt");c.style.transform="perspective(900px) rotateX("+rx+"deg) rotateY("+ry+"deg) translate(-4px,-8px) scale(1.03)";
     }
   });
   document.addEventListener("pointermove",mv,{passive:true});
@@ -174,9 +179,11 @@
     else if(right&&!calm()){const ab=right.querySelector(".ab")||right,r=ab.getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2);}
   }
   function burst(x,y){
-    const cols=[tok("--ok"),tok("--brass"),tok("--indigo")];
-    for(let i=0;i<10;i++){const s=document.createElement("span");s.className="fx-spark";const a=i/10*Math.PI*2,d=26+Math.random()*16;
-      s.style.cssText="left:"+x+"px;top:"+y+"px;background:"+cols[i%3]+";--dx:"+Math.cos(a)*d+"px;--dy:"+Math.sin(a)*d+"px";document.body.appendChild(s);setTimeout(()=>s.remove(),700);}
+    const cols=[tok("--ok"),tok("--brass"),tok("--indigo"),tok("--seal"),tok("--warn")];
+    for(let i=0;i<30;i++){const s=document.createElement("span");s.className="fx-spark"+(i%3===0?" star":"");const a=i/30*Math.PI*2+Math.random()*.3,d=50+Math.random()*90;
+      s.style.cssText="left:"+x+"px;top:"+y+"px;background:"+cols[i%cols.length]+";--dx:"+Math.cos(a)*d+"px;--dy:"+(Math.sin(a)*d-20)+"px;--sz:"+(6+Math.random()*9)+"px;--t:"+(.7+Math.random()*.6)+"s;--rot:"+((Math.random()-.5)*600)+"deg";
+      document.body.appendChild(s);setTimeout(()=>s.remove(),1500);}
+    const p=document.createElement("span");p.className="fx-pts";p.textContent="✓";p.style.cssText="left:"+x+"px;top:"+(y-10)+"px";document.body.appendChild(p);setTimeout(()=>p.remove(),1200);
   }
   onScroll();
 })();

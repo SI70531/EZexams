@@ -60,7 +60,7 @@
 .eg-link:hover{color:var(--seal);text-decoration-color:var(--seal)}
 
 /* entrance: the card drops in on a spring and its lines follow one after another; each screen change re-plays the lines */
-@keyframes egdrop{0%{opacity:0;transform:translateY(-70px) rotateX(-22deg) scale(.88)}55%{opacity:1;transform:translateY(8px) rotateX(3deg) scale(1.015)}78%{transform:translateY(-3px) scale(.998)}100%{transform:none}}
+@keyframes egdrop{0%{opacity:0;transform:translateY(-160px) rotateX(-40deg) rotateZ(-5deg) scale(.7)}50%{opacity:1;transform:translateY(18px) rotateX(6deg) rotateZ(1.5deg) scale(1.04)}70%{transform:translateY(-8px) rotateX(-2deg) scale(.99)}86%{transform:translateY(3px) scale(1.005)}100%{transform:none}}
 @keyframes eglines{from{opacity:0;transform:translateY(16px);filter:blur(4px)}to{opacity:1;transform:none;filter:none}}
 @keyframes egbrand{from{opacity:0;transform:translateX(-18px) rotate(-6deg)}to{opacity:1;transform:none}}
 #ezgate:not(.out) .eg-wrap{animation:egdrop .85s cubic-bezier(.2,.9,.25,1) both}
@@ -283,9 +283,9 @@
     if(RM()||!document.body.animate)return;
     const fx=document.createElement("div");fx.className="eg-fx";fx.style.left=cx+"px";fx.style.top=cy+"px";fx.setAttribute("aria-hidden","true");root.appendChild(fx);
     const cols=[tokv("--ok"),tokv("--brass"),tokv("--indigo"),tokv("--seal"),tokv("--warn")];
-    [0,140,300].forEach((d,k)=>{const r=document.createElement("i");r.className="eg-ring";const z=60+k*26;r.style.cssText="left:"+(-z/2)+"px;top:"+(-z/2)+"px;width:"+z+"px;height:"+z+"px;opacity:0";fx.appendChild(r);
-      r.animate([{transform:"scale(.2)",opacity:.9},{transform:"scale("+(big?7:5.5)+")",opacity:0}],{duration:1000,delay:d,easing:"cubic-bezier(.1,.7,.3,1)",fill:"both"});});
-    const n=big?64:44;
+    [0,110,230,380,560].forEach((d,k)=>{const r=document.createElement("i");r.className="eg-ring";const z=60+k*26;r.style.cssText="left:"+(-z/2)+"px;top:"+(-z/2)+"px;width:"+z+"px;height:"+z+"px;opacity:0";fx.appendChild(r);
+      r.animate([{transform:"scale(.2)",opacity:.9},{transform:"scale("+(big?11:8)+")",opacity:0}],{duration:1000,delay:d,easing:"cubic-bezier(.1,.7,.3,1)",fill:"both"});});
+    const n=big?130:80;
     for(let i=0;i<n;i++){
       const e=document.createElement("i"),a=Math.random()*Math.PI*2,v=(big?200:150)+Math.random()*260,dx=Math.cos(a)*v,dy=Math.sin(a)*v-90,grav=260+Math.random()*220,t=1100+Math.random()*900;
       const kind=i%4,sz=6+Math.random()*7;
@@ -300,11 +300,11 @@
   }
   function punch(){   /* the whole card squashes, then springs */
     if(RM()||!ticket.animate)return;
-    ticket.animate([{transform:"scale(1)"},{transform:"scale(.94,1.04)",offset:.2},{transform:"scale(1.07,.96) rotate(-1.2deg)",offset:.5},{transform:"scale(.99,1.01) rotate(.6deg)",offset:.75},{transform:"none"}],{duration:620,easing:"ease-out"});
+    ticket.animate([{transform:"scale(1)"},{transform:"scale(.88,1.08)",offset:.2},{transform:"scale(1.14,.92) rotate(-2.5deg)",offset:.5},{transform:"scale(.97,1.03) rotate(1.2deg)",offset:.75},{transform:"none"}],{duration:620,easing:"ease-out"});
   }
   function shakeCard(){
     if(RM()||!ticket.animate)return;
-    ticket.animate([{transform:"translateX(0)"},{transform:"translateX(-12px) rotate(-1.2deg)"},{transform:"translateX(10px) rotate(.9deg)"},{transform:"translateX(-7px)"},{transform:"translateX(4px)"},{transform:"none"}],{duration:420,easing:"ease-out"});
+    ticket.animate([{transform:"translateX(0)"},{transform:"translateX(-26px) rotate(-3deg)"},{transform:"translateX(22px) rotate(2.4deg)"},{transform:"translateX(-7px)"},{transform:"translateX(4px)"},{transform:"none"}],{duration:420,easing:"ease-out"});
     ticket.animate([{boxShadow:"6px 6px 0 var(--hard),0 0 0 0 transparent"},{boxShadow:"6px 6px 0 var(--seal),0 0 0 6px color-mix(in srgb,var(--seal) 25%,transparent)",offset:.3},{boxShadow:"6px 6px 0 var(--hard),0 0 0 0 transparent"}],{duration:620,easing:"ease-out"});
   }
   const mid=()=>{const r=ticket.getBoundingClientRect();return[r.left+r.width/2,r.top+r.height/2];};

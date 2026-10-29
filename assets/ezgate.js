@@ -190,7 +190,7 @@
   async function submitAcct(mode){
     const u=$("#egUser").value.trim().toLowerCase(),pw=$("#egPass").value,go=$("#egGo");
     if(!/^[a-z0-9_]{1,20}$/.test(u))return badAcct("帳號名稱最多 20 個字，只能用英文、數字和底線。");
-    if(pw.length<8)return badAcct("密碼至少要 8 個字。");
+    if(pw.length<6)return badAcct("密碼至少要 6 個字。");
     if(mode==="register"&&pw!==$("#egPass2").value)return badAcct("兩次輸入的密碼不一樣。");
     busy=true;go.disabled=true;say("連線中…");
     try{

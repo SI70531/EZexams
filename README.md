@@ -67,7 +67,7 @@ Answers that don't match clearly go into an "unmatched" group. To see where ever
 
 ## Accounts and Syncing Progress
 
-- **Sign up** with a username and a password (8+ characters). There is no email, so a forgotten password cannot be recovered.
+- **Sign up** with a username and a password (6+ characters). There is no email, so a forgotten password cannot be recovered.
 - **Device PIN (optional):** after signing in you can set a 4-digit PIN for *that device only*. Next time that device asks for the PIN instead of the password. The Worker checks it (stored only as a keyed hash); 5 wrong tries delete it and the password is needed again.
 - Closing the site signs you out. Progress is stored in Supabase, one row per account and subject, and Row Level Security means an account can only ever read or write its own rows.
 - Answers are merged question by question, and every upload first reads the cloud copy, so two devices answering at the same time won't erase each other's work. If a sync fails, the site retries by itself.
@@ -76,7 +76,7 @@ Answers that don't match clearly go into an "unmatched" group. To see where ever
 ### One-time setup (Supabase + Worker)
 
 1. Supabase → **SQL Editor**: run `tools/supabase.sql` (creates the `progress` table with Row Level Security).
-2. Supabase → Authentication → Sign In / Providers → Email: turn **Confirm email** off, set minimum password length 8. (Authentication → Sessions → *JWT expiry* of 86400 s keeps a study session signed in all day.)
+2. Supabase → Authentication → Sign In / Providers → Email: turn **Confirm email** off, minimum password length 6. (Authentication → Sessions → *JWT expiry* of 86400 s keeps a study session signed in all day.)
 3. Cloudflare → Workers → `ezexams-ai` → Settings → Variables and Secrets: add the secret **`SUPABASE_SECRET_KEY`** (Supabase → Project Settings → API Keys → *Secret keys*). It is only used to log a device in after a right PIN.
 4. The project URL and the publishable key are in `assets/ezsync.js` and `tools/ezexams-worker.js` (they are public by design). A username becomes `<username>@…` using `MAIL` in `ezsync.js` and `tests/harness.mjs`; nothing is ever sent to it.
 

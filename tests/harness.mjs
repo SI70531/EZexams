@@ -47,7 +47,7 @@ export function supabase(method, urlStr, headers = {}, text = "") {
     const email = String(b.email || "").toLowerCase();
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return out(400, { error_code: "validation_failed", msg: "Unable to validate email address: invalid format" });
     if (sbs.users.has(email)) return out(422, { error_code: "user_already_exists", msg: "User already registered" });
-    if (String(b.password || "").length < 8) return out(422, { error_code: "weak_password", msg: "Password should be at least 8 characters." });
+    if (String(b.password || "").length < 6) return out(422, { error_code: "weak_password", msg: "Password should be at least 6 characters." });
     const user = { id: crypto.randomUUID(), email, password: b.password, meta: b.data || {} }; sbs.users.set(email, user);
     return out(200, mkSession(user));
   }

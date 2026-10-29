@@ -16,6 +16,14 @@
 .view.fx-enter{animation:fxenter .6s cubic-bezier(.2,1,.3,1)}
 .fx-rv{opacity:0;transform:translateY(46px) scale(.96) rotate(.6deg);transition:opacity .7s cubic-bezier(.2,.9,.25,1),transform .8s cubic-bezier(.2,1.2,.3,1)}
 .fx-rv.fx-in{opacity:1;transform:none}
+@supports (animation-timeline:view()){
+.fx-sv{animation:fxsin linear forwards,fxsout linear forwards;animation-timeline:view(),view();animation-range:entry 0% entry 100%,exit 0% exit 100%}
+.fx-sv.fx-rv{transition:none}
+@keyframes fxsin{from{opacity:0;transform:translateY(34px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes fxsout{from{opacity:1;transform:none}to{opacity:0;transform:translateY(-34px) scale(.97)}}
+html.ezcalm .fx-sv{animation:none}
+}
+@media (prefers-reduced-motion:reduce){.fx-sv{animation:none!important}}
 @keyframes fxrise{from{opacity:0;transform:translateY(34px) scale(.94)}to{opacity:1;transform:none}}
 .vhead h1,.hero h1{animation:fxrise .95s cubic-bezier(.2,1.1,.3,1) both}
 .vhead p,.hero p{animation:fxrise .95s .16s cubic-bezier(.2,1.1,.3,1) both}
@@ -108,9 +116,15 @@
   /* only the tab on screen, and only blocks within a few screens below: farther ones just appear normally.
      All positions are read first and the classes written after, so the browser lays the page out once. */
   function arm(root){
-    if(!io||document.documentElement.classList.contains("ezcalm"))return;
+    if(document.documentElement.classList.contains("ezcalm"))return;
     const vh=innerHeight,scope=root===document?[...document.querySelectorAll("section.view:not([hidden])")]:[root];
     const roots=scope.length?scope:[document];
+    if(CSS.supports&&CSS.supports("animation-timeline:view()")){      /* every block fades in and out as it crosses the screen edges while scrolling (only blocks that fit on screen; nested ones fade with their parent) */
+      const cand=[];roots.forEach(r=>r.querySelectorAll(SEL).forEach(el=>{if(!el.dataset.fxSv&&!el.closest("#ezgate,.ezs-panel,.wcard,details:not([open])"))cand.push(el);}));
+      const rc=cand.map(el=>el.getBoundingClientRect());
+      cand.forEach((el,i)=>{if(!rc[i].height)return;el.dataset.fxSv=1;if(rc[i].height<vh*.7&&!el.parentElement.closest(".fx-sv"))el.classList.add("fx-sv");});
+    }
+    if(!io)return;
     const els=[];roots.forEach(r=>r.querySelectorAll(SEL).forEach(el=>{if(!el.dataset.fxRv&&!el.closest("#ezgate,.ezs-panel,.wcard,details:not([open])"))els.push(el);}));
     const rects=els.map(el=>el.getBoundingClientRect());
     els.forEach((el,i)=>{const r=rects[i];if(!r.height)return;el.dataset.fxRv=1;   /* hidden: armed again when its tab opens */

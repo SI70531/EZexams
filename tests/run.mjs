@@ -472,11 +472,13 @@ await check("motion: 總複習 cards rise in; clearing a mistake says how many a
   assert(!pg.errs.length, pg.errs.join(" | "));
   await pg.ctx.close();
 });
-await check("wow: the intro plays once per tab and can be clicked away; a wrong answer shatters, a right one flashes; scrolled-past headings get a ✓ that is remembered", async () => {
-  const pg = await device({ skipGate: true }); await pg.goto(U + "?wow=1"); await pg.waitForSelector(".wow-intro", { timeout: 3000 });
-  await pg.click(".wow-intro"); await pg.waitForFunction(() => !document.querySelector(".wow-intro"), null, { timeout: 4000 });
-  await pg.goto(U + "?wow=1"); await pg.waitForTimeout(600);
-  assert(!(await pg.$(".wow-intro")), "intro played twice in one tab");
+await check("wow: the intro plays every time the login screen shows and can be clicked away; a wrong answer shatters, a right one flashes; scrolled-past headings get a ✓ that is remembered", async () => {
+  const lg = await device(); await lg.goto(U + "?wow=1"); await lg.waitForSelector(".wow-intro", { timeout: 3000 });
+  await lg.click(".wow-intro"); await lg.waitForFunction(() => !document.querySelector(".wow-intro"), null, { timeout: 4000 });
+  await lg.reload(); await lg.waitForSelector(".wow-intro", { timeout: 3000 });   /* signed out again: the intro plays again */
+  await lg.ctx.close();
+  const pg = await device({ skipGate: true }); await pg.goto(U + "?wow=1"); await pg.waitForTimeout(600);
+  assert(!(await pg.$(".wow-intro")), "intro played with no login screen");
   await pg.goto(PAGE); await pg.waitForTimeout(900); await pg.evaluate(PICK);
   await pg.evaluate(() => { show("ch1"); const it = pickItem(0), a = QUIZ.ch1[0].a; it.scrollIntoView({ block: "center" }); [...it.querySelectorAll(".opt")].find(o => +o.dataset.oi !== a).click(); });
   await pg.waitForSelector(".wow-crack", { timeout: 2000 }); await pg.waitForSelector(".wow-shard", { timeout: 2000 });
@@ -487,6 +489,19 @@ await check("wow: the intro plays once per tab and can be clicked away; a wrong 
   await pg.reload(); await pg.waitForTimeout(900);
   assert(await pg.evaluate(() => !!document.querySelector("#ch1 h3.mo-read")), "✓ not remembered after a reload");
   assert(!pg.errs.length, pg.errs.join(" | "));
+  await pg.ctx.close();
+});
+await check("wow: signing in sends you to the home page, where the exam cards fly in; clicking a heading marks it read", async () => {
+  resetWorker();
+  const pg = await device(); await pg.addInitScript(() => { window.EZWOW_FORCE = true; }); await pg.goto(PAGE + "?wow=1#ch1"); await pg.waitForTimeout(600);
+  await signUp(pg, "homer");
+  await pg.waitForFunction(() => location.pathname.replace(/\/$/, "").split("/").pop() !== "midterm", null, { timeout: 8000 });
+  assert(!/midterm/.test(new URL(pg.url()).pathname), "still on a subject page: " + pg.url());
+  assert(await pg.evaluate(() => document.querySelectorAll(".exam-subj").length > 0), "home page has no cards");
+  await pg.waitForSelector(".wow-banner", { timeout: 6000 });   /* the cards fly in first, then the welcome banner sweeps across */
+  await pg.goto(PAGE); await pg.waitForTimeout(700); await pg.evaluate(() => show("ch1")); await pg.waitForTimeout(400);
+  await pg.evaluate(() => document.querySelector("#ch1 h3").click());
+  assert(await pg.evaluate(() => document.querySelector("#ch1 h3").classList.contains("mo-read")), "click did not mark the heading");
   await pg.ctx.close();
 });
 await check("wow: the answer text types itself out and ends complete; the welcome banner shows the streak when signed in", async () => {

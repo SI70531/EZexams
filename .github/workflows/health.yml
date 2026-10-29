@@ -1,5 +1,5 @@
 # Daily check of the Worker's secrets and of errors reported by visitors' browsers.
-# - fails (and GitHub emails you) when GITHUB_TOKEN is invalid or expires within 14 days, or GEMINI_KEY stops working
+# - fails (and GitHub emails you) when Supabase is unreachable, SUPABASE_SECRET_KEY is missing, or GEMINI_KEY stops working
 # - opens (or adds to) the issue "網站錯誤回報" when pages reported errors in the last 24 hours
 name: Health check
 on:
@@ -20,12 +20,11 @@ jobs:
           set -e
           h=$(curl -fsS "$WORKER/health")
           echo "$h" | jq .
-          gh_ok=$(echo "$h" | jq -r '.github.ok'); days=$(echo "$h" | jq -r '.github.daysLeft // "none"'); gm_ok=$(echo "$h" | jq -r '.gemini.ok')
+          sb_ok=$(echo "$h" | jq -r '.supabase.ok'); sb_secret=$(echo "$h" | jq -r '.supabase.secret'); gm_ok=$(echo "$h" | jq -r '.gemini.ok')
           bad=0
-          if [ "$gh_ok" != "true" ]; then echo "::error::GITHUB_TOKEN 無效或已過期，雲端同步會停。請到 GitHub 重新產生 token（只勾 gist），再到 Cloudflare Worker 的 Variables and Secrets 更新 GITHUB_TOKEN。"; bad=1; fi
-          if [ "$days" != "none" ] && [ "$days" -lt 14 ]; then echo "::error::GITHUB_TOKEN 剩 $days 天就到期（$(echo "$h" | jq -r .github.expires)）。請盡快換新的。"; bad=1; fi
+          if [ "$sb_ok" != "true" ]; then echo "::error::Supabase 沒有回應（HTTP $(echo "$h" | jq -r .supabase.status)），帳號登入和進度同步會停。請到 Supabase 檢查專案有沒有被暫停。"; bad=1; fi
+          if [ "$sb_secret" != "true" ]; then echo "::error::Worker 沒有 SUPABASE_SECRET_KEY，裝置 PIN 登入會失敗。請到 Cloudflare Worker 的 Variables and Secrets 加上。"; bad=1; fi
           if [ "$gm_ok" != "true" ]; then echo "::error::GEMINI_KEY 無法使用（HTTP $(echo "$h" | jq -r .gemini.status)），AI 批改會改用關鍵字。請到 Google AI Studio 檢查金鑰，再更新 Worker 的 GEMINI_KEY。"; bad=1; fi
-          [ "$days" != "none" ] && echo "::notice::GITHUB_TOKEN 還有 $days 天到期"
           exit $bad
       - name: Errors from visitors' browsers (last 24 h)
         if: always()

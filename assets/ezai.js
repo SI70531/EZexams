@@ -1,5 +1,5 @@
 /* EZAI: free AI grading with the student's own Google Gemini API key (free tier, no credit card).
-   The key lives only in this browser (localStorage "ezai-key"); it is never synced to the Gist.
+   The key lives only in this browser (localStorage "ezai-key"); it is never synced.
    Subject pages use it as a drop-in for the grader they already call:
      SAMPLE = EZAI.sampler();          // null when no key is set
      const out = await SAMPLE.json(prompt);   // parsed JSON, or throws {code}
@@ -39,10 +39,10 @@
     return fail("network","HTTP "+r.status+" "+m);
   }
 
-  /* the proxy needs this tab's sign-in token (signing in with a PIN), so the Worker URL alone cannot use the quota */
+  /* the proxy needs this tab's sign-in token (signing in to an account), so the Worker URL alone cannot use the quota */
   async function proxyToken(force){
     const S=window.EZSync;const t=S&&S.session?await S.session(force):null;
-    if(!t)throw fail("login","先登入 PIN 碼才能使用 AI 批改");
+    if(!t)throw fail("login","先登入才能使用 AI 批改");
     return t;
   }
   /* grading (stable) asks for the most deterministic answer Google offers: temperature 0, the single most likely
@@ -57,7 +57,7 @@
           generationConfig:Object.assign(stable?{temperature:0,topK:1,topP:1,seed:7+(attempt||0)}:{temperature:0.2},json?{responseMimeType:"application/json"}:{})})},120000);
     let body=null;try{body=await r.json();}catch(e){}
     if(px&&r.status===401&&!force)return call(key,model,prompt,json,stable,true,attempt);   /* token expired: renew once */
-    if(px&&r.status===401)throw fail("login","登入已過期，請重新輸入 PIN 碼");
+    if(px&&r.status===401)throw fail("login","登入已過期，請重新登入");
     if(!r.ok)throw httpErr(r,body);
     const c=body&&body.candidates&&body.candidates[0];
     const text=c&&c.content&&Array.isArray(c.content.parts)?c.content.parts.filter(p=>!p.thought).map(p=>p.text||"").join(""):"";
@@ -155,7 +155,7 @@
       if(c==="rate_limited")return "免費額度暫時用完（每分鐘約 10 次），過一兩分鐘再按。";
       if(c==="invalid_json"||c==="empty_completion")return "AI 連續三次都沒有給出完整的結果。";
       if(c==="empty")return "請先貼上金鑰。";
-      if(c==="login")return (e.message&&e.message!==c?e.message:"先登入 PIN 碼才能使用 AI 批改")+"（右上角「登入」）。";
+      if(c==="login")return (e.message&&e.message!==c?e.message:"先登入才能使用 AI 批改")+"（右上角「登入」）。";
       if(c==="timeout")return "連線逾時，Google 一直沒有回應。可能是網路不穩、VPN，或學校／公司網路、擋廣告外掛擋掉了 Google API。換個網路（例如手機熱點）再試一次。";
       if(c==="blocked")return "瀏覽器沒有收到 Google 的回應，請求被擋下了"+why+"。如果有裝擋廣告／隱私外掛，先對這個網站關掉；也可以換一個瀏覽器試試。";
       return "Gemini 回報錯誤"+why+"。";

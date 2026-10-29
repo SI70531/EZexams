@@ -20,7 +20,7 @@ tag = "v1"
 new_sqlite_classes = ["GeminiRelay"]
 
 
-# Per-visitor counters (wrong PINs, new PINs, error reports) and the list of recent page errors.
+# Per-visitor counters (wrong PINs, AI calls, error reports) and each device's PIN record and the list of recent page errors.
 [[durable_objects.bindings]]
 name = "GUARD"
 class_name = "Guard"

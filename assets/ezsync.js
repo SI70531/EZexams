@@ -3,60 +3,36 @@
    (tools/supabase.sql), read and written straight from the browser with the person's own sign-in, so Row Level
    Security decides who sees what. A device may also remember a 4-digit PIN for its account (checked by the Worker,
    tools/ezexams-worker.js); the PIN only works on that device.
-   Old PIN codes (progress in a private Gist, through the Worker) still sign in as "code" mode, so progress made
-   before accounts can be imported into an account (importLegacy) and nothing is lost.
    Each subject stores one row = {updatedAt, data}.
 
    Hooking up a subject page takes one line, placed before the page's own script:
      <script src="../../assets/ezsync.js" data-key="<the page's localStorage key>"></script>
    It watches writes to that key, merges with the cloud copy on load, and adds a sync chip to the top bar. */
 (function(){
-  const LS={last:"ezsync-last",code:"ezsync-code",sess:"ezsync-sess",s2:"ezsync-s2",dev:"ezsync-dev"};
+  const LS={last:"ezsync-last",s2:"ezsync-s2",dev:"ezsync-dev"};
   const WORKER="https://ezexams-ai.ta77199ta.workers.dev";
   /* the Supabase project; the publishable key is public by design (Row Level Security protects the data) */
   const SB="https://jyfmolrqxypufwjqexan.supabase.co",SBK="sb_publishable_YJbE5DyYa6UKsAbfsxjnWg_4VW4HVnr";
   /* Supabase wants an email; a username becomes <username>@this domain (nothing is ever sent there) */
   const MAIL="@ezexams.example.com";
-  const KEYS=["stats-midterm-v1","os-midterm-v1","ds-midterm-v1","econ-midterm-v2"];   /* every subject's storage key, for importing */
-  /* the sync code is kept for this browser tab only (sessionStorage): closing the site signs this device out, and the
-     next visit asks for the code again. Progress itself stays in localStorage. */
-  const store=k=>(k===LS.code||k===LS.sess||k===LS.s2)?sessionStorage:localStorage;
-  /* the old GitHub-token mode is gone: forget anything it left in this browser */
-  try{["ezsync-token","ezsync-gist","ezsync-user"].forEach(k=>localStorage.removeItem(k));}catch(e){}
-  try{const old=localStorage.getItem(LS.code);if(old){if(!sessionStorage.getItem(LS.code))sessionStorage.setItem(LS.code,old);localStorage.removeItem(LS.code);}}catch(e){}
+  /* the sign-in is kept for this browser tab only (sessionStorage): closing the site signs this device out. Progress itself
+     stays in localStorage. */
+  const store=k=>k===LS.s2?sessionStorage:localStorage;
+  /* leftovers of the retired sign-in modes (GitHub token, old PIN codes): forget them */
+  try{["ezsync-token","ezsync-gist","ezsync-user","ezsync-code"].forEach(k=>localStorage.removeItem(k));["ezsync-code","ezsync-sess"].forEach(k=>sessionStorage.removeItem(k));}catch(e){}
   const get=k=>{try{return store(k).getItem(k);}catch(e){return null;}};
   let internal=false;
   const sess2=()=>{try{return JSON.parse(get(LS.s2)||"null");}catch(e){return null;}};
-  const on=()=>!!(get(LS.code)||sess2());
+  const on=()=>!!sess2();
   const set=(k,v)=>{internal=true;try{v==null?store(k).removeItem(k):store(k).setItem(k,v);}catch(e){}internal=false;};
-  /* each PIN is its own progress: a new PIN starts from zero, and signing in with a different PIN than last time on
-     this browser replaces the local progress with that PIN's (the same PIN as last time keeps local answers that
-     were not uploaded yet and merges them). Only a short hash of the last PIN is kept, never the PIN itself. */
-  const who=c=>{let h=2166136261;for(const ch of "ezexams:"+c){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);}return (h>>>0).toString(36);};
-  /* true when this browser's progress has no real owner yet: nothing recorded, or made under the old 6-digit codes.
-     A 4-digit PIN's or an account's marker means it belongs to that person. */
-  function isLegacyOwner(prev){
-    if(!prev)return true;
-    if(prev.startsWith("acct:"))return false;
-    for(let i=0;i<10000;i++)if(who(String(i).padStart(4,"0"))===prev)return false;
-    return true;
-  }
-  function startFor(code,fresh){
-    const w=who(code),prev=get("ezsync-who");
-    /* moving from the old 6-digit codes: this browser's progress belongs to the person setting up their 4-digit PIN,
-       so it is kept (and uploaded to the new PIN) instead of starting from zero */
-    const legacy=isLegacyOwner(prev);
-    if(!legacy&&(fresh||prev!==w))dropLocal();
-    set("ezsync-who",w);
-  }
   /* forget this browser's answers (another person is signing in) */
   function dropLocal(){
     Object.values(subjects).forEach(s=>{clearTimeout(s.timer);s.timer=null;});
     const drop=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(/-midterm-v\d+$|^ezsync-at:|^ezopt:|^eznum:/.test(k))drop.push(k);}
     drop.forEach(k=>set(k,null));[LS.last,"ezsync-lastpush"].forEach(k=>set(k,null));
   }
-  /* an account owns this browser's answers once it has signed in here; progress from before accounts (a PIN, or nothing
-     recorded) is adopted by whoever signs in first. Signing in as a different account first asks, then clears. */
+  /* an account owns this browser's answers once it has signed in here; progress from before accounts (made under an old
+     PIN, or nothing recorded) is adopted by whoever signs in first. Signing in as a different account first asks, then clears. */
   const acctWho=uid=>"acct:"+uid;
   function startForAcct(uid){
     const prev=get("ezsync-who");
@@ -74,7 +50,7 @@
   let status={state:on()?"idle":"off",msg:""};
   function emit(state,msg,code){status={state,msg:msg||"",code:code||""};listeners.forEach(f=>{try{f(status);}catch(e){}});}
 
-  /* sync code: the Worker reads and writes the Gist for us */
+  /* progress lives in the Supabase table `progress`, one row per account and subject */
   /* text/plain keeps the request "simple" (no CORS preflight), which also lets a keepalive upload leave with the page */
   async function px(method,path,body){
     let r;
@@ -89,24 +65,6 @@
       r.status===429?"rate":er.status==="BAD_CODE"?"badcode":er.status==="TOO_BIG"?"big":(er.status==="NO_TOKEN"||er.status==="BAD_TOKEN"||er.status==="NO_SECRET"||er.status==="SUPABASE")?"server":"http";
     throw Object.assign(new Error(why),{code,status:r.status,why,wait,left:er.left});
   }
-  /* ---- old PIN codes: sign-in token from the Worker (12 hours), renewed quietly with the PIN kept for this tab ---- */
-  const tokExp=t=>{try{return JSON.parse(atob(t.split(".")[0].replace(/-/g,"+").replace(/_/g,"/"))).exp||0;}catch(e){return 0;}};
-  async function login(code,mode){
-    const t=JSON.parse(await px("POST","/login",JSON.stringify({code,mode})));
-    set(LS.sess,t.token);return t;
-  }
-  async function legacySession(force){
-    const t=get(LS.sess);
-    if(!force&&t&&tokExp(t)>Date.now()+60000)return t;
-    if(!get(LS.code))return null;
-    return (await login(get(LS.code),"join")).token;
-  }
-  /* a Worker call that needs the old token: renewed once if the Worker says it expired */
-  async function authed(fn){
-    try{return await fn(await legacySession());}
-    catch(e){if(e.code!=="login")throw e;return await fn(await legacySession(true));}
-  }
-
   /* ---- accounts: Supabase Auth + the progress table, called straight from the browser ---- */
   async function sb(method,path,{body,token,prefer,keepalive}={}){
     let r;
@@ -161,14 +119,12 @@
       const rows=await acctCall("GET","/rest/v1/progress?select=payload&key=eq."+encodeURIComponent(key)+"&limit=1");
       return rows&&rows[0]&&rows[0].payload?JSON.stringify(rows[0].payload):null;
     }
-    if(!get(LS.code))throw Object.assign(new Error("off"),{code:"off"});
-    const t=await authed(tk=>px("GET","/sync?key="+encodeURIComponent(key)+"&t="+encodeURIComponent(tk)));return t&&t.trim()!=="{}"?t:null;
+    throw Object.assign(new Error("off"),{code:"off"});
   }
   async function writeRemote(key,payload,keepalive){
     const s=sess2();
     if(s){await acctCall("POST","/rest/v1/progress?on_conflict=user_id,key",{body:{user_id:s.uid,key,payload,updated_at:new Date().toISOString()},prefer:"resolution=merge-duplicates,return=minimal",keepalive});return;}
-    if(!get(LS.code))throw Object.assign(new Error("off"),{code:"off"});
-    await authed(async tk=>{px.keepalive=keepalive;try{await px("POST","/sync",JSON.stringify({t:tk,key,payload}));}finally{px.keepalive=false;}});
+    throw Object.assign(new Error("off"),{code:"off"});
   }
   function errMsg(e){
     const c=e&&e.code;
@@ -185,7 +141,7 @@
     if(c==="emailinvalid")return "系統暫時不能註冊（帳號格式被拒絕）。請把這句話告訴管理員。";
     if(c==="confirm")return "註冊功能還在設定中（Email 確認沒有關閉），暫時不能註冊。";
     if(c==="locked"){const m=Math.max(1,Math.ceil((e.wait||0)/60000));return "PIN 碼輸入錯太多次，請 "+m+" 分鐘後再試。";}
-    if(c==="login")return sess2()||get(LS.code)?"登入已過期，請重新登入。":"請先登入。";
+    if(c==="login")return sess2()?"登入已過期，請重新登入。":"請先登入。";
     if(c==="server")return "同步伺服器設定有問題（"+(e.why||"")+"）。作答先存在這台裝置。";
     if(c==="rate")return "伺服器暫時忙碌。作答已存在這台裝置，稍後會自動上傳。";
     if(c==="big")return "進度資料太大，同步伺服器拒收。";
@@ -210,7 +166,6 @@
       sb("POST","/auth/v1/logout?scope=local",{token:s.at}).catch(()=>{});set(LS.s2,old);
       throw Object.assign(new Error("cancelled"),{code:"cancel"});
     }
-    set(LS.code,null);set(LS.sess,null);   /* an old PIN sign-in in this tab ends here */
     startForAcct(s.uid);
     const d=devRec();
     setDev(d&&d.uid===s.uid?Object.assign(d,{username:u}):{uid:s.uid,username:u,dev:newId(),pin:false,imp:{}});
@@ -229,7 +184,6 @@
     catch(e){if(e.code==="nopin"||e.code==="pinlocked")setDev(Object.assign(d,{pin:false}));throw e;}
     const j=await sb("POST","/auth/v1/verify",{body:{type:"magiclink",token_hash:t.token_hash}});
     if(!j||!j.access_token)throw Object.assign(new Error("no session"),{code:"server",why:"Supabase gave no session"});
-    set(LS.code,null);set(LS.sess,null);
     const s=adopt(j,d.username);startForAcct(s.uid);emit("ok","已登入");return s;
   }
   async function setPin(pin){
@@ -244,35 +198,8 @@
     if(sess2())await withToken(tk=>px("POST","/pin/clear",JSON.stringify({t:tk,deviceId:d.dev}))).catch(()=>{});
     setDev(Object.assign(d,{pin:false}));
   }
-  /* upload one subject without a page for it: merged with whatever the account already holds */
-  async function uploadKey(key){
-    const data=get(key);if(data==null)return;
-    let up=JSON.parse(data);
-    const raw=await readRemote(key);
-    if(raw){const r=JSON.parse(raw);if(r&&r.data)up=defaultMerge(up,r.data);}
-    set(key,JSON.stringify(up));
-    await writeRemote(key,{updatedAt:+get(metaKey(key))||Date.now(),data:up},false);
-  }
-  /* progress made under an old PIN: read it through the Worker, merge it into this browser's answers, upload to the account */
-  async function importLegacy(pin){
-    const s=sess2();if(!s)throw Object.assign(new Error("sign in first"),{code:"login"});
-    if(!/^\d{4}$/.test(pin))throw Object.assign(new Error("bad pin"),{code:"badcode"});
-    const t=JSON.parse(await px("POST","/login",JSON.stringify({code:pin,mode:"join"}))).token;
-    let n=0;
-    for(const key of KEYS){
-      const raw=await px("GET","/sync?key="+encodeURIComponent(key)+"&t="+encodeURIComponent(t));
-      if(!raw||raw.trim()==="{}")continue;
-      const r=JSON.parse(raw);if(!r||!r.data)continue;
-      const lo=get(key);
-      set(key,JSON.stringify(lo?defaultMerge(JSON.parse(lo),r.data):r.data));set(metaKey(key),String(Date.now()));
-      await uploadKey(key);n++;
-    }
-    markImported();return n;
-  }
-  function markImported(){const d=devRec();if(d){d.imp=Object.assign({},d.imp,{[d.uid]:1});setDev(d);}}
-
   const subjects={};// key -> {merge, timer}
-  /* after a failure (offline, GitHub busy or rate-limited) try again by itself: 30 s, 1, 2, 4 … up to 15 minutes */
+  /* after a failure (offline, the server busy or rate-limited) try again by itself: 30 s, 1, 2, 4 … up to 15 minutes */
   let retryT=null,retryN=0;
   function retryLater(key,e){
     if(!e||!on()||e.code==="off"||e.code==="badcode"||e.code==="server"||e.code==="nocode"||e.code==="locked")return;
@@ -296,8 +223,8 @@
         body:JSON.stringify({msg:"sync "+what+" failed: "+e.code+" "+(e.status||"")+" "+String(e.why||e.message||"").slice(0,120),src:"ezsync.js",page:location.pathname})}).catch(()=>{});}catch(_){}}
   }
   const metaKey=k=>"ezsync-at:"+k;
-  /* GitHub allows about 500 uploads (gist revisions) an hour, so uploads are spread evenly: at most one every
-     7.2 s (3600 s / 500), counted across every subject and every open tab in this browser */
+  /* uploads are spread out: at most one every
+     30 s, counted across every subject and every open tab in this browser */
   const GAP=30000,LASTK="ezsync-lastpush";   /* at most one upload every 30 s from this browser (about 120 an hour) */
   const lastAny=()=>+get(LASTK)||0;
 
@@ -341,7 +268,7 @@
     busyPush[key]=true;
     try{
       if(keepalive&&lastAny()+GAP>Date.now()){
-        /* leaving the page inside the 7.2 s window: wait for the turn if the page keeps running;
+        /* leaving the page inside the 30 s window: wait for the turn if the page keeps running;
            if the browser freezes it, the next visit uploads the change (it is newer than the cloud copy) */
         keepalive=false;
       }
@@ -390,45 +317,24 @@
       set(metaKey(key),String(Date.now()));dirty[key]=true;
       const sub=subjects[key];if(!sub||!on())return;
       clearTimeout(sub.timer);emit("dirty","有新的作答，幾秒後自動上傳…");
-      /* every upload is a new gist revision and GitHub limits those to about 500 an hour: upload soon,
-         but never sooner than 7.2 s after the last upload from this browser; leaving the page uploads right away */
+      /* upload soon,
+         but never sooner than 30 s after the last upload from this browser; leaving the page uploads right away */
       const wait=()=>Math.max(10000,lastAny()+GAP-Date.now());   /* 10 s gathers a burst of answers into one upload */
       const go=()=>{const w=lastAny()+GAP-Date.now();if(w>0){sub.timer=setTimeout(go,w+Math.random()*500);return;}sub.timer=null;push(key);};   /* another tab may have uploaded meanwhile */
       sub.timer=setTimeout(go,wait()+Math.random()*500);   /* a little jitter so two tabs do not wake at the same moment */
     },
-    /* sync code: devices with the same code share progress; replaces a GitHub token set up before */
-    /* mode "create": the code must be new; "join": it must already hold progress */
-    async connectCode(code,opts={}){
-      const mode=opts.mode;
-      code=(code||"").trim();
-      if(!code)throw Object.assign(new Error("empty"),{code:"empty"});
-      if(!/^\d{4}$/.test(code))throw Object.assign(new Error("bad code"),{code:"badcode"});
-      /* the Worker checks the PIN (counting wrong ones) and, for a new PIN, claims it right away */
-      const oldS=get(LS.sess);
-      try{await login(code,mode==="create"?"create":"join");}
-      catch(e){set(LS.sess,oldS);throw e;}
-      /* the PIN is right; if switching would clear answers on this device, ask first (opts.confirm(n) → true to go on) */
-      const n=this.wouldClear(code,mode);
-      if(n&&opts.confirm&&!(await opts.confirm(n))){set(LS.sess,oldS);throw Object.assign(new Error("cancelled"),{code:"cancel"});}
-      set(LS.s2,null);set(LS.code,code);
-      startFor(code,mode==="create");
-      emit("ok","已連結");return code;
-    },
-    mode:()=>sess2()?"acct":get(LS.code)?"code":"off",
+    mode:()=>sess2()?"acct":"off",
     account:()=>{const s=sess2();return s?{uid:s.uid,username:s.username}:null;},
     /* what this device remembers: the account that last signed in here, and whether it has a PIN */
-    device:()=>{const d=devRec();return d?{uid:d.uid,username:d.username,pin:!!d.pin,asked:!!d.asked,imported:!!(d.imp&&d.imp[d.uid])}:null;},
+    device:()=>{const d=devRec();return d?{uid:d.uid,username:d.username,pin:!!d.pin,asked:!!d.asked}:null;},
     signUp:(u,p,o)=>acctAuth("register",u,p,o||{}),
     signIn:(u,p,o)=>acctAuth("login",u,p,o||{}),
-    pinLogin,setPin,clearPin,importLegacy,markImported,
+    pinLogin,setPin,clearPin,
     markPinAsked(){const d=devRec();if(d){d.asked=1;setDev(d);}},
-    /* does this account already hold progress in the cloud? (a brand-new account does not) */
-    async hasRemote(){const r=await acctCall("GET","/rest/v1/progress?select=key&limit=1");return !!(r&&r.length);},
     forgetDevice(){setDev(null);},
-    codeHint:()=>{const c=get(LS.code)||"";return c?c.slice(0,2)+"••••":"";},
     disconnect(){
       const s=sess2();if(s)sb("POST","/auth/v1/logout?scope=local",{token:s.at}).catch(()=>{});   /* this device's session only */
-      [LS.last,LS.code,LS.sess,LS.s2].forEach(k=>set(k,null));emit("off","");},
+      [LS.last,LS.s2].forEach(k=>set(k,null));emit("off","");},
     /* upload whatever is still waiting (used before signing out) */
     async flush(){
       const ks=Object.keys(subjects).filter(k=>dirty[k]||subjects[k].timer);
@@ -437,18 +343,12 @@
     },
     pending:()=>Object.keys(subjects).some(k=>dirty[k]||subjects[k].timer),
     /* sign-in token for other Worker services (the AI grading proxy); null when not signed in */
-    session:f=>(sess2()?token(!!f):legacySession(!!f)).catch(()=>null),
-    /* how many answers this browser holds that signing in with this PIN would clear (0 if none would be) */
-    wouldClear(code,mode){
-      const w=who(code),prev=get("ezsync-who");
-      if(isLegacyOwner(prev)||!(mode==="create"||prev!==w))return 0;
-      return countLocal();
-    },
+    session:f=>token(!!f).catch(()=>null),
     /* sync this page's subject right now: upload pending answers, then download (reloads if another device changed something) */
     async syncNow(){
       for(const k of Object.keys(subjects)){const sub=subjects[k];if(sub.timer){clearTimeout(sub.timer);sub.timer=null;}await pull(k);}
     },
-    async syncAll(){const ks=Object.keys(subjects);for(const k of ks)await pull(k,{reloadOnChange:false});if(!ks.length){emit("sync","同步中…");try{if(sess2())await token(true);else if(get(LS.code))await legacySession(true);set(LS.last,String(Date.now()));emit("ok","已同步");}catch(e){emit("err",errMsg(e));}}},
+    async syncAll(){const ks=Object.keys(subjects);for(const k of ks)await pull(k,{reloadOnChange:false});if(!ks.length){emit("sync","同步中…");try{if(sess2())await token(true);set(LS.last,String(Date.now()));emit("ok","已同步");}catch(e){emit("err",errMsg(e));}}},
     connected:()=>on(),
     lastSync:()=>+get(LS.last)||0,
     status:()=>status,
@@ -551,7 +451,7 @@
       const on=window.EZSync.connected();
       a.dataset.state=on?s.state:"off";
       a.querySelector(".synclab").textContent=!on?"未同步":s.state==="sync"?"同步中":s.state==="dirty"?"待同步":s.state==="err"?"暫時離線":"已同步";
-      a.title=!on?"只存在這台裝置。點這裡登入。":(s.msg&&s.state==="err"?s.msg+"（點一下可以馬上再試）":s.msg&&s.state==="dirty"?s.msg+"（點一下馬上上傳）":"已同步（"+(window.EZSync.account()?"帳號 "+window.EZSync.account().username:"舊 PIN 碼 "+window.EZSync.codeHint())+"）。點一下立即同步。");
+      a.title=!on?"只存在這台裝置。點這裡登入。":(s.msg&&s.state==="err"?s.msg+"（點一下可以馬上再試）":s.msg&&s.state==="dirty"?s.msg+"（點一下馬上上傳）":"已同步（帳號 "+window.EZSync.account().username+"）。點一下立即同步。");
     });
   }
   function updateNote(){

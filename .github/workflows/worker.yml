@@ -1,6 +1,6 @@
 # Deploys the EZexams Worker (tools/ezexams-worker.js + tools/wrangler.toml) to Cloudflare.
 # Needs two repository secrets: CLOUDFLARE_API_TOKEN (template "Edit Cloudflare Workers") and CLOUDFLARE_ACCOUNT_ID.
-# The Worker's own secrets (GEMINI_KEY, GITHUB_TOKEN) stay in Cloudflare and are not touched.
+# The Worker's own secrets (GEMINI_KEY, SUPABASE_SECRET_KEY) stay in Cloudflare and are not touched.
 name: Deploy Worker
 on:
   workflow_dispatch:

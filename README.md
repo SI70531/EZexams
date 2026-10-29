@@ -71,7 +71,6 @@ Answers that don't match clearly go into an "unmatched" group. To see where ever
 - **Device PIN (optional):** after signing in you can set a 4-digit PIN for *that device only*. Next time that device asks for the PIN instead of the password. The Worker checks it (stored only as a keyed hash); 5 wrong tries delete it and the password is needed again.
 - Closing the site signs you out. Progress is stored in Supabase, one row per account and subject, and Row Level Security means an account can only ever read or write its own rows.
 - Answers are merged question by question, and every upload first reads the cloud copy, so two devices answering at the same time won't erase each other's work. If a sync fails, the site retries by itself.
-- **Old PIN codes** (the 4-digit PINs from before accounts) still work through 舊 PIN 碼登入. A new account offers 匯入舊 PIN 進度 once, which copies that progress into the account. Remove the old PIN code (Worker `/login`, `/sync`, `GITHUB_TOKEN`, the Gist) when everyone has moved.
 
 ### One-time setup (Supabase + Worker)
 
@@ -108,7 +107,7 @@ npm i playwright && npx playwright install chromium
 node tests/run.mjs
 ```
 
-The tests run against a fake Supabase, GitHub and Gemini. They open every page in a headless browser and check things like tabs, the phone layout, signing up and in, device PINs, importing old progress, and syncing between two devices. `ONLY="device PIN" node tests/run.mjs` runs just the checks whose name matches. They also run automatically on every push.
+The tests run against a fake Supabase and Gemini. They open every page in a headless browser and check things like tabs, the phone layout, signing up and in, device PINs, and syncing between two devices. `ONLY="device PIN" node tests/run.mjs` runs just the checks whose name matches. They also run automatically on every push.
 
 ## Health Checks and Error Reports
 

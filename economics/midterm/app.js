@@ -217,11 +217,11 @@ const range=(el,cls)=>$(el,cls);
   if(tc.checked||tb.checked)g+='<polyline class="line dash" points="'+pts0.join(" ")+'"/>';
   g+='<polyline class="line" points="'+pts.join(" ")+'"/>';
   g+='<circle class="dotp" cx="'+X(qx*100/130)+'" cy="'+Y(qy*100/130)+'" r="5"/>';
-  g+=txt("t-ink",qx*100/130+2,qy*100/130+4,idle>0?"內部點：沒效率":"在 PPF 上：有效率");
+  g+=txt("t-ink",qx*100/130+2,qy*100/130+4,idle>0?"Interior point: inefficient":"On the PPF: efficient");
   $(el,".p-svg").innerHTML=svg(g);
-  $(el,".p-out").textContent="電腦 "+f(qx,0)+" 台、小麥 "+f(qy,0)+" 噸。\n"+(idle>0?"有 "+Math.round(idle*100)+"% 資源閒置（例如失業）→ 點在線內，兩種都能同時變多。\n":"")+
-   (cv<cm?"再多做 "+f(next-cv,0)+" 台電腦，要放棄 "+f(oc,1)+" 噸小麥（機會成本）。電腦做越多，這個數字越大 → 機會成本遞增，所以 PPF 往外凸。":"已經全部做電腦，小麥是 0。")+
-   (tb.checked?"\n兩種技術都進步 → PPF 整條往外移（經濟成長）。":tc.checked?"\n只有電腦技術進步 → 橫軸截距變大，小麥最大產量不變，PPF 往外「轉」。":"");
+  $(el,".p-out").textContent="Computers "+f(qx,0)+", wheat "+f(qy,0)+" tons.\n"+(idle>0?"Idle resources: "+Math.round(idle*100)+"% (e.g., unemployment) → the point is inside the curve, so both goods could increase together.\n":"")+
+   (cv<cm?"Making "+f(next-cv,0)+" more computers means giving up "+f(oc,1)+" tons of wheat (opportunity cost 機會成本). The more computers, the larger this number → increasing opportunity cost, which is why the PPF bows outward.":"All resources go to computers, so wheat is 0.")+
+   (tb.checked?"\nBoth technologies improve → the whole PPF shifts outward (economic growth 經濟成長).":tc.checked?"\nOnly computer technology improves → the x-intercept grows, maximum wheat output is unchanged, and the PPF pivots outward.":"");
  }
  [c,u,tc,tb].forEach(i=>i.addEventListener("input",draw));draw();
 })();
@@ -234,12 +234,12 @@ const range=(el,cls)=>$(el,cls);
   // hours per unit: ax = A hours per X ...
   const aox=ax/ay,box_=bx/by; // OC of 1 X in Y
   const r=(n)=>f(n,2);
-  let h='<table><tr><th></th><th>做 1 個 X 要放棄</th><th>做 1 個 Y 要放棄</th></tr><tr><td>A 國</td><td>'+r(aox)+' Y</td><td>'+r(1/aox)+' X</td></tr><tr><td>B 國</td><td>'+r(box_)+' Y</td><td>'+r(1/box_)+' X</td></tr></table>';
-  const absX=ax<bx?"A":ax>bx?"B":"兩國一樣",absY=ay<by?"A":ay>by?"B":"兩國一樣";
-  let msg="絕對利益（花的時間少）：X → "+absX+"，Y → "+absY+"\n";
-  if(Math.abs(aox-box_)<1e-9)msg+="兩國機會成本一樣 → 沒有比較利益，貿易沒有好處。";
+  let h='<table><tr><th></th><th>Giving up per 1 X</th><th>Giving up per 1 Y</th></tr><tr><td>Country A (A 國)</td><td>'+r(aox)+' Y</td><td>'+r(1/aox)+' X</td></tr><tr><td>Country B (B 國)</td><td>'+r(box_)+' Y</td><td>'+r(1/box_)+' X</td></tr></table>';
+  const absX=ax<bx?"A":ax>bx?"B":"Tie",absY=ay<by?"A":ay>by?"B":"Tie";
+  let msg="Absolute advantage (絕對利益, less time): X → "+absX+", Y → "+absY+"\n";
+  if(Math.abs(aox-box_)<1e-9)msg+="Both countries have the same opportunity cost → no comparative advantage, no gains from trade.";
   else{const cx=aox<box_?"A":"B",cy=cx==="A"?"B":"A";const lo=Math.min(aox,box_),hi=Math.max(aox,box_);
-   msg+="比較利益（機會成本低）：X → "+cx+" 國，Y → "+cy+" 國\n→ "+cx+" 國出口 X、"+cy+" 國出口 Y。\n雙方都得利的價格：1 個 X 換 "+r(lo)+" 到 "+r(hi)+" 個 Y 之間。";}
+   msg+="Comparative advantage (比較利益, lower opportunity cost): X → country "+cx+", Y → country "+cy+"\n→ country "+cx+" exports X, country "+cy+" exports Y.\nBoth gain if the price is between "+r(lo)+" and "+r(hi)+" units of Y per X.";}
   $(el,".ca-t").innerHTML=h;$(el,".ca-out").textContent=msg;
  }
  ins.forEach(i=>i.addEventListener("input",draw));
@@ -249,12 +249,12 @@ const range=(el,cls)=>$(el,cls);
 /* supply and demand shifts: D: P = 80 - 0.6Q + d ; S: P = 20 + 0.6Q - s */
 (function(){const el=document.getElementById("w-sd");if(!el)return;
  const D=range(el,".sd-d"),Sx=range(el,".sd-s");
- const EV={inc:[12,0,"所得增加（正常財）→ 需求右移"],sub:[12,0,"替代品漲價 → 需求右移"],comp:[-12,0,"互補品漲價 → 需求左移"],exb:[12,0,"買方預期未來漲價 → 現在的需求右移"],inp:[0,-12,"原料（投入）漲價 → 供給左移"],tech:[0,12,"技術進步 → 供給右移"],exs:[0,-12,"賣方預期未來漲價 → 現在的供給左移（先囤貨）"],both:[12,12,"需求和供給都增加"],zero:[0,0,"回到原點"]};
+ const EV={inc:[12,0,"Income rises (normal good 正常財) → demand shifts right"],sub:[12,0,"Price of a substitute rises → demand shifts right"],comp:[-12,0,"Price of a complement rises → demand shifts left"],exb:[12,0,"Buyers expect higher prices → demand now shifts right"],inp:[0,-12,"Input price rises → supply shifts left"],tech:[0,12,"Technology improves → supply shifts right"],exs:[0,-12,"Sellers expect higher prices → supply now shifts left (they hold back stock)"],both:[12,12,"Demand and supply both increase"],zero:[0,0,"Back to start"]};
  let note="";
  function draw(){
   const d=+D.value,s=+Sx.value;
   const q=(60+d+s)/1.2,p=80-0.6*q+d;
-  let g=axes("Q 數量","P 價格");
+  let g=axes("Q quantity","P price");
   if(d)g+=lin("line dash",80,-0.6);if(s)g+=lin("line2 dash",20,0.6);
   g+=lin("line",80+d,-0.6)+lin("line2",20-s,0.6);
   g+=line("gl",0,p,q,p)+line("gl",q,0,q,p);
@@ -262,9 +262,9 @@ const range=(el,cls)=>$(el,cls);
   g+='<circle class="dotp" cx="'+X(q)+'" cy="'+Y(p)+'" r="5"/>';
   g+=txt("t-ink",Math.min(96,(80+d-8)/0.6),10,"D","middle")+txt("t-seal",Math.min(96,(92-20+s)/0.6),94,"S","middle");
   $(el,".sd-svg").innerHTML=svg(g);
-  const ar=(v,base)=>v>base+0.05?"↑":v<base-0.05?"↓":"不變";
-  $(el,".sd-out").textContent=(note?note+"\n":"")+"均衡價格 P = "+f(p)+"（"+ar(p,50)+"），均衡數量 Q = "+f(q)+"（"+ar(q,50)+"）\n"+
-   (d===0&&s===0?"拖曳兩條拉桿，或按上面的事件按鈕。":d&&s?"兩條線同時動：看哪一個變數兩個效果同方向（確定），哪一個相反方向（不確定，取決於誰移得多）。":d?"需求線移動 → 價格和數量同方向變動；供給線沒動，是沿著供給線改變「供給量」。":"供給線移動 → 價格和數量反方向變動；需求線沒動，是沿著需求線改變「需求量」。");
+  const ar=(v,base)=>v>base+0.05?"↑":v<base-0.05?"↓":"unchanged";
+  $(el,".sd-out").textContent=(note?note+"\n":"")+"Equilibrium price P = "+f(p)+" ("+ar(p,50)+"), equilibrium quantity Q = "+f(q)+" ("+ar(q,50)+")\n"+
+   (d===0&&s===0?"Drag the two sliders, or press an event button above.":d&&s?"Both curves are moving: see which variable moves the same way under both effects (determinate) and which moves in opposite ways (ambiguous, depends on which shifts more).":d?"The demand curve shifts → price and quantity move in the same direction; supply doesn't move, so we move along the supply curve (change in quantity supplied 供給量變動).":"The supply curve shifts → price and quantity move in opposite directions; demand doesn't move, so we move along the demand curve (change in quantity demanded 需求量變動).");
  }
  [D,Sx].forEach(i=>i.addEventListener("input",()=>{note="";draw();}));
  $$(el,".sd-ev").forEach(b=>b.addEventListener("click",()=>{const e=EV[b.dataset.e];D.value=e[0];Sx.value=e[1];note=e[2];draw();}));draw();
@@ -275,20 +275,20 @@ const range=(el,cls)=>$(el,cls);
  const P=range(el,".el-p");
  function draw(){
   const p=+P.value,q=100-p,e=p/q,tr=p*q;
-  let g=axes("Q 數量","P 價格");
+  let g=axes("Q quantity","P price");
   g+=poly("rev",[[0,0],[q,0],[q,p],[0,p]]);
   g+=lin("line",100,-1)+'<circle class="dotp" cx="'+X(q)+'" cy="'+Y(p)+'" r="5"/>';
-  g+=txt("t-ink",q/2,p/2,"TR = "+f(tr,0),"middle")+txt("t-brass",52,52,"中點 彈性 = 1");
+  g+=txt("t-ink",q/2,p/2,"TR = "+f(tr,0),"middle")+txt("t-brass",52,52,"midpoint elasticity = 1");
   g+='<circle class="dot0" cx="'+X(50)+'" cy="'+Y(50)+'" r="3.5"/>';
   $(el,".el-svg").innerHTML=svg(g);
-  const kind=Math.abs(e-1)<0.02?"單一彈性（=1）":e>1?"富有彈性（>1）":"缺乏彈性（<1）";
+  const kind=Math.abs(e-1)<0.02?"unit elastic (單一彈性, =1)":e>1?"elastic (富有彈性, >1)":"inelastic (缺乏彈性, <1)";
   const up=(p+1)*(99-p)-tr;
-  $(el,".el-out").textContent="P = $"+p+"，Q = "+q+"，總收益 TR = P × Q = "+f(tr,0)+"\n這一點的彈性 = "+f(e,2)+" → "+kind+"\n再漲 $1：TR "+(up>0?"增加 ":"減少 ")+f(Math.abs(up),0)+(Math.abs(e-1)<0.02?"（幾乎不變）":"")+"\n"+(e>1?"富有彈性：價格和收益「反方向」→ 降價才會讓收益增加。":e<1?"缺乏彈性：價格和收益「同方向」→ 漲價會讓收益增加。":"在中點，TR 最大。")+"\n注意：整條線斜率都一樣，但彈性從上到下一直變小。";
+  $(el,".el-out").textContent="P = $"+p+", Q = "+q+", total revenue TR = P × Q = "+f(tr,0)+"\nElasticity at this point = "+f(e,2)+" → "+kind+"\nIf the price rises $1: TR "+(up>0?"increases by ":"decreases by ")+f(Math.abs(up),0)+(Math.abs(e-1)<0.02?" (almost no change)":"")+"\n"+(e>1?"Elastic: price and revenue move in \"opposite directions\" → only a price cut raises revenue.":e<1?"Inelastic: price and revenue move in the \"same direction\" → a price rise raises revenue.":"At the midpoint, TR is at its maximum.")+"\nNote: the slope is the same all along the line, but elasticity keeps falling from top to bottom.";
  }
  P.addEventListener("input",draw);draw();
  const mpEl=document.getElementById("w-mp");const ins=$$(mpEl,".mp input");
  function mp(){const[p1,p2,q1,q2]=ins.map(i=>+i.value);const dq=(q2-q1)/((q1+q2)/2),dp=(p2-p1)/((p1+p2)/2);
-  $(mpEl,".mp-out").textContent="%ΔQ = ("+q2+" − "+q1+") ÷ "+f((q1+q2)/2,2)+" = "+f(dq*100,1)+"%\n%ΔP = ("+p2+" − "+p1+") ÷ "+f((p1+p2)/2,2)+" = "+f(dp*100,1)+"%\n彈性 = |"+f(dq*100,1)+" ÷ "+f(dp*100,1)+"| = "+(dp?f(Math.abs(dq/dp),2):"—")+(dp?(Math.abs(dq/dp)>1?" → 富有彈性":Math.abs(dq/dp)<1?" → 缺乏彈性":" → 單一彈性"):"")+"\n總收益："+f(p1*q1,0)+" → "+f(p2*q2,0);}
+  $(mpEl,".mp-out").textContent="%ΔQ = ("+q2+" − "+q1+") ÷ "+f((q1+q2)/2,2)+" = "+f(dq*100,1)+"%\n%ΔP = ("+p2+" − "+p1+") ÷ "+f((p1+p2)/2,2)+" = "+f(dp*100,1)+"%\nElasticity = |"+f(dq*100,1)+" ÷ "+f(dp*100,1)+"| = "+(dp?f(Math.abs(dq/dp),2):"—")+(dp?(Math.abs(dq/dp)>1?" → elastic":Math.abs(dq/dp)<1?" → inelastic":" → unit elastic"):"")+"\nTotal revenue: "+f(p1*q1,0)+" → "+f(p2*q2,0);}
  ins.forEach(i=>i.addEventListener("input",mp));mp();
 })();
 
@@ -299,13 +299,13 @@ const range=(el,cls)=>$(el,cls);
   const pr=+P.value,ceil=ty[0].checked;
   const qd=(80-pr)/0.6,qs=(pr-20)/0.6;
   const binding=ceil?pr<50:pr>50;
-  let g=axes("Q 數量","P 價格")+lin("line",80,-0.6)+lin("line2",20,0.6);
-  g+=line(binding?"ctrl":"ctrl dash",0,pr,100,pr)+txt(binding?"t-seal":"t-ink",99,pr+2.5,(ceil?"價格上限 ":"價格下限 ")+"$"+pr,"end");
-  if(binding){const lo=Math.min(qd,qs),hi=Math.max(qd,qs);g+=line("gap",lo,pr,hi,pr)+line("gl",qd,0,qd,pr)+line("gl",qs,0,qs,pr)+txt("t-ink",qd,-6,"QD","middle")+txt("t-seal",qs,-6,"QS","middle")+txt("t-seal",(lo+hi)/2,pr+(ceil?-6:5),ceil?"短缺":"過剩","middle");}
+  let g=axes("Q quantity","P price")+lin("line",80,-0.6)+lin("line2",20,0.6);
+  g+=line(binding?"ctrl":"ctrl dash",0,pr,100,pr)+txt(binding?"t-seal":"t-ink",99,pr+2.5,(ceil?"Price ceiling ":"Price floor ")+"$"+pr,"end");
+  if(binding){const lo=Math.min(qd,qs),hi=Math.max(qd,qs);g+=line("gap",lo,pr,hi,pr)+line("gl",qd,0,qd,pr)+line("gl",qs,0,qs,pr)+txt("t-ink",qd,-6,"QD","middle")+txt("t-seal",qs,-6,"QS","middle")+txt("t-seal",(lo+hi)/2,pr+(ceil?-6:5),ceil?"shortage":"surplus","middle");}
   g+='<circle class="dot0" cx="'+X(50)+'" cy="'+Y(50)+'" r="4"/>';
   $(el,".pc-svg").innerHTML=svg(g);
-  $(el,".pc-out").textContent=!binding?((ceil?"上限":"下限")+"訂在 $"+pr+(ceil?"，高於":"，低於")+"均衡價格 $50 → 沒有約束力（not binding），市場照樣在 P = 50、Q = 50 成交。"):
-   ((ceil?"上限":"下限")+" $"+pr+(ceil?" 低於":" 高於")+"均衡價格 $50 → 有約束力（binding）\n需求量 QD = "+f(qd)+"，供給量 QS = "+f(qs)+"\n"+(ceil?"短缺 shortage = QD − QS = "+f(qd-qs)+"，實際成交量只有 QS = "+f(qs)+"（比均衡少）。會出現排隊、黑市、品質變差。":"過剩 surplus = QS − QD = "+f(qs-qd)+"，實際成交量只有 QD = "+f(qd)+"（比均衡少）。最低工資的例子：過剩的勞工 = 失業。")+"\n上限離均衡越遠（越低），短缺越大；長期供需更有彈性，短缺也會變大。");
+  $(el,".pc-out").textContent=!binding?((ceil?"Ceiling":"Floor")+" set at $"+pr+(ceil?" , above":" , below")+" the equilibrium price $50 → not binding (沒有約束力); the market still clears at P = 50, Q = 50."):
+   ((ceil?"Ceiling":"Floor")+" $"+pr+(ceil?" below":" above")+" the equilibrium price $50 → binding (有約束力)\nQuantity demanded QD = "+f(qd)+", quantity supplied QS = "+f(qs)+"\n"+(ceil?"Shortage = QD − QS = "+f(qd-qs)+", and the quantity actually traded is only QS = "+f(qs)+" (less than equilibrium). Expect queues, black markets and lower quality.":"Surplus = QS − QD = "+f(qs-qd)+", and the quantity actually traded is only QD = "+f(qd)+" (less than equilibrium). In the minimum-wage example, surplus labor = unemployment.")+"\nThe farther the ceiling is below equilibrium, the larger the shortage; in the long run, with more elastic supply and demand, the shortage grows too.");
  }
  P.addEventListener("input",draw);ty.forEach(i=>i.addEventListener("change",()=>{P.value=ty[0].checked?35:65;draw();}));draw();
 })();
@@ -317,22 +317,22 @@ function taxLab(el){
   const t=+tS.value,b=+bS.value/10,d=+dS.value/10;
   const a=50+50*b,c=50-50*d;
   const qt=Math.max(0,50-t/(b+d)),pb=a-b*qt,ps=pb-t;
-  let g=axes("Q 數量","P 價格");
+  let g=axes("Q quantity","P price");
   g+=poly("cs",[[0,a],[0,pb],[qt,pb]]);
   g+=poly("ps",[[0,ps],[0,c],[qt,ps]]);
   if(t>0){g+=poly("rev",[[0,pb],[qt,pb],[qt,ps],[0,ps]])+poly("dwl",[[qt,pb],[50,50],[qt,ps]]);}
   g+=lin("line",a,-b)+lin("line2",c,d);
   if(t>0){const onB=who[0].checked;g+=onB?lin("line dash",a-t,-b):lin("line2 dash",c+t,d);
-   g+=txt("t-ink",2,pb+2,"PB="+f(pb))+txt("t-ink",2,ps-5,"PS="+f(ps))+txt("t-ink",qt/2,(pb+ps)/2-1.5,"稅收","middle")+txt("t-seal",qt+(50-qt)*0.62,50,"DWL","start");}
+   g+=txt("t-ink",2,pb+2,"PB="+f(pb))+txt("t-ink",2,ps-5,"PS="+f(ps))+txt("t-ink",qt/2,(pb+ps)/2-1.5,"tax revenue","middle")+txt("t-seal",qt+(50-qt)*0.62,50,"DWL","start");}
   g+=txt("t-ink",qt/4,pb+(a-pb)/4,"CS","middle")+txt("t-ink",qt/4,ps-(ps-c)/2.2,"PS","middle");
   $(el,".tx-svg").innerHTML=svg(g);
   const cs=0.5*qt*(a-pb),psv=0.5*qt*(ps-c),rev=t*qt,dwl=0.5*t*(50-qt);
   const csq=0.5*50*(a-50),psq=0.5*50*(50-c);
   const sh=t>0?(pb-50)/t:d/(b+d);
-  $(el,".tx-out").textContent=(t===0?"沒有課稅：消費者剩餘 CS = "+f(csq,0)+"，生產者剩餘 PS = "+f(psq,0)+"，總剩餘 = "+f(csq+psq,0)+"（最大）。\n往右拖「稅額」看看會怎樣。":
-   "每單位稅 $"+t+"，課在"+(who[0].checked?"買方（需求線往下移）":"賣方（供給線往上移）")+"\n數量 50 → "+f(qt)+"\n買方付 PB = "+f(pb)+"（多付 "+f(pb-50)+"），賣方拿 PS = "+f(ps)+"（少拿 "+f(50-ps)+"）\n買方負擔 "+Math.round(sh*100)+"%、賣方負擔 "+Math.round((1-sh)*100)+"% → "+(Math.abs(sh-0.5)<0.02?"彈性一樣，平分":sh>0.5?"買方比較沒彈性，負擔比較多":"賣方比較沒彈性，負擔比較多")+
-   "\nCS = "+f(cs,0)+"（原本 "+f(csq,0)+"），PS = "+f(psv,0)+"（原本 "+f(psq,0)+"）\n稅收 = "+t+" × "+f(qt)+" = "+f(rev,0)+"，無謂損失 DWL = ½ × "+t+" × "+f(50-qt)+" = "+f(dwl,0))+
-   "\n試試：把稅加倍，DWL 變 4 倍；切換課在買方或賣方，數字完全一樣；把兩條線調平（更有彈性），DWL 變大。";
+  $(el,".tx-out").textContent=(t===0?"No tax: consumer surplus CS = "+f(csq,0)+", producer surplus PS = "+f(psq,0)+", total surplus = "+f(csq+psq,0)+" (the maximum).\nDrag \"tax\" to the right to see what happens.":
+   "Tax per unit $"+t+", levied on "+(who[0].checked?"buyers (the demand curve shifts down)":"sellers (the supply curve shifts up)")+"\nQuantity 50 → "+f(qt)+"\nBuyers pay PB = "+f(pb)+" (pay "+f(pb-50)+" more), sellers keep PS = "+f(ps)+" (keep "+f(50-ps)+" less)\nBuyers bear "+Math.round(sh*100)+"%, sellers bear "+Math.round((1-sh)*100)+"% → "+(Math.abs(sh-0.5)<0.02?"same elasticity, split evenly":sh>0.5?"buyers are less elastic and bear more":"sellers are less elastic and bear more")+
+   "\nCS = "+f(cs,0)+" (was "+f(csq,0)+"), PS = "+f(psv,0)+" (was "+f(psq,0)+")\nTax revenue = "+t+" × "+f(qt)+" = "+f(rev,0)+", deadweight loss DWL = ½ × "+t+" × "+f(50-qt)+" = "+f(dwl,0))+
+   "\nTry: double the tax and the DWL becomes 4 times; switch the tax between buyers and sellers and the numbers are identical; flatten the two curves (more elastic) and the DWL grows.";
  }
  [tS,bS,dS].forEach(i=>i.addEventListener("input",draw));who.forEach(i=>i.addEventListener("change",draw));draw();
 }
@@ -342,21 +342,21 @@ document.querySelectorAll(".w-tax").forEach(taxLab);
 (function(){const el=document.getElementById("w-tar");if(!el)return;
  const wS=$(el,".tr-w"),tS=$(el,".tr-t");
  function draw(){
-  const pw=+wS.value,t=+tS.value;let g=axes("Q 數量","P 價格");let msg="";
+  const pw=+wS.value,t=+tS.value;let g=axes("Q quantity","P price");let msg="";
   if(pw>=50){const qs=pw,qd=100-pw;
    g+=poly("cs",[[0,100],[0,pw],[qd,pw]])+poly("ps",[[0,pw],[0,0],[qs,pw]])+poly("gain",[[qd,pw],[50,50],[qs,pw]]);
-   g+=lin("line",100,-1)+lin("line2",0,1)+line("ctrl",0,pw,100,pw)+txt("t-seal",99,pw+2.5,"世界價格 $"+pw,"end")+line("gap",qd,pw,qs,pw);
-   msg="世界價格 $"+pw+" ≥ 國內價格 $50 → 出口國，國內價格跟著變成 $"+pw+"\n國內生產 "+qs+"、國內消費 "+qd+"、出口 "+(qs-qd)+"\n消費者剩餘 "+f(0.5*qd*qd,0)+"（原本 1,250，減少），生產者剩餘 "+f(0.5*qs*qs,0)+"（原本 1,250，增加）\n總剩餘增加 "+f(0.5*(pw-50)*(qs-qd),0)+"（綠色三角形）。關稅只對進口國有用，這裡不起作用。";
+   g+=lin("line",100,-1)+lin("line2",0,1)+line("ctrl",0,pw,100,pw)+txt("t-seal",99,pw+2.5,"World price $"+pw,"end")+line("gap",qd,pw,qs,pw);
+   msg="World price $"+pw+" ≥ domestic price $50 → exporting country; the domestic price becomes $"+pw+"\nDomestic production "+qs+", domestic consumption "+qd+", exports "+(qs-qd)+"\nConsumer surplus "+f(0.5*qd*qd,0)+" (was 1,250, falls), producer surplus "+f(0.5*qs*qs,0)+" (was 1,250, rises)\nTotal surplus rises by "+f(0.5*(pw-50)*(qs-qd),0)+" (green triangle). A tariff only matters to an importing country; it does nothing here.";
   }else{const pd=Math.min(50,pw+t),qs=pd,qd=100-pd,qs0=pw,qd0=100-pw;
    g+=poly("cs",[[0,100],[0,pd],[qd,pd]])+poly("ps",[[0,pd],[0,0],[qs,pd]]);
    if(pd>pw)g+=poly("rev",[[qs,pd],[qd,pd],[qd,pw],[qs,pw]])+poly("dwl",[[qs0,pw],[qs,pd],[qs,pw]])+poly("dwl",[[qd,pd],[qd0,pw],[qd,pw]]);
    g+=poly("gain",[[qd,pd],[50,50],[qs,pd]]);
-   g+=lin("line",100,-1)+lin("line2",0,1)+line("ctrl",0,pw,100,pw)+txt("t-ink",99,pw-5,"世界價格 $"+pw,"end");
-   if(t>0)g+=line("ctrl dash",0,pd,100,pd)+txt("t-seal",99,pd+2.5,"加關稅 $"+f(pd),"end");
+   g+=lin("line",100,-1)+lin("line2",0,1)+line("ctrl",0,pw,100,pw)+txt("t-ink",99,pw-5,"World price $"+pw,"end");
+   if(t>0)g+=line("ctrl dash",0,pd,100,pd)+txt("t-seal",99,pd+2.5,"Tariff $"+f(pd),"end");
    const imp=qd-qs,rev=(pd-pw)*imp,dwl=0.5*(pd-pw)*(qs-qs0)+0.5*(pd-pw)*(qd0-qd);
-   msg="世界價格 $"+pw+" < 國內價格 $50 → 進口國\n"+(t>0?"關稅 $"+t+"：國內價格 = "+pw+" + "+t+" = $"+f(pd)+(pw+t>=50?"（關稅太高，等於不貿易）":"")+"\n":"")+
-    "國內生產 "+f(qs)+"、國內消費 "+f(qd)+"、進口 "+f(imp)+"\n消費者剩餘 "+f(0.5*qd*qd,0)+"，生產者剩餘 "+f(0.5*qs*qs,0)+(t>0?"，關稅收入 "+f(rev,0)+"（灰色）\n無謂損失 DWL = "+f(dwl,0)+"（兩個黃色三角形：左邊是生產過多、右邊是消費過少）":"")+
-    "\n和不貿易相比，總剩餘增加 "+f(0.5*(50-pd)*(qd-qs),0)+"（綠色）。"+(t>0?"關稅讓綠色變小。":"");
+   msg="World price $"+pw+" < domestic price $50 → importing country\n"+(t>0?"Tariff $"+t+": domestic price = "+pw+" + "+t+" = $"+f(pd)+(pw+t>=50?" (the tariff is so high that it equals no trade)":"")+"\n":"")+
+    "Domestic production "+f(qs)+", domestic consumption "+f(qd)+", imports "+f(imp)+"\nConsumer surplus "+f(0.5*qd*qd,0)+", producer surplus "+f(0.5*qs*qs,0)+(t>0?", tariff revenue "+f(rev,0)+" (gray)\nDeadweight loss DWL = "+f(dwl,0)+" (two yellow triangles: overproduction on the left, under-consumption on the right)":"")+
+    "\nCompared with no trade, total surplus rises by "+f(0.5*(50-pd)*(qd-qs),0)+" (green). "+(t>0?"The tariff shrinks the green area.":"");
   }
   $(el,".tr-svg").innerHTML=svg(g);$(el,".tr-out").textContent=msg;
  }
@@ -369,19 +369,19 @@ document.querySelectorAll(".w-tax").forEach(taxLab);
 (function(){const el=document.getElementById("w-marg");if(!el)return;
  const [s,c,a,b]=[".mg-s",".mg-c",".mg-a",".mg-b"].map(k=>$(el,k));
  function draw(){const sv=+s.value||0,cv=+c.value||0,av=+a.value||0,bv=+b.value||0;const mb=av-bv;
-  $(el,".mg-out").textContent="沉沒成本 $"+f(sv,0)+"：已經花掉、拿不回來 → 不列入計算。\n邊際利益 MB = 做了之後的價值 − 不做的價值 = "+f(av,0)+" − "+f(bv,0)+" = $"+f(mb,0)+"\n邊際成本 MC = $"+f(cv,0)+"\n"+(mb>cv?"MB > MC → 應該做（多賺 $"+f(mb-cv,0)+"）":mb<cv?"MB < MC → 不要做（做了會少 $"+f(cv-mb,0)+"）":"MB = MC → 做不做都一樣")+"\n最多願意為這件事付：$"+f(mb,0);}
+  $(el,".mg-out").textContent="Sunk cost $"+f(sv,0)+": already spent and unrecoverable → left out of the calculation.\nMarginal benefit MB = value if done − value if not done = "+f(av,0)+" − "+f(bv,0)+" = $"+f(mb,0)+"\nMarginal cost MC = $"+f(cv,0)+"\n"+(mb>cv?"MB > MC → do it (gain $"+f(mb-cv,0)+")":mb<cv?"MB < MC → don't do it (lose $"+f(cv-mb,0)+")":"MB = MC → indifferent")+"\nThe most you would pay for this: $"+f(mb,0);}
  [s,c,a,b].forEach(i=>i.addEventListener("input",draw));
  $$(el,".mg-ex").forEach(btn=>btn.addEventListener("click",()=>{btn.dataset.v.split(",").forEach((v,k)=>[s,c,a,b][k].value=v);draw();}));draw();
 })();
 
 /* Ch2 circular flow */
 (function(){const el=document.getElementById("w-cf");if(!el)return;
- const EV={a:["g","牛奶","$1","Selena 付雜貨店 $1 買牛奶"],b:["f","1 小時勞動","$8 工資","Stuart 在速食店工作一小時賺 $8"],c:["g","剪髮服務","$40","Shanna 花 $40 剪頭髮"],d:["f","Acme 的資本（10% 股權）","$20,000 利潤","Salma 持有 Acme 10% 股份賺 $20,000"]};
+ const EV={a:["g","Milk","$1","Selena pays a grocery store $1 for milk"],b:["f","1 hour of labor","$8 wage","Stuart works an hour at a fast-food restaurant and earns $8"],c:["g","Haircut","$40","Shanna spends $40 on a haircut"],d:["f","Acme's capital (10% stake)","$20,000 profit","Salma owns 10% of Acme and earns $20,000"]};
  let cur="a";
  function draw(){const e=EV[cur],g=e[0]==="g";
   const box=(x,y,w,h,t,on)=>'<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="8" fill="'+(on?"var(--indigo-mid)":"var(--paper2)")+'" stroke="var(--ink)" stroke-width="1.4"/><text x="'+(x+w/2)+'" y="'+(y+h/2+5)+'" text-anchor="middle">'+t+'</text>';
   let s='<svg viewBox="0 0 380 280" role="img"><defs><marker id="cfa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0L10,5L0,10z" fill="var(--ink)"/></marker><marker id="cfm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0L10,5L0,10z" fill="var(--seal)"/></marker></defs>';
-  s+=box(10,115,80,44,"Firms 廠商",true)+box(290,115,80,44,"家計單位",true)+box(120,12,140,44,"商品與服務市場",g)+box(120,222,140,44,"生產要素市場",!g);
+  s+=box(10,115,80,44,"Firms 廠商",true)+box(290,115,80,44,"Households",true)+box(120,12,140,44,"Goods &amp; services mkt",g)+box(120,222,140,44,"Factor markets",!g);
   if(g){s+='<path d="M90,130 L190,130 L190,58" stroke="var(--indigo)" stroke-width="2.5" fill="none" marker-end="url(#cfa)"/><path d="M262,34 L330,34 L330,113" stroke="var(--indigo)" stroke-width="2.5" fill="none" marker-end="url(#cfa)"/>';
    s+='<path d="M350,113 L350,20 L262,20" stroke="var(--seal)" stroke-width="2.5" stroke-dasharray="6 3" fill="none" marker-end="url(#cfm)"/><path d="M118,20 L30,20 L30,113" stroke="var(--seal)" stroke-width="2.5" stroke-dasharray="6 3" fill="none" marker-end="url(#cfm)"/>';
    s+='<text x="195" y="100" class="t-ink">'+e[1]+' →</text><text x="190" y="85" text-anchor="middle" class="t-seal">← '+e[2]+'</text>';}
@@ -389,7 +389,7 @@ document.querySelectorAll(".w-tax").forEach(taxLab);
    s+='<path d="M30,161 L30,262 L118,262" stroke="var(--seal)" stroke-width="2.5" stroke-dasharray="6 3" fill="none" marker-end="url(#cfm)"/><path d="M262,262 L350,262 L350,161" stroke="var(--seal)" stroke-width="2.5" stroke-dasharray="6 3" fill="none" marker-end="url(#cfm)"/>';
    s+='<text x="190" y="190" text-anchor="middle" class="t-ink">← '+e[1]+'</text><text x="190" y="208" text-anchor="middle" class="t-seal">'+e[2]+' →</text>';}
   $(el,".cf-svg").innerHTML=s+'</svg>';
-  $(el,".cf-out").textContent=e[3]+"\n市場："+(g?"商品與服務市場（家計是買方、廠商是賣方）":"生產要素市場（家計是賣方、廠商是買方）")+"\n實物（藍）："+e[1]+(g?"：廠商 → 家計":"：家計 → 廠商")+"\n金錢（紅虛線）："+e[2]+(g?"：家計 → 廠商（家計的支出 = 廠商的收入）":"：廠商 → 家計（廠商付出 = 家計的所得）");
+  $(el,".cf-out").textContent=e[3]+"\nMarket: "+(g?"goods and services (households are buyers, firms are sellers)":"factors of production (households are sellers, firms are buyers)")+"\nReal flow (blue): "+e[1]+(g?": firm → household":": household → firm")+"\nMoney (red dashed): "+e[2]+(g?": household → firm (household spending = firm revenue)":": firm → household (firm payment = household income)");
   $$(el,".cf-ev").forEach(b=>b.classList.toggle("primary",b.dataset.e===cur));}
  $$(el,".cf-ev").forEach(b=>b.addEventListener("click",()=>{cur=b.dataset.e;draw();}));draw();
 })();
@@ -400,13 +400,13 @@ document.querySelectorAll(".w-tax").forEach(taxLab);
  const XX=x=>L+(R-L)*x/45,YY=y=>B-(B-T)*y/45;
  function draw(){const h=r.map(i=>+i.value);let lawn=0,car=0;h.forEach((v,k)=>{lawn+=v*PR[k][0];car+=(10-v)*PR[k][1];});
   const ppf=[[0,40],[20,30],[30,20],[40,0]];const maxCar=lawn<=20?40-lawn/2:lawn<=30?30-(lawn-20):20-2*(lawn-30);
-  let g=axes("割草（片）","洗車（台）")+'<polyline class="line" points="'+ppf.map(p=>XX(p[0]).toFixed(1)+","+YY(p[1]).toFixed(1)).join(" ")+'"/>';
+  let g=axes("Mowing (lawns)","Car washing (cars)")+'<polyline class="line" points="'+ppf.map(p=>XX(p[0]).toFixed(1)+","+YY(p[1]).toFixed(1)).join(" ")+'"/>';
   ppf.forEach(p=>g+='<circle class="dot0" cx="'+XX(p[0])+'" cy="'+YY(p[1])+'" r="3"/>');
   g+='<circle class="dotp" cx="'+XX(lawn)+'" cy="'+YY(car)+'" r="6"/><text class="t-ink" x="'+(XX(lawn)+8)+'" y="'+(YY(car)-8)+'">('+lawn+', '+car+')</text>';
   [10,20,30,40].forEach(v=>{g+='<text x="'+XX(v)+'" y="'+(B+14)+'" text-anchor="middle" font-size="11">'+v+'</text><text x="'+(L-4)+'" y="'+(YY(v)+4)+'" text-anchor="end" font-size="11">'+v+'</text>';});
   $(el,".lm-svg").innerHTML=svg(g);
   const eff=Math.abs(maxCar-car)<1e-9;
-  $(el,".lm-out").textContent="Larry："+h[0]+" 草、"+(10-h[0])+" 車；Moe："+h[1]+" 草、"+(10-h[1])*2+" 車；Curly："+h[2]*2+" 草、"+(10-h[2])+" 車\n合計："+lawn+" 片草、"+car+" 台車\n"+(eff?"在 PPF 上 → 有效率。":"在 PPF 內 → 沒效率：同樣割 "+lawn+" 片草，最多可以洗 "+maxCar+" 台車（多 "+(maxCar-car)+" 台）。")+"\n機會成本（1 片草 = 幾台車）：Curly 0.5、Larry 1、Moe 2 → 要割草時先派 Curly、再 Larry、最後 Moe，PPF 才會往外凸。";}
+  $(el,".lm-out").textContent="Larry: "+h[0]+" lawns, "+(10-h[0])+" cars; Moe: "+h[1]+" lawns, "+(10-h[1])*2+" cars; Curly: "+h[2]*2+" lawns, "+(10-h[2])+" cars\nTotal: "+lawn+" lawns, "+car+" cars\n"+(eff?"On the PPF → efficient.":"Inside the PPF → inefficient: for the same "+lawn+" lawns, up to "+maxCar+" cars could be washed ("+(maxCar-car)+" more).")+"\nOpportunity cost (cars per lawn): Curly 0.5, Larry 1, Moe 2 → to mow, send Curly first, then Larry, then Moe, so the PPF bows outward.";}
  r.forEach(i=>i.addEventListener("input",draw));
  $$(el,".lm-ex").forEach(b=>b.addEventListener("click",()=>{b.dataset.v.split(",").forEach((v,k)=>{r[k].value=v;r[k].dispatchEvent(new Event("input"));});draw();}));draw();
 })();
@@ -415,7 +415,7 @@ document.querySelectorAll(".w-tax").forEach(taxLab);
 (function(){const el=document.getElementById("w-lat");if(!el)return;
  const P=$(el,".la-p");const XX=q=>L+(R-L)*q/35,YY=p=>B-(B-T)*p/7;
  function draw(){const p=+P.value;const sam=16-2*p,dean=8-p,qd=sam+dean,sb=3*p,pe=2*p,qs=sb+pe;
-  let g=axes("Q 杯","P");
+  let g=axes("Q cups","P");
   g+='<line class="line" x1="'+XX(24)+'" y1="'+YY(0)+'" x2="'+XX(6)+'" y2="'+YY(6)+'"/><line class="line2" x1="'+XX(0)+'" y1="'+YY(0)+'" x2="'+XX(30)+'" y2="'+YY(6)+'"/>';
   g+='<text class="t-ink" x="'+XX(6)+'" y="'+(YY(6)-6)+'">D</text><text class="t-seal" x="'+XX(30)+'" y="'+(YY(6)-6)+'">S</text>';
   g+='<line class="ctrl" x1="'+L+'" y1="'+YY(p)+'" x2="'+R+'" y2="'+YY(p)+'"/>';
@@ -424,7 +424,7 @@ document.querySelectorAll(".w-tax").forEach(taxLab);
   [0,1,2,3,4,5,6].forEach(v=>g+='<text x="'+(L-4)+'" y="'+(YY(v)+4)+'" text-anchor="end" font-size="11">$'+v+'</text>');
   [5,10,15,20,25,30].forEach(v=>g+='<text x="'+XX(v)+'" y="'+(B+14)+'" text-anchor="middle" font-size="11">'+v+'</text>');
   $(el,".la-svg").innerHTML=svg(g);
-  $(el,".la-out").textContent="P = $"+f(p,2)+"\n需求量 QD = Sam "+f(sam)+" + Dean "+f(dean)+" = "+f(qd)+"\n供給量 QS = Starbucks "+f(sb)+" + Peet's "+f(pe)+" = "+f(qs)+"\n"+(qd===qs?"QD = QS → 均衡！均衡價格 $3、均衡數量 15 杯。":qs>qd?"QS > QD → 過剩 (surplus) "+f(qs-qd)+" 杯 → 賣方降價，價格往 $3 走。":"QD > QS → 短缺 (shortage) "+f(qd-qs)+" 杯 → 價格上漲，往 $3 走。");}
+  $(el,".la-out").textContent="P = $"+f(p,2)+"\nQuantity demanded QD = Sam "+f(sam)+" + Dean "+f(dean)+" = "+f(qd)+"\nQuantity supplied QS = Starbucks "+f(sb)+" + Peet's "+f(pe)+" = "+f(qs)+"\n"+(qd===qs?"QD = QS → equilibrium! Equilibrium price $3, equilibrium quantity 15 cups.":qs>qd?"QS > QD → surplus (過剩) "+f(qs-qd)+" cups → sellers cut prices, moving the price toward $3.":"QD > QS → shortage (短缺) "+f(qd-qs)+" cups → the price rises toward $3.");}
  P.addEventListener("input",draw);draw();
 })();
 
@@ -440,7 +440,7 @@ document.querySelectorAll(".w-tax").forEach(taxLab);
   g+=line("gl",0,p2,q2,p2)+line("gl",q2,0,q2,p2)+'<circle class="dot0" cx="'+X(50)+'" cy="'+Y(50)+'" r="4"/><circle class="dotp" cx="'+X(q2)+'" cy="'+Y(p2)+'" r="5"/>';
   $(el,".es-svg").innerHTML=svg(g);
   const dp=(p2-50)/50*100,dq=(q2-50)/50*100;
-  $(el,".es-out").textContent=(dem?"需求增加（D 往上移 15）；供給線斜率 = "+f(k,1)+(k>1?"（陡 → 缺乏彈性）":"（平 → 有彈性）"):"供給減少（S 往上移 15）；需求線斜率 = "+f(k,1)+(k>1?"（陡 → 缺乏彈性）":"（平 → 有彈性）"))+"\n價格 50 → "+f(p2)+"（"+f(dp)+"%），數量 50 → "+f(q2)+"（"+f(dq)+"%）\n總收益 TR = P×Q：2,500 → "+f(p2*q2,0)+"\n"+(dem?(k>1?"供給缺乏彈性：需求增加主要推高價格（海濱房地產）。":"供給有彈性：需求增加主要讓數量增加（新車）。"):(k>1?"需求缺乏彈性：供給減少讓價格大漲、總收益上升（OPEC 短期）。":"需求有彈性：價格只小漲、數量大減（OPEC 長期）。"));}
+  $(el,".es-out").textContent=(dem?"Demand increases (D shifts up 15); supply slope = "+f(k,1)+(k>1?" (steep → inelastic)":" (flat → elastic)"):"Supply decreases (S shifts up 15); demand slope = "+f(k,1)+(k>1?" (steep → inelastic)":" (flat → elastic)"))+"\nPrice 50 → "+f(p2)+" ("+f(dp)+"%), quantity 50 → "+f(q2)+" ("+f(dq)+"%)\nTotal revenue TR = P×Q: 2,500 → "+f(p2*q2,0)+"\n"+(dem?(k>1?"Inelastic supply: an increase in demand mainly pushes up the price (beachfront property).":"Elastic supply: an increase in demand mainly raises the quantity (new cars)."):(k>1?"Inelastic demand: a supply cut sharply raises the price and total revenue rises (OPEC in the short run).":"Elastic demand: the price rises only a little and the quantity falls a lot (OPEC in the long run)."));}
  K.addEventListener("input",draw);wr.forEach(r=>r.addEventListener("change",draw));
  $$(el,".es-ex").forEach(b=>b.addEventListener("click",()=>{const[v,w]=b.dataset.v.split(",");K.value=v;wr[+w].checked=true;K.dispatchEvent(new Event("input"));draw();}));draw();
 })();
@@ -450,7 +450,7 @@ document.querySelectorAll(".w-tax").forEach(taxLab);
  const P=$(el,".su-p");const XX=q=>L+(R-L)*q/32,YY=p=>B-(B-T)*p/65;const pp=(a)=>a.map(v=>XX(v[0]).toFixed(1)+","+YY(v[1]).toFixed(1)).join(" ");
  function draw(){const p=+P.value,qd=(60-p)/2,qs=p-15,q=Math.max(0,Math.min(qd,qs));
   const wtp=60-2*q,mc=15+q;
-  let g=axes("Q 雙","P");
+  let g=axes("Q pairs","P");
   g+='<polygon class="cs" points="'+pp([[0,60],[0,p],[q,p],[q,wtp]])+'"/><polygon class="ps" points="'+pp([[0,p],[0,15],[q,mc],[q,p]])+'"/>';
   if(Math.abs(q-15)>0.01)g+='<polygon class="dwl" points="'+pp([[q,wtp],[15,30],[q,mc]])+'"/>';
   g+='<line class="line" x1="'+XX(0)+'" y1="'+YY(60)+'" x2="'+XX(30)+'" y2="'+YY(0)+'"/><line class="line2" x1="'+XX(0)+'" y1="'+YY(15)+'" x2="'+XX(32)+'" y2="'+YY(47)+'"/>';
@@ -458,7 +458,7 @@ document.querySelectorAll(".w-tax").forEach(taxLab);
   [10,20,30,40,50,60].forEach(v=>g+='<text x="'+(L-4)+'" y="'+(YY(v)+4)+'" text-anchor="end" font-size="11">'+v+'</text>');[5,10,15,20,25,30].forEach(v=>g+='<text x="'+XX(v)+'" y="'+(B+14)+'" text-anchor="middle" font-size="11">'+v+'</text>');
   $(el,".su-svg").innerHTML=svg(g);
   const cs=q*(60-p)-q*q,ps=q*(p-15)-q*q/2,ts=cs+ps;
-  $(el,".su-out").textContent="P = $"+p+"：QD = "+f(qd)+"，QS = "+f(qs)+" → 成交量 Q = "+f(q)+"\nCS（藍）= "+f(cs,1)+"，PS（紅）= "+f(ps,1)+"，總剩餘 = "+f(ts,1)+"（最大 337.5）\n"+(Math.abs(p-30)<0.01?"均衡：總剩餘最大 → 有效率。CS = ½×15×30 = 225、PS = ½×15×15 = 112.5":"價格不是均衡（像價格管制）→ 成交量少於 15，黃色 = 損失的總剩餘 "+f(337.5-ts,1)+"。"+(p>30?"價格高，CS 變小、PS 一開始可能變大。":"價格低，PS 變小、CS 一開始可能變大。"));}
+  $(el,".su-out").textContent="P = $"+p+": QD = "+f(qd)+", QS = "+f(qs)+" → quantity traded Q = "+f(q)+"\nCS (blue) = "+f(cs,1)+", PS (red) = "+f(ps,1)+", total surplus = "+f(ts,1)+" (maximum 337.5)\n"+(Math.abs(p-30)<0.01?"Equilibrium: total surplus is maximized → efficient. CS = ½×15×30 = 225, PS = ½×15×15 = 112.5":"The price is not the equilibrium (like a price control) → the quantity traded is below 15, and yellow = the lost total surplus "+f(337.5-ts,1)+"。"+(p>30?"The price is high, so CS shrinks and PS may rise at first.":"The price is low, so PS shrinks and CS may rise at first."));}
  P.addEventListener("input",draw);draw();
 })();
 
@@ -466,13 +466,13 @@ document.querySelectorAll(".w-tax").forEach(taxLab);
 (function(){const el=document.getElementById("w-laf");if(!el)return;
  const Tt=$(el,".lf-t");const XX=t=>L+(R-L)*t/300,YY=v=>B-(B-T)*v/31000;
  function draw(){const t=+Tt.value,q=200-2*t/3,rev=t*q,dwl=t*t/3;
-  let g=axes("稅 T","$");let r=[],d=[];for(let x=0;x<=300;x+=5){r.push(XX(x).toFixed(1)+","+YY(x*(200-2*x/3)).toFixed(1));d.push(XX(x).toFixed(1)+","+YY(x*x/3).toFixed(1));}
+  let g=axes("Tax T","$");let r=[],d=[];for(let x=0;x<=300;x+=5){r.push(XX(x).toFixed(1)+","+YY(x*(200-2*x/3)).toFixed(1));d.push(XX(x).toFixed(1)+","+YY(x*x/3).toFixed(1));}
   g+='<polyline class="line" points="'+r.join(" ")+'"/><polyline class="line2" points="'+d.join(" ")+'"/>';
   g+='<line class="gl" x1="'+XX(t)+'" y1="'+B+'" x2="'+XX(t)+'" y2="'+T+'"/><circle class="dotp" cx="'+XX(t)+'" cy="'+YY(rev)+'" r="5"/><circle class="dot0" cx="'+XX(t)+'" cy="'+YY(dwl)+'" r="4"/>';
-  g+='<text class="t-ink" x="'+XX(150)+'" y="'+(YY(15000)-8)+'" text-anchor="middle">稅收</text><text class="t-seal" x="'+XX(270)+'" y="'+(YY(24300)-8)+'" text-anchor="middle">DWL</text>';
+  g+='<text class="t-ink" x="'+XX(150)+'" y="'+(YY(15000)-8)+'" text-anchor="middle">tax revenue (稅收)</text><text class="t-seal" x="'+XX(270)+'" y="'+(YY(24300)-8)+'" text-anchor="middle">DWL</text>';
   [100,200,300].forEach(v=>g+='<text x="'+XX(v)+'" y="'+(B+14)+'" text-anchor="middle" font-size="11">'+v+'</text>');[10000,20000,30000].forEach(v=>g+='<text x="'+(L-4)+'" y="'+(YY(v)+4)+'" text-anchor="end" font-size="11">'+v/1000+'k</text>');
   $(el,".lf-svg").innerHTML=svg(g);
-  $(el,".lf-out").textContent="T = $"+t+"：Q = 200 − 2T/3 = "+f(q)+"，買方付 "+f(100+2*t/3)+"、賣方拿 "+f(100-t/3)+"\n稅收 R = T × Q = "+f(rev,0)+"\nDWL = T²/3 = "+f(dwl,0)+"\n"+(t<150?"在拉弗曲線左側：提高稅收會增加。":t===150?"T = 150：稅收最大（15,000）。":"在拉弗曲線右側：降稅反而能收到更多稅、DWL 也更小。"+(t===200?"（作業 e：$200 是壞政策）":""));}
+  $(el,".lf-out").textContent="T = $"+t+": Q = 200 − 2T/3 = "+f(q)+", buyers pay "+f(100+2*t/3)+", sellers keep "+f(100-t/3)+"\nTax revenue R = T × Q = "+f(rev,0)+"\nDWL = T²/3 = "+f(dwl,0)+"\n"+(t<150?"On the left side of the Laffer curve (拉弗曲線): raising the tax raises revenue.":t===150?"T = 150: revenue is at its maximum (15,000).":"On the right side of the Laffer curve: cutting the tax actually collects more revenue, and the DWL is smaller too."+(t===200?" (homework e: $200 is a bad policy)":""));}
  Tt.addEventListener("input",draw);draw();
 })();
 

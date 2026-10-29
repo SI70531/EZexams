@@ -59,12 +59,12 @@ function renderQuiz(key){
   }
   qs.forEach((it,i)=>{
     const d=document.createElement("div");d.className="qitem";
-    const st=document.createElement("div");st.className="stem";st.innerHTML='<span class="num">'+(i+1)+'.</span>';st.appendChild(document.createTextNode(it.q));d.appendChild(st);
+    const st=document.createElement("div");st.className="stem";st.innerHTML='<span class="num">'+(i+1)+'.</span>'+EZT.html(it.q);d.appendChild(st);
     const os=document.createElement("div");os.className="opts";
     const btns=[];
     it.o.forEach((txt,oi)=>{
       const b=EZopt();b.className="opt";b.type="button";
-      b.innerHTML='<span class="ab">'+"ABCD"[oi]+'</span>';const t=document.createElement("span");t.textContent=txt;b.appendChild(t);
+      b.innerHTML='<span class="ab">'+"ABCD"[oi]+'</span>';const t=document.createElement("span");t.innerHTML=EZT.html(txt);b.appendChild(t);
       b.dataset.oi=oi;btns.push(b);
       b.addEventListener("click",()=>{if(S.quiz[key]&&S.quiz[key][i]!==undefined)return;S.quiz[key]=S.quiz[key]||{};S.quiz[key][i]=oi;save();mark();renderScore();afterAnswer(key);});
       os.appendChild(b);

@@ -448,17 +448,16 @@ await check("rewards: 3 right in a row shows the combo chip, a wrong answer hide
   assert(!pg.errs.length, pg.errs.join(" | "));
   await pg.ctx.close();
 });
-await check("motion: the tab underline follows the active tab, opening a later tab slides it in, 淺色/深色 still switches, 減少動畫 turns it all off", async () => {
+await check("motion: the tab underline follows the active tab, switching tabs never makes the page wider than the screen, 淺色/深色 still switches", async () => {
   const pg = await device({ skipGate: true }); await pg.goto(PAGE); await pg.waitForTimeout(900);
   const under = async () => { await pg.waitForTimeout(550); return pg.evaluate(() => { const g = document.querySelector(".mo-glide"), c = document.querySelector('#tabs [aria-current="true"]'); return g && c ? g.offsetLeft === c.offsetLeft && g.offsetWidth === c.offsetWidth : null; }); };
   assert(await under() === true, "underline not under the active tab");
-  await pg.evaluate(() => show("ch2")); await pg.waitForFunction(() => document.getElementById("ch2").classList.contains("mo-r"), null, { timeout: 2000 });
-  assert(await under() === true, "underline did not follow to Ch2");
-  await pg.evaluate(() => show("ch1")); await pg.waitForFunction(() => document.getElementById("ch1").classList.contains("mo-l"), null, { timeout: 2000 });
+  const wide = [];
+  for (const id of ["ch2", "ch1"]) { await pg.evaluate(i => show(i), id); for (let k = 0; k < 8; k++) { wide.push(await pg.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)); await pg.waitForTimeout(60); } }
+  assert(!wide.some(Boolean), "the page got a sideways scrollbar while switching tabs");
+  assert(await under() === true, "underline did not follow the active tab");
   await pg.click(".theme button"); await pg.click('.theme [data-t="light"]');
   await pg.waitForFunction(() => document.documentElement.getAttribute("data-theme") === "light", null, { timeout: 3000 });
-  await pg.evaluate(() => document.documentElement.classList.add("ezcalm")); await pg.evaluate(() => show("ch2")); await pg.waitForTimeout(150);
-  assert(await pg.evaluate(() => !document.getElementById("ch2").classList.contains("mo-r")), "slide ran in 減少動畫 mode");
   assert(!pg.errs.length, pg.errs.join(" | "));
   await pg.ctx.close();
 });

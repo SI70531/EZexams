@@ -17,7 +17,7 @@
 (function(){
   const TK="ezexams-theme",root=document.documentElement,host=root.getAttribute("data-theme");
   const NAME={system:"跟隨裝置",light:"淺色",dark:"深色"};
-  let mode="dark";try{const t=localStorage.getItem(TK);if(t==="light"||t==="dark"||t==="system")mode=t;}catch(e){}   /* Midnight Navy (dark) is the look unless 淺色 / 跟隨裝置 was chosen */
+  let mode="system";try{const t=localStorage.getItem(TK);if(t==="light"||t==="dark")mode=t;}catch(e){}
   function applyRoot(m){
     if(m==="light"||m==="dark")root.setAttribute("data-theme",m);
     else if(host)root.setAttribute("data-theme",host);else root.removeAttribute("data-theme");
@@ -35,7 +35,7 @@
     apply(mode);
     function close(){menu.hidden=true;btn.setAttribute("aria-expanded","false");}
     btn.addEventListener("click",e=>{e.stopPropagation();menu.hidden=!menu.hidden;btn.setAttribute("aria-expanded",String(!menu.hidden));});
-    menu.addEventListener("click",e=>{const b=e.target.closest("[data-t]");if(!b)return;mode=b.dataset.t;apply(mode);try{localStorage.setItem(TK,mode);}catch(err){}close();btn.focus();});
+    menu.addEventListener("click",e=>{const b=e.target.closest("[data-t]");if(!b)return;mode=b.dataset.t;apply(mode);try{mode==="system"?localStorage.removeItem(TK):localStorage.setItem(TK,mode);}catch(err){}close();btn.focus();});
     document.addEventListener("click",e=>{if(!menu.hidden&&!e.target.closest(".theme"))close();});
     document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!menu.hidden){close();btn.focus();}});
   }

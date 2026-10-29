@@ -1,101 +1,121 @@
 # EZexams
 
-Exam Cram Hub: https://si70531.github.io/EZexams/
+**Exam Cram Hub:** https://si70531.github.io/EZexams/
 
-| Subject | Scope / Info | Link |
-| --- | --- | --- |
-| Statistics | Midterm Oct 21 (Anderson 14e, Ch1–Ch4) | https://si70531.github.io/EZexams/statistics/midterm/ |
-| Operating Systems | Midterm Oct 29 (Silberschatz 9th, Ch1–Ch5) | https://si70531.github.io/EZexams/operating-systems/midterm/ |
-| Data & File Structures | Midterm Nov 6 (Gilberg & Forouzan, Ch1–Ch3) | https://si70531.github.io/EZexams/data-structures/midterm/ |
-| Economics | Midterm Nov 9 (Mankiw, Ch1–Ch9) | https://si70531.github.io/EZexams/economics/midterm/ |
+EZexams is a study site with notes, practice questions, and mock exams for each midterm.
 
-## Folder Structure
+## Upcoming Midterms
+
+| Subject | Exam Date | What's Covered | Link |
+| --- | --- | --- | --- |
+| Statistics | Oct 21 | Anderson 14e, Chapters 1–4 | https://si70531.github.io/EZexams/statistics/midterm/ |
+| Operating Systems | Oct 29 | Silberschatz 9th ed., Chapters 1–5 | https://si70531.github.io/EZexams/operating-systems/midterm/ |
+| Data & File Structures | Nov 6 | Gilberg & Forouzan, Chapters 1–3 | https://si70531.github.io/EZexams/data-structures/midterm/ |
+| Economics | Nov 9 | Mankiw, Chapters 1–9 | https://si70531.github.io/EZexams/economics/midterm/ |
+
+## How the Project Is Organized
 
 ```
-index.html                     home page (exam tickets, sync setup, AI grading setup)
-sw.js, manifest.webmanifest    offline support / install to home screen
-assets/
-  ezcore.js     theme switcher + offline registration (every page loads it in <head>)
-  ezbase.css    styles shared by all subject pages
-  ezsync.js     cross-device sync (4-digit PIN through the Worker)
-  ezgate.js     entry gate that asks for the 4-digit PIN before the site opens
-  ezfx.js       interaction layer (UI only): reveal on scroll, ripples, answer feedback
-  ezai.js       free AI grading with a Gemini API key
-  ezexplain.js  AI explanation for multiple-choice answers (what went wrong + all four options)
-  ezplan.js     N-day study plan
-  ezchw.js      written questions graded by AI only against the notes (chapters, mock exams, assignment), AI model answers; past exams keep keyword grading
-  ezwrong.js    wrong-answer area, "back to the notes" buttons, floating "back to the question" button
-  ezquiz.js     multiple-choice score bar, per-question "clear answer" button, answer timestamps
-  ezshuffle.js  shuffles questions and options each time a tab is opened (answered ones stay on top)
-  ezsearch.js   keyword search in the top bar of every subject page (/ or Ctrl+K)
-  ezpage.js     page functions every subject shares (save, show, tabs, chapter scores, written-answer helpers)
-  fonts/        self-hosted web fonts (tools/fonts.py)
-  icon*, og.png favicon and link-preview image
-<subject>/<exam>/
-  index.html    content only: notes, exams, page-specific styles
-  app.js        that page's code (quiz rendering, grading prompts, progress); loaded after assets/ezpage.js
-  quiz.js       the multiple-choice question bank (QUIZ, plus MOCK for economics)
-tools/
-  stamp.py      updates the ?v=<hash> on script/style links
-  fonts.py      downloads the fonts into assets/fonts (.github/workflows/fonts.yml)
-  ezexams-worker.js, wrangler.toml   the Cloudflare Worker (AI proxy, PIN sign-in, sync, health, error log)
-tests/          node tests/run.mjs: headless-browser checks with the Worker faked in memory
+index.html          Home page (exam list, sync sign-in, AI grading setup)
+assets/             Shared code and styles used by every page
+  ezbase.css        Shared styles
+  ezsync.js         Saves progress across devices with a 4-digit PIN
+  ezgate.js         PIN screen shown before the site opens
+  ezai.js           AI grading for short answers
+  ezexplain.js      AI explanations for wrong multiple-choice answers
+  ezchw.js          AI grading for written questions
+  ezplan.js         Builds an N-day study plan
+  ezwrong.js        Wrong-answer review area
+  ezquiz.js         Score bar and answer timestamps
+  ezshuffle.js      Shuffles question order each time a page opens
+  ezsearch.js       Search bar (press / or Ctrl+K)
+  ezpage.js         Shared page features (saving, tabs, chapter scores)
+  ezcore.js         Theme switching and offline support
+  ezfx.js           Animations and answer feedback
+subject/exam/       One folder per exam
+  index.html        Notes and exam content for that page
+  app.js            Code for that page
+  quiz.js           Multiple-choice questions
+tools/              Helper scripts and the Cloudflare Worker (see below)
+tests/              Automatic checks for the site
 ```
 
-When adding a new subject:
-1. Create `subject-name/exam-type/index.html` (copy an existing subject as a template) with its code in `app.js` and its questions in `quiz.js` next to it.
-2. Append a `<section class="exam-subj" data-date="YYYY-MM-DD">` inside `#subjects` in the root `index.html`.
-3. Add a corresponding row to the markdown table above.
+## Adding a New Subject
 
-The home page automatically sorts subjects chronologically based on `data-date`. Please keep the markdown table sorted by date as well.
+1. Copy an existing subject folder as a template, then create `subject-name/exam-type/` with `index.html`, `app.js`, and `quiz.js`.
+2. In the root `index.html`, add a new `<section class="exam-subj" data-date="YYYY-MM-DD">` inside `#subjects`.
+3. Add a row for it to the table at the top of this README.
 
-### Editing questions without losing anyone's progress
+The home page sorts subjects by date automatically. Keep the table sorted by date too.
 
-Answers are saved by chapter and question position. In a `quiz.js`, fix typos in place and add new questions at the **end** of a chapter; inserting or deleting in the middle shifts every answer after it.
+## Editing Questions
 
-### Wrong-answer area
+Saved answers are matched to questions by their position in `quiz.js`. So:
 
-`assets/ezwrong.js` is the same for every subject. It files each wrong answer under a notes section (`<h3 data-sec="...">`), checking in this order:
-1. a `sec:"..."` field on the question in `quiz.js` (use this to correct a question that lands in the wrong section);
-2. the subject's hand-written `WRONG_RULES` in `quiz.js`, if it has any (data structures does);
-3. keyword matching against the notes (only within the question's own chapter when that is known).
+- Fixing a typo is always safe.
+- Add new questions at the **end** of a chapter. Adding or deleting in the middle moves every answer after it to the wrong question.
 
-A weak match is shown in an "unmatched" group instead of under a wrong section. In the browser console, `EZWrong.report()` lists where every question goes.
+## Wrong-Answer Review
 
-### Tests
+`assets/ezwrong.js` sorts each wrong answer under the matching section of the notes. It checks, in order:
 
-`node tests/run.mjs` (after `npm i playwright && npx playwright install chromium`) opens every page in a headless browser and runs the real Worker code in Node with GitHub, Gemini and the Durable Objects faked in memory: tabs, phone layout, the PIN gate (new PIN, wrong-PIN lockout, switching PINs), syncing between two devices, merging, upload on sign-out, the review page and AI fallback. `.github/workflows/tests.yml` runs it on every push.
+1. A `sec:"..."` label on the question in `quiz.js` (use this to fix a question that lands in the wrong section).
+2. Hand-written rules in `quiz.js`, if the subject has any.
+3. Keyword matching against the notes.
 
-### Health and error reports
+Answers that don't match clearly go into an "unmatched" group. To see where every question ended up, run `EZWrong.report()` in the browser console.
 
-`.github/workflows/health.yml` runs every morning: it fails (GitHub emails you) when the Worker's `GITHUB_TOKEN` is invalid or expires within 14 days, or `GEMINI_KEY` stops working, and it collects errors that visitors' browsers reported to the Worker (`POST /log`, sent by `assets/ezcore.js`; message, file and page only) into the issue 「網站錯誤回報」.
+## Syncing Progress Across Devices
 
-### Cache versions
+- Set a 4-digit PIN on your first device. On any other device, enter the same PIN to share your progress.
+- You need to enter the PIN each time you open the site.
+- Your answers are merged question by question, so two devices answering at the same time won't erase each other's work.
+- If a sync fails, the site retries by itself.
+- No GitHub account is needed to use the site.
 
-Script and stylesheet links carry `?v=<content hash>` so browsers pick up changes right away. A GitHub Action (`.github/workflows/stamp.yml`) refreshes these on every push; to do it by hand, run `python3 tools/stamp.py`.
-
-## Cross-Device Sync
-
-Progress syncs by a 4-digit **PIN** (the Worker still accepts the older 6-digit codes; a browser that last used one keeps its progress when it first sets up a 4-digit PIN). The PIN is asked for every time the site is opened (closing the site signs out), and a newly created PIN starts from zero progress. Opening the site without one shows an entry gate (`assets/ezgate.js`, styled as an admission ticket in the site's own light/dark theme): set a code up on the first device and enter the same code once on every other device (or choose to use this device only for the session); devices with the same code share progress. Nobody needs a GitHub account or token. The pages talk to the EZexams Worker (`tools/ezexams-worker.js`), which keeps all progress in one private Gist of the GitHub account behind its secret `GITHUB_TOKEN` (a classic token with only the `gist` scope). Each file is named `<first 24 hex of SHA-256(code)>--<STORAGE_KEY>.json`, so the codes themselves are never stored. Anyone who knows a code can read and change that progress, so codes should not be trivial.
-
-Signing in goes through `POST /login`, which returns a signed session token (12 hours); syncing and the Gemini proxy only work with that token, so the Worker URL alone is no way into the Gemini quota. Wrong PINs are counted per visitor (IP): five misses within 15 minutes lock that visitor out for the rest of the window, and one visitor can set up at most five new PINs an hour; IPv6 visitors are counted per /64, and 200 wrong PINs an hour across the whole site pause PIN sign-in until the hour passes, so changing IP does not restart a search of the 10,000 PINs. Each PIN may make 600 AI calls an hour and 3,000 a day, and only the models listed in the Worker can be called (counters live in the `Guard` Durable Object). Every upload first reads the cloud copy and merges it question by question, so a device never overwrites answers another device made in the meantime.
-
-Answers are merged question by question: the later answer (by its timestamp) wins, so two devices answering at the same time do not overwrite each other. Leaving the page or pressing 登出 uploads anything still waiting first. Signing in with a different PIN asks before it clears the answers kept on that device.
-
-Sync logic is handled by `assets/ezsync.js`; uploads wait 10 s to gather a burst of answers and are spread to at most one every 30 s per browser; one failed sync shows 待同步 and retries by itself, only three in a row show 暫時離線, and each kind of failure is reported to the daily health issue.
-
-To enable sync for a new subject page, include this script tag right before your main script:
+To turn on sync for a new subject page, add this line just before the page's main script:
 
 ```html
 <script src="../../assets/ezsync.js" data-key="YOUR_STORAGE_KEY"></script>
 ```
 
-## AI Grading (free)
+## AI Grading (Free)
 
-AI grading works out of the box. The pages call a small Cloudflare Worker (`tools/ezexams-worker.js`, deployed at `https://ezexams-ai.ta77199ta.workers.dev`) that forwards requests to Google Gemini and adds the API key on its side, so the key never appears on the website. The Worker only serves pages from `https://si70531.github.io` and only forwards `generateContent` calls; the key is stored in the Worker as the secret `GEMINI_KEY` (Settings → Variables and Secrets). If the proxy ever stops working, the **AI Correcting** section on the main page reappears and you can paste your own free key (from https://aistudio.google.com/apikey); a pasted key stays in that browser only and is used directly. If the free quota runs out or Gemini is unreachable, grading falls back to keyword matching automatically. Logic is in `assets/ezai.js`. Written questions everywhere except past exams (考古題) are graded by AI only (`assets/ezchw.js`, blocks marked `.aiw`): the prompt carries the notes section the question belongs to and the hidden reference answer (for reference only), the AI may not require ideas outside the notes, and it also writes a model answer (English + 中文) shown after grading or with 「看 AI 解答」. If the AI is unavailable the question shows the reason and 重試; there is no keyword fallback there (past exams keep the reference answer, keyword grading and self-grading). Grading requests use temperature 0, top-k 1 and a fixed seed, so the same answer gets the same score as far as Gemini allows.
+AI grading works without any setup. The pages send requests through a small Cloudflare Worker (`tools/ezexams-worker.js`), which talks to Google Gemini. The API key stays on the server, so it never appears on the website.
 
-The same connection powers the multiple-choice explanations (`assets/ezexplain.js`): after you answer, Gemini explains your mistake and why each option is right or wrong. Results are cached in the browser so each question is only asked once.
+- If the proxy stops working, the **AI Correcting** section on the home page lets you paste your own free key from https://aistudio.google.com/apikey. That key stays in your browser only.
+- If the free quota runs out or Gemini can't be reached, short answers are graded by keyword matching instead.
+- Written questions are graded only by AI, and the AI also writes a model answer after grading.
+- The AI explains why each wrong multiple-choice answer is wrong. Each explanation is saved, so each question is only explained once.
 
 ## Question Order
 
-`assets/ezshuffle.js` deals a new order every time a tab is opened (reload, or switch tabs and come back). Answered questions move to the top, numbered in the order you answered them, and keep the option order you saw; only unanswered questions and their options are shuffled. Past exams are never shuffled. Answers are stored by original position (`data-i`), so shuffling never affects saved progress.
+Each time you open a page, the unanswered questions are shuffled. Answered questions move to the top in the order you answered them. Past exams are never shuffled.
+
+## Tests
+
+To run the automatic checks:
+
+```
+npm i playwright && npx playwright install chromium
+node tests/run.mjs
+```
+
+The tests open every page in a headless browser and check things like tabs, the phone layout, the PIN screen, and syncing between two devices. They also run automatically on every push.
+
+## Health Checks and Error Reports
+
+A GitHub Action runs every morning and emails you if:
+
+- The Worker's GitHub token is invalid or will expire within 14 days.
+- The Gemini key stops working.
+
+It also collects errors that visitors' browsers report (message, file, and page only) into a GitHub issue called "Website error reports".
+
+## Cache Refresh
+
+Script and style links include a version tag, so browsers always load the newest files. A GitHub Action updates these tags on every push. To update them by hand, run:
+
+```
+python3 tools/stamp.py
+```

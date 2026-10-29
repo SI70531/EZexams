@@ -52,15 +52,14 @@ window.addEventListener("hashchange",()=>{const h=location.hash.slice(1);if(h&&h
 
 /* ---------- question markup ---------- */
 function stemHTML(it,i){
-  return (it.fig?'<div class="qfig">'+it.fig+'</div>':'')+'<div class="stem"><span class="num">'+(i+1)+'.</span>'+(it.hw?'<span class="hwtag">'+esc(it.hw)+'</span>':'')+esc(it.q)+'</div>'+
-    (it.qz?'<div class="zhq">'+esc(it.qz)+'</div>':'');
+  return (it.fig?'<div class="qfig">'+it.fig+'</div>':'')+'<div class="stem"><span class="num">'+(i+1)+'.</span>'+(it.hw?'<span class="hwtag">'+esc(it.hw)+'</span>':'')+esc(it.q)+'</div>';
 }
 function optHTML(it,oi,k){
-  const z=it.oz&&it.oz[oi];
+  const z=null; /* questions are English only; 中文 only in the explanation */
   return '<span class="ab">'+ABCD[k]+'</span><span class="ot"><span class="oe">'+esc(it.o[oi])+'</span>'+(z?'<span class="zho">'+esc(z)+'</span>':'')+'</span>';
 }
 function answerLine(it){
-  const k=it.a,z=it.oz&&it.oz[k];
+  const k=it.a,z=null;
   return '<div class="ansline"><b>Answer: ('+ABCD[k].toLowerCase()+') '+esc(it.o[k])+'</b>'+(z?'<span class="zho">答案：'+esc(z)+'</span>':'')+'</div>';
 }
 
@@ -72,7 +71,7 @@ function renderQuiz(ch){
   const nh=qs.filter(q=>q.h).length;
   const isHw=/^hw/.test(ch);
   box.innerHTML=isHw?'<h2>作業選擇題（'+qs.length+' 題）</h2><p class="small">老師出的作業原題。點選項就會對答案並顯示中文解析。</p><p><button class="btn zhbtn" type="button"></button></p>':
-    '<h2>Multiple-choice question（'+qs.length+' 題，共 100 分）</h2><p class="small">題目和考試一樣是英文，下面灰字是中文翻譯。點選項就會對答案並顯示中文解析。</p><p><button class="btn zhbtn" type="button"></button></p>';
+    '<h2>Multiple-choice question（'+qs.length+' 題，共 100 分）</h2><p class="small">題目和考試一樣是英文，點選項就會對答案，解析是中文。</p><p><button class="btn zhbtn" type="button"></button></p>';
   qs.forEach((it,i)=>{
     const d=document.createElement("div");d.className="qitem";d.innerHTML=stemHTML(it,i);
     const os=document.createElement("div");os.className="opts";const btns=[];

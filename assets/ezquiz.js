@@ -79,7 +79,12 @@
   }
   function ensureClear(el,on,fn){
     const r=el.querySelector(":scope > .qbtns");let b=r&&r.querySelector(".qclear");
-    if(on){if(!b){b=document.createElement("button");b.type="button";b.className="btn qclear";b.textContent="清除作答";row(el).appendChild(b);}b.onclick=fn;}
+    if(on){if(!b){b=document.createElement("button");b.type="button";b.className="btn qclear";b.textContent="清除作答";row(el).appendChild(b);}
+      /* two clicks: first asks for confirmation, the second within 4 s actually clears (same as the whole-page reset) */
+      b.onclick=()=>{
+        if(b.dataset.armed!=="1"){b.dataset.armed="1";b.textContent="確定清除？";setTimeout(()=>{if(b.dataset.armed==="1"){b.dataset.armed="";b.textContent="清除作答";}},4000);return;}
+        b.dataset.armed="";b.textContent="清除作答";fn();
+      };}
     else if(b){b.remove();if(r&&!r.children.length)r.remove();}
   }
   /* after grading (one question or 批改全部), open that question's reference answer by itself */

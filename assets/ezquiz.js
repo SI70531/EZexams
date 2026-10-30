@@ -103,7 +103,7 @@
   }
   document.addEventListener("input",e=>{
     const q=e.target.closest&&e.target.closest(".exq");if(!q||e.target.tagName!=="TEXTAREA")return;
-    const id=exOf(q);if(!id)return;S.ex2=S.ex2||{};const x=S.ex2[id]=S.ex2[id]||{ans:{},grade:{},self:{}};x.at=x.at||{};x.at[q.id]=now();
+    const id=exOf(q);if(!id)return;S.ex2=S.ex2||{};const x=S.ex2[id]=S.ex2[id]||{ans:{},grade:{}};x.at=x.at||{};x.at[q.id]=now();
   },true);
 
   /* ---------- draw ---------- */
@@ -166,7 +166,7 @@
     const sec=document.getElementById(ch);if(!sec)return null;
     const mc=[...sec.querySelectorAll(".quiz[data-quiz] > .qitem")].find(it=>!it.querySelector(".opt.right,.opt.wrong"));if(mc)return mc;
     const w=sec.querySelector(".chw");if(!w)return null;const x=(S.ex2||{})[w.dataset.exam]||{};
-    return [...w.querySelectorAll(".exq")].find(q=>!((x.grade||{})[q.id]||(x.self||{})[q.id]))||null;
+    return [...w.querySelectorAll(".exq")].find(q=>!((x.grade||{})[q.id]))||null;
   };
   /* the glow class comes off when its animation ends: a class left on an element replays the animation every time
      its tab is shown again, which made earlier targets light up together with the new one */
@@ -201,7 +201,7 @@
     let n=0,t=0;
     v.querySelectorAll(".quiz[data-quiz] > .qitem").forEach(it=>{t++;if(!it.querySelector(".opt.right,.opt.wrong"))n++;});
     const w=v.querySelector(".chw");
-    if(w&&typeof S!=="undefined"){const x=(S.ex2||{})[w.dataset.exam]||{};w.querySelectorAll(".exq").forEach(q=>{t++;if(!((x.grade||{})[q.id]||(x.self||{})[q.id]))n++;});}
+    if(w&&typeof S!=="undefined"){const x=(S.ex2||{})[w.dataset.exam]||{};w.querySelectorAll(".exq").forEach(q=>{t++;if(!((x.grade||{})[q.id]))n++;});}
     return {n,t};
   }
   function draw(){
@@ -236,7 +236,7 @@
   function count(v){
     let n=0,d=0;
     v.querySelectorAll(".quiz[data-quiz] > .qitem, .exambody > .qitem").forEach(it=>{n++;if(it.querySelector(".opt.right,.opt.wrong,.opt.pick"))d++;});
-    v.querySelectorAll(".exq").forEach(q=>{n++;const g=q.querySelector(".gres");const cb=q.querySelector(".self input");if((g&&!g.hidden&&!g.classList.contains("stale"))||(cb&&cb.checked))d++;});
+    v.querySelectorAll(".exq").forEach(q=>{n++;const g=q.querySelector(".gres");if(g&&!g.hidden&&!g.classList.contains("stale"))d++;});
     return {n,d};
   }
   let busy=false;

@@ -356,7 +356,7 @@
     errMsg
   };
 
-  /* ---------- default merge for EZexams pages: {quiz, quizReset, ex2:{id:{ans,grade,self,resetAt}}, last} ---------- */
+  /* ---------- default merge for EZexams pages: {quiz, quizReset, ex2:{id:{ans,grade,resetAt}}, last} ---------- */
   function defaultMerge(local,remote){
     const out=JSON.parse(JSON.stringify(remote||{}));
     const rQat=JSON.parse(JSON.stringify((remote&&remote.qat)||{})),rEx=JSON.parse(JSON.stringify((remote&&remote.ex2)||{}));
@@ -368,9 +368,9 @@
       if(lq[ch])out.quiz[ch]=Object.assign({},lq[ch]);else delete out.quiz[ch];}});
     if(local.ex2){out.ex2=out.ex2||{};
       Object.keys(local.ex2).forEach(id=>{
-        const L=local.ex2[id]||{},Rm=out.ex2[id]||(out.ex2[id]={ans:{},grade:{},self:{}});
+        const L=local.ex2[id]||{},Rm=out.ex2[id]||(out.ex2[id]={ans:{},grade:{}});
         if((Rm.resetAt||0)>(L.resetAt||0))return;
-        ["ans","grade","self"].forEach(f=>{Rm[f]=Object.assign({},L[f]||{},Rm[f]||{});});
+        ["ans","grade"].forEach(f=>{Rm[f]=Object.assign({},L[f]||{},Rm[f]||{});});
         Object.keys(L.ans||{}).forEach(q=>{if(!Rm.ans[q]&&L.ans[q])Rm.ans[q]=L.ans[q];});
       });}
     /* per-question 清除作答 (ezquiz.js): answers and clears carry times; the later one wins, so a cleared answer
@@ -393,8 +393,8 @@
         if(!Object.keys(at).length&&!Object.keys(clr).length)return;
         R.at=at;R.clr=clr;
         Object.keys(clr).forEach(q=>{
-          if(clr[q]>=(at[q]||0)){["ans","grade","self"].forEach(f=>{if(R[f])delete R[f][q];});}
-          else if((L.at||{})[q]===at[q]){["ans","grade","self"].forEach(f=>{if(L[f]&&L[f][q]!==undefined){R[f]=R[f]||{};R[f][q]=L[f][q];}else if(R[f])delete R[f][q];});}
+          if(clr[q]>=(at[q]||0)){["ans","grade"].forEach(f=>{if(R[f])delete R[f][q];});}
+          else if((L.at||{})[q]===at[q]){["ans","grade"].forEach(f=>{if(L[f]&&L[f][q]!==undefined){R[f]=R[f]||{};R[f][q]=L[f][q];}else if(R[f])delete R[f][q];});}
         });
       });
     }
@@ -411,7 +411,7 @@
       const L=local.ex2[id]||{},R=out.ex2&&out.ex2[id];if(!R)return;
       const ra=(rEx[id]&&rEx[id].at)||{},clr=R.clr||{};
       Object.keys(L.at||{}).forEach(q=>{
-        if((L.at[q]||0)>(ra[q]||0)&&(L.at[q]||0)>(clr[q]||0))["ans","grade","self"].forEach(f=>{
+        if((L.at[q]||0)>(ra[q]||0)&&(L.at[q]||0)>(clr[q]||0))["ans","grade"].forEach(f=>{
           if(L[f]&&L[f][q]!==undefined){R[f]=R[f]||{};R[f][q]=L[f][q];}else if(R[f])delete R[f][q];});
       });
     });

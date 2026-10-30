@@ -97,7 +97,7 @@
     if(typeof document==="undefined"||!document.body||document.getElementById("ezlimit"))return;
     const el=document.createElement("div");el.id="ezlimit";el.setAttribute("role","alert");
     el.style.cssText="position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:1200;max-width:min(92vw,460px);background:var(--paper,#fff);color:var(--ink,#111);border:1.5px solid var(--seal,#c4472a);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.25);padding:12px 16px;font-size:14px;line-height:1.6";
-    let n=60;const render=()=>{el.innerHTML="<b>AI 免費額度暫時用完</b><br>約 "+n+" 秒後可以再試。這段時間你的作答都有保存，也可以先用「自己給分」或關鍵字比對。 <button type='button' style='margin-left:6px;font:inherit;border:1px solid currentColor;border-radius:6px;background:none;color:inherit;padding:1px 10px;cursor:pointer'>知道了</button>";el.querySelector("button").onclick=close;};
+    let n=60;const render=()=>{el.innerHTML="<b>AI 免費額度暫時用完</b><br>約 "+n+" 秒後可以再試。你的作答都有保存，倒數結束後再按一次批改即可。 <button type='button' style='margin-left:6px;font:inherit;border:1px solid currentColor;border-radius:6px;background:none;color:inherit;padding:1px 10px;cursor:pointer'>知道了</button>";el.querySelector("button").onclick=close;};
     const close=()=>{clearInterval(LT);el.remove();};
     render();document.body.appendChild(el);
     LT=setInterval(()=>{n--;if(n<=0){close();return;}render();},1000);

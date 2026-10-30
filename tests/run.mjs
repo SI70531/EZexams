@@ -502,11 +502,10 @@ await check("motion: 總複習 cards rise in; clearing a mistake says how many a
   assert(!pg.errs.length, pg.errs.join(" | "));
   await pg.ctx.close();
 });
-await check("wow: the intro plays the first time each day the login screen shows and can be clicked away; a wrong answer shatters, a right one flashes; scrolled-past headings get a ✓ that is remembered", async () => {
+await check("wow: the intro plays every time the login screen shows and can be clicked away; a wrong answer shatters, a right one flashes; scrolled-past headings get a ✓ that is remembered", async () => {
   const lg = await device(); await lg.goto(U + "?wow=1"); await lg.waitForSelector(".wow-intro", { timeout: 3000 });
   await lg.click(".wow-intro"); await lg.waitForFunction(() => !document.querySelector(".wow-intro"), null, { timeout: 4000 });
-  await lg.reload(); await lg.waitForTimeout(1200);   /* same day: the login screen opens without the intro */
-  assert(!(await lg.$(".wow-intro")), "intro replayed on the same day");
+  await lg.reload(); await lg.waitForSelector(".wow-intro", { timeout: 3000 });   /* signed out again: the intro plays again */
   await lg.ctx.close();
   const pg = await device({ skipGate: true }); await pg.goto(U + "?wow=1"); await pg.waitForTimeout(600);
   assert(!(await pg.$(".wow-intro")), "intro played with no login screen");

@@ -278,7 +278,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
       const g=document.createElement("div");g.className="wgroup rvwrong";g.dataset.wsec=k;
       const t=document.createElement("div");t.className="wgh";
       const inCard=s&&host.querySelector('.rvsec[data-rsec="'+CSS.escape(k)+'"]');
-      t.textContent="✗ "+(inCard?"這一段答錯 ":s?(NAME[s.ch]||s.ch)+"｜"+s.title+"　答錯 ":k==="_"?"其他錯題（沒對到特定段落）":(NAME[k.slice(1)]||k.slice(1))+"｜未對到特定段落的錯題　")+arr.length+" 題";
+      t.textContent="✗ "+(inCard?"這一段答錯 ":s?(NAME[s.ch]||s.ch)+"｜"+s.title+"　答錯 ":k==="_"?"其他錯題（講義裡找不到對應的重點段落，請看題目解說）":(NAME[k.slice(1)]||k.slice(1))+"｜這章的其他錯題（找不到對應的重點段落，請整章重讀）　")+arr.length+" 題";
       g.appendChild(t);
       arr.forEach(w=>{
         const c=document.createElement("div");c.className="wcard";c.dataset.wid=wid(w);

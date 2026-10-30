@@ -20,152 +20,19 @@
 <script src="assets/ezcore.js?v=d160d4f0"></script>
 <script src="assets/ezfx.js?v=9bec8989" defer></script>
 <script src="assets/ezmotion.js?v=c272e3db" defer></script>
-<script src="assets/ezwow.js?v=88c7918e" defer></script>
-<script src="assets/ezai.js?v=b44ee5aa"></script>
+<script src="assets/ezwow.js?v=26d864f0" defer></script>
+<script src="assets/ezai.js?v=f5dda45c"></script>
 <link rel="stylesheet" href="assets/fonts/fonts.css?v=8277b7f0">
-<style>
-/* Layout: an exam-room noticeboard. Each exam is an admission ticket with a tear-off stub; handwritten titles, mono metadata. */
-:root{
-  --bg:#dde1e0; --paper:#f3f5f5; --paper2:#e8ebeb;
-  --ink:#06141b; --ink70:rgba(6,20,27,.76); --muted:rgba(6,20,27,.64); --line:#c2c9ca; --line-strong:#9ba8ab;
-  --indigo:#253745; --indigo-soft:rgba(37,55,69,.08); --indigo-mid:rgba(37,55,69,.18);
-  --seal:#c4472a; --seal-soft:rgba(196,71,42,.06); --seal-line:rgba(196,71,42,.3);
-  --brass:#4a5c6a; --brass-soft:rgba(74,92,106,.08); --brass-line:rgba(74,92,106,.3);
-  --ok:#2d7a3e; --ok-soft:rgba(45,122,62,.08); --ok-line:rgba(45,122,62,.3);
-  --accent:#253745; --accent-ink:#ffffff; --accent-soft:rgba(37,55,69,.08);
-  --bad:#c4472a; --bad-soft:rgba(196,71,42,.06); --warn:#a26300; --warn-soft:rgba(196,128,20,.09); --warn-line:rgba(196,128,20,.32);
-  --code:#e3e7e7; --fig:#f3f5f5; --hard:#06141b; --shadow:0 6px 18px rgba(6,20,27,.12);
-  --f-display:"Iansui","DFKai-SB","BiauKai","Kaiti TC","Noto Sans TC",serif;
-  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
-  --f-en:"Source Serif 4","Georgia","Noto Serif TC",serif;
-  --f-mono:"JetBrains Mono","Menlo","Consolas","Noto Sans TC",monospace;
-}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#11212d; --paper:#1c2e3b; --paper2:#172835;
-  --ink:#ccd0cf; --ink70:rgba(204,208,207,.82); --muted:rgba(204,208,207,.66); --line:#2f4352; --line-strong:#4a5c6a;
-  --indigo:#9ba8ab; --indigo-soft:rgba(155,168,171,.1); --indigo-mid:rgba(155,168,171,.22);
-  --seal:#ff7d5a; --seal-soft:rgba(255,125,90,.08); --seal-line:rgba(255,125,90,.34);
-  --brass:#a9bccb; --brass-soft:rgba(169,188,203,.08); --brass-line:rgba(169,188,203,.3);
-  --ok:#73d48f; --ok-soft:rgba(115,212,143,.09); --ok-line:rgba(115,212,143,.32);
-  --accent:#9ba8ab; --accent-ink:#06141b; --accent-soft:rgba(155,168,171,.1);
-  --bad:#ff7d5a; --bad-soft:rgba(255,125,90,.08); --warn:#f2bd5a; --warn-soft:rgba(242,189,90,.09); --warn-line:rgba(242,189,90,.32);
-  --code:#0d1b25; --fig:#ccd0cf; --hard:#06141b; --shadow:0 6px 18px rgba(0,0,0,.4);
-  color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#11212d; --paper:#1c2e3b; --paper2:#172835;
-  --ink:#ccd0cf; --ink70:rgba(204,208,207,.82); --muted:rgba(204,208,207,.66); --line:#2f4352; --line-strong:#4a5c6a;
-  --indigo:#9ba8ab; --indigo-soft:rgba(155,168,171,.1); --indigo-mid:rgba(155,168,171,.22);
-  --seal:#ff7d5a; --seal-soft:rgba(255,125,90,.08); --seal-line:rgba(255,125,90,.34);
-  --brass:#a9bccb; --brass-soft:rgba(169,188,203,.08); --brass-line:rgba(169,188,203,.3);
-  --ok:#73d48f; --ok-soft:rgba(115,212,143,.09); --ok-line:rgba(115,212,143,.32);
-  --accent:#9ba8ab; --accent-ink:#06141b; --accent-soft:rgba(155,168,171,.1);
-  --bad:#ff7d5a; --bad-soft:rgba(255,125,90,.08); --warn:#f2bd5a; --warn-soft:rgba(242,189,90,.09); --warn-line:rgba(242,189,90,.32);
-  --code:#0d1b25; --fig:#ccd0cf; --hard:#06141b; --shadow:0 6px 18px rgba(0,0,0,.4);
-  color-scheme:dark}
-[hidden]{display:none!important}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);line-height:1.75;-webkit-font-smoothing:antialiased;transition:background .25s,color .25s}
-.wrap{max-width:960px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-header.wrap{padding-block:max(20px,env(safe-area-inset-top,0px)) 0}
-.topline{display:flex;justify-content:space-between;align-items:center;gap:12px}
-.logo{display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:13px;font-weight:600}
-.logo .mk{display:grid;place-items:center;width:32px;height:32px;border-radius:7px;background:var(--ink);color:var(--bg);font-size:12px}
-.hero{padding-block:56px 40px;border-bottom:1.5px solid var(--ink)}
-.hero .prompt{font-family:var(--f-mono);font-size:13px;color:var(--brass);font-weight:600}
-.hero .prompt::before{content:"$ ";color:var(--muted)}
-.hero .prompt::after{content:"";display:inline-block;width:.6em;height:1.1em;margin-left:4px;vertical-align:-2px;background:var(--brass);animation:blink 1.1s steps(1) infinite}
-@keyframes blink{50%{opacity:0}}
-.hero h1{font-family:var(--f-display);font-weight:700;font-size:clamp(38px,7vw,58px);line-height:1.15;margin:12px 0 12px}
-.hero h1 em{font-style:normal;color:var(--seal)}
-.hero p.tag{margin-top:20px}@media (min-width:761px){.hero p.tag{white-space:nowrap;max-width:none}}
-.hero p{margin:0;color:var(--ink70);max-width:46ch;font-size:16.5px}
-main{padding-block:36px 72px}
-.subjgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:44px 24px;align-items:start}
-.subjgrid .tickets{grid-template-columns:1fr}
-.term{margin:0 0 56px}
-.termh{font-family:var(--f-display);font-size:clamp(26px,4vw,34px);margin:0 0 24px;padding-bottom:10px;border-bottom:2px solid var(--ink)}
-.subjgrid .empty{color:var(--muted);margin:0}
-.exam-subj.past{opacity:.6}
-.pastbox{margin:26px 0 0;border-top:1.5px dashed var(--line-strong);padding-top:14px}
-.pastbox>summary{cursor:pointer;font-family:var(--f-mono);font-size:13.5px;font-weight:600;color:var(--muted);list-style:none;display:inline-flex;align-items:center;gap:8px}
-.pastbox>summary::-webkit-details-marker{display:none}
-.pastbox>summary::before{content:"▸";transition:transform .2s}.pastbox[open]>summary::before{transform:rotate(90deg)}
-.pastbox .pastgrid{margin-top:16px}
-.exam-subj.past .subj h2::after{content:"（已考完）";font-size:.55em;color:var(--muted);margin-left:6px}
-#subjects .slot{min-height:258px}
-@media (max-width:760px){.subjgrid{grid-template-columns:1fr;gap:36px}}
-.subj{display:flex;align-items:baseline;gap:12px;margin:0 0 16px}
-.subj h2{font-family:var(--f-display);font-size:26px;font-weight:700;margin:0}
-.subj .en{font-family:var(--f-mono);font-size:12.5px;color:var(--muted)}
-.tickets{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,420px),1fr));gap:20px}
-.ticket{position:relative;display:grid;grid-template-columns:1fr 104px;text-decoration:none;color:inherit;background:var(--paper);border:1.5px solid var(--ink);border-radius:10px;box-shadow:5px 5px 0 var(--hard);transition:transform .15s,box-shadow .15s}
-.ticket:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--hard)}
-.ticket:focus-visible{outline:2px solid var(--indigo);outline-offset:4px}
-.ticket .main{padding:18px 20px 16px;min-width:0}
-.ticket .stub{position:relative;border-left:2px dashed var(--line-strong);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:14px 8px;background:var(--indigo-soft);border-radius:0 9px 9px 0;font-family:var(--f-mono);text-align:center}
-.ticket .stub::before,.ticket .stub::after{content:"";position:absolute;left:-11px;width:20px;height:20px;border-radius:50%;background:var(--bg);border:1.5px solid var(--ink)}
-.ticket .stub::before{top:-11px;clip-path:inset(50% 0 0 0)}
-.ticket .stub::after{bottom:-11px;clip-path:inset(0 0 50% 0)}
-.stub .k{font-size:10.5px;color:var(--muted);letter-spacing:.08em}
-.stub .v{font-size:22px;font-weight:600;color:var(--indigo);line-height:1.1}
-.stub .s{font-size:11px;color:var(--muted)}
-.ticket .kind{font-family:var(--f-mono);font-size:11.5px;font-weight:600;color:var(--accent-ink);background:var(--seal);border-radius:4px;padding:1px 8px}
-.ticket h3{font-family:var(--f-display);font-weight:700;font-size:26px;margin:10px 0 2px;line-height:1.3}
-.ticket p{margin:0;color:var(--ink70);font-size:14.5px}
-.ticket dl{display:grid;grid-template-columns:auto 1fr;gap:2px 14px;margin:12px 0 0;font-size:13.5px}
-.ticket dt{font-family:var(--f-mono);font-size:12px;color:var(--muted);padding-top:2px}
-.ticket dd{margin:0;color:var(--ink)}
-.ticket .go{display:inline-block;margin-top:14px;font-family:var(--f-mono);font-size:13px;font-weight:600;color:var(--indigo)}
-.ticket:hover .go{color:var(--seal)}
-.slot{display:grid;place-items:center;border:1.5px dashed var(--line-strong);border-radius:10px;padding:24px;color:var(--muted);font-family:var(--f-mono);font-size:13px;min-height:170px;text-align:center}
-.sync{margin-top:48px}
-.syncbox{background:var(--paper);border:1.5px solid var(--ink);border-radius:10px;box-shadow:5px 5px 0 var(--hard);padding:18px 22px;max-width:720px}
-.syncbox p{margin:8px 0;color:var(--ink70);font-size:15px}
-.syncstate{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-family:var(--f-mono);font-size:14px}
-.syncstate .small{color:var(--muted);font-size:12.5px}
-.led{width:10px;height:10px;border-radius:50%;background:var(--muted)}
-.led.ok{background:var(--ok)}.led.sync{background:var(--warn);animation:blink 1s steps(1) infinite}.led.err{background:var(--seal)}
-.steps{margin:10px 0;padding-left:22px;font-size:14.5px;color:var(--ink70)}
-.steps li{margin:4px 0}
-.steps a{color:var(--indigo);font-weight:600}
-code{font-family:var(--f-mono);font-size:.9em;background:var(--indigo-soft);padding:0 5px;border-radius:4px}
-.tokrow{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 6px}
-.tokrow input{flex:1 1 220px;min-width:0;font-family:var(--f-mono);font-size:14px;padding:8px 12px;border:1.5px solid var(--line-strong);border-radius:8px;background:var(--paper2);color:var(--ink)}
-.tokrow input:focus{outline:none;border-color:var(--indigo);box-shadow:0 0 0 3px var(--indigo-soft)}
-.btn{font:inherit;font-size:14px;font-weight:500;border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:8px;padding:7px 16px;cursor:pointer}
-.btn:hover:not([disabled]){background:var(--indigo-soft)}
-.btn.primary{background:var(--indigo);border-color:var(--indigo);color:var(--accent-ink);font-weight:600}
-.btn.primary:hover:not([disabled]){background:var(--seal);border-color:var(--seal)}
-.btn[disabled]{opacity:.55;cursor:default}
-.small{font-size:13px;color:var(--muted)}
-.msg{font-size:14px;min-height:1.2em}.msg.err{color:var(--seal)}.msg.ok{color:var(--ok)}
-.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-.theme{position:relative;flex:0 0 auto}
-.themebtn{width:36px;height:36px;border-radius:8px;border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);cursor:pointer;display:grid;place-items:center;transition:background .15s}
-.themebtn:hover{background:var(--indigo-soft)}
-.themebtn svg{width:17px;height:17px;display:none}
-.themebtn[data-mode="system"] .i-system,.themebtn[data-mode="light"] .i-light,.themebtn[data-mode="dark"] .i-dark{display:block}
-.thmenu{position:absolute;right:0;top:44px;z-index:20;min-width:148px;background:var(--paper);border:1px solid var(--line);border-radius:8px;box-shadow:var(--shadow);padding:6px;display:grid;gap:2px}
-.thmenu button{font:inherit;font-size:14px;text-align:left;border:0;background:transparent;color:var(--ink);border-radius:6px;padding:7px 10px 7px 30px;cursor:pointer;position:relative}
-.thmenu button:hover{background:var(--indigo-soft)}
-.thmenu button[aria-checked="true"]{color:var(--seal);font-weight:700}
-.thmenu button[aria-checked="true"]::before{content:"✓";position:absolute;left:11px}
-.themebtn.wide{width:auto;height:38px;border-radius:8px;padding:0 14px 0 12px;display:flex;align-items:center;gap:7px;font:inherit;font-family:var(--f-mono);font-size:12.5px;font-weight:500}
-.themebtn.wide .lab::before{content:"外觀：";color:var(--muted)}
-@media (max-width:520px){.ticket{grid-template-columns:1fr 84px}.stub .v{font-size:18px}.hero{padding-block:36px 28px}}
-
-
-.syncbtns{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 4px}
-</style>
+<link rel="stylesheet" href="assets/ezhome.css?v=3811ee9f">
 </head>
 <body>
 <header class="wrap">
   <div class="topline">
     <div class="logo"><span class="mk">EZ</span>EZexams</div>
-    <div class="theme"><button class="themebtn" id="themeBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="themeMenu" title="外觀：跟隨裝置"><svg class="i-system" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><svg class="i-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2 12h2.2M19.8 12H22M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg><svg class="i-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button><div class="thmenu" id="themeMenu" role="menu" hidden><button type="button" role="menuitemradio" data-t="system">跟隨裝置</button><button type="button" role="menuitemradio" data-t="light">淺色</button><button type="button" role="menuitemradio" data-t="dark">深色</button></div></div>
+    <div style="display:flex;align-items:center;gap:10px"><a class="btn" href="help.html" style="text-decoration:none">說明</a><div class="theme"><button class="themebtn" id="themeBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="themeMenu" title="外觀：跟隨裝置"><svg class="i-system" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><svg class="i-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2 12h2.2M19.8 12H22M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg><svg class="i-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button><div class="thmenu" id="themeMenu" role="menu" hidden><button type="button" role="menuitemradio" data-t="system">跟隨裝置</button><button type="button" role="menuitemradio" data-t="light">淺色</button><button type="button" role="menuitemradio" data-t="dark">深色</button></div></div></div>
   </div>
   <div class="hero">
-    <div class="prompt">ls ~/exams</div>
+    <div class="prompt">你的考試準備區</div>
     <h1>考前衝刺</h1>
     <p class="tag">白話講義、章末選擇題、考古題和模擬試題。寫完直接批改，看哪裡還要補。</p>
   </div>
@@ -248,15 +115,15 @@ code{font-family:var(--f-mono);font-size:.9em;background:var(--indigo-soft);padd
     <div class="syncbox">
       <div class="syncstate"><span class="led" id="aiLed"></span><b id="aiTitle">用關鍵字比對批改</b><span class="small" id="aiSub"></span></div>
       <div id="aiOff">
-        <p>手寫題現在是用關鍵字比對給分，只能抓有沒有寫到術語。設定一把免費的 Google Gemini 金鑰後，統計、作業系統、資料結構的手寫題會改成 AI 批改，有分數也有中文評語。不用綁信用卡。</p>
+        <p>手寫題現在是用關鍵字比對給分，只能抓有沒有寫到術語。設定一把免費的 Google AI 金鑰後，統計、作業系統、資料結構的手寫題會改成 AI 批改，有分數也有中文評語。不用綁信用卡。</p>
         <ol class="steps">
           <li>用 Google 帳號打開 <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google 的免費金鑰頁面（AI Studio）</a>。</li>
           <li>按 <b>Create API key</b>（第一次會請你同意條款、選一個專案，選預設的就好）。</li>
-          <li>按 <b>Copy key</b> 複製金鑰（<code>AQ.</code> 或 <code>AIza</code> 開頭都可以），貼到下面按「啟用」。每台裝置要各貼一次。</li>
+          <li>按 <b>Copy key</b> 複製金鑰，整串貼到下面按「啟用」。每台裝置要各貼一次。</li>
         </ol>
         <form class="tokrow" id="aiForm" autocomplete="off">
-          <label for="aiInput" class="sr">Gemini 金鑰</label>
-          <input id="aiInput" type="password" placeholder="AQ.… 或 AIza…" spellcheck="false">
+          <label for="aiInput" class="sr">AI 金鑰</label>
+          <input id="aiInput" type="password" placeholder="貼上金鑰" spellcheck="false">
           <button class="btn primary" type="submit" id="aiBtn">啟用</button>
         </form>
         <p class="small">金鑰只存在這台裝置的瀏覽器，不會上傳到雲端，只存在這台裝置的瀏覽器。免費額度大約每分鐘 10 次、每天上千次，一次「批改全部」只算 1 次。注意：免費版 Google 可能拿送出的內容改進模型，所以不要在答案裡寫個人資料。</p>

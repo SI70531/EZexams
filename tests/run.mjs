@@ -433,6 +433,36 @@ await check("Worker: one account gets 600 AI calls an hour and 3000 a day, then 
   } finally { Date.now = real; }
 });
 const PICK = "window.pickItem = i => { const l = [...document.querySelectorAll('#ch1 .quiz > .qitem')]; return l.find(x => +x.dataset.i === i) || l[i]; };";
+await check("usability: practice modes filter questions, clearing and redoing ask first and can be undone, the AI quota notice shows", async () => {
+  const pg = await device({ skipGate: true }); await pg.goto(PAGE); await pg.waitForTimeout(800); await pg.evaluate(PICK);
+  const click = (i, right) => pg.evaluate(([i, right]) => { show("ch1"); const it = pickItem(i), a = QUIZ.ch1[i].a, opts = [...it.querySelectorAll(".opt")];
+    (right ? opts.find(o => +o.dataset.oi === a) : opts.find(o => +o.dataset.oi !== a)).click(); }, [i, right]);
+  await click(0, true); await click(1, false);
+  const vis = () => pg.evaluate(() => [...document.querySelectorAll("#ch1 .quiz > .qitem")].filter(x => !x.classList.contains("qhide")).length);
+  const total = await pg.evaluate(() => QUIZ.ch1.length);
+  const mode = t => pg.evaluate(t => [...document.querySelectorAll("#ch1 .qmodes .btn")].find(b => b.textContent === t).click(), t);
+  await mode("只練錯題"); assert(await vis() === 1, "wrong-only should show 1, got " + await vis());
+  await mode("只看未答"); assert(await vis() === total - 2, "unanswered count " + await vis());
+  await mode("隨機 10 題"); assert(await vis() === Math.min(10, total - 2), "random count " + await vis());
+  await mode("全部"); assert(await vis() === total, "all should show every question");
+  await pg.waitForTimeout(400);
+  /* clearing one answer: first click only asks, undo keeps the answer */
+  await pg.evaluate(() => pickItem(0).querySelector(".qclear").click());
+  assert(/確定/.test(await pg.evaluate(() => pickItem(0).querySelector(".qclear").textContent)), "no confirm text");
+  await pg.evaluate(() => pickItem(0).querySelector(".qclear").click());
+  await pg.waitForSelector("#ezundo", { timeout: 2000 });
+  await pg.evaluate(() => document.querySelector("#ezundo button").click());
+  await pg.waitForTimeout(300);
+  assert(await pg.evaluate(() => Object.keys(S.quiz.ch1 || {}).length) === 2, "undo should keep both answers");
+  /* the AI quota notice */
+  await pg.evaluate(() => { const el = document.createElement("div"); document.body.appendChild(el); });
+  await pg.evaluate(() => EZAI.limitNotice()); await pg.waitForSelector("#ezlimit", { timeout: 2000 });
+  assert(/額度/.test(await pg.textContent("#ezlimit")), "quota notice text");
+  assert(await pg.evaluate(() => typeof EZAI.errText === "function" && /額度/.test(EZAI.errText({ code: "rate_limited" }))), "quota text missing");
+  assert(!pg.errs.length, pg.errs.join(" | "));
+  await pg.ctx.close();
+});
+
 await check("rewards: 3 right in a row shows the combo chip, a wrong answer hides it, finishing a chapter shows its result card", async () => {
   const pg = await device({ skipGate: true }); await pg.goto(PAGE); await pg.waitForTimeout(800); await pg.evaluate(PICK);
   const click = (i, right) => pg.evaluate(([i, right]) => { show("ch1"); const it = pickItem(i), a = QUIZ.ch1[i].a, opts = [...it.querySelectorAll(".opt")];
@@ -472,10 +502,11 @@ await check("motion: 總複習 cards rise in; clearing a mistake says how many a
   assert(!pg.errs.length, pg.errs.join(" | "));
   await pg.ctx.close();
 });
-await check("wow: the intro plays every time the login screen shows and can be clicked away; a wrong answer shatters, a right one flashes; scrolled-past headings get a ✓ that is remembered", async () => {
+await check("wow: the intro plays the first time each day the login screen shows and can be clicked away; a wrong answer shatters, a right one flashes; scrolled-past headings get a ✓ that is remembered", async () => {
   const lg = await device(); await lg.goto(U + "?wow=1"); await lg.waitForSelector(".wow-intro", { timeout: 3000 });
   await lg.click(".wow-intro"); await lg.waitForFunction(() => !document.querySelector(".wow-intro"), null, { timeout: 4000 });
-  await lg.reload(); await lg.waitForSelector(".wow-intro", { timeout: 3000 });   /* signed out again: the intro plays again */
+  await lg.reload(); await lg.waitForTimeout(1200);   /* same day: the login screen opens without the intro */
+  assert(!(await lg.$(".wow-intro")), "intro replayed on the same day");
   await lg.ctx.close();
   const pg = await device({ skipGate: true }); await pg.goto(U + "?wow=1"); await pg.waitForTimeout(600);
   assert(!(await pg.$(".wow-intro")), "intro played with no login screen");

@@ -98,7 +98,7 @@ x.q.e?"TEACHER'S SHORT NOTE (use it as the ground truth): "+x.q.e:"",
           const c=e&&e.code;
           /* quota or overload: wait a minute and carry on by itself */
           if((c==="rate_limited"||c==="busy"||c==="invalid_json"||c==="empty_completion")&&job.tries<3){
-            job.tries++;Q.unshift(job);QD.add(x.id);WAITMSG=c==="rate_limited"?"免費額度暫時用完，一分鐘後自動繼續…":"Gemini 暫時很忙，稍後自動繼續…";redraw(x.id);
+            job.tries++;Q.unshift(job);QD.add(x.id);WAITMSG=c==="rate_limited"?"免費額度暫時用完，一分鐘後自動繼續…":"AI 暫時很忙，稍後自動繼續…";redraw(x.id);
             await sleep(c==="invalid_json"||c==="empty_completion"?3000:60000);WAITMSG="";continue;
           }
           ERR[x.id]=window.EZAI?EZAI.errText(e):"AI 解析失敗。";redraw(x.id);

@@ -88,7 +88,7 @@ function renderQuiz(key){
     if(isExam)t.textContent="選擇題：已作答 "+n+" / "+qs.length+"，答對 "+r+" 題（"+r*2+" 分）";
     else t.textContent=n<qs.length?("已作答 "+n+" / "+qs.length+"，目前答對 "+r+" 題"):("完成！答對 "+r+" / "+qs.length+(r>=qs.length*0.8?"，觀念很穩。":"，把錯的題目對應段落再讀一次。"));
     sc.appendChild(t);
-    const rb=document.createElement("button");rb.className="btn";rb.type="button";rb.textContent=isExam?"重做選擇題":"重做這章";rb.addEventListener("click",()=>{if(rb.dataset.armed!=="1"){rb.dataset.armed="1";rb.textContent="確定重做？";setTimeout(()=>{if(rb.dataset.armed==="1"){rb.dataset.armed="";rb.textContent=isExam?"重做選擇題":"重做這章";}},4000);return;}rb.dataset.armed="";rb.textContent=isExam?"重做選擇題":"重做這章";delete S.quiz[key];save();renderQuiz(key);afterAnswer(key);});sc.appendChild(rb);
+    const rb=document.createElement("button");rb.className="btn";rb.type="button";rb.textContent=isExam?"重做選擇題":"重做這章";rb.addEventListener("click",()=>{if(rb.dataset.armed!=="1"){rb.dataset.armed="1";rb.textContent="確定重做？這章作答與分數會清空";setTimeout(()=>{if(rb.dataset.armed==="1"){rb.dataset.armed="";rb.textContent=isExam?"重做選擇題":"重做這章";}},4000);return;}rb.dataset.armed="";rb.textContent=isExam?"重做選擇題":"重做這章";(window.EZundo||((w,f)=>f()))("這章的作答",()=>{delete S.quiz[key];save();renderQuiz(key);afterAnswer(key);});});sc.appendChild(rb);
     if(!isExam&&n>=qs.length){const nx=nextOf(key);if(nx){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";nb.textContent=key==="ch3"?"開始考古題":"下一章";nb.dataset.go=nx;sc.appendChild(nb);}}
   }
   renderScore();

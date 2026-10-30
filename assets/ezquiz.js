@@ -18,6 +18,49 @@
   document.head.appendChild(st);
 
   const now=()=>Date.now();
+  /* EZundo(what, doIt, el): the clear happens after 8 s unless 復原 is pressed, so nothing is lost by a slip. */
+  window.EZundo=function(what,doIt,el){
+    const old=document.getElementById("ezundo");if(old&&old._fin)old._fin();
+    if(el)el.style.opacity=".4";
+    const t=document.createElement("div");t.id="ezundo";t.setAttribute("role","status");
+    t.style.cssText="position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:1200;background:var(--paper,#fff);color:var(--ink,#111);border:1.5px solid var(--ink,#111);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.25);padding:10px 16px;font-size:14px";
+    t.innerHTML="<span></span> <button type='button' style='margin-left:8px;font:inherit;font-weight:600;border:1px solid currentColor;border-radius:6px;background:none;color:inherit;padding:1px 12px;cursor:pointer'>復原</button>";
+    t.firstChild.textContent="將清除"+what+"（8 秒內可復原）";
+    let done=false;const fin=()=>{if(done)return;done=true;clearTimeout(tm);t.remove();if(el)el.style.opacity="";doIt();};
+    const tm=setTimeout(fin,8000);t._fin=fin;
+    t.querySelector("button").onclick=()=>{done=true;clearTimeout(tm);t.remove();if(el)el.style.opacity="";};
+    document.body.appendChild(t);
+    addEventListener("pagehide",()=>{if(!done){done=true;clearTimeout(tm);if(el)el.style.opacity="";}},{once:true});   /* leaving the page cancels, nothing is lost */
+  };
+
+  /* quick practice modes on every chapter quiz: all / 只看未答 / 只練錯題 / 隨機 10 題 */
+  const mcss=document.createElement("style");
+  mcss.textContent=".qmodes{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 14px}.qmodes .lb{font-size:13px;color:var(--muted)}.qmodes .btn[aria-pressed=true]{background:var(--indigo,#253745);color:var(--accent-ink,#fff);border-color:var(--indigo,#253745)}.qitem.qhide{display:none!important}.qmodes .qn{font-size:13px;color:var(--muted)}";
+  document.head.appendChild(mcss);
+  function addModes(box){
+    if(!box||box.querySelector(":scope > .qmodes")||!box.querySelector(".qitem"))return;
+    const bar=document.createElement("div");bar.className="qmodes";
+    bar.innerHTML="<span class='lb'>練習模式</span>";
+    const note=document.createElement("span");note.className="qn";
+    const items=()=>[...box.querySelectorAll(".qitem")];
+    const wrong=i=>!!i.querySelector(".opt.wrong"),done=i=>!!i.querySelector(".opt.right,.opt.wrong");
+    const modes=[["all","全部",()=>true],["new","只看未答",i=>!done(i)],["wrong","只練錯題",wrong],["rand","隨機 10 題",null]];
+    const btns={};
+    function apply(k){
+      let show;
+      if(k==="rand"){const pool=items().filter(i=>!done(i));pool.sort(()=>Math.random()-.5);show=new Set(pool.slice(0,10));}
+      const f=modes.find(m=>m[0]===k)[2];let n=0;
+      items().forEach(i=>{const ok=k==="rand"?show.has(i):f(i);i.classList.toggle("qhide",!ok);if(ok)n++;});
+      Object.keys(btns).forEach(x=>btns[x].setAttribute("aria-pressed",String(x===k)));
+      note.textContent=k==="all"?"":(n?"顯示 "+n+" 題":(k==="wrong"?"目前沒有錯題。":k==="new"?"全部都答過了。":"沒有未答的題目了。"));
+    }
+    modes.forEach(m=>{const b=document.createElement("button");b.type="button";b.className="btn";b.textContent=m[1];b.setAttribute("aria-pressed",String(m[0]==="all"));b.onclick=()=>apply(m[0]);btns[m[0]]=b;bar.appendChild(b);});
+    bar.appendChild(note);box.insertBefore(bar,box.firstChild);
+  }
+  const scan=()=>document.querySelectorAll(".quiz[data-quiz]").forEach(addModes);
+  new MutationObserver(ms=>{for(const m of ms)for(const n of m.addedNodes)if(n.nodeType===1&&(n.matches(".qitem,.quiz")||n.querySelector(".qitem"))){scan();return;}}).observe(document.body,{childList:true,subtree:true});
+  scan();
+
   const isChapter=key=>{const v=document.getElementById(key);return !!v&&v.classList.contains("view");};
   const idxOf=it=>it.dataset.i!=null?+it.dataset.i:[...it.parentElement.children].filter(x=>x.classList.contains("qitem")).indexOf(it);
   /* one row of buttons under a question (shared with ezwrong.js) */
@@ -82,8 +125,8 @@
     if(on){if(!b){b=document.createElement("button");b.type="button";b.className="btn qclear";b.textContent="清除作答";row(el).appendChild(b);}
       /* two clicks: first asks for confirmation, the second within 4 s actually clears (same as the whole-page reset) */
       b.onclick=()=>{
-        if(b.dataset.armed!=="1"){b.dataset.armed="1";b.textContent="確定清除？";setTimeout(()=>{if(b.dataset.armed==="1"){b.dataset.armed="";b.textContent="清除作答";}},4000);return;}
-        b.dataset.armed="";b.textContent="清除作答";fn();
+        if(b.dataset.armed!=="1"){b.dataset.armed="1";b.textContent="確定清除這題的作答與分數？";setTimeout(()=>{if(b.dataset.armed==="1"){b.dataset.armed="";b.textContent="清除作答";}},4000);return;}
+        b.dataset.armed="";b.textContent="清除作答";window.EZundo("這題的作答",fn,el);
       };}
     else if(b){b.remove();if(r&&!r.children.length)r.remove();}
   }

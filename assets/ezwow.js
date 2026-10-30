@@ -286,7 +286,8 @@ h3.mo-read::before{content:"✓";flex:0 0 auto;align-self:center;display:grid;pl
     const today=day(new Date()),y=new Date();y.setDate(y.getDate()-1);
     if(s.last!==today){s={last:today,n:s.last===day(y)?(s.n||0)+1:1};try{localStorage.setItem("ezstreak",JSON.stringify(s));}catch(e){}}
     if(robot()||calm())return;
-    const first=root.classList.contains("ezlock");   /* every time the login screen is about to show (a new tab, a signed-out reload) */
+    let seenToday=false;try{seenToday=localStorage.getItem("ezwow-intro")===today;}catch(e){}   /* the big intro plays once a day; after that the login screen opens straight away */
+    const first=root.classList.contains("ezlock")&&!seenToday;if(first){try{localStorage.setItem("ezwow-intro",today);}catch(e){}}   /* every time the login screen is about to show (a new tab, a signed-out reload) */
     const cardsFly=()=>{
       document.querySelectorAll(".exam-subj").forEach((c,i)=>{
         if(!c.animate)return;const dir=i%2?1:-1;

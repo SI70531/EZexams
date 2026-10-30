@@ -250,7 +250,7 @@ code{font-family:var(--f-mono);font-size:.9em;background:var(--indigo-soft);padd
       <div id="aiOff">
         <p>手寫題現在是用關鍵字比對給分，只能抓有沒有寫到術語。設定一把免費的 Google Gemini 金鑰後，統計、作業系統、資料結構的手寫題會改成 AI 批改，有分數也有中文評語。不用綁信用卡。</p>
         <ol class="steps">
-          <li>用 Google 帳號打開 <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio 的 API 金鑰頁</a>。</li>
+          <li>用 Google 帳號打開 <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google 的免費金鑰頁面（AI Studio）</a>。</li>
           <li>按 <b>Create API key</b>（第一次會請你同意條款、選一個專案，選預設的就好）。</li>
           <li>按 <b>Copy key</b> 複製金鑰（<code>AQ.</code> 或 <code>AIza</code> 開頭都可以），貼到下面按「啟用」。每台裝置要各貼一次。</li>
         </ol>
@@ -259,7 +259,7 @@ code{font-family:var(--f-mono);font-size:.9em;background:var(--indigo-soft);padd
           <input id="aiInput" type="password" placeholder="AQ.… 或 AIza…" spellcheck="false">
           <button class="btn primary" type="submit" id="aiBtn">啟用</button>
         </form>
-        <p class="small">金鑰只存在這台裝置的瀏覽器，不會同步到 Gist。免費額度大約每分鐘 10 次、每天上千次，一次「批改全部」只算 1 次。注意：免費版 Google 可能拿送出的內容改進模型，所以不要在答案裡寫個人資料。</p>
+        <p class="small">金鑰只存在這台裝置的瀏覽器，不會上傳到雲端，只存在這台裝置的瀏覽器。免費額度大約每分鐘 10 次、每天上千次，一次「批改全部」只算 1 次。注意：免費版 Google 可能拿送出的內容改進模型，所以不要在答案裡寫個人資料。</p>
       </div>
       <p class="msg" id="aiMsg" role="status"></p>
     </div>
@@ -298,7 +298,7 @@ code{font-family:var(--f-mono);font-size:.9em;background:var(--indigo-soft);padd
     const on=EZAI.connected();
     /* once enabled the panel is not needed; it comes back if Google rejects the key or a page links to #ai */
     $("ai").hidden=on&&!keepAi&&!EZAI.rejected()&&location.hash!=="#ai";$("aiLed").className="led "+(on&&!EZAI.rejected()?"ok":on?"err":"");
-    $("aiTitle").textContent=on?(EZAI.rejected()?"Google 不接受目前的金鑰，請貼一把新的":"已啟用 Gemini 批改"):"用關鍵字比對批改";
+    $("aiTitle").textContent=on?(EZAI.rejected()?"Google 不接受目前的金鑰，請貼一把新的":"已啟用 AI 批改"):"用關鍵字比對批改";
     $("aiSub").textContent=on?EZAI.model():"";
   }
   $("aiForm").addEventListener("submit",async e=>{

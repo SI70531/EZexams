@@ -238,3 +238,7 @@ pre{max-width:100%;overflow-x:auto}
 .rvwrong>.wgh{font-size:14px;font-weight:700;color:var(--bad,#c62828);margin:10px 0 0;scroll-margin-top:80px}
 .rvwrong .wcard{margin:10px 0}
 @media (max-width:640px){.rvsec{padding:10px 13px 4px}.rvwrong{margin-left:4px;padding-left:10px}}
+/* lecture notes: English first, the Chinese version right under it */
+.zhn{display:block;margin-top:3px;font-size:.92em;line-height:1.6;color:var(--muted);font-family:"Noto Sans TC",var(--f-body,system-ui),sans-serif;font-style:normal}
+.zhn b,.zhn strong{color:inherit}
+body.nozh .zhn{display:none}

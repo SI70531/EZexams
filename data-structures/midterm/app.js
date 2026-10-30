@@ -118,7 +118,7 @@ const KEYS={
 "y25-26":TABLE6,
 "y25-27":[G(2,"ppre\\s*(==?\\s*|is\\s*)?null","(a) pPre null"),G(2,"pnew"+ARR+"link\\s*=\\s*list"+ARR+"head","(b) pNew->link = list.head"),G(2,"list"+ARR+"head\\s*=\\s*pnew","(c) list.head = pNew"),G(2,"pnew"+ARR+"link\\s*=\\s*ppre"+ARR+"link","(d) pNew->link = pPre->link"),G(2,"ppre"+ARR+"link\\s*=\\s*pnew","(e) pPre->link = pNew")],
 "y25-28":[G(2,"last|最後|尾","temp moves to the last node"),G(2,"dummy|plist|頭","last node points to the dummy node"),G(2,"circular|環|cycle|循環","becomes a circularly linked list")],
-"mock-a-21":[G(2,"circular|環","circularly")],
+"mock-a-21":[G(2,"null|空","null")],
 "mock-a-22":[G(2,"o\\s*\\(\\s*n\\s*\\)|linear|線性","O(n)")],
 "mock-a-23":[G(2,"probe|探測","probe")],
 "mock-a-24":KO(7,["2150","1","7","8","15"],["0?615","1","2","3","5"]),
@@ -132,8 +132,8 @@ const KEYS={
 "mock-b-24":KO(7,["3685","1","12","13","25"],["1229","1","4","5","9"]),
 "mock-b-25":[G(2,NUM(4),"(a) i. 4"),G(2,NUM(5),"(a) ii. 5"),G(2,NUM(3),"(b) i. 3"),G(2,NUM(7),"(b) ii. 7"),G(2,NUM(2),"(c) i. 2"),G(2,NUM(11),"(c) ii. 11"),G(2,"47|8\\s*/\\s*17","(d) 47%")],
 "mock-b-26":[G(2,FB("a","null")+"|ppre\\s*=\\s*null","(a) null"),G(2,FB("b","list"+ARR+"head")+"|ploc\\s*=\\s*list"+ARR+"head","(b) list.head"),G(2,"target\\s*>","(c) target > pLoc->data.key"),G(2,"ploc\\s*=\\s*ploc"+ARR+"link","(d) pLoc = pLoc->link"),G(2,"target\\s*(==?|equal|is)\\s*(to\\s*)?ploc","(e) target equal pLoc->data.key")],
-"mock-b-27":[G(2,"ppred"+ARR+"fore\\s*=\\s*pdlt"+ARR+"fore","(a) pPred->fore = pDlt->fore"),G(2,"list"+ARR+"head\\s*=\\s*pdlt"+ARR+"fore","(b) list.head = pDlt->fore"),G(2,"psucc"+ARR+"back\\s*=\\s*pdlt"+ARR+"back","(c) pSucc->back = pDlt->back"),G(2,"list"+ARR+"rear\\s*=\\s*pdlt"+ARR+"back","(d) list.rear = pDlt->back"),G(2,"recycle","(e) recycle(pDlt)")],
-"mock-b-28":[G(2,"pnew"+ARR+"link\\s*=\\s*rear"+ARR+"link","pNew->link = rear->link"),G(2,"rear"+ARR+"link\\s*=\\s*pnew","rear->link = pNew"),G(2,"rear\\s*=\\s*pnew","(b) rear = pNew")]
+"mock-b-27":[G(2,"ppre\\s*(==?\\s*|is\\s*)?null","(a) pPre null"),G(2,"pnew"+ARR+"link\\s*=\\s*list"+ARR+"head","(b) pNew->link = list.head"),G(2,"list"+ARR+"head\\s*=\\s*pnew","(c) list.head = pNew"),G(2,"pnew"+ARR+"link\\s*=\\s*ppre"+ARR+"link","(d) pNew->link = pPre->link"),G(2,"ppre"+ARR+"link\\s*=\\s*pnew","(e) pPre->link = pNew")],
+"mock-b-28":[G(2,"head\\s*=\\s*ploc"+ARR+"link","(a) list.head = pLoc->link"),G(2,"ppre"+ARR+"link\\s*=\\s*ploc"+ARR+"link","(b) pPre->link = pLoc->link"),G(2,"recycle|count|第一行|first","recycle / count / first-statement difference")]
 };
 if(typeof KEYS_MORE!=="undefined")Object.assign(KEYS,KEYS_MORE);
 function keywordGrade(qid,pts,ans){

@@ -94,7 +94,7 @@ function renderQuiz(ch){
   function renderScore(){
     const s=quizStat(ch);sc.innerHTML="";
     const t=document.createElement("span");t.textContent=s.k<s.n?("已作答 "+s.k+" / "+s.n+"，目前答對 "+s.r+" 題"):("完成！答對 "+s.r+" / "+s.n+(s.r>=s.n*0.8?"，這章很穩。":"，錯的題目回上面找對應段落再讀一次。"));sc.appendChild(t);
-    const rb=document.createElement("button");rb.className="btn";rb.type="button";rb.textContent="重做這章";rb.addEventListener("click",()=>{delete S.quiz[ch];S.quizReset=S.quizReset||{};S.quizReset[ch]=Date.now();save();renderQuiz(ch);renderTabs(ch);refreshPCB();applyZh();});sc.appendChild(rb);
+    const rb=document.createElement("button");rb.className="btn";rb.type="button";rb.textContent="重做這章";rb.addEventListener("click",()=>{if(rb.dataset.armed!=="1"){rb.dataset.armed="1";rb.textContent="確定重做？";setTimeout(()=>{if(rb.dataset.armed==="1"){rb.dataset.armed="";rb.textContent="重做這章";}},4000);return;}rb.dataset.armed="";rb.textContent="重做這章";delete S.quiz[ch];S.quizReset=S.quizReset||{};S.quizReset[ch]=Date.now();save();renderQuiz(ch);renderTabs(ch);refreshPCB();applyZh();});sc.appendChild(rb);
     const idx=VIEWS.findIndex(v=>v[0]===ch);const nx=VIEWS[idx+1];
     if(isHw&&s.k>=s.n){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";nb.textContent="接著寫第二大題 25 題";nb.addEventListener("click",()=>{const t=document.getElementById("ch"+ch.slice(2)+"-mc");if(t){t.scrollIntoView({block:"start"});scrollBy(0,-76);}});sc.appendChild(nb);}
     else if(s.k>=s.n){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";if(nx&&nx[0]!=="|"){nb.textContent="下一章："+CHN[nx[0]];nb.dataset.go=nx[0];}else{nb.textContent="開始模擬考 1";nb.dataset.go="mock-1";}sc.appendChild(nb);}

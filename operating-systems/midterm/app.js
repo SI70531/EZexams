@@ -230,24 +230,17 @@ document.querySelectorAll(".exam").forEach(ex=>{
   }
   function render(q){
     const g=st.grade[q.id];const box=q.querySelector(".gres");const ta=q.querySelector("textarea");
-    const stale=g&&!g.self&&g.ans!==ta.value.trim();
-    q.classList.toggle("aigraded",!!(g&&g.ai&&!stale)); q.classList.toggle("kwgraded",!!(g&&!g.ai)); /* 自己給分 only after keyword grading */ /* AI graded: no self-grading controls */
+    const stale=g&&g.ans!==ta.value.trim();
+    q.classList.toggle("aigraded",!!(g&&g.ai&&!stale)); q.classList.toggle("kwgraded",!!(g&&!g.ai)); /* AI graded: no self-grading controls */
     if(!g){box.hidden=true;q.dataset.verdict="";return;}
     box.hidden=false;q.dataset.verdict=stale?"":g.verdict;
     box.className="gres "+(stale?"stale":g.verdict);
     box.innerHTML="";
     const h=document.createElement("div");h.className="ghead";
-    h.textContent=(g.self?"✎ 自評　":"")+(g.verdict==="correct"?"✓ 正確":g.verdict==="partial"?"△ 部分正確":"✗ 錯誤")+"　"+g.score+" / "+q.dataset.pts+" 分"+(stale?"（答案改過了，請重新批改）":"");
+    h.textContent=(g.verdict==="correct"?"✓ 正確":g.verdict==="partial"?"△ 部分正確":"✗ 錯誤")+"　"+g.score+" / "+q.dataset.pts+" 分"+(stale?"（答案改過了，請重新批改）":"");
     box.appendChild(h);
     const f=document.createElement("div");f.textContent=g.feedback||"";box.appendChild(f);
     if(!g.ai&&!CHW&&g.missing&&g.missing.length){ /* AI feedback already says what is missing */const m=document.createElement("div");m.className="miss";m.textContent="缺少的關鍵字："+g.missing.join("、");box.appendChild(m);}
-    if(!stale&&!g.ai&&!CHW){const P=+q.dataset.pts,row=document.createElement("div");row.style.cssText="margin-top:8px;display:flex;gap:6px;align-items:center;flex-wrap:wrap";
-      row.innerHTML='<span class="small">自己給分：</span>';const inp=document.createElement("input");inp.type="number";inp.min=0;inp.max=P;inp.step=0.5;inp.value=g.score;inp.style.cssText="width:70px;padding:3px 6px";
-      const ok=document.createElement("button");ok.type="button";ok.className="btn chip";ok.textContent="改分";
-      const full=document.createElement("button");full.type="button";full.className="btn chip";full.textContent="滿分";
-      const setS=v=>{v=Math.round(Math.max(0,Math.min(P,Number(v)||0))*2)/2;st.grade[q.id]=Object.assign({},g,{score:v,verdict:v>=P?"correct":v>0?"partial":"wrong",feedback:"你自己改的分數。",missing:[],manual:true});save();render(q);upd();};
-      ok.addEventListener("click",()=>setS(inp.value));full.addEventListener("click",()=>setS(P));
-      row.append(inp,document.createTextNode("/ "+P),ok,full);box.appendChild(row);}
   }
   function upd(){
     let got=0,graded=0;
@@ -290,24 +283,12 @@ document.querySelectorAll(".exam").forEach(ex=>{
   qs.forEach(q=>{
     const ta=q.querySelector("textarea");
     ta.value=st.ans[q.id]||"";
-    q._ezclear=()=>{ta.value="";delete st.ans[q.id];delete st.grade[q.id];if(st.self)delete st.self[q.id];const si=q.querySelector(".selfsc input");if(si)si.value="";const cb=q.querySelector(".self input");if(cb)cb.checked=false;const gs=q.querySelector(".gstat");if(gs)gs.textContent="";save();render(q);upd();}; /* 清除作答 (ezquiz.js) */
+    q._ezclear=()=>{ta.value="";delete st.ans[q.id];delete st.grade[q.id];const gs=q.querySelector(".gstat");if(gs)gs.textContent="";save();render(q);upd();}; /* 清除作答 (ezquiz.js) */
     let tmr=null;
     ta.addEventListener("input",()=>{clearTimeout(tmr);tmr=setTimeout(()=>{st.ans[q.id]=ta.value;save();render(q);},400);});
     const btn=q.querySelector(".grade"),stat=q.querySelector(".gstat");
     btn.addEventListener("click",()=>{st.ans[q.id]=ta.value;save();grade([qInfo(q)],[btn,gAll],stat);});
     const pts=+q.dataset.pts;
-    const sw=document.createElement("div");sw.className="selfsc";
-    sw.innerHTML='<span class="lb">自己給分</span><button class="btn" type="button" data-v="0">0</button><button class="btn" type="button" data-v="'+pts/2+'">一半</button><button class="btn" type="button" data-v="'+pts+'">滿分 '+pts+'</button><input type="number" min="0" max="'+pts+'" step="0.5" aria-label="自訂分數"><span class="small">/ '+pts+' 分</span><button class="btn primary" type="button" data-set>給分</button><button class="btn" type="button" data-clr>取消</button>';
-    q.querySelector(".gres").before(sw);
-    const inp=sw.querySelector("input");
-    const setSelf=v=>{let sc=Math.max(0,Math.min(pts,Number(v)||0));sc=Math.round(sc*2)/2;inp.value=sc;
-      st.grade[q.id]={score:sc,verdict:sc>=pts?"correct":sc>0?"partial":"wrong",feedback:"自評分數（你自己對照參考答案給的分）",missing:[],ans:ta.value.trim(),self:true};
-      save();render(q);upd();};
-    sw.querySelectorAll("[data-v]").forEach(b=>b.addEventListener("click",()=>setSelf(b.dataset.v)));
-    sw.querySelector("[data-set]").addEventListener("click",()=>{if(inp.value!=="")setSelf(inp.value);});
-    inp.addEventListener("keydown",e=>{if(e.key==="Enter"&&inp.value!=="")setSelf(inp.value);});
-    sw.querySelector("[data-clr]").addEventListener("click",()=>{delete st.grade[q.id];inp.value="";save();render(q);upd();});
-    if(st.grade[q.id])inp.value=st.grade[q.id].score;
     render(q);if(CHW)EZchw.setup(q);
   });
   gAll.addEventListener("click",()=>{
@@ -337,8 +318,8 @@ document.querySelectorAll(".exam").forEach(ex=>{
     const b=e.currentTarget;
     if(b.dataset.armed!=="1"){b.dataset.armed="1";b.textContent="確定清除作答與分數？";setTimeout(()=>{b.dataset.armed="";b.textContent="清除作答";},4000);return;}
     b.dataset.armed="";b.textContent="清除作答";
-    st.ans={};st.grade={};st.self={};st.resetAt=Date.now();save();
-    qs.forEach(q=>{q.querySelector("textarea").value="";q.querySelector(".selfsc input").value="";q.querySelector(".gstat").textContent="";render(q);});
+    st.ans={};st.grade={};st.resetAt=Date.now();save();
+    qs.forEach(q=>{q.querySelector("textarea").value="";q.querySelector(".gstat").textContent="";render(q);});
     ex.querySelectorAll("details.qa").forEach(d=>d.open=false);upd();
   });
   EX[id].upd=upd;

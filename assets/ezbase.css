@@ -132,7 +132,6 @@ td.l,th.l{text-align:left}
 .qa[open] summary::before{transform:rotate(45deg)}
 .qa[open] summary{border-bottom:1px solid var(--line)}
 .qa .inner{padding:8px 16px 10px}
-.self{display:none}
 .examtools{position:sticky;top:calc(env(safe-area-inset-top,0px) + 68px);z-index:4;background:var(--paper);border:1px solid var(--line);border-radius:8px;box-shadow:var(--shadow);padding:10px 12px 10px 16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 18px}
 .examtools .score{font-family:var(--f-display);font-weight:700;font-variant-numeric:tabular-nums;margin-right:auto;color:var(--ink)}
 .examtools .timer{font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-weight:600;color:var(--seal);border:1px solid var(--seal-line);border-radius:20px;padding:2px 11px}
@@ -142,7 +141,7 @@ td.l,th.l{text-align:left}
 .btn.primary:hover:not([disabled]){background:var(--seal);border-color:var(--seal);color:var(--accent-ink)}
 .btn[disabled]{opacity:.55;cursor:default}
 .exq{margin:0 0 10px;scroll-margin-top:80px}
-.exq>label:not(.self){display:block;font-size:12px;letter-spacing:.18em;color:var(--brass);font-weight:700;margin-top:10px}
+.exq>label{display:block;font-size:12px;letter-spacing:.18em;color:var(--brass);font-weight:700;margin-top:10px}
 .exq textarea{width:100%;min-height:110px;font:inherit;font-size:15.5px;line-height:1.75;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:10px 14px;resize:vertical;display:block;margin:6px 0 0;transition:border-color .15s,box-shadow .15s}
 .exq textarea::placeholder{color:var(--muted)}
 .exq textarea:focus{outline:none;border-color:var(--indigo);box-shadow:0 0 0 3px var(--indigo-soft)}
@@ -209,14 +208,11 @@ body.nograde .nogradenote{display:block}
   .examtools{position:static}
   .qitem{padding:14px 14px}
 }
-.exq.aigraded .selfsc,.exq.aigraded label.self{display:none}
 .quiz>h2,.chw>h2{overflow-wrap:anywhere}
 pre{max-width:100%;overflow-x:auto}
 /* home progress table: score on the first line, details below */
 .pscore{font-weight:700;white-space:nowrap}.psub{display:block;margin:3px -5px 0;font-size:.86em;line-height:1.7;color:var(--muted)}.psub>span{white-space:nowrap;display:inline-block;margin:0 5px}
 .ptodo{color:var(--bad,#c62828);font-weight:600}.pok{color:var(--ok,#2e7d32);font-weight:600}
-/* 自己給分 shows only when the question was graded by keywords (no AI), so you can correct the score */
-.exq:not(.kwgraded) .selfsc{display:none}
 /* a finished row in the home progress table turns green */
 #progTable tr:has(.pok)>td{background:rgba(45,122,62,.14)}
 /* 總複習: one key-point card per notes section, in notes order; that section's wrong answers follow right after it */

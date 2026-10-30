@@ -1,6 +1,6 @@
 /* EZexams written questions graded by AI only: chapter-end parts, mock exams and the statistics assignment
-   (blocks get the class .aiw). Past exams (考古題) keep the reference answer, keyword grading and self-grading.
-   - No keyword grading and no self-grading here. If the AI cannot answer (not signed in, quota used up, offline),
+   (blocks get the class .aiw). Past exams (考古題) keep the reference answer, keyword grading.
+   - No keyword grading here. If the AI cannot answer (not signed in, quota used up, offline),
      the question says so and offers 重試; nothing is scored.
    - The reference answer stays in the page but is never shown: it goes to the AI as a reference only.
    - The AI grades against the chapter's notes (the section the question belongs to): it may not require or reward
@@ -10,7 +10,7 @@
    Used by each subject's app.js (EZchw.is / EZchw.grade / EZchw.setup). Outside a chapter tab, a question's notes are
    the section that shares the most words with it. */
 (function(){
-  const css=`.aiw details.qa,.aiw .self,.aiw .selfsc,.aiw .nogradenote{display:none!important}
+  const css=`.aiw details.qa,.aiw .nogradenote{display:none!important}
 .aiw .aians{margin-top:12px}
 .aiw .aians .aisrc{display:block;margin-top:8px;font-family:var(--f-mono);font-size:11px;color:var(--muted)}
 .aiw .aibtn{margin-left:6px}

@@ -53,6 +53,7 @@
 "CORRECT ANSWER: ("+letterOf(it,x.q.a)+")",
 "STUDENT PICKED: ("+letterOf(it,x.pick)+")"+(x.ok?" — correct":" — wrong"),
 x.q.e?"TEACHER'S SHORT NOTE (use it as the ground truth): "+x.q.e:"",
+"Math: write formulas in plain text with Unicode, e.g. O(n log n), n², 2ⁿ, log₂n, 1 + 2 + 4 + … + n. Never use LaTeX, dollar signs or backslash commands.",
 "Reply with ONLY this JSON:",
 '{"mistake":"","options":[{"letter":"A","correct":false,"why":""}],"point":""}',
 "- mistake: if the student was wrong, 1-2 sentences on the exact misunderstanding behind their pick (what they probably confused). Empty string if they were right.",
@@ -125,11 +126,11 @@ x.q.e?"TEACHER'S SHORT NOTE (use it as the ground truth): "+x.q.e:"",
     if(c){
       const os=[...it.querySelectorAll(".opt[data-oi]")];
       sig="r2:"+x.id+":"+os.map(o=>o.dataset.oi+o.querySelector(".ab").textContent).join("");
-      html='<div class="aih">AI 解析</div>'+(c.mistake?'<p class="aimis"><b>你選 ('+letterOf(it,x.pick)+') 錯在：</b>'+esc(c.mistake)+'</p>':'')+
+      html='<div class="aih">AI 解析</div>'+(c.mistake?'<p class="aimis"><b>你選 ('+letterOf(it,x.pick)+') 錯在：</b>'+tx(c.mistake)+'</p>':'')+
         /* right or wrong comes from the answer key, not from the AI's own "correct" flag (it sometimes gets it wrong) */
         '<ul>'+os.map(o=>{const a=c.opts[o.dataset.oi];if(!a)return "";const L=o.querySelector(".ab").textContent.trim(),ok=o.dataset.oi===String(x.q.a);
-          return '<li class="'+(ok?"ok":"no")+(o.dataset.oi===String(x.pick)?" mine":"")+'"><span class="ab">'+L+'</span><span>'+(ok?"<b>正確。</b>":"")+esc(a.why)+'</span></li>';}).join("")+'</ul>'+
-        (c.point?'<p class="aipt">重點：'+esc(c.point)+'</p>':'');
+          return '<li class="'+(ok?"ok":"no")+(o.dataset.oi===String(x.pick)?" mine":"")+'"><span class="ab">'+L+'</span><span>'+(ok?"<b>正確。</b>":"")+tx(a.why)+'</span></li>';}).join("")+'</ul>'+
+        (c.point?'<p class="aipt">重點：'+tx(c.point)+'</p>':'');
     }else if(PEND[x.id]){sig="p:"+x.id;html='<div class="aih">AI 解析</div><span class="aimsg">AI 分析中…</span>';}
     else if(QD.has(x.id)){const m=WAITMSG&&Q[0]&&Q[0].x.id===x.id?WAITMSG:"排隊中，前面的題目分析完就輪到這題…";sig="q:"+x.id+m;html='<div class="aih">AI 解析</div><span class="aimsg">'+m+'</span>';}
     else if(ERR[x.id]){sig="e:"+x.id+ERR[x.id];html='<div class="aih">AI 解析</div><span class="aimsg">'+esc(ERR[x.id])+'</span> <button class="btn aigo" type="button">再試一次</button>';}
@@ -143,6 +144,26 @@ x.q.e?"TEACHER'S SHORT NOTE (use it as the ground truth): "+x.q.e:"",
     const b=box.querySelector(".aigo");if(b)b.onclick=()=>{delete ERR[x.id];enqueue(it,x,true);};
   }
   const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+  /* Gemini often answers with LaTeX ($O(\log n)$, \dots, ^{2}). The page has no math engine, so turn the
+     common pieces into plain Unicode / <sup> / <sub> here. Also covers answers cached before this fix. */
+  const SYM={log:"log",ln:"ln",dots:"…",ldots:"…",cdots:"⋯",times:"×",cdot:"·",le:"≤",leq:"≤",ge:"≥",geq:"≥",
+    neq:"≠",ne:"≠",approx:"≈",equiv:"≡",infty:"∞",to:"→",rightarrow:"→",leftarrow:"←",Rightarrow:"⇒",in:"∈",
+    sum:"Σ",pm:"±",lceil:"⌈",rceil:"⌉",lfloor:"⌊",rfloor:"⌋",mid:"|",cup:"∪",cap:"∩",
+    alpha:"α",beta:"β",gamma:"γ",delta:"δ",Delta:"Δ",epsilon:"ε",theta:"θ",Theta:"Θ",lambda:"λ",mu:"μ",
+    pi:"π",sigma:"σ",omega:"ω",Omega:"Ω"};
+  function tex(t){
+    let s=t;
+    for(let k=0;k<3;k++)s=s.replace(/\\(?:text|mathrm|mathit|mathbf|operatorname)\{([^{}]*)\}/g,"$1")
+      .replace(/\\frac\{([^{}]*)\}\{([^{}]*)\}/g,"($1)/($2)").replace(/\\sqrt\{([^{}]*)\}/g,"√($1)");
+    s=s.replace(/\\[,;!]|\\quad|\\qquad/g," ").replace(/\\\{/g,"{").replace(/\\\}/g,"}")
+      .replace(/\\([a-zA-Z]+)/g,(m,w)=>SYM[w]!==undefined?SYM[w]:w);
+    s=s.replace(/\^\{([^{}]*)\}/g,"<sup>$1</sup>").replace(/\^(\S)/g,"<sup>$1</sup>")
+      .replace(/_\{([^{}]*)\}/g,"<sub>$1</sub>").replace(/_(\S)/g,"<sub>$1</sub>");
+    return s.replace(/[{}]/g,"").trim();
+  }
+  /* escape first, then convert the math segments (\( \), \[ \] and $ $) */
+  const tx=s=>esc(s).replace(/\\\((.+?)\\\)|\\\[(.+?)\\\]|\$([^$\n]+)\$/g,(m,a,b,c)=>tex(a!==undefined?a:b!==undefined?b:c));
 
   let busy=false;
   function all(){

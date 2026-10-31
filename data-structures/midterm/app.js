@@ -513,7 +513,7 @@ function loops(el){
     quad:{n:"Quadratic（巢狀，j <= n）",code:["1 i = 1","2 loop (i <= n)","  1 j = 1","  2 loop (j <= n)","    1 application code","    2 j = j + 1","  3 end loop","  4 i = i + 1","3 end loop"],f:"f(n) = n²",o:"O(n²)"}};
   const s=sel(Object.keys(T).map(k=>[k,T[k].n]),"mul");const n=num(1000,"110px");n.min=1;n.max=100000;
   const r=$("div","labrow");r.append($("label","small","迴圈"),s,$("label","small","n ="),n);el.appendChild(r);
-  const wrap=$("div","llwrap");const left=$("div","llview");const right=$("div");wrap.append(left,right);el.appendChild(wrap);
+  const wrap=$("div","llwrap tblcode");const left=$("div","llview");const right=$("div");wrap.append(left,right);el.appendChild(wrap);
   const log=$("div","lablog");el.appendChild(log);
   function draw(){
     const k=s.value,N=Math.max(1,Math.min(100000,parseInt(n.value)||1));const t=T[k];right.innerHTML=codeBox(t.code.map(l=>l.replace(/\bn\b/g,String(N))),-1);

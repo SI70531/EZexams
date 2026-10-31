@@ -340,9 +340,16 @@ W.states=function(box){
   box.innerHTML='<div class="wtitle">試試看：按下事件，看 process 怎麼移動</div><svg viewBox="0 0 700 330" class="wsvg"></svg><div class="wbtns"></div><div class="wnote"></div>';
   const svg=box.querySelector("svg"),btns=box.querySelector(".wbtns"),note=box.querySelector(".wnote");
   function draw(){
-    let h='<defs><marker id="wsa" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M0,0L10,5L0,10z" fill="currentColor"/></marker></defs>';
-    T.forEach(([a,b,lab],i)=>{const [x1,y1]=S[a],[x2,y2]=S[b];const dx=x2-x1,dy=y2-y1,L=Math.hypot(dx,dy);const ox=-dy/L*14,oy=dx/L*14;const sx=x1+dx/L*62+ox,sy=y1+dy/L*26+oy,ex=x2-dx/L*62+ox,ey=y2-dy/L*26+oy;
-      const act=a===cur;h+='<g class="wedge'+(act?' on':'')+'"><line x1="'+sx+'" y1="'+sy+'" x2="'+ex+'" y2="'+ey+'" marker-end="url(#wsa)"/><text x="'+LP[i][0]+'" y="'+LP[i][1]+'" text-anchor="'+LP[i][2]+'">'+lab+'</text></g>';});
+    const mk=(id,c)=>'<marker id="'+id+'" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:'+c+'"/></marker>';
+    let h='<defs>'+mk("wsa","var(--line-strong)")+mk("wsb","var(--seal)")+'</defs>';
+    /* where the (offset) edge line meets the node ellipse, padded by 4: solve |((o+s*u)/(rx,ry))|=1 for s, so line ends sit exactly on the outline */
+    const RX=64,RY=28,hit=(ox,oy,ux,uy,far)=>{const A=(ux/RX)**2+(uy/RY)**2,B=2*(ox*ux/RX**2+oy*uy/RY**2),C=(ox/RX)**2+(oy/RY)**2-1,D=Math.sqrt(Math.max(0,B*B-4*A*C));return far?(-B+D)/(2*A):(-B-D)/(2*A);};
+    T.forEach(([a,b,lab],i)=>{const [x1,y1]=S[a],[x2,y2]=S[b];const dx=x2-x1,dy=y2-y1,L=Math.hypot(dx,dy),ux=dx/L,uy=dy/L;const ox=-uy*14,oy=ux*14;
+      const s0=hit(ox,oy,ux,uy,true),s1=L-hit(ox,oy,-ux,-uy,true);
+      const sx=(x1+ox+ux*s0).toFixed(1),sy=(y1+oy+uy*s0).toFixed(1),ex=(x1+ox+ux*s1).toFixed(1),ey=(y1+oy+uy*s1).toFixed(1);
+      /* label sits just outside its own line (on the side the line is offset to), anchored away from the line when it is steep */
+      const mx=(+sx+ +ex)/2,my=(+sy+ +ey)/2,side=Math.abs(uy)>.55?(mx>355?1:-1):0,lx=mx+side*12,ly=my+(side?4:(oy>0?20:-10)),an=side?(side>0?'start':'end'):'middle';
+      const act=a===cur;h+='<g class="wedge'+(act?' on':'')+'"><line x1="'+sx+'" y1="'+sy+'" x2="'+ex+'" y2="'+ey+'" marker-end="url(#'+(act?"wsb":"wsa")+')"/><text x="'+lx.toFixed(1)+'" y="'+ly.toFixed(1)+'" text-anchor="'+an+'">'+lab+'</text></g>';});
     for(const k in S){const [x,y]=S[k];h+='<g class="wnode'+(k===cur?' on':'')+'"><ellipse cx="'+x+'" cy="'+y+'" rx="60" ry="24"/><text x="'+x+'" y="'+(y+5)+'" text-anchor="middle">'+k+'</text></g>';}
     svg.innerHTML=h;
     btns.innerHTML="";

@@ -62,7 +62,11 @@
   if("IntersectionObserver"in window){
     /* scrolls out of view completely -> re-armed, so it draws again each time it comes back */
     const io=new IntersectionObserver(es=>es.forEach(e=>{
-      if(e.intersectionRatio===0)done.delete(e.target);
+      if(e.intersectionRatio===0){
+        /* clip-path reveals report ratio 0 while they play: only re-arm when it is truly outside the viewport */
+        const r=e.target.getBoundingClientRect();
+        if(r.bottom<0||r.top>innerHeight)done.delete(e.target);
+      }
       else if(e.intersectionRatio>=.3&&!done.has(e.target)){done.add(e.target);drawIn(e.target);}
     }),{threshold:[0,.3]});
     boxes.forEach(b=>io.observe(b));

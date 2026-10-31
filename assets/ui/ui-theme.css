@@ -1,0 +1,18 @@
+/* UI 組件懶人包 × EZexams 主題橋接
+   把 ui.css 的 --ui-* 變數對到站內的主題 token，淺色 / 深色都跟著網站走。
+   必須在 ui.css 之後載入。 */
+:root, :root[data-theme="light"], :root[data-theme="dark"] {
+  --ui-bg: var(--paper);
+  --ui-card: var(--paper2);
+  --ui-line: var(--line-strong);
+  --ui-ink: var(--ink);
+  --ui-mute: var(--muted);
+  --ui-brand: var(--seal);
+  --ui-brand-ink: var(--paper);
+  --ui-ok: var(--ok);
+  --ui-warn: var(--warn);
+  --ui-err: var(--bad);
+  --ui-r: 14px;
+  --ui-shadow: var(--shadow);
+  --ui-font: var(--f-body);
+}

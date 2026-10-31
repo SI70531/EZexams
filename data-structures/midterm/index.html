@@ -148,6 +148,10 @@ figure.fig{margin:16px 0}
 :root[data-theme="dark"] .fig svg{filter:invert(.88) hue-rotate(180deg)}
 :root[data-theme="dark"] .fig .cap{color:var(--muted)}
 .two>pre{flex:1 1 300px;min-width:0;margin:6px 0}
+/* 毛玻璃：pseudocode 區塊與欄位表改成半透明 + 背景模糊 */
+pre,.tbl{background:linear-gradient(135deg,color-mix(in srgb,#fff 20%,transparent),transparent 62%),color-mix(in srgb,var(--paper) 45%,transparent);-webkit-backdrop-filter:blur(14px) saturate(1.5);backdrop-filter:blur(14px) saturate(1.5);border:1px solid color-mix(in srgb,var(--ink) 16%,transparent);box-shadow:inset 0 1px 0 color-mix(in srgb,#fff 30%,transparent),var(--shadow)}
+.tbl th,.tbl td{background:color-mix(in srgb,var(--paper) 32%,transparent)}
+.tbl th{background:color-mix(in srgb,var(--paper2) 50%,transparent)}
 .mxwrap{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:8px}
 .mxb .small{margin-bottom:3px}
 .mx{display:grid;grid-template-columns:repeat(3,40px);border:1.5px solid var(--ink);border-radius:4px;overflow:hidden;background:var(--paper)}

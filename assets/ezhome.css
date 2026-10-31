@@ -63,7 +63,7 @@ main{padding-block:36px 72px}
 .pastbox>summary::-webkit-details-marker{display:none}
 .pastbox>summary::before{content:"▸";transition:transform .2s}.pastbox[open]>summary::before{transform:rotate(90deg)}
 .pastbox .pastgrid{margin-top:16px}
-.exam-subj.past .subj h2::after{content:"（已考完）";font-size:.55em;color:var(--muted);margin-left:6px}
+.exam-subj.past .subj .en::after{content:"（已考完）";margin-left:6px}
 #subjects .slot{min-height:258px}
 @media (max-width:760px){.subjgrid{grid-template-columns:1fr;gap:36px}}
 .subj{display:flex;align-items:baseline;gap:12px;margin:0 0 16px}

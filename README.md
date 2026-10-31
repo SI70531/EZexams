@@ -34,7 +34,7 @@ assets/             Shared code and styles used by every page
   ezfx.js           Animations and answer feedback
   ezjoy.js          Combo chip and chapter-clear card
   ezmotion.js       Tab glide, theme reveal, review motion
-  ezfig.js          Diagrams and interactive figures draw themselves on tab switch / scroll, with a ↻ replay chip
+  ezfig.js          Diagrams and interactive figures draw themselves on tab switch / scroll
   ezwow.js          Big effects: intro, page turn, shatter, trail, particles, read marks
 subject/exam/       One folder per exam
   index.html        Notes and exam content for that page

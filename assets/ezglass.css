@@ -116,8 +116,8 @@ html::before{
 @media (prefers-color-scheme: dark){html:root:not([data-theme="light"]) :is(code,pre){background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.22);color:#f1f5f4}}
 html:root[data-theme="dark"] :is(code,pre){background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.22);color:#f1f5f4}
 
-/* ============ 5. Lecture notes: same as browser zoom 110%, but only inside the notes ============ */
+/* ============ 5. Lecture notes: same as browser zoom 120%, but only inside the notes ============ */
 /* Only the chapter views (#ch1, #ch2 …). The top bar, tabs and everything else stay at 100%.
    Chapter-end practice (.chw) is zoomed back so it keeps its normal size. */
-:root .view[id^="ch"]{zoom:1.1}
-:root .view[id^="ch"] .chw{zoom:.9091}
+:root .view[id^="ch"]{zoom:1.2}
+:root .view[id^="ch"] .chw{zoom:.8333}

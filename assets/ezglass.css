@@ -29,12 +29,6 @@
   --glass-th:rgba(255,255,255,.06); --glass-line:rgba(255,255,255,.12); --glass-fallback:rgba(28,46,59,.92);
   --blob-a:rgba(139,92,246,.38); --blob-b:rgba(56,130,246,.34); --blob-c:rgba(234,120,40,.22)}
 
-/* dark mode: secondary / small text was a dull grey on glass, so lift it (Chinese small text especially) */
-@media (prefers-color-scheme: dark){html:root:not([data-theme="light"]){--muted:rgba(226,231,230,.88);--ink70:rgba(226,231,230,.94)}}
-html:root[data-theme="dark"]{--muted:rgba(226,231,230,.88);--ink70:rgba(226,231,230,.94)}
-@media (prefers-color-scheme: dark){html:root:not([data-theme="light"]) .zhn{color:rgba(232,237,236,.9)}}
-html:root[data-theme="dark"] .zhn{color:rgba(232,237,236,.9)}
-
 /* ============ 1. Background glow blobs ============ */
 /* Three big soft circles in different corners, sitting under everything (z-index:-1).
    They live on <html>::before so no HTML change is needed; <body> keeps its own background (it propagates to the canvas). */
@@ -121,5 +115,3 @@ html::before{
 :root :is(code,pre) code{background:transparent;border:0}
 @media (prefers-color-scheme: dark){html:root:not([data-theme="light"]) :is(code,pre){background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.22);color:#f1f5f4}}
 html:root[data-theme="dark"] :is(code,pre){background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.22);color:#f1f5f4}
-@media (prefers-color-scheme: dark){html:root:not([data-theme="light"]) .zhn{color:rgba(240,244,243,.94)}}
-html:root[data-theme="dark"] .zhn{color:rgba(240,244,243,.94)}

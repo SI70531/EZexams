@@ -9,14 +9,14 @@
   if(!document.querySelector("[data-quiz],.view,#tabs"))return;
   const root=document.documentElement;
   const css=`
-#jump{position:fixed;right:max(14px,env(safe-area-inset-right,0px));bottom:max(64px,calc(env(safe-area-inset-bottom,0px) + 58px));z-index:56;font:600 13px/1.2 var(--f-mono);color:var(--ink)}
-#jump button.jp-pill{all:unset;cursor:pointer;display:flex;align-items:center;gap:8px;max-width:min(64vw,300px);padding:8px 14px;border-radius:999px;
+#jump{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:max(64px,calc(env(safe-area-inset-bottom,0px) + 58px));z-index:56;font:600 13px/1.2 var(--f-mono);color:var(--ink)}
+#jump button.jp-pill{all:unset;cursor:pointer;display:flex;align-items:center;gap:8px;max-width:min(46vw,260px);padding:8px 14px;border-radius:999px;
   background:color-mix(in srgb,var(--paper) 88%,transparent);border:1px solid var(--line-strong);box-shadow:var(--shadow);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);transition:transform .2s}
 #jump button.jp-pill:hover{transform:translateY(-2px)}
 #jump button.jp-pill:focus-visible{outline:2px solid var(--seal);outline-offset:2px}
 #jump .jp-dot{flex:none;width:8px;height:8px;border-radius:50%;background:var(--seal);box-shadow:0 0 0 3px color-mix(in srgb,var(--seal) 25%,transparent)}
 #jump .jp-now{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#jump .jp-list{position:absolute;right:0;bottom:calc(100% + 10px);width:min(86vw,340px);max-height:min(60vh,420px);overflow:auto;margin:0;padding:6px;list-style:none;
+#jump .jp-list{position:absolute;left:0;bottom:calc(100% + 10px);width:min(86vw,340px);max-height:min(60vh,420px);overflow:auto;margin:0;padding:6px;list-style:none;
   background:color-mix(in srgb,var(--paper) 94%,transparent);border:1px solid var(--line-strong);border-radius:14px;box-shadow:var(--shadow);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
   opacity:0;transform:translateY(10px) scale(.97);pointer-events:none;transition:opacity .2s,transform .3s cubic-bezier(.2,1.1,.3,1)}
 #jump.open .jp-list{opacity:1;transform:none;pointer-events:auto}

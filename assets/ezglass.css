@@ -1,0 +1,105 @@
+/* EZexams glassmorphism layer.
+   Loaded LAST on every page (home, help, all subjects), so it only restyles surfaces and never touches layout.
+   1) Background glow blobs   2) Glass cards / content blocks   3) Glass tables
+   Light mode uses the spec values; dark mode flips to a translucent white-on-dark glass so text stays readable. */
+
+/* ============ 0. Glass tokens (light = spec values) ============ */
+:root{
+  --glass-bg:rgba(255,255,255,.45);          /* translucent white */
+  --glass-bg-nested:rgba(255,255,255,.30);   /* glass inside glass: no extra blur, just a lighter tint */
+  --glass-fig:rgba(255,255,255,.55);         /* figures keep a lighter panel: their SVG strokes are dark */
+  --glass-bd:rgba(255,255,255,.6);           /* the 1px bright edge is what sells the effect */
+  --glass-sh:0 10px 30px rgba(0,0,0,.06);
+  --glass-sh-hover:0 16px 40px rgba(0,0,0,.10);
+  --glass-th:rgba(255,255,255,.2);           /* table header tint */
+  --glass-line:rgba(0,0,0,.08);              /* table cell dividers */
+  --glass-fallback:rgba(255,255,255,.82);    /* browsers without backdrop-filter */
+  --glass-blur:16px;
+  /* blob colours: lavender / sky / peach */
+  --blob-a:rgba(167,139,250,.55); --blob-b:rgba(96,165,250,.50); --blob-c:rgba(251,146,60,.38);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --glass-bg:rgba(255,255,255,.07); --glass-bg-nested:rgba(255,255,255,.05); --glass-fig:rgba(236,240,240,.86);
+  --glass-bd:rgba(255,255,255,.16); --glass-sh:0 10px 30px rgba(0,0,0,.35); --glass-sh-hover:0 16px 40px rgba(0,0,0,.45);
+  --glass-th:rgba(255,255,255,.06); --glass-line:rgba(255,255,255,.12); --glass-fallback:rgba(28,46,59,.92);
+  --blob-a:rgba(139,92,246,.38); --blob-b:rgba(56,130,246,.34); --blob-c:rgba(234,120,40,.22)}}
+:root[data-theme="dark"]{
+  --glass-bg:rgba(255,255,255,.07); --glass-bg-nested:rgba(255,255,255,.05); --glass-fig:rgba(236,240,240,.86);
+  --glass-bd:rgba(255,255,255,.16); --glass-sh:0 10px 30px rgba(0,0,0,.35); --glass-sh-hover:0 16px 40px rgba(0,0,0,.45);
+  --glass-th:rgba(255,255,255,.06); --glass-line:rgba(255,255,255,.12); --glass-fallback:rgba(28,46,59,.92);
+  --blob-a:rgba(139,92,246,.38); --blob-b:rgba(56,130,246,.34); --blob-c:rgba(234,120,40,.22)}
+
+/* ============ 1. Background glow blobs ============ */
+/* Three big soft circles in different corners, sitting under everything (z-index:-1).
+   They live on <html>::before so no HTML change is needed; <body> keeps its own background (it propagates to the canvas). */
+html::before{
+  content:"";position:fixed;inset:-10%;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(circle 480px at 10% 8%,  var(--blob-a), transparent 70%),   /* top-left: lavender */
+    radial-gradient(circle 440px at 92% 26%, var(--blob-b), transparent 70%),   /* right: sky blue */
+    radial-gradient(circle 520px at 62% 98%, var(--blob-c), transparent 70%);   /* bottom: peach */
+  filter:blur(24px);
+  animation:glassdrift 28s ease-in-out infinite alternate;
+}
+@keyframes glassdrift{to{transform:translate3d(2.5%,-2%,0) scale(1.06)}}
+@media (prefers-reduced-motion: reduce){html::before{animation:none}}
+
+/* ============ 2. Glass cards ============ */
+/* `:root` in front lifts specificity above the page's own inline rules (.box.en, .qitem …) without !important. */
+:root :is(.ticket,.syncbox,.pcb,.box,.calc,.fig,.qa,.examtools,.qitem,.qscore,.day,.next,.rvsec,.cheat .two>div,.thmenu){
+  background:var(--glass-bg);
+  -webkit-backdrop-filter:blur(var(--glass-blur));
+  backdrop-filter:blur(var(--glass-blur));
+  border:1px solid var(--glass-bd);
+  border-radius:16px;
+  box-shadow:var(--glass-sh);
+}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  :root :is(.ticket,.syncbox,.pcb,.box,.calc,.fig,.qa,.examtools,.qitem,.qscore,.day,.next,.rvsec,.cheat .two>div,.thmenu,table){background:var(--glass-fallback)}
+}
+/* glass inside glass: drop the second blur (a blur of an already-blurred layer looks the same and costs a lot of GPU on long pages) */
+:root :is(.qitem,.rvsec,.qa,.day,.cheat .two>div,.fig,.next,.pcb) :is(.box,.calc,.fig,.qa,table,.pcb){
+  -webkit-backdrop-filter:none;backdrop-filter:none;background:var(--glass-bg-nested);box-shadow:none;
+}
+/* the coloured note boxes keep their tint (English / Chinese / warning / tip) on top of the glass */
+:root .box.en  {background:linear-gradient(var(--indigo-soft),var(--indigo-soft)),var(--glass-bg)}
+:root .box.zh  {background:linear-gradient(var(--brass-soft),var(--brass-soft)),var(--glass-bg)}
+:root .box.warn{background:linear-gradient(var(--seal-soft),var(--seal-soft)),var(--glass-bg)}
+:root .box.tip {background:linear-gradient(var(--warn-soft),var(--warn-soft)),var(--glass-bg)}
+:root .fig{background:var(--glass-fig)}
+:root .box,:root .fig,:root .calc{border-radius:16px}
+/* answer options inside a question card: see-through instead of a solid grey slab (right / wrong states keep their colours) */
+:root .opt:not(.right):not(.wrong){background:var(--glass-bg-nested);border-color:var(--glass-bd)}
+
+/* home page ticket: soft lift instead of the hard offset shadow; the tear-off notches become glass arcs */
+:root .ticket:hover{transform:translateY(-3px);box-shadow:var(--glass-sh-hover)}
+:root .ticket .stub{border-radius:0 15px 15px 0;border-left-color:var(--glass-line);background:var(--glass-th)}
+:root .ticket .stub::before,:root .ticket .stub::after{background:transparent;border:1px solid var(--glass-bd)}
+:root .pcb .ph{border-radius:15px 15px 0 0}
+:root .pcb{overflow:hidden}
+:root .examtools{border-radius:16px}
+
+/* ============ 3. Glass tables ============ */
+/* The table itself is the glass block, shrink-wrapped so no empty glass is left beside narrow tables.
+   Cells are transparent; dividers are 1px hairlines; the header gets a faint extra tint. */
+:root table{
+  width:fit-content;max-width:100%;
+  border-collapse:separate;border-spacing:0;
+  background:var(--glass-bg);
+  -webkit-backdrop-filter:blur(var(--glass-blur));
+  backdrop-filter:blur(var(--glass-blur));
+  border:1px solid var(--glass-bd);
+  border-radius:16px;
+  box-shadow:var(--glass-sh);
+  overflow-x:auto;
+}
+:root table.ezfull,:root table.prog{width:100%}
+:root table :is(th,td){
+  background:transparent;
+  border:0;
+  border-right:1px solid var(--glass-line);
+  border-bottom:1px solid var(--glass-line);
+}
+:root table :is(th,td):last-child{border-right:0}
+:root table>:last-child>tr:last-child>*{border-bottom:0}
+:root table th{background:var(--glass-th)}

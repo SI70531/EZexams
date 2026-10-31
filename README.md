@@ -35,6 +35,7 @@ assets/             Shared code and styles used by every page
   ezjoy.js          Combo chip and chapter-clear card
   ezmotion.js       Tab glide, theme reveal, review motion
   ezfig.js          Diagrams and interactive figures draw themselves on tab switch / scroll
+  ezfit.js          Layout fit: narrow tables get their explanation beside them, or stretch to full width
   ezwow.js          Big effects: intro, page turn, shatter, trail, particles, read marks
 subject/exam/       One folder per exam
   index.html        Notes and exam content for that page
@@ -82,6 +83,13 @@ Answers that don't match clearly go into an "unmatched" group. To see where ever
 2. Supabase → Authentication → Sign In / Providers → Email: turn **Confirm email** off, minimum password length 6. (Authentication → Sessions → *JWT expiry* of 86400 s keeps a study session signed in all day.)
 3. Cloudflare → Workers → `ezexams-ai` → Settings → Variables and Secrets: add the secret **`SUPABASE_SECRET_KEY`** (Supabase → Project Settings → API Keys → *Secret keys*). It is only used to log a device in after a right PIN.
 4. The project URL and the publishable key are in `assets/ezsync.js` and `tools/ezexams-worker.js` (they are public by design). A username becomes `<username>@…` using `MAIL` in `ezsync.js` and `tests/harness.mjs`; nothing is ever sent to it.
+
+To give a new subject page the figure animations and the layout fit, add these two lines next to the other `assets/` scripts (then run `python3 tools/stamp.py`):
+
+```html
+<script src="../../assets/ezfig.js" defer></script>
+<script src="../../assets/ezfit.js" defer></script>
+```
 
 To turn on sync for a new subject page, add this line just before the page's main script:
 

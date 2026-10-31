@@ -32,13 +32,14 @@
   }
   /* interactive figures built from HTML (array cells, list nodes, matrices, bars, tables): pieces pop / rise / grow in one after another */
   function domIn(box){
-    const els=[...box.querySelectorAll(".labhead,.lbl,.labhint,.labrow,.labgrid,.cell,.slot,.node,.arr,.llhead,.mx span,.mxop,.bar-r,.bar-r i,.labtbl tr,.llcode,.lablog,.tside tr")]
+    const els=[...box.querySelectorAll(".labhead,.lbl,.labhint,.labrow,.labgrid,.cell,.slot,.node,.arr,.llhead,.mx span,.mxop,.bar-r,.bar-r i,.llcode,.lablog,.wtitle,.wnote,.wrow,.wgantt .gb>span,.gtk,.wres,.wcalc,.wlog,.lab-row,.calc,.sc-item,.p-sorted>span,table tr")]
       .filter(e=>!e.closest("svg"));
     if(!els.length)return;
     const step=Math.min(28,1100/els.length);
     els.forEach((e,i)=>{
       const d=i*step;
       try{
+        if(e.matches(".gb>span")){e.style.transformOrigin="0 50%";e.animate([{transform:"scaleX(0)",opacity:0},{transform:"none",opacity:1}],{duration:520,delay:d,easing:"cubic-bezier(.2,.9,.3,1)",fill:"backwards"});return;}
         if(e.matches(".bar-r i")){e.style.transformOrigin="0 50%";e.animate([{transform:"scaleX(0)"},{transform:"none"}],{duration:750,delay:d,easing:"cubic-bezier(.2,.9,.3,1)",fill:"backwards"});return;}
         if(e.matches(".cell,.slot,.node,.mx span,.mxop,.arr,.llhead")){e.animate([{opacity:0,transform:"scale(.6)"},{opacity:1,transform:"none"}],{duration:420,delay:d,easing:"cubic-bezier(.2,1.2,.3,1)",fill:"backwards"});return;}
         e.animate([{opacity:0,transform:"translateY(10px)"},{opacity:1,transform:"none"}],{duration:420,delay:d,easing:"cubic-bezier(.2,.9,.3,1)",fill:"backwards"});
@@ -46,7 +47,7 @@
     });
   }
   function drawIn2(box){
-    if(box.matches(".lab,.ilab"))domIn(box);
+    if(box.matches(".lab,.ilab,.widget"))domIn(box);
     if(box.tagName==="PRE"){
       /* code / algorithm: the lines appear one by one, top to bottom, with a soft glow on the newest line */
       const h=box.scrollHeight,cs=getComputedStyle(box),lh=parseFloat(cs.lineHeight)||parseFloat(cs.fontSize)*1.5,
@@ -88,7 +89,7 @@
     });
   }
 
-  const boxes=[...document.querySelectorAll("figure.fg,figure.fig,.ilab,.lab,pre,table")].filter(b=>!(b.matches("pre,table")&&b.closest(".ilab,.lab,figure")));
+  const boxes=[...document.querySelectorAll("figure.fg,figure.fig,.ilab,.lab,.widget,pre,table")].filter(b=>!(b.matches("pre,table")&&b.closest(".ilab,.lab,.widget,figure")));
   const done=new WeakSet();
   const view=b=>b.closest("section.view");
 

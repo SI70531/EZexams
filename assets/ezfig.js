@@ -89,14 +89,31 @@
     });
   }
 
-  const boxes=[...document.querySelectorAll("figure.fg,figure.fig,.ilab,.lab,.widget,pre,table")].filter(b=>!(b.matches("pre,table")&&b.closest(".ilab,.lab,.widget,figure")));
-  const done=new WeakSet();
+  const boxes=[],known=new WeakSet(),done=new WeakSet();
   const view=b=>b.closest("section.view");
+  let io=null;
+  /* collect every figure-like block that is not registered yet (also the ones a page builds later, e.g. past-exam figures) */
+  function gather(){
+    const found=[...document.querySelectorAll("figure.fg,figure.fig,div.fig,.qfig,.two,.ilab,.lab,.widget,pre,table")]
+      .filter(b=>!(b.matches(".two")&&(!b.querySelector("svg")||b.querySelector(".fig,figure,.qfig"))))
+      .filter(b=>!(b.matches("pre,table")&&b.closest(".ilab,.lab,.widget,figure,.fig,.qfig")));
+    /* catch-all: any other diagram (an svg whose wrapper is none of the above, whatever tag it sits in) is animated by its parent block */
+    const pool=boxes.concat(found);
+    document.querySelectorAll("svg").forEach(sv=>{
+      if(pool.some(b=>b.contains(sv)))return;
+      if(sv.closest("button,a,nav,[aria-hidden=true],.top,.ico"))return;
+      const vb=(sv.getAttribute("viewBox")||"").split(/[ ,]+/).map(Number),w=parseFloat(sv.getAttribute("width"))||vb[2]||0;
+      if(w&&w<60)return;                                                     /* little icons */
+      const host=sv.parentElement&&sv.parentElement!==document.body?sv.parentElement:sv;
+      if(!pool.includes(host)){pool.push(host);found.push(host);}
+    });
+    found.forEach(x=>{if(known.has(x))return;known.add(x);boxes.push(x);if(io)io.observe(x);});
+  }
 
   /* ---- play when it comes into view; a tab switch re-arms everything inside that tab ---- */
   if("IntersectionObserver"in window){
     /* scrolls out of view completely -> re-armed, so it draws again each time it comes back */
-    const io=new IntersectionObserver(es=>es.forEach(e=>{
+    io=new IntersectionObserver(es=>es.forEach(e=>{
       if(e.intersectionRatio===0){
         /* clip-path reveals report ratio 0 while they play: only re-arm when it is truly outside the viewport */
         const r=e.target.getBoundingClientRect();
@@ -104,8 +121,9 @@
       }
       else if(e.intersectionRatio>=.3&&!done.has(e.target)){done.add(e.target);drawIn(e.target);}
     }),{threshold:[0,.3]});
-    boxes.forEach(b=>io.observe(b));
   }
+  gather();
+  let gt=0;new MutationObserver(()=>{clearTimeout(gt);gt=setTimeout(gather,120);}).observe(document.body,{childList:true,subtree:true});
   document.querySelectorAll("section.view").forEach(v=>{
     new MutationObserver(()=>{
       if(v.hidden){boxes.forEach(b=>{if(view(b)===v)done.delete(b);});return;}

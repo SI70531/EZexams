@@ -25,10 +25,77 @@
     });
     if(locked.length)setTimeout(()=>locked.forEach(([e,o])=>{e.style.overflow=o;}),ms);
   }
+  /* ---- flow diagrams (boxes joined by arrows): play in the order of the arrows, slowly, so the direction is clear ----
+     the start box appears, each arrow is then drawn from its tail to its head, and only when the head arrives does the box it points to appear */
+  let flowMs=0;
+  function flowIn(svg){
+    const R=e=>e.getBoundingClientRect();
+    const sR=R(svg);if(!sR.width)return false;
+    const all=[...svg.querySelectorAll("path,line,polyline,polygon,rect,circle,ellipse,text")].filter(e=>!e.closest("defs,marker,clipPath,mask,symbol,pattern"));
+    const tag=e=>e.tagName.toLowerCase();
+    /* boxes */
+    let nodes=all.filter(e=>/^(rect|ellipse)$/.test(tag(e))).map(e=>({e,r:R(e),txt:[],t:null})).filter(n=>n.r.width>=28&&n.r.height>=14&&n.r.width*n.r.height<sR.width*sR.height*.5);
+    nodes=nodes.filter(n=>nodes.filter(m=>m!==n&&m.r.left>=n.r.left-1&&m.r.right<=n.r.right+1&&m.r.top>=n.r.top-1&&m.r.bottom<=n.r.bottom+1).length<2);   /* not a group frame */
+    if(nodes.length<3)return false;
+    const dist=(p,r)=>Math.hypot(Math.max(r.left-p.x,0,p.x-r.right),Math.max(r.top-p.y,0,p.y-r.bottom));
+    const near=(p,not)=>{let b=null,d=1e9;nodes.forEach(n=>{if(n===not)return;const k=dist(p,n.r);if(k<d){d=k;b=n;}});return[b,d];};
+    const pt=(e,at)=>{const q=e.getPointAtLength(at),m=e.getScreenCTM();return m?new DOMPoint(q.x,q.y).matrixTransform(m):q;};
+    const lenOf=e=>{try{return e.getTotalLength()}catch(x){return 0}};
+    const isNode=e=>nodes.some(n=>n.e===e);
+    /* arrows: strokes that carry an arrowhead marker */
+    const arrows=all.filter(e=>!isNode(e)&&!/^(text|circle)$/.test(tag(e))&&e.getTotalLength&&getComputedStyle(e).markerEnd!=="none"&&lenOf(e)>0).map(e=>{
+      const L=lenOf(e),a=pt(e,0),b=pt(e,L),[tn,td]=near(b);return{e,L,a,b,tn,td};});
+    if(arrows.filter(a=>a.td<22).length<2)return false;                      /* axes of a graph etc. are not flow */
+    arrows.forEach(a=>{const [sn]=near(a.a,a.tn);a.sn=sn;});
+    /* text that belongs to a box */
+    const texts=all.filter(e=>tag(e)==="text");
+    texts.forEach(t=>{const r=R(t),c={x:(r.left+r.right)/2,y:(r.top+r.bottom)/2};let best=null,ba=1e12;nodes.forEach(n=>{if(dist(c,n.r)===0){const ar=n.r.width*n.r.height;if(ar<ba){ba=ar;best=n;}}});if(best){best.txt.push(t);t._n=best;}});
+    /* schedule */
+    const inc=new Set(arrows.map(a=>a.tn));
+    let roots=nodes.filter(n=>!inc.has(n)).sort((a,b)=>a.r.left-b.r.left||a.r.top-b.r.top);
+    if(!roots.length)roots=[nodes.slice().sort((a,b)=>a.r.left-b.r.left||a.r.top-b.r.top)[0]];
+    const POP=380,SPEED=.24;                                                  /* px per ms of arrow drawing */
+    const q=roots.slice(0,1).concat(roots.slice(1));roots.forEach(n=>{n.t=0;});
+    const sched=[];let qi=0;
+    while(qi<q.length){
+      const n=q[qi++];
+      arrows.filter(a=>a.sn===n&&!a.done).sort((a,b)=>a.b.y-b.b.y).forEach((a,k)=>{
+        a.done=1;a.t=n.t+POP*.8+k*140;a.d=Math.max(520,Math.min(1200,a.L/SPEED));sched.push(a);
+        const t=a.tn;if(t&&t.t===null){t.t=a.t+a.d*.92;q.push(t);}
+      });
+    }
+    let end=0;sched.forEach(a=>{end=Math.max(end,a.t+a.d);});
+    arrows.filter(a=>!a.done).forEach(a=>{a.done=1;a.t=end*.5;a.d=700;sched.push(a);if(a.tn&&a.tn.t===null){a.tn.t=a.t+a.d*.9;}});
+    nodes.forEach(n=>{if(n.t===null)n.t=end*.6;});
+    end=Math.max(end,...sched.map(a=>a.t+a.d),...nodes.map(n=>n.t+POP));
+    const f=Math.min(1,10000/end);                                          /* whole figure never takes longer than ~10 s */
+    const T=x=>x*f;
+    flowMs=Math.max(flowMs,T(end)+300);
+    /* every other element joins the box / arrow it is closest to */
+    const done=new Set([...nodes.map(n=>n.e),...arrows.map(a=>a.e),...texts.filter(t=>t._n)]);
+    const rest=all.filter(e=>!done.has(e));
+    const bound=(e,fn)=>{try{fn()}catch(x){}};
+    nodes.forEach(n=>{[n.e,...n.txt].forEach(e=>bound(e,()=>{e.style.transformBox="fill-box";e.style.transformOrigin="50% 50%";
+      e.animate([{opacity:0,transform:"scale(.82)"},{opacity:1,transform:"none"}],{duration:POP,delay:T(n.t),easing:"cubic-bezier(.2,1.2,.3,1)",fill:"backwards"});}));});
+    sched.forEach(a=>bound(a.e,()=>{
+      const dl=T(a.t),du=T(a.d);
+      a.e.animate([{strokeDasharray:a.L+" "+a.L,strokeDashoffset:a.L},{strokeDasharray:a.L+" "+a.L,strokeDashoffset:0}],{duration:du,delay:dl,easing:"cubic-bezier(.35,0,.25,1)",fill:"backwards"});
+      a.e.style.markerEnd="none";setTimeout(()=>{a.e.style.markerEnd="";},dl+du*.97);       /* the head appears when the line arrives */
+    }));
+    rest.forEach(e=>bound(e,()=>{
+      const r=R(e),c={x:(r.left+r.right)/2,y:(r.top+r.bottom)/2};let bt=T(end)*.5,bd=1e9;
+      sched.forEach(a=>{[a.a,a.b].forEach((p,i)=>{const k=Math.hypot(p.x-c.x,p.y-c.y);if(k<bd){bd=k;bt=T(a.t)+(i?T(a.d)*.95:0);}});});
+      const L=lenOf(e),cs=getComputedStyle(e),stroked=cs.stroke!=="none"&&parseFloat(cs.strokeWidth)>0,filled=cs.fill!=="none";
+      if(tag(e)!=="text"&&stroked&&!filled&&L>8&&e.getTotalLength){e.animate([{strokeDasharray:L+" "+L,strokeDashoffset:L},{strokeDasharray:L+" "+L,strokeDashoffset:0}],{duration:520*f+120,delay:Math.max(0,bt-260),fill:"backwards"});return;}
+      e.animate([{opacity:0},{opacity:1}],{duration:380,delay:bt,fill:"backwards"});
+    }));
+    return true;
+  }
   function drawIn(box){
     if(calm()||!box.animate)return;
-    lockScroll(box,2300);
+    flowMs=0;
     drawIn2(box);
+    lockScroll(box,Math.max(2300,flowMs+500));
   }
   /* interactive figures built from HTML (array cells, list nodes, matrices, bars, tables): pieces pop / rise / grow in one after another */
   function domIn(box){
@@ -63,6 +130,7 @@
     }
     const svgs=[...box.querySelectorAll("svg")];
     svgs.forEach(svg=>{
+      try{if(flowIn(svg))return;}catch(x){}
       const els=[...svg.querySelectorAll("path,line,polyline,polygon,rect,circle,ellipse,text")]
         .filter(e=>!e.closest("defs,marker,clipPath,mask,symbol,pattern"));
       if(!els.length)return;

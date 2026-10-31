@@ -115,3 +115,18 @@ html::before{
 :root :is(code,pre) code{background:transparent;border:0}
 @media (prefers-color-scheme: dark){html:root:not([data-theme="light"]) :is(code,pre){background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.22);color:#f1f5f4}}
 html:root[data-theme="dark"] :is(code,pre){background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.22);color:#f1f5f4}
+
+/* ============ 5. Lecture notes: text 10% larger ============ */
+/* Only the chapter views (#ch1, #ch2 …), i.e. the notes. Chapter-end practice (.chw), quizzes and exams keep their size.
+   Base 16px -> 17.6px; the fixed-px rules are scaled by the same 1.1. */
+:root .view[id^="ch"]{font-size:17.6px}
+:root .view[id^="ch"] .chw{font-size:16px}
+:root .view[id^="ch"] :is(.box.en,.box.en *):not(.chw *){font-size:18.7px}
+:root .view[id^="ch"] :is(.zhn,.small,.cap,.fig .cap):not(.chw *){font-size:inherit}
+:root .view[id^="ch"] table:not(.chw *){font-size:16px}
+:root .view[id^="ch"] table th:not(.chw *){font-size:14.85px}
+:root .view[id^="ch"] :is(.calc,pre):not(.chw *){font-size:14.85px}
+:root .view[id^="ch"] h3:not(.chw *){font-size:26.4px}
+:root .view[id^="ch"] h4:not(.chw *){font-size:18.2px}
+:root .view[id^="ch"] .small:not(.chw *){font-size:14.85px}
+:root .view[id^="ch"] .cap:not(.chw *){font-size:14.3px}

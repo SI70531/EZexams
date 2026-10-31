@@ -37,8 +37,7 @@ function refreshPCB(){
     el.innerHTML='<div class="ph"><span>NODE</span><span>#'+String(PID[id]??0).padStart(2,"0")+'</span></div>'+
       '<div class="pr"><span>state</span><b class="st '+p.state+'">'+p.state+'</b></div>'+
       '<div class="pr"><span>'+lab+'</span><b>'+(p.n?p.done+" / "+p.n:"—")+'</b></div>'+
-      '<div class="bar"><i style="width:'+pct+'%"></i></div>'+
-      '<div class="pr lk"><span>link</span><b>'+(nextOf(id)||"null")+'</b></div>';
+      '<div class="bar"><i style="width:'+pct+'%"></i></div>';
     el.setAttribute("aria-label","進度："+p.state+(p.n?"，"+p.done+"/"+p.n:""));
   });
 }

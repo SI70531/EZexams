@@ -11,8 +11,26 @@
   const root=document.documentElement;
   const calm=()=>root.classList.contains("ezcalm")||matchMedia("(prefers-reduced-motion:reduce)").matches;
   /* ---- draw one diagram: trace strokes, grow fills, fade labels, staggered (total stagger <= ~0.9s) ---- */
+  /* while pieces slide / scale in they would briefly make scrollable containers overflow (a flashing scrollbar): lock those containers until the motion ends */
+  function lockScroll(box,ms){
+    const set=new Set();
+    for(let a=box;a&&a!==document.body;a=a.parentElement)set.add(a);
+    box.querySelectorAll("*").forEach(e=>set.add(e));
+    const locked=[];
+    set.forEach(e=>{
+      let cs;try{cs=getComputedStyle(e);}catch(x){return;}
+      if(/(auto|scroll)/.test(cs.overflowX+cs.overflowY)&&(e.scrollHeight>e.clientHeight||e.scrollWidth>e.clientWidth||e!==box)){
+        locked.push([e,e.style.overflow]);e.style.overflow="hidden";
+      }
+    });
+    if(locked.length)setTimeout(()=>locked.forEach(([e,o])=>{e.style.overflow=o;}),ms);
+  }
   function drawIn(box){
     if(calm()||!box.animate)return;
+    lockScroll(box,2300);
+    drawIn2(box);
+  }
+  function drawIn2(box){
     if(box.tagName==="PRE"){
       /* code / algorithm: the lines appear one by one, top to bottom, with a soft glow on the newest line */
       const h=box.scrollHeight,cs=getComputedStyle(box),lh=parseFloat(cs.lineHeight)||parseFloat(cs.fontSize)*1.5,

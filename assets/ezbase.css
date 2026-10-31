@@ -242,3 +242,9 @@ pre{max-width:100%;overflow-x:auto}
 .zhn{display:block;margin-top:3px;font-size:.92em;line-height:1.6;color:var(--muted);font-family:"Noto Sans TC",var(--f-body,system-ui),sans-serif;font-style:normal}
 .zhn b,.zhn strong{color:inherit}
 body.nozh .zhn{display:none}
+
+/* tables next to their explanation (ezfit.js) and compact tables inside interactive figures */
+.tside{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 28px;align-items:start;margin:8px 0}.tside>div{min-width:0}.tside table,.lab table{margin:6px 0}.tside th,.tside td,.lab th,.lab td{padding:4px 11px}.tside .box,.tside pre{margin-top:8px}
+@media (max-width:760px){.tside{grid-template-columns:1fr}}
+table.ezfull{display:table;width:100%}
+@media (max-width:760px){table.ezfull{display:block;width:auto}}

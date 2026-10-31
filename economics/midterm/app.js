@@ -170,7 +170,7 @@ function renderHome(){
   let html='<tr><th class="l">項目</th><th>狀態</th></tr>';let next=null;
   CHS.forEach(c=>{const s=quizStat(c);const hk="hw"+c.slice(2),h=QUIZ[hk]?quizStat(hk):null;
     const sc=Math.round(s.r*100/s.n*10)/10; /* a chapter is 25 multiple-choice questions, 100 分 */
-    html+='<tr><td class="l"><button class="btn" data-go="'+c+'" data-goend="'+c+'">'+c.replace("ch","Ch")+' 章末練習</button></td><td>'+(s.k?('<b class="pscore">得分 '+sc+' / 100 分</b><span class="psub"><span>選擇 '+(s.k?s.r+'/'+s.k:'還沒寫')+'（共 '+s.n+' 題）</span>'+(h?'<span>作業 '+(h.k?h.r+'/'+h.k:'還沒寫')+'（共 '+h.n+' 題）</span>':'')+(s.k>=s.n?'<span class="pok">✓ 完成</span>':'<span class="ptodo">未完成</span>')+'</span>'):(h&&h.k?'作業 '+h.r+'/'+h.k+'，25 題還沒做':"還沒做"))+'</td></tr>';
+    html+='<tr><td class="l"><button class="btn" data-go="'+c+'" data-goend="'+c+'">'+c.replace("ch","Ch")+' 章末練習</button></td><td>'+(s.k?('<b class="pscore">得分 '+sc+' / 100 分</b><span class="psub"><span>選擇 '+(s.k?s.r+'/'+s.k:'還沒寫')+'（共 '+s.n+' 題）</span>'+(h?'<span>作業 '+(h.k?h.r+'/'+h.k:'還沒寫')+'（共 '+h.n+' 題）</span>':'')+(s.k>=s.n?'<span class="pok">✓ 完成</span>':'<span class="ptodo">未完成</span>')+'</span>'):(h&&h.k?'作業 '+h.r+'/'+h.k+'，25 題還沒寫':"還沒寫"))+'</td></tr>';
     if(!next&&s.k<s.n)next=[c,"讀 "+CHN[c]+"，再做章末練習"];});
   Object.keys(MOCK).forEach((id,j)=>{const e=examStat(id);
     html+='<tr><td class="l"><button class="btn" data-go="'+id+'">模擬考 '+(j+1)+'</button></td><td>'+(e.k?('<b class="pscore">得分 '+Math.round(e.r/e.n*1000)/10+' / 100 分</b><span class="psub"><span>選擇 '+(e.k?e.r+'/'+e.k:'還沒寫')+'（共 '+e.n+' 題）</span>'+(e.done?'<span class="pok">✓ 完成</span>':'<span class="ptodo">未完成</span>')+'</span>'):"還沒寫")+'</td></tr>';

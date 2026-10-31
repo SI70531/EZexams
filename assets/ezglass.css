@@ -5,9 +5,9 @@
 
 /* ============ 0. Glass tokens (light = spec values) ============ */
 :root{
-  --glass-bg:rgba(255,255,255,.45);          /* translucent white */
-  --glass-bg-nested:rgba(255,255,255,.30);   /* glass inside glass: no extra blur, just a lighter tint */
-  --glass-fig:rgba(255,255,255,.55);         /* figures keep a lighter panel: their SVG strokes are dark */
+  --glass-bg:rgba(255,255,255,.32);          /* translucent white */
+  --glass-bg-nested:rgba(255,255,255,.20);   /* glass inside glass: no extra blur, just a lighter tint */
+  --glass-fig:rgba(255,255,255,.42);         /* figures keep a lighter panel: their SVG strokes are dark */
   --glass-bd:rgba(255,255,255,.6);           /* the 1px bright edge is what sells the effect */
   --glass-sh:0 10px 30px rgba(0,0,0,.06);
   --glass-sh-hover:0 16px 40px rgba(0,0,0,.10);

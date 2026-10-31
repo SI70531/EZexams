@@ -69,12 +69,19 @@
     nodes.forEach(n=>{if(n.t===null)n.t=end*.6;});
     end=Math.max(end,...sched.map(a=>a.t+a.d),...nodes.map(n=>n.t+POP));
     const f=Math.min(1,10000/end);                                          /* whole figure never takes longer than ~10 s */
-    const T=x=>x*f;
+    /* backdrop shapes (big fills, or a fill that wraps several boxes) come first, then the flow starts */
+    const isBack=e=>{try{const cs=getComputedStyle(e);if(cs.fill==="none"||cs.fillOpacity==="0"||tag(e)==="text")return false;const r=R(e),a=r.width*r.height;
+      if(a>sR.width*sR.height*.12)return true;if(a<2500)return false;
+      return nodes.filter(n=>n.r.left>r.left&&n.r.right<r.right&&n.r.top>r.top&&n.r.bottom<r.bottom).length>=2;}catch(x){return false;}};
+    const backs=all.filter(e=>!isNode(e)&&!arrows.some(a=>a.e===e)&&!(tag(e)==="text")&&isBack(e));
+    const OFF=backs.length?420:0;
+    const T=x=>x*f+OFF;
     flowMs=Math.max(flowMs,T(end)+300);
     /* every other element joins the box / arrow it is closest to */
     const done=new Set([...nodes.map(n=>n.e),...arrows.map(a=>a.e),...texts.filter(t=>t._n)]);
-    const rest=all.filter(e=>!done.has(e));
+    const rest=all.filter(e=>!done.has(e)&&!backs.includes(e));
     const bound=(e,fn)=>{try{fn()}catch(x){}};
+    backs.forEach((e,i)=>bound(e,()=>{e.style.transformBox="fill-box";e.style.transformOrigin="50% 50%";e.animate([{opacity:0,transform:"scale(.94)"},{opacity:1,transform:"none"}],{duration:520,delay:i*80,easing:"cubic-bezier(.2,.9,.3,1)",fill:"backwards"});}));
     nodes.forEach(n=>{[n.e,...n.txt].forEach(e=>bound(e,()=>{e.style.transformBox="fill-box";e.style.transformOrigin="50% 50%";
       e.animate([{opacity:0,transform:"scale(.82)"},{opacity:1,transform:"none"}],{duration:POP,delay:T(n.t),easing:"cubic-bezier(.2,1.2,.3,1)",fill:"backwards"});}));});
     sched.forEach(a=>bound(a.e,()=>{
@@ -84,12 +91,71 @@
     }));
     rest.forEach(e=>bound(e,()=>{
       const r=R(e),c={x:(r.left+r.right)/2,y:(r.top+r.bottom)/2};let bt=T(end)*.5,bd=1e9;
+      /* a line that touches boxes is drawn once those boxes are there */
+      let touch=-1;
+      if(tag(e)!=="text"&&e.getTotalLength){try{const L0=lenOf(e),m=e.getScreenCTM(),g=at=>{const q=e.getPointAtLength(at);return m?new DOMPoint(q.x,q.y).matrixTransform(m):q;};
+        [g(0),g(L0)].forEach(pp=>nodes.forEach(n=>{if(dist(pp,n.r)<=14)touch=Math.max(touch,T(n.t)+POP*.7);}));}catch(x2){}}
+      if(touch>=0){const cs0=getComputedStyle(e);if(cs0.stroke!=="none"&&cs0.fill==="none"){const L1=lenOf(e);if(L1>8){e.animate([{strokeDasharray:L1+" "+L1,strokeDashoffset:L1},{strokeDasharray:L1+" "+L1,strokeDashoffset:0}],{duration:520,delay:touch,fill:"backwards"});return;}}
+        e.animate([{opacity:0},{opacity:1}],{duration:380,delay:touch,fill:"backwards"});return;}
       sched.forEach(a=>{[a.a,a.b].forEach((p,i)=>{const k=Math.hypot(p.x-c.x,p.y-c.y);if(k<bd){bd=k;bt=T(a.t)+(i?T(a.d)*.95:0);}});});
       const L=lenOf(e),cs=getComputedStyle(e),stroked=cs.stroke!=="none"&&parseFloat(cs.strokeWidth)>0,filled=cs.fill!=="none";
       if(tag(e)!=="text"&&stroked&&!filled&&L>8&&e.getTotalLength){e.animate([{strokeDasharray:L+" "+L,strokeDashoffset:L},{strokeDasharray:L+" "+L,strokeDashoffset:0}],{duration:520*f+120,delay:Math.max(0,bt-260),fill:"backwards"});return;}
       e.animate([{opacity:0},{opacity:1}],{duration:380,delay:bt,fill:"backwards"});
     }));
     return true;
+  }
+  /* ---- order of a generic diagram: background shapes -> free lines (axes, curves) -> boxes / nodes with their text -> connectors (they leave from boxes that already exist) -> arrowheads and labels beside them ---- */
+  function orderPlan(svg,els){
+    const sR=svg.getBoundingClientRect(),area=(sR.width*sR.height)||1;
+    const info=els.map(e=>{
+      const tg=e.tagName.toLowerCase();let cs=null;try{cs=getComputedStyle(e);}catch(x){}
+      const r=e.getBoundingClientRect(),a=r.width*r.height;
+      const filled=!!cs&&cs.fill&&cs.fill!=="none"&&cs.fillOpacity!=="0";
+      let k;
+      if(tg==="text")k="text";
+      else if(filled&&a>area*.28)k="bg";
+      else if(/^(rect|ellipse|circle)$/.test(tg)&&Math.min(r.width,r.height)>=5)k="node";
+      else if(filled&&a>=450)k="node";
+      else if(filled)k="head";
+      else k="line";
+      return{e,tg,k,r,a,cs};
+    });
+    /* a filled shape that wraps two or more other shapes is the backdrop of the figure (e.g. the yellow ADT region) */
+    info.forEach(i=>{
+      if(i.k!=="node"&&i.k!=="head")return;if(!i.cs||i.cs.fill==="none"||i.a<2500)return;
+      let inside=0;info.forEach(o=>{if(o===i||o.k==="text")return;const c={x:(o.r.left+o.r.right)/2,y:(o.r.top+o.r.bottom)/2};
+        if(c.x>i.r.left&&c.x<i.r.right&&c.y>i.r.top&&c.y<i.r.bottom&&o.a<i.a*.6)inside++;});
+      if(inside>=2)i.k="bg";
+    });
+    const nodes=info.filter(i=>i.k==="node"&&i.a>=150);
+    const dnode=(p,q)=>Math.hypot(Math.max(q.left-p.x,0,p.x-q.right),Math.max(q.top-p.y,0,p.y-q.bottom));
+    const nearNode=p=>nodes.some(n=>dnode(p,n.r)<=14);
+    info.forEach(i=>{
+      if(i.k!=="line")return;i.conn=false;
+      try{const L=i.e.getTotalLength(),m=i.e.getScreenCTM(),f=at=>{const q=i.e.getPointAtLength(at);return m?new DOMPoint(q.x,q.y).matrixTransform(m):q;};
+        i.p0=f(0);i.p1=f(L);i.conn=nodes.length>=2&&(nearNode(i.p0)||nearNode(i.p1));}catch(x){}
+    });
+    const D=new Map();let t=0;
+    const seq=(items,step,gap)=>{items.forEach((i,j)=>D.set(i.e,t+j*step));if(items.length)t+=items.length*step+gap;};
+    const of=k=>info.filter(i=>i.k===k);
+    seq(of("bg"),70,100);
+    const free=info.filter(i=>i.k==="line"&&!i.conn);seq(free,Math.min(70,520/Math.max(1,free.length)),120);
+    seq(nodes.concat(info.filter(i=>i.k==="node"&&i.a<150)),Math.min(60,520/Math.max(1,of("node").length)),160);
+    const conn=info.filter(i=>i.k==="line"&&i.conn);seq(conn,Math.min(110,700/Math.max(1,conn.length)),0);
+    const lines=info.filter(i=>i.k==="line"&&D.has(i.e));
+    const center=r=>({x:(r.left+r.right)/2,y:(r.top+r.bottom)/2});
+    const nearLine=c=>{let b=null,bd=1e9;lines.forEach(l=>[l.p0,l.p1,center(l.r)].forEach(p=>{if(!p)return;const d=Math.hypot(p.x-c.x,p.y-c.y);if(d<bd){bd=d;b=l;}}));return b;};
+    info.filter(i=>i.k==="head").forEach(i=>{const l=nearLine(center(i.r));D.set(i.e,l?D.get(l.e)+520:t);});
+    info.filter(i=>i.k==="text").forEach(i=>{
+      const c=center(i.r);let best=null,ba=1e12;
+      nodes.forEach(n=>{if(dnode(c,n.r)===0&&n.a<ba){ba=n.a;best=n;}});
+      if(best){D.set(i.e,D.get(best.e)+80);return;}
+      const l=nearLine(c);D.set(i.e,l?D.get(l.e)+300:t);
+    });
+    let mx=0;D.forEach(v=>{mx=Math.max(mx,v);});
+    const f=mx>1900?1900/mx:1;
+    flowMs=Math.max(flowMs,mx*f+900);
+    return{d:e=>(D.get(e)||0)*f};
   }
   function drawIn(box){
     if(calm()||!box.animate)return;
@@ -134,18 +200,21 @@
       const els=[...svg.querySelectorAll("path,line,polyline,polygon,rect,circle,ellipse,text")]
         .filter(e=>!e.closest("defs,marker,clipPath,mask,symbol,pattern"));
       if(!els.length)return;
+      let plan=null;try{plan=orderPlan(svg,els);}catch(x){}
       const step=Math.min(22,900/els.length);
       els.forEach((e,i)=>{
         let cs;try{cs=getComputedStyle(e);}catch(x){return;}
-        const delay=i*step,tag=e.tagName.toLowerCase();
+        const delay=plan?plan.d(e):i*step,tag=e.tagName.toLowerCase();
         try{
-          if(tag==="text"){e.animate([{opacity:0,transform:"translateY(5px)"},{opacity:1,transform:"none"}],{duration:420,delay:delay+150,easing:"ease-out",fill:"backwards"});return;}
+          if(tag==="text"){e.animate([{opacity:0,transform:"translateY(5px)"},{opacity:1,transform:"none"}],{duration:420,delay:plan?delay:delay+150,easing:"ease-out",fill:"backwards"});return;}
           const stroked=cs.stroke&&cs.stroke!=="none"&&parseFloat(cs.strokeWidth)>0;
           const filled=cs.fill&&cs.fill!=="none"&&cs.fillOpacity!=="0";
           const dashed=cs.strokeDasharray&&cs.strokeDasharray!=="none";
           if(stroked&&!filled&&!dashed&&e.getTotalLength){
             const L=e.getTotalLength();
-            if(L>0&&isFinite(L)){e.animate([{strokeDasharray:L+" "+L,strokeDashoffset:L},{strokeDasharray:L+" "+L,strokeDashoffset:0}],{duration:650,delay,easing:"cubic-bezier(.4,0,.2,1)",fill:"backwards"});return;}
+            if(L>0&&isFinite(L)){e.animate([{strokeDasharray:L+" "+L,strokeDashoffset:L},{strokeDasharray:L+" "+L,strokeDashoffset:0}],{duration:650,delay,easing:"cubic-bezier(.4,0,.2,1)",fill:"backwards"});
+            if(plan&&cs.markerEnd&&cs.markerEnd!=="none"){e.style.markerEnd="none";setTimeout(()=>{e.style.markerEnd="";},delay+630);}   /* the arrowhead shows when the line arrives */
+            return;}
           }
           if(tag==="rect"&&filled){e.style.transformBox="fill-box";e.style.transformOrigin="50% 100%";
             e.animate([{transform:"scaleY(0)",opacity:0},{transform:"none",opacity:1}],{duration:560,delay,easing:"cubic-bezier(.2,1.2,.3,1)",fill:"backwards"});return;}

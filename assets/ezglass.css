@@ -121,3 +121,7 @@ html:root[data-theme="dark"] :is(code,pre){background:rgba(255,255,255,.12);bord
    Chapter-end practice (.chw) is zoomed back so it keeps its normal size. */
 :root .view[id^="ch"]{zoom:1.2}
 :root .view[id^="ch"] .chw{zoom:.8333}
+
+/* section headings (h3 is a flex row with a dotted rule): put the Chinese line on its own row under the title */
+:root h3:has(>.zhn){flex-wrap:wrap}
+:root h3>.zhn{order:2;flex:0 0 100%;margin-top:0;font-weight:500}

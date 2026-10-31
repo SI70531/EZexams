@@ -9,13 +9,12 @@
   if(!document.querySelector("[data-quiz],.view,#tabs"))return;
   const root=document.documentElement;
   const css=`
-#jump{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:max(64px,calc(env(safe-area-inset-bottom,0px) + 58px));z-index:56;font:600 13px/1.2 var(--f-mono);color:var(--ink)}
-#jump button.jp-pill{all:unset;cursor:pointer;display:flex;align-items:center;gap:8px;max-width:min(46vw,260px);padding:8px 14px;border-radius:999px;
+#jump{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:max(14px,calc(env(safe-area-inset-bottom,0px) + 14px));z-index:56;font:600 13px/1.2 var(--f-mono);color:var(--ink)}
+#jump button.jp-pill{all:unset;cursor:pointer;box-sizing:border-box;display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;
   background:color-mix(in srgb,var(--paper) 88%,transparent);border:1px solid var(--line-strong);box-shadow:var(--shadow);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);transition:transform .2s}
 #jump button.jp-pill:hover{transform:translateY(-2px)}
 #jump button.jp-pill:focus-visible{outline:2px solid var(--seal);outline-offset:2px}
-#jump .jp-dot{flex:none;width:8px;height:8px;border-radius:50%;background:var(--seal);box-shadow:0 0 0 3px color-mix(in srgb,var(--seal) 25%,transparent)}
-#jump .jp-now{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#jump svg{width:20px;height:20px;stroke:var(--ink)}
 #jump .jp-list{position:absolute;left:0;bottom:calc(100% + 10px);width:min(86vw,340px);max-height:min(60vh,420px);overflow:auto;margin:0;padding:6px;list-style:none;
   background:color-mix(in srgb,var(--paper) 94%,transparent);border:1px solid var(--line-strong);border-radius:14px;box-shadow:var(--shadow);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
   opacity:0;transform:translateY(10px) scale(.97);pointer-events:none;transition:opacity .2s,transform .3s cubic-bezier(.2,1.1,.3,1)}
@@ -29,9 +28,9 @@ html.ezcalm #jump .jp-list,html.ezcalm #jump button.jp-pill{transition:none}`;
   const st=document.createElement("style");st.textContent=css;document.head.appendChild(st);
 
   const box=document.createElement("nav");box.id="jump";box.setAttribute("aria-label","章節段落跳轉");
-  box.innerHTML='<button type="button" class="jp-pill" aria-expanded="false" aria-controls="jpList"><span class="jp-dot" aria-hidden="true"></span><span class="jp-now">—</span></button><ul class="jp-list" id="jpList" role="list"></ul>';
+  box.innerHTML='<button type="button" class="jp-pill" aria-expanded="false" aria-controls="jpList"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">章節段落</span></button><ul class="jp-list" id="jpList" role="list"></ul>';
   document.body.appendChild(box);
-  const pill=box.querySelector(".jp-pill"),now=box.querySelector(".jp-now"),list=box.querySelector(".jp-list");
+  const pill=box.querySelector(".jp-pill"),list=box.querySelector(".jp-list");
 
   const visible=el=>el.offsetParent!==null||el.getClientRects().length>0;
   const heads=()=>[...document.querySelectorAll(".view h2,.view h3,main h2,main h3,article h2,article h3")]
@@ -43,8 +42,7 @@ html.ezcalm #jump .jp-list,html.ezcalm #jump button.jp-pill{transition:none}`;
     const hs=heads();const mid=innerHeight*.35;
     let cur=null;
     for(const h of hs){if(h.getBoundingClientRect().top<=mid)cur=h;else break;}
-    const txt=cur?label(cur):(hs[0]?label(hs[0]):"—");
-    if(txt!==lastKey){now.textContent=txt;lastKey=txt;}
+    pill.title=cur?label(cur):"";
     box.style.display=hs.length?"":"none";
     return {hs,cur};
   }

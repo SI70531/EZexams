@@ -28,6 +28,7 @@
 <script src="../../assets/ezai.js?v=470f21a1"></script>
 <style>.plansep{border:0;border-top:1px dashed var(--line);margin:10px 0}</style>
 <script src="../../assets/ezplan.js?v=83f54f76" defer></script>
+<style>.side{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 28px;align-items:start;margin-top:8px}.side>div{min-width:0}.side table,.labtbl table{margin:6px 0}.side th,.side td,.labtbl th,.labtbl td{padding:3px 11px}.side .box{margin-top:8px}.llwrap{grid-template-columns:auto minmax(0,1fr)!important;gap:12px 28px!important;align-items:start}@media (max-width:760px){.side,.llwrap{grid-template-columns:1fr!important}}</style>
 </head>
 <body>
 <link rel="stylesheet" href="../../assets/fonts/fonts.css?v=8277b7f0">
@@ -511,6 +512,7 @@ end deviation
   2 i = i / 2
 3 end loop</pre>
 </div>
+<div class="side"><div>
 <div class="tbl"><table>
 <tr><th colspan="2">Multiply</th><th colspan="2">Divide</th></tr>
 <tr><th>Iteration</th><th>Value of i</th><th>Iteration</th><th>Value of i</th></tr>
@@ -527,12 +529,14 @@ end deviation
 <tr><td>(exit)</td><td>1024</td><td>(exit)</td><td>0</td></tr>
 </table></div>
 <p class="small">Table 1-2　Analysis of multiply and divide loops</p>
+</div><div>
 <pre>multiply   2<sup>Iterations</sup> &lt; 1000
 divide     1000 / 2<sup>Iterations</sup> &gt;= 1          <span class="c">f(n) = ⌈log₂n⌉</span></pre>
 <div class="box zh"><span class="lbl">圖解 Table 1-2</span>
 左邊 i 從 1 開始每次乘 2：1, 2, 4, …, 512 都 &lt; 1000，所以跑 <b>10</b> 次；第 11 次 i = 1024 不再 &lt; 1000，離開（exit）。<br>
 右邊 i 從 1000 開始每次除 2（整數除法，捨去小數）：1000, 500, 250, 125, 62, 31, 15, 7, 3, 1，也是 <b>10</b> 次；再除一次變 0，不再 ≥ 1，離開。<br>
 兩邊都是「最多能乘（或除）幾次 2」→ log₂1000 ≈ 9.97，取上限 = <b>10</b>，所以 f(n) = ⌈log₂n⌉。</div>
+</div></div>
 <div class="lab" data-lab="loops"></div>
 
 <h4>Nested loops <span class="sl">Slide 37–39</span></h4>

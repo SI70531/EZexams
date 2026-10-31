@@ -19,6 +19,7 @@ EZexams is a study site with notes, practice questions, and mock exams for each 
 index.html          Home page (exam list, sync sign-in, AI grading setup)
 assets/             Shared code and styles used by every page
   ezbase.css        Shared styles
+  ezglass.css       Glassmorphism layer: background glow blobs, frosted cards and tables
   ezsync.js         Accounts and saving progress across devices (Supabase)
   ezgate.js         Sign-in screen shown before the site opens
   ezai.js           AI grading for short answers

@@ -544,8 +544,6 @@ divide     1000 / 2<sup>Iterations</sup> &gt;= 1          <span class="c">f(n) =
 右邊 i 從 1000 開始每次除 2（整數除法，捨去小數）：1000, 500, 250, 125, 62, 31, 15, 7, 3, 1，也是 <b>10</b> 次；再除一次變 0，不再 ≥ 1，離開。<br>
 兩邊都是「最多能乘（或除）幾次 2」→ log₂1000 ≈ 9.97，取上限 = <b>10</b>，所以 f(n) = ⌈log₂n⌉。</div>
 </div></div>
-<div class="lab" data-lab="loops"></div>
-
 <h4>Nested loops <span class="sl">Slide 37–39</span><span class="zhn">巢狀迴圈</span></h4>
 <p><b>Iterations = outer loop iterations × inner loop iterations</b> (total = outer count × inner count).<span class="zhn">總次數 = 外層迴圈次數 × 內層迴圈次數。</span></p>
 <div class="tbl"><table>
@@ -583,6 +581,8 @@ i = 1 時內層跑 1 次、i = 2 跑 2 次、…、i = 10 跑 10 次，加起來
 <li><b>Nested loops</b>: if the inner count is <b>fixed</b>, simply multiply; if the inner limit depends on the outer variable (e.g., <code>j &lt;= i</code>), it is dependent, and you must add up every round.<span class="zhn"><b>巢狀 loop</b>：內層次數<b>固定</b>就直接相乘；內層上限是外層變數（如 <code>j &lt;= i</code>）就是 dependent，要把每一圈加起來。</span></li>
 </ol></div>
 <div class="box en"><span class="lbl">ANSWER TEMPLATE</span>The outer loop is a <i>linear</i> loop and runs <b>n</b> times. The inner loop is a <i>logarithmic</i> loop and runs <b>log₂n</b> times. The total is f(n) = n log₂n, so the efficiency is <b>O(n log n)</b>.<div class="zhtr"><span>中文</span>外層是線性迴圈，跑 n 次；內層是對數迴圈，跑 log₂n 次。總次數 f(n) = n log₂n，所以效率是 O(n log n)。數字換成題目的就能直接用。</div></div>
+
+<div class="lab" data-lab="loops"></div>
 
 <h4>Big-O notation <span class="sl">Slide 40–42</span> <span class="star">★★★</span><span class="zhn">Big-O 表示法</span></h4>
 <ul>

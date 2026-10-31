@@ -19,7 +19,7 @@
     const locked=[];
     set.forEach(e=>{
       let cs;try{cs=getComputedStyle(e);}catch(x){return;}
-      if(/(auto|scroll)/.test(cs.overflowX+cs.overflowY)&&(e.scrollHeight>e.clientHeight||e.scrollWidth>e.clientWidth||e!==box)){
+      if(/(auto|scroll)/.test(cs.overflowX+cs.overflowY)){
         locked.push([e,e.style.overflow]);e.style.overflow="hidden";
       }
     });

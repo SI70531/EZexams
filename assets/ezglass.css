@@ -8,7 +8,7 @@
   --glass-bg:rgba(255,255,255,.32);          /* translucent white */
   --glass-bg-nested:rgba(255,255,255,.20);   /* glass inside glass: no extra blur, just a lighter tint */
   --glass-fig:rgba(255,255,255,.42);         /* figures keep a lighter panel: their SVG strokes are dark */
-  --glass-bd:rgba(255,255,255,.6);           /* the 1px bright edge is what sells the effect */
+  --glass-bd:rgba(255,255,255,.55);          /* the 1px bright edge is what sells the effect */
   --glass-sh:0 10px 30px rgba(0,0,0,.06);
   --glass-sh-hover:0 16px 40px rgba(0,0,0,.10);
   --glass-th:rgba(255,255,255,.2);           /* table header tint */
@@ -28,6 +28,12 @@
   --glass-bd:rgba(255,255,255,.16); --glass-sh:0 10px 30px rgba(0,0,0,.35); --glass-sh-hover:0 16px 40px rgba(0,0,0,.45);
   --glass-th:rgba(255,255,255,.06); --glass-line:rgba(255,255,255,.12); --glass-fallback:rgba(28,46,59,.92);
   --blob-a:rgba(139,92,246,.38); --blob-b:rgba(56,130,246,.34); --blob-c:rgba(234,120,40,.22)}
+
+/* dark mode: secondary / small text was a dull grey on glass, so lift it (Chinese small text especially) */
+@media (prefers-color-scheme: dark){html:root:not([data-theme="light"]){--muted:rgba(226,231,230,.88);--ink70:rgba(226,231,230,.94)}}
+html:root[data-theme="dark"]{--muted:rgba(226,231,230,.88);--ink70:rgba(226,231,230,.94)}
+@media (prefers-color-scheme: dark){html:root:not([data-theme="light"]) .zhn{color:rgba(232,237,236,.9)}}
+html:root[data-theme="dark"] .zhn{color:rgba(232,237,236,.9)}
 
 /* ============ 1. Background glow blobs ============ */
 /* Three big soft circles in different corners, sitting under everything (z-index:-1).

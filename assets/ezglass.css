@@ -109,3 +109,17 @@ html::before{
 :root table :is(th,td):last-child{border-right:0}
 :root table>:last-child>tr:last-child>*{border-bottom:0}
 :root table th{background:var(--glass-th)}
+
+/* ============ 4. Inline code / code blocks ============ */
+/* The solid near-black (--code) chips looked like holes in the glass. Make them a light see-through film instead,
+   with a bright hairline and normal-contrast text, in both themes. */
+:root :is(code,pre){
+  background:rgba(255,255,255,.38);
+  border:1px solid rgba(0,0,0,.08);
+  color:var(--ink);
+}
+:root :is(code,pre) code{background:transparent;border:0}
+@media (prefers-color-scheme: dark){html:root:not([data-theme="light"]) :is(code,pre){background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.22);color:#f1f5f4}}
+html:root[data-theme="dark"] :is(code,pre){background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.22);color:#f1f5f4}
+@media (prefers-color-scheme: dark){html:root:not([data-theme="light"]) .zhn{color:rgba(240,244,243,.94)}}
+html:root[data-theme="dark"] .zhn{color:rgba(240,244,243,.94)}

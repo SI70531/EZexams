@@ -54,7 +54,7 @@ html.ezcalm #jump .jp-list,html.ezcalm #jump button.jp-pill{transition:none}`;
       b.textContent=label(h);if(h.tagName==="H3")b.className="lv3";
       b.setAttribute("aria-current",String(h===cur));
       b.addEventListener("click",()=>{
-        const bar=document.querySelector("header.top,.top");const off=(bar?bar.getBoundingClientRect().height:0)+16;
+        const bar=document.querySelector("header.top,.top");const off=(bar?bar.getBoundingClientRect().height:0)+56;
         const y=window.scrollY+h.getBoundingClientRect().top-off;
         window.scrollTo({top:Math.max(0,y),behavior:root.classList.contains("ezcalm")?"auto":"smooth"});
         close();

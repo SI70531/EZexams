@@ -122,7 +122,6 @@ html:root[data-theme="dark"] :is(code,pre){background:rgba(255,255,255,.12);bord
 :root .view[id^="ch"]{font-size:17.6px}
 :root .view[id^="ch"] .chw{font-size:16px}
 :root .view[id^="ch"] :is(.box.en,.box.en *):not(.chw *){font-size:18.7px}
-:root .view[id^="ch"] :is(.zhn,.small,.cap,.fig .cap):not(.chw *){font-size:inherit}
 :root .view[id^="ch"] table:not(.chw *){font-size:16px}
 :root .view[id^="ch"] table th:not(.chw *){font-size:14.85px}
 :root .view[id^="ch"] :is(.calc,pre):not(.chw *){font-size:14.85px}

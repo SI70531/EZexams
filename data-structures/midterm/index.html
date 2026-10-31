@@ -548,7 +548,7 @@ divide     1000 / 2<sup>Iterations</sup> &gt;= 1          <span class="c">f(n) =
 <p><b>Iterations = outer loop iterations × inner loop iterations</b> (total = outer count × inner count).<span class="zhn">總次數 = 外層迴圈次數 × 內層迴圈次數。</span></p>
 <div class="tbl"><table>
 <tr><th>類型</th><th>The slide's program<span class="zhn">投影片的程式</span></th><th>算法</th><th>f(n)</th></tr>
-<tr><td><b>Linear logarithmic</b><span class="zhn">線性對數</span></td><td>外層 <code>i = 1 … 10</code>（i + 1）<br>內層 <code>j = 1 … 10</code>（<code>j = j * 2</code>）</td><td>10 × ⌈log₂10⌉ = 10 × 4 = 40</td><td>⌈n log₂n⌉</td></tr>
+<tr><td><b>Linear logarithmic</b><span class="zhn">線性對數</span></td><td>外層 <code>i = 1 … 10</code>（i + 1）<br>內層 <code>j = 1 … 10</code>（<code>j = j * 2</code>）</td><td>10 × ⌈log₂10⌉ = 10 × 4 = 40</td><td>n⌈log₂n⌉</td></tr>
 <tr><td><b>Dependent quadratic</b><span class="zhn">相依二次</span></td><td>外層 <code>i = 1 … 10</code><br>內層 <code>loop (j &lt;= i)</code>（j + 1）</td><td>1 + 2 + 3 + … + 9 + 10 = 55<br>平均內層 (n + 1)/2 次</td><td>n(n + 1)/2</td></tr>
 <tr><td><b>Quadratic</b><span class="zhn">二次</span></td><td>外層 <code>i = 1 … 10</code><br>內層 <code>j = 1 … 10</code>（j + 1）</td><td>10 × 10 = 100</td><td>n²</td></tr>
 </table></div>
@@ -561,7 +561,7 @@ divide     1000 / 2<sup>Iterations</sup> &gt;= 1          <span class="c">f(n) =
     2 j = j * 2
   3 end loop
   4 i = i + 1
-3 end loop                          <span class="c">10 × ⌈log₂10⌉　→　f(n) = ⌈n log₂n⌉</span>
+3 end loop                          <span class="c">10 × ⌈log₂10⌉　→　f(n) = n⌈log₂n⌉</span>
 
 <span class="c">投影片 38：Dependent quadratic（內層上限 = 外層變數 i）</span>
 1 i = 1

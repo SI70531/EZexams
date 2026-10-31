@@ -236,7 +236,7 @@ The cache is smaller than the storage being cached, so <b>cache management</b> i
 <table style="width:100%"><tr><th>Level</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr>
 <tr><th>Name</th><td>registers</td><td>cache</td><td>main memory</td><td>solid state disk</td><td>magnetic disk</td></tr>
 <tr><th>Typical size</th><td>&lt; 1 KB</td><td>&lt; 16 MB</td><td>&lt; 64 GB</td><td>&lt; 1 TB</td><td>&lt; 10 TB</td></tr>
-<tr><th>Implementation</th><td class="l">custom memory, multiple ports, CMOS</td><td class="l">on-chip or off-chip CMOS SRAM</td><td>CMOS SRAM</td><td>flash memory</td><td>magnetic disk</td></tr>
+<tr><th>Implementation</th><td class="l">custom memory, multiple ports, CMOS<span class="zhn">自訂記憶體、多個埠、CMOS</span></td><td class="l">on-chip or off-chip CMOS SRAM<span class="zhn">晶片內或晶片外的 CMOS SRAM</span></td><td>CMOS SRAM</td><td>flash memory</td><td>magnetic disk</td></tr>
 <tr><th>Access time (ns)</th><td>0.25 – 0.5</td><td>0.5 – 25</td><td>80 – 250</td><td>25,000 – 50,000</td><td>5,000,000</td></tr>
 <tr><th>Bandwidth (MB/s)</th><td>20,000 – 100,000</td><td>5,000 – 10,000</td><td>1,000 – 5,000</td><td>500</td><td>20 – 150</td></tr>
 <tr><th>Managed by</th><td>compiler</td><td>hardware</td><td>operating system</td><td>operating system</td><td>operating system</td></tr>
@@ -274,7 +274,7 @@ The cache is smaller than the storage being cached, so <b>cache management</b> i
 <b>Graceful degradation（優雅降級）</b>：壞掉的部分不做了，系統<b>繼續跑，但變慢</b>。速度和剩下能用的硬體成正比。例：10 顆 CPU 壞 1 顆，剩 9 顆繼續做，大約慢 10%。<br>
 <b>Fault tolerance（容錯）</b>：比降級更強，壞掉一個元件<b>完全不影響運作</b>，使用者感覺不到。做法是多準備一份硬體（redundancy）同時做同樣的事，並能偵測、診斷、修正錯誤。例：兩顆 CPU 同步執行同一份工作，一顆壞了另一顆照常輸出。</span></div>
 <table><tr><th></th><th class="l">After a component fails<span class="zhn">壞掉一個元件後</span></th><th class="l">Keyword<span class="zhn">關鍵字</span></th></tr>
-<tr><td>Graceful degradation</td><td class="l">Continues service, performance drops<span class="zhn">繼續服務，效能下降</span></td><td class="l">continue providing service proportional to the surviving hardware</td></tr>
+<tr><td>Graceful degradation</td><td class="l">Continues service, performance drops<span class="zhn">繼續服務，效能下降</span></td><td class="l">continue providing service proportional to the surviving hardware<span class="zhn">提供的服務與存活的硬體成比例，持續運作</span></td></tr>
 <tr><td>Fault tolerance</td><td class="l">Continues service, performance unchanged<span class="zhn">繼續服務，效能不變</span></td><td class="l">continue operation despite failure; requires redundancy / duplication<span class="zhn">continue operation despite failure；需要 redundancy／duplication</span></td></tr></table>
 <div class="box en"><span class="lbl">ANSWER TEMPLATE — Graceful degradation / Fault tolerance</span>Graceful degradation is the ability to continue providing service proportional to the level of surviving hardware. Fault tolerance goes beyond graceful degradation: a fault-tolerant system can suffer a failure of any single component and still continue operation, which requires a mechanism to allow the failure to be detected, diagnosed, and, if possible, corrected.<div class="zhtr"><span>中文</span>優雅降級（graceful degradation）：依照剩下還能用的硬體多寡，繼續提供相應程度的服務。容錯（fault tolerance）比降級更進一步：任何單一元件故障，系統都能繼續運作，需要能偵測、診斷、並盡可能修正錯誤的機制。</div></div>
 <div class="box warn"><span class="lbl">How to tell them apart</span>If the question says "<b>slower but still runs</b>" → graceful degradation. If it says "<b>completely unaffected</b>, has backup" → fault tolerance.<span class="zhn"><b>分辨口訣</b> 題目說「<b>變慢但還能跑</b>」→ graceful degradation。說「<b>完全不受影響</b>、有備援」→ fault tolerance。</span></div>
@@ -313,9 +313,9 @@ A timer is used to prevent an infinite loop / a process hogging resources: it ge
 <div class="box en"><span class="lbl">ANSWER TEMPLATE — Process vs. Program</span>A process is a program in execution; it is a unit of work within the system. A program is a passive entity; a process is an active entity.<div class="zhtr"><span>中文</span>Process 是「正在執行的程式」，是系統裡的工作單位。程式（program）是被動的（存在硬碟上的檔案），process 是主動的。</div></div>
 <table style="width:100%">
 <tr><th>Management category<span class="zhn">管理類別</span></th><th class="l">What the OS is responsible for (for list questions)<span class="zhn">OS 負責的事（list 題用）</span></th></tr>
-<tr><td>Process management</td><td class="l">Creating and deleting processes; suspending and resuming processes; providing mechanisms for process synchronization, communication, and deadlock（死結） handling.</td></tr>
-<tr><td>Memory management</td><td class="l">Keeping track of which parts of memory are being used and by whom; deciding which processes and data to move into and out of memory; allocating and deallocating memory space.</td></tr>
-<tr><td>Storage / File-system</td><td class="l">Creating and deleting files and directories; primitives to manipulate files; mapping files onto secondary storage; backing up files.</td></tr>
+<tr><td>Process management</td><td class="l">Creating and deleting processes; suspending and resuming processes; providing mechanisms for process synchronization, communication, and deadlock（死結） handling.<span class="zhn">建立與刪除行程；暫停與恢復行程；提供行程同步、通訊與死結（deadlock）處理的機制。</span></td></tr>
+<tr><td>Memory management</td><td class="l">Keeping track of which parts of memory are being used and by whom; deciding which processes and data to move into and out of memory; allocating and deallocating memory space.<span class="zhn">追蹤記憶體的哪些部分正在被誰使用；決定哪些行程與資料要搬進或搬出記憶體；配置與釋放記憶體空間。</span></td></tr>
+<tr><td>Storage / File-system</td><td class="l">Creating and deleting files and directories; primitives to manipulate files; mapping files onto secondary storage; backing up files.<span class="zhn">建立與刪除檔案與目錄；提供操作檔案的基本運算；把檔案對應到輔助儲存裝置；備份檔案。</span></td></tr>
 <tr><td>Mass-storage</td><td class="l">Free-space management; storage allocation; disk scheduling.</td></tr>
 </table>
 <ul>
@@ -414,11 +414,11 @@ A timer is used to prevent an infinite loop / a process hogging resources: it ge
 <h3 data-sec="2.2">2.2 Process State <span class="star">★★★</span></h3>
 <table style="width:100%">
 <tr><th>State<span class="zhn">狀態</span></th><th class="l">English definition (memorize)<span class="zhn">英文定義（背）</span></th><th class="l">Plain talk<span class="zhn">白話</span></th></tr>
-<tr><td>new</td><td class="l">The process is being created.</td><td class="l">Just created<span class="zhn">剛建立</span></td></tr>
-<tr><td>ready</td><td class="l">The process is waiting to be assigned to a processor.</td><td class="l">Ready, queued up waiting for the CPU (Central Processing Unit)<span class="zhn">準備好了，排隊等 CPU（Central Processing Unit，中央處理器）</span></td></tr>
-<tr><td>running</td><td class="l">Instructions are being executed.</td><td class="l">Currently using the CPU<span class="zhn">正在用 CPU</span></td></tr>
-<tr><td>waiting</td><td class="l">The process is waiting for some event to occur.</td><td class="l">Waiting for I/O or an event<span class="zhn">在等 I/O 或事件</span></td></tr>
-<tr><td>terminated</td><td class="l">The process has finished execution.</td><td class="l">Finished<span class="zhn">結束</span></td></tr>
+<tr><td>new</td><td class="l">The process is being created.<span class="zhn">行程正在被建立。</span></td><td class="l">Just created<span class="zhn">剛建立</span></td></tr>
+<tr><td>ready</td><td class="l">The process is waiting to be assigned to a processor.<span class="zhn">行程正在等待被分配到處理器。</span></td><td class="l">Ready, queued up waiting for the CPU (Central Processing Unit)<span class="zhn">準備好了，排隊等 CPU（Central Processing Unit，中央處理器）</span></td></tr>
+<tr><td>running</td><td class="l">Instructions are being executed.<span class="zhn">指令正在被執行。</span></td><td class="l">Currently using the CPU<span class="zhn">正在用 CPU</span></td></tr>
+<tr><td>waiting</td><td class="l">The process is waiting for some event to occur.<span class="zhn">行程正在等待某個事件發生。</span></td><td class="l">Waiting for I/O or an event<span class="zhn">在等 I/O 或事件</span></td></tr>
+<tr><td>terminated</td><td class="l">The process has finished execution.<span class="zhn">行程已經執行完畢。</span></td><td class="l">Finished<span class="zhn">結束</span></td></tr>
 </table>
 <p><b>State diagram (you must be able to draw it):</b><span class="zhn"><b>state diagram（一定要會畫）：</b></span></p>
 <div class="fig">
@@ -550,7 +550,7 @@ struct mm_struct *mm;         /* address space of this process（記憶體空間
 </ul>
 <table style="width:100%">
 <tr><th></th><th>Long-term (job)</th><th>Short-term (CPU)</th><th>Mid-term</th></tr>
-<tr><td>Function<span class="zhn">做什麼</span></td><td>Selects which processes enter the ready queue<span class="zhn">選誰進 ready queue</span></td><td>Selects which process uses the CPU<span class="zhn">選誰用 CPU</span></td><td>swap out / swap in</td></tr>
+<tr><td>Function<span class="zhn">做什麼</span></td><td>Selects which processes enter the ready queue<span class="zhn">選誰進 ready queue</span></td><td>Selects which process uses the CPU<span class="zhn">選誰用 CPU</span></td><td>swap out / swap in<span class="zhn">換出／換入</span></td></tr>
 <tr><td>Frequency<span class="zhn">多久一次</span></td><td>Rare (seconds, minutes)<span class="zhn">很少（秒、分鐘）</span></td><td>Very frequent (milliseconds), must be fast<span class="zhn">很頻繁（毫秒），必須快</span></td><td>As needed<span class="zhn">視需要</span></td></tr>
 <tr><td>degree of multiprogramming<span class="zhn">degree of multiprogramming（多元程式程度）</span></td><td>Controls (increases)<span class="zhn">控制（增加）</span></td><td>Not involved<span class="zhn">無關</span></td><td>Decreases<span class="zhn">減少</span></td></tr>
 </table>
@@ -731,11 +731,11 @@ while (true) {                         while (true) {
 <h3 data-sec="3.2">3.2 Scheduling Criteria（評估標準）<span class="star">★★</span></h3>
 <table style="width:100%">
 <tr><th>Name<span class="zhn">名稱</span></th><th class="l">English definition<span class="zhn">英文定義</span></th><th>要</th></tr>
-<tr><td>CPU utilization<span class="zhn">CPU utilization（使用率）</span></td><td class="l">Keep the CPU as busy as possible.</td><td>max</td></tr>
-<tr><td>Throughput<span class="zhn">Throughput（吞吐量）</span></td><td class="l"># of processes that complete their execution per time unit.</td><td>max</td></tr>
+<tr><td>CPU utilization<span class="zhn">CPU utilization（使用率）</span></td><td class="l">Keep the CPU as busy as possible.<span class="zhn">讓 CPU 盡可能保持忙碌。</span></td><td>max</td></tr>
+<tr><td>Throughput<span class="zhn">Throughput（吞吐量）</span></td><td class="l"># of processes that complete their execution per time unit.<span class="zhn">每單位時間內完成執行的行程數量。</span></td><td>max</td></tr>
 <tr><td>Turnaround time<span class="zhn">Turnaround time（周轉時間）</span></td><td class="l">Amount of time to execute a particular process (completion time − arrival time).<span class="zhn">Amount of time to execute a particular process (完成時間 − 到達時間).</span></td><td>min</td></tr>
-<tr><td>Waiting time<span class="zhn">Waiting time（等待時間）</span></td><td class="l">Amount of time a process has been waiting in the ready queue.</td><td>min</td></tr>
-<tr><td>Response time<span class="zhn">Response time（回應時間）</span></td><td class="l">Time from when a request was submitted until the first response is produced.</td><td>min</td></tr>
+<tr><td>Waiting time<span class="zhn">Waiting time（等待時間）</span></td><td class="l">Amount of time a process has been waiting in the ready queue.<span class="zhn">行程在 ready queue 中等待的時間總量。</span></td><td>min</td></tr>
+<tr><td>Response time<span class="zhn">Response time（回應時間）</span></td><td class="l">Time from when a request was submitted until the first response is produced.<span class="zhn">從提出請求到產生第一個回應所花的時間。</span></td><td>min</td></tr>
 </table>
 <p><b>Optimization criteria</b>: Max CPU utilization, Max throughput, Min turnaround time, Min waiting time, Min response time. Mnemonic: <b>"the first two should be large, the last three small"</b>. Response time is the time from "submitting a request to the <b>first response</b>" appearing, not until output is complete; it is used in time-sharing environments.<span class="zhn"><b>Optimization criteria（最佳化目標）</b>：Max CPU utilization、Max throughput、Min turnaround time、Min waiting time、Min response time。口訣：<b>「前兩個要大，後三個要小」</b>。Response time 是「送出 request（請求）到<b>第一個回應</b>出現」的時間，不是到輸出完畢，用在 time-sharing 環境。</span></p>
 <div class="calc">Turnaround time = Completion time − Arrival time
@@ -948,8 +948,8 @@ Q2 – FCFS
 
 <h4>Soft vs. Hard real-time</h4>
 <table><tr><th></th><th class="l">Meaning<span class="zhn">意思</span></th><th class="l">In plain words<span class="zhn">白話</span></th></tr>
-<tr><td>Soft real-time systems</td><td class="l">No guarantee as to when a critical real-time process will be scheduled</td><td class="l">Important processes get priority, but there is <b>no guarantee</b> of when they will be scheduled<span class="zhn">重要的 process 會優先，但<b>不保證</b>什麼時候被排到</span></td></tr>
-<tr><td>Hard real-time systems</td><td class="l">Task must be serviced by its deadline</td><td class="l">Must finish before the deadline; missing it counts as failure<span class="zhn">一定要在 deadline 前做完，超過就算失敗</span></td></tr></table>
+<tr><td>Soft real-time systems</td><td class="l">No guarantee as to when a critical real-time process will be scheduled<span class="zhn">無法保證關鍵的即時（real-time）行程何時會被排程</span></td><td class="l">Important processes get priority, but there is <b>no guarantee</b> of when they will be scheduled<span class="zhn">重要的 process 會優先，但<b>不保證</b>什麼時候被排到</span></td></tr>
+<tr><td>Hard real-time systems</td><td class="l">Task must be serviced by its deadline<span class="zhn">工作必須在它的截止時間（deadline）前完成服務</span></td><td class="l">Must finish before the deadline; missing it counts as failure<span class="zhn">一定要在 deadline 前做完，超過就算失敗</span></td></tr></table>
 
 <h4>影響效能的兩種 latency（延遲）</h4>
 <ol>
@@ -1225,10 +1225,10 @@ Exercise C: 80% parallel, N=8
 </div>
 <table style="width:100%">
 <tr><th>Model</th><th class="l">Definition (key English sentence)<span class="zhn">定義（英文關鍵句）</span></th><th class="l">Characteristics<span class="zhn">特點</span></th><th class="l">Examples<span class="zhn">例子</span></th></tr>
-<tr><td>Many-to-One</td><td class="l">Many user-level threads mapped to a single kernel thread.</td><td class="l">One thread blocks → <b>all block</b>; also <b>cannot run in parallel</b> on multicore (only one can enter the kernel at a time). Rarely used now.<span class="zhn">一個 thread block → <b>全部 block</b>；multicore 上也<b>無法平行</b>（一次只有一個能進 kernel）。現在很少用。</span></td><td class="l">Solaris Green Threads, GNU Portable Threads</td></tr>
-<tr><td>One-to-One</td><td class="l">Each user-level thread maps to a kernel thread.</td><td class="l">Creating a user thread creates a kernel thread; more concurrency than M:1; but high overhead, so the number of threads is often limited.<span class="zhn">建立 user thread 就建立 kernel thread；concurrency 比 M:1 高；但 overhead 大，thread 數量常被限制。</span></td><td class="l">Windows, Linux, Solaris 9+</td></tr>
-<tr><td>Many-to-Many</td><td class="l">Allows many user-level threads to be mapped to many kernel threads.</td><td class="l">The OS can create a sufficient number of kernel threads.<span class="zhn">OS 可以建立足夠數量的 kernel threads。</span></td><td class="l">Before Solaris 9, Windows ThreadFiber<span class="zhn">Solaris 9 以前, Windows ThreadFiber</span></td></tr>
-<tr><td>Two-level</td><td class="l">Similar to M:M, except that it allows a user thread to be bound to a kernel thread.</td><td class="l">M:M plus binding allowed.<span class="zhn">M:M＋可綁定。</span></td><td class="l">IRIX, HP-UX, Tru64 UNIX, before Solaris 8<span class="zhn">IRIX, HP-UX, Tru64 UNIX, Solaris 8 以前</span></td></tr>
+<tr><td>Many-to-One</td><td class="l">Many user-level threads mapped to a single kernel thread.<span class="zhn">許多使用者層級執行緒對應到單一個核心執行緒。</span></td><td class="l">One thread blocks → <b>all block</b>; also <b>cannot run in parallel</b> on multicore (only one can enter the kernel at a time). Rarely used now.<span class="zhn">一個 thread block → <b>全部 block</b>；multicore 上也<b>無法平行</b>（一次只有一個能進 kernel）。現在很少用。</span></td><td class="l">Solaris Green Threads, GNU Portable Threads</td></tr>
+<tr><td>One-to-One</td><td class="l">Each user-level thread maps to a kernel thread.<span class="zhn">每個使用者層級執行緒對應到一個核心執行緒。</span></td><td class="l">Creating a user thread creates a kernel thread; more concurrency than M:1; but high overhead, so the number of threads is often limited.<span class="zhn">建立 user thread 就建立 kernel thread；concurrency 比 M:1 高；但 overhead 大，thread 數量常被限制。</span></td><td class="l">Windows, Linux, Solaris 9+</td></tr>
+<tr><td>Many-to-Many</td><td class="l">Allows many user-level threads to be mapped to many kernel threads.<span class="zhn">允許許多使用者層級執行緒對應到許多核心執行緒。</span></td><td class="l">The OS can create a sufficient number of kernel threads.<span class="zhn">OS 可以建立足夠數量的 kernel threads。</span></td><td class="l">Before Solaris 9, Windows ThreadFiber<span class="zhn">Solaris 9 以前, Windows ThreadFiber</span></td></tr>
+<tr><td>Two-level</td><td class="l">Similar to M:M, except that it allows a user thread to be bound to a kernel thread.<span class="zhn">和 M:M 類似，但允許把某個使用者執行緒綁定到一個核心執行緒。</span></td><td class="l">M:M plus binding allowed.<span class="zhn">M:M＋可綁定。</span></td><td class="l">IRIX, HP-UX, Tru64 UNIX, before Solaris 8<span class="zhn">IRIX, HP-UX, Tru64 UNIX, Solaris 8 以前</span></td></tr>
 </table>
 
 <h3 data-sec="4.6">4.6 Thread Libraries ＆ Implicit Threading <span class="star">★</span></h3>
@@ -1334,10 +1334,10 @@ Thread 2: lock(second_mutex); lock(first_mutex);
 <h3 data-sec="5.2">5.2 四個必要條件 <span class="star">★★★</span></h3>
 <table style="width:100%">
 <tr><th>Condition<span class="zhn">條件</span></th><th class="l">English definition (for essay questions)<span class="zhn">英文定義（申論題用）</span></th><th class="l">In plain words<span class="zhn">白話</span></th></tr>
-<tr><td>Mutual exclusion<span class="zhn">Mutual exclusion（互斥）</span></td><td class="l">Only one process at a time can use a resource.</td><td class="l">A resource can be used by only one at a time<span class="zhn">resource 一次只能一個人用</span></td></tr>
-<tr><td>Hold and wait<span class="zhn">Hold and wait（持有並等待）</span></td><td class="l">A process holding at least one resource is waiting to acquire additional resources held by other processes.</td><td class="l">Holding one while waiting for another<span class="zhn">手上拿著，還在等別的</span></td></tr>
-<tr><td>No preemption<span class="zhn">No preemption（不可搶奪）</span></td><td class="l">A resource can be released only voluntarily by the process holding it, after that process has completed its task.</td><td class="l">Cannot be forcibly taken<span class="zhn">不能硬搶</span></td></tr>
-<tr><td>Circular wait<span class="zhn">Circular wait（循環等待）</span></td><td class="l">There exists a set {P0, P1, …, Pn} of waiting processes such that P0 waits for P1, P1 waits for P2, …, Pn waits for P0.</td><td class="l">Waiting forms a cycle<span class="zhn">等待形成一個圈</span></td></tr>
+<tr><td>Mutual exclusion<span class="zhn">Mutual exclusion（互斥）</span></td><td class="l">Only one process at a time can use a resource.<span class="zhn">同一時間只有一個行程能使用一項資源。</span></td><td class="l">A resource can be used by only one at a time<span class="zhn">resource 一次只能一個人用</span></td></tr>
+<tr><td>Hold and wait<span class="zhn">Hold and wait（持有並等待）</span></td><td class="l">A process holding at least one resource is waiting to acquire additional resources held by other processes.<span class="zhn">持有至少一項資源的行程，正在等待取得其他行程所持有的額外資源。</span></td><td class="l">Holding one while waiting for another<span class="zhn">手上拿著，還在等別的</span></td></tr>
+<tr><td>No preemption<span class="zhn">No preemption（不可搶奪）</span></td><td class="l">A resource can be released only voluntarily by the process holding it, after that process has completed its task.<span class="zhn">資源只能由持有它的行程在完成工作之後自願釋放。</span></td><td class="l">Cannot be forcibly taken<span class="zhn">不能硬搶</span></td></tr>
+<tr><td>Circular wait<span class="zhn">Circular wait（循環等待）</span></td><td class="l">There exists a set {P0, P1, …, Pn} of waiting processes such that P0 waits for P1, P1 waits for P2, …, Pn waits for P0.<span class="zhn">存在一組等待中的行程 {P0, P1, …, Pn}，使得 P0 等 P1、P1 等 P2、……、Pn 等 P0。</span></td><td class="l">Waiting forms a cycle<span class="zhn">等待形成一個圈</span></td></tr>
 </table>
 <div class="box en"><span class="lbl">ANSWER</span>Deadlock can arise if four conditions hold simultaneously: mutual exclusion, hold and wait, no preemption, and circular wait.<div class="zhtr"><span>中文</span>四個條件同時成立才可能死結：互斥（mutual exclusion）、持有並等待（hold and wait）、不可搶奪（no preemption）、循環等待（circular wait）。</div></div>
 
@@ -1553,7 +1553,7 @@ If P2 requests one more C (Request P2 = (0,0,1)):
 <p><b>Process termination</b></p>
 <ul>
 <li>Abort all deadlocked processes; or<span class="zhn">Abort all deadlocked processes；或</span></li>
-<li>Abort one process at a time until the deadlock cycle is eliminated。</li>
+<li>Abort one process at a time until the deadlock cycle is eliminated。<span class="zhn">一次中止一個行程，直到死結的循環被消除。</span></li>
 <li>Factors in choosing which: priority, how long it has run / how much longer it needs, how many resources it has used, how many more it needs, how many to terminate, interactive or batch.<span class="zhn">選誰的考量：priority（優先權）、已算多久／還要多久、用了多少 resource、還需要多少 resource、要 terminate（終止）幾個、interactive 還是 batch。</span></li>
 </ul>
 </div>
@@ -1562,7 +1562,7 @@ If P2 requests one more C (Request P2 = (0,0,1)):
 <ul>
 <li><b>Selecting a victim</b> – minimize cost.<span class="zhn"><b>Selecting a victim（犧牲者）</b> – minimize cost。</span></li>
 <li><b>Rollback</b> – return to some safe state, restart process from that state.<span class="zhn"><b>Rollback（回滾）</b> – return to some safe state, restart process from that state。</span></li>
-<li><b>Starvation</b> – same process may always be picked as victim; include number of rollbacks in cost factor。</li>
+<li><b>Starvation</b> – same process may always be picked as victim; include number of rollbacks in cost factor。<span class="zhn">飢餓（Starvation）：同一個行程可能總是被選為犧牲者；把回復（rollback）次數納入成本因素。</span></li>
 </ul>
 </div>
 </div>

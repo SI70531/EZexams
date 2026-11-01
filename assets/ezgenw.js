@@ -177,25 +177,34 @@
     const {render,upd,save,btns,stat}=ctx;
     const list=qsEls.filter(q=>q.querySelector("textarea")&&q.querySelector("textarea").value.trim());
     if(!list.length){stat.textContent="還沒有作答。";return;}
-    btns.forEach(b=>b.disabled=true);stat.textContent="AI 批改中…";
-    let done=0;
-    try{
-      for(const q of list){
-        const B=BLOCKS[q.dataset.w],i=+q.dataset.slot,ta=q.querySelector("textarea"),ans=ta.value.trim();
-        const body=q.dataset.gid?{id:q.dataset.gid,ans,notes:notesFor(B,q)}:{s:C.s,key:B.key,slot:i,ans,notes:notesFor(B,q)};
-        stat.textContent="AI 批改中… "+(done+1)+" / "+list.length;
-        const r=await post("/gen/wgrade",body);
-        const sc=Math.max(0,Math.min(+r.p||+q.dataset.pts,+r.score||0));
-        ctx.st.grade[q.id]={score:sc,verdict:r.verdict||(sc>=(+q.dataset.pts)?"correct":sc>0?"partial":"wrong"),feedback:String(r.feedback||""),missing:Array.isArray(r.missing)?r.missing.map(String):[],ans,ai:true};
-        window.EZchw.keep(q.id,r.answer_en,r.answer_zh);
-        render(q);window.EZchw.showAnswer(q,true);
-        done++;
+    btns.forEach(b=>b.disabled=true);stat.textContent="AI 批改中… 0 / "+list.length;
+    let cursor=0,done=0;const failed=[];
+    /* Two requests at a time: faster than serial grading, while keeping pressure on Gemini modest. */
+    async function worker(){
+      while(true){
+        const n=cursor++;if(n>=list.length)return;
+        const q=list[n],B=BLOCKS[q.dataset.w],i=+q.dataset.slot,ta=q.querySelector("textarea"),ans=ta.value.trim();
+        try{
+          const body=q.dataset.gid?{id:q.dataset.gid,ans,notes:notesFor(B,q)}:{s:C.s,key:B.key,slot:i,ans,notes:notesFor(B,q)};
+          const r=await post("/gen/wgrade",body);
+          const sc=Math.max(0,Math.min(+r.p||+q.dataset.pts,+r.score||0));
+          ctx.st.grade[q.id]={score:sc,verdict:r.verdict||(sc>=(+q.dataset.pts)?"correct":sc>0?"partial":"wrong"),feedback:String(r.feedback||""),missing:Array.isArray(r.missing)?r.missing.map(String):[],ans,ai:true};
+          window.EZchw.keep(q.id,r.answer_en,r.answer_zh);
+          render(q);window.EZchw.showAnswer(q,true);
+          save();
+        }catch(e){failed.push({q,e});}
+        done++;stat.textContent="AI 批改中… "+done+" / "+list.length;
       }
+    }
+    try{
+      await Promise.all(Array.from({length:Math.min(2,list.length)},()=>worker()));
       save();upd();
-      stat.textContent="批改完成。";
-    }catch(e){
-      save();upd();
-      stat.textContent=errText(e)+(done?"（已批改 "+done+" 題）":"");
+      if(failed.length){
+        stat.textContent="已完成 "+(list.length-failed.length)+" / "+list.length+" 題；"+failed.length+" 題未成功："+errText(failed[0].e)+" ";
+        const retry=document.createElement("button");retry.type="button";retry.className="btn chip gretry";retry.textContent="重試未完成的題目";
+        retry.addEventListener("click",()=>{retry.remove();grade(failed.map(x=>x.q),ctx);});
+        stat.appendChild(retry);
+      }else stat.textContent="批改完成。";
     }finally{btns.forEach(b=>b.disabled=false);}
   }
   /* blocks: [{key:'ch1w', exam:'ch1w', view:'ch1', views:['ch1'], title, box, batch}] ; attach({course, subject, blocks, get, save, s}) */

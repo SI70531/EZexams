@@ -20,6 +20,8 @@ svg text.ezgl{cursor:help}
   font:500 13px/1.5 "Noto Sans TC",system-ui,sans-serif;color:#eef2f4;background:rgba(18,22,26,.94);
   box-shadow:0 6px 18px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.12);opacity:0;transform:translateY(4px);transition:opacity .12s,transform .12s}
 #eztip.on{opacity:1;transform:none}
+.ez-defrow{display:flex;justify-content:flex-end;margin-top:8px}
+.btn.ez-def{font-size:12px;padding:3px 12px}
 #eztip b{display:block;color:#f2bd5a;font-weight:700;margin-bottom:2px}
 `;
   const st=document.createElement("style");st.textContent=css;document.head.appendChild(st);
@@ -106,10 +108,38 @@ svg text.ezgl{cursor:help}
   document.addEventListener("keydown",e=>{if(e.key==="Escape")hide();});
   addEventListener("scroll",hide,{passive:true});
 
+
+  /* ---------- default key: every interactive figure gets a 預設 button that restores its starting state ---------- */
+  const WSEL=".ilab,.widget[data-w],.lab[data-lab]";
+  const snaps=new Map();
+  function snapshot(c){
+    if(snaps.has(c))return;
+    snaps.set(c,[...c.querySelectorAll("input,select,textarea")].map(el=>[el,(el.type==="checkbox"||el.type==="radio")?el.checked:el.value]));
+  }
+  function resetW(c){
+    const arr=snaps.get(c);if(!arr)return;
+    arr.forEach(([el,v])=>{
+      if(el.type==="checkbox"||el.type==="radio")el.checked=v;else el.value=v;
+      el.dispatchEvent(new Event("input",{bubbles:true}));el.dispatchEvent(new Event("change",{bubbles:true}));
+    });
+    const rs=[...c.querySelectorAll("button")].find(b=>/^(重來|重新開始|reset)$/i.test(b.textContent.trim()));
+    if(rs)rs.click();
+  }
+  function addDefault(c){
+    if(c.dataset.ezdef||!c.parentElement||!inNotes(c.parentElement))return;
+    c.dataset.ezdef="1";snapshot(c);
+    if([...c.querySelectorAll("button")].some(b=>b.textContent.includes("預設")))return;
+    const row=document.createElement("div");row.className="ez-defrow";
+    const b=document.createElement("button");b.type="button";b.className="btn ez-def";b.textContent="預設";
+    b.addEventListener("click",()=>resetW(c));
+    row.appendChild(b);c.appendChild(row);
+  }
+
   /* ---------- wiring ---------- */
   function scan(root){
     root.querySelectorAll("table").forEach(initTable);
     scanText(root);
+    root.querySelectorAll(WSEL).forEach(addDefault);
   }
   let t=0;const later=()=>{clearTimeout(t);t=setTimeout(()=>scan(document),120);};
   const start=()=>{scan(document);document.querySelectorAll("section.view").forEach(v=>new MutationObserver(later).observe(v,{childList:true,subtree:true}));};

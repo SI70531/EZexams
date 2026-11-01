@@ -71,22 +71,18 @@
   async function run(key,prompt,json,stable,attempt){
     let saved=get(LS_MODEL);
     let last;
-    for(let round=0;round<2;round++){
-      if(round)await sleep(4000);
-      let order=saved?[saved,...MODELS.filter(m=>m!==saved)]:MODELS;
-      if(attempt)order=order.slice(attempt%order.length).concat(order.slice(0,attempt%order.length));   /* a retry starts on another model */
-      for(const m of order){
-        try{const t=await call(key,m,prompt,json,stable,false,attempt);return t;}
-        catch(e){
-          last=e;
-          if(e.code==="no_model"){if(m===saved){saved=null;set(LS_MODEL,null);}continue;}
-          if(e.code==="busy"||e.code==="rate_limited")continue;
-          if(e.code==="login")throw e;
-          if(e.code==="bad_key")set(LS_BAD,"1"); /* the home page shows the key panel again */
-          throw e;
-        }
+    let order=saved?[saved,...MODELS.filter(m=>m!==saved)]:MODELS;
+    if(attempt)order=order.slice(attempt%order.length).concat(order.slice(0,attempt%order.length));   /* a retry starts on another model */
+    for(const m of order){
+      try{const t=await call(key,m,prompt,json,stable,false,attempt);return t;}
+      catch(e){
+        last=e;
+        if(e.code==="no_model"){if(m===saved){saved=null;set(LS_MODEL,null);}continue;}
+        if(e.code==="busy"||e.code==="rate_limited")continue;
+        if(e.code==="login")throw e;
+        if(e.code==="bad_key")set(LS_BAD,"1"); /* the home page shows the key panel again */
+        throw e;
       }
-      if(last&&last.code==="rate_limited")break; /* quota, not a blip: waiting 4 s will not help */
     }
     if(last&&last.code==="rate_limited")limitToast();
     throw last||fail("network");

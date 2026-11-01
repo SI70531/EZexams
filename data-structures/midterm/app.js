@@ -568,7 +568,7 @@ function seqvar(el){
     pro:{n:"Algorithm 2-3 Probability",code:["1 looker = 0","2 loop (looker < last AND target not equal list[looker])","  1 looker = looker + 1","3 end loop","4 if (target equal list[looker])","  1 found = true","  2 if (looker > 0) 交換 list[looker − 1]、list[looker]，looker = looker − 1","5 else found = false","7 locn = looker"]},
     ord:{n:"Algorithm 2-4 Ordered list",code:["1 if (target < list[last])","  1 looker = 0","  2 loop (target > list[looker])","    1 looker = looker + 1","  3 end loop","2 else looker = last","4 if (target equal list[looker]) found = true","5 else found = false","7 locn = looker"]}};
   const s=sel(Object.keys(ALG).map(k=>[k,ALG[k].n]),"seq");const lst=txt("4 21 36 14 62 91 8 22 7 81 77 10","100%");const tg=num(14,"80px");
-  const g=$("div","labgrid");const l1=$("label",null,"List（空白分隔；ordered list 會自動排序）");l1.appendChild(lst);const l2=$("label",null,"演算法");l2.appendChild(s);const l3=$("label",null,"target");l3.appendChild(tg);g.append(l1,l2,l3);el.appendChild(g);
+  const g=$("div","labgrid");const l1=$("label",null,"List（空白分隔；ordered list 會自動排序）");l1.appendChild(lst);const l2=$("label",null,"演算法");l2.style.gridColumn="span 2";l2.appendChild(s);const l3=$("label",null,"target");l3.appendChild(tg);g.append(l1,l2,l3);el.appendChild(g);
   const r=$("div","labrow");const bP=btn("上一步"),bN=btn("下一步",true),bA=btn("跑完"),bR=btn("重來");r.append(bP,bN,bA,bR);el.appendChild(r);
   const wrap=$("div","llwrap");const view=$("div","llview");const code=$("div");wrap.append(view,code);el.appendChild(wrap);const log=$("div","lablog");el.appendChild(log);
   let arr=[],steps=[],si=0,base="";

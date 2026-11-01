@@ -451,6 +451,9 @@ await check("usability: practice modes filter questions, clearing and redoing as
   assert(/確定/.test(await pg.evaluate(() => pickItem(0).querySelector(".qclear").textContent)), "no confirm text");
   await pg.evaluate(() => pickItem(0).querySelector(".qclear").click());
   await pg.waitForSelector("#ezundo", { timeout: 2000 });
+  assert(/將清除這題的作答（[123] 秒）/.test(await pg.textContent("#ezundo")), "countdown text missing");
+  assert(await pg.evaluate(() => getComputedStyle(document.querySelector("#ezundo")).position !== "fixed"), "undo should sit in place of the button, not float");
+  assert(await pg.evaluate(() => document.querySelector("#ezundo button").textContent === "取消"), "cancel button missing");
   await pg.evaluate(() => document.querySelector("#ezundo button").click());
   await pg.waitForTimeout(300);
   assert(await pg.evaluate(() => Object.keys(S.quiz.ch1 || {}).length) === 2, "undo should keep both answers");

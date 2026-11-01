@@ -54,7 +54,7 @@ function renderQuiz(key){
   const qs=QUIZ[key];const isExam=!!MCVIEW[key];
   box.innerHTML="";
   if(!isExam){
-    const h=document.createElement("h2");h.textContent="Multiple-choice question（"+qs.length+" 題，共 40 分）";box.appendChild(h);
+    const h=document.createElement("h2");h.textContent="Part I. Multiple Choice (40%)";box.appendChild(h);
     const p=document.createElement("p");p.className="small";p.textContent="題目是英文，跟考卷一樣。點一個選項就會對答案並顯示中文解析。";box.appendChild(p);
   }else{
     const p=document.createElement("p");p.className="small";p.textContent="點一個選項就會對答案，答對每題 2 分，會算進上方總分。";box.appendChild(p);

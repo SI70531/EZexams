@@ -134,11 +134,8 @@
   function ensureClear(el,on,fn){
     const r=el.querySelector(":scope > .qbtns");let b=r&&r.querySelector(".qclear");
     if(on){if(!b){b=document.createElement("button");b.type="button";b.className="btn qclear";b.textContent="清除作答";row(el).appendChild(b);}
-      /* two clicks: first asks for confirmation, the second within 4 s actually clears (same as the whole-page reset) */
-      b.onclick=()=>{
-        if(b.dataset.armed!=="1"){b.dataset.armed="1";b.textContent="確定清除這題的作答與分數？";setTimeout(()=>{if(b.dataset.armed==="1"){b.dataset.armed="";b.textContent="清除作答";}},4000);return;}
-        b.dataset.armed="";b.textContent="清除作答";window.EZundo("這題的作答",fn,el,b);
-      };}
+      /* one click starts the 3 s countdown in place of the button (取消 undoes it), no separate confirm step */
+      b.onclick=()=>{window.EZundo("這題的作答",fn,el,b);};}
     else if(b){b.remove();if(r&&!r.children.length)r.remove();}
   }
   /* after grading (one question or 批改全部), open that question's reference answer by itself */

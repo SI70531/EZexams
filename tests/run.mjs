@@ -446,9 +446,7 @@ await check("usability: practice modes filter questions, clearing and redoing as
   await mode("隨機 10 題"); assert(await vis() === Math.min(10, total - 2), "random count " + await vis());
   await mode("全部"); assert(await vis() === total, "all should show every question");
   await pg.waitForTimeout(400);
-  /* clearing one answer: first click only asks, undo keeps the answer */
-  await pg.evaluate(() => pickItem(0).querySelector(".qclear").click());
-  assert(/確定/.test(await pg.evaluate(() => pickItem(0).querySelector(".qclear").textContent)), "no confirm text");
+  /* clearing one answer: one click starts the countdown straight away, 取消 keeps the answer */
   await pg.evaluate(() => pickItem(0).querySelector(".qclear").click());
   await pg.waitForSelector("#ezundo", { timeout: 2000 });
   assert(/將清除這題的作答（[123] 秒）/.test(await pg.textContent("#ezundo")), "countdown text missing");

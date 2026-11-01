@@ -18,19 +18,30 @@
   document.head.appendChild(st);
 
   const now=()=>Date.now();
-  /* EZundo(what, doIt, el): the clear happens after 8 s unless 復原 is pressed, so nothing is lost by a slip. */
-  window.EZundo=function(what,doIt,el){
+  /* EZundo(what, doIt, el, btn): the clear happens after 3 s unless 取消 is pressed, so nothing is lost by a slip.
+     With btn, the button itself is replaced in place by "將清除…（3）[取消]" and counts down; without it a toast is used. */
+  const UNDO_S=3;
+  window.EZundo=function(what,doIt,el,btn){
     const old=document.getElementById("ezundo");if(old&&old._fin)old._fin();
     if(el)el.style.opacity=".4";
     const t=document.createElement("div");t.id="ezundo";t.setAttribute("role","status");
-    t.style.cssText="position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:1200;background:var(--paper,#fff);color:var(--ink,#111);border:1.5px solid var(--ink,#111);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.25);padding:10px 16px;font-size:14px";
-    t.innerHTML="<span></span> <button type='button' style='margin-left:8px;font:inherit;font-weight:600;border:1px solid currentColor;border-radius:6px;background:none;color:inherit;padding:1px 12px;cursor:pointer'>復原</button>";
-    t.firstChild.textContent="將清除"+what+"（8 秒內可復原）";
-    let done=false;const fin=()=>{if(done)return;done=true;clearTimeout(tm);t.remove();if(el)el.style.opacity="";doIt();};
-    const tm=setTimeout(fin,8000);t._fin=fin;
-    t.querySelector("button").onclick=()=>{done=true;clearTimeout(tm);t.remove();if(el)el.style.opacity="";};
-    document.body.appendChild(t);
-    addEventListener("pagehide",()=>{if(!done){done=true;clearTimeout(tm);if(el)el.style.opacity="";}},{once:true});   /* leaving the page cancels, nothing is lost */
+    const cancel="<button type='button' class='btn' style='margin-left:8px;font:inherit;font-weight:600;padding:1px 12px;cursor:pointer'>取消</button>";
+    if(btn&&btn.parentNode){
+      t.style.cssText="display:inline-flex;align-items:center;gap:2px;padding:4px 6px 4px 12px;border:1px solid var(--line,#ccc);border-radius:8px;background:var(--paper,#fff);color:var(--ink,#111);font-size:inherit"+(btn.classList.contains("qclear")?";margin-left:auto":"");
+      btn.style.display="none";btn.after(t);
+    }else{
+      t.style.cssText="position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:1200;background:var(--paper,#fff);color:var(--ink,#111);border:1.5px solid var(--ink,#111);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.25);padding:10px 16px;font-size:14px";
+      document.body.appendChild(t);
+    }
+    t.innerHTML="<span></span>"+cancel;
+    const msg=t.firstChild,end=now()+UNDO_S*1000;
+    const draw=()=>{msg.textContent="將清除"+what+"（"+Math.max(1,Math.ceil((end-now())/1000))+" 秒）";};draw();
+    let done=false;
+    const stop=()=>{done=true;clearTimeout(tm);clearInterval(iv);t.remove();if(btn)btn.style.display="";if(el)el.style.opacity="";};
+    const fin=()=>{if(done)return;stop();doIt();};
+    const tm=setTimeout(fin,UNDO_S*1000),iv=setInterval(draw,250);t._fin=fin;
+    t.querySelector("button").onclick=()=>{if(!done)stop();};
+    addEventListener("pagehide",()=>{if(!done)stop();},{once:true});   /* leaving the page cancels, nothing is lost */
   };
 
   /* quick practice modes on every chapter quiz: all / 只看未答 / 只練錯題 / 隨機 10 題 */
@@ -126,7 +137,7 @@
       /* two clicks: first asks for confirmation, the second within 4 s actually clears (same as the whole-page reset) */
       b.onclick=()=>{
         if(b.dataset.armed!=="1"){b.dataset.armed="1";b.textContent="確定清除這題的作答與分數？";setTimeout(()=>{if(b.dataset.armed==="1"){b.dataset.armed="";b.textContent="清除作答";}},4000);return;}
-        b.dataset.armed="";b.textContent="清除作答";window.EZundo("這題的作答",fn,el);
+        b.dataset.armed="";b.textContent="清除作答";window.EZundo("這題的作答",fn,el,b);
       };}
     else if(b){b.remove();if(r&&!r.children.length)r.remove();}
   }

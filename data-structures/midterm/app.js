@@ -607,7 +607,7 @@ function seqvar(el){
     const st=steps[i-1];render(st);
     log.innerHTML="步驟 "+i+" / "+steps.length+"："+st.msg+"<br>比較 target 的次數 <b>"+st.cmp+"</b>　迴圈條件測試 <b>"+st.tests+"</b> 次";
     if(st.done&&st.swap){log.innerHTML+="<br>交換已經存回 list，再按一次「重來」或「跑完」找同一個值，會看到它繼續往前。";}}
-  function step(){if(si>=steps.length){log.innerHTML+="<br>已經跑完。";return;}const st=steps[si];st._pre=arr.slice();si++;if(st.done&&st.swap){arr=st.a.slice();}show(si);}
+  function step(){if(si>=steps.length){if(!log.innerHTML.includes("已經跑完"))log.innerHTML+="<br>已經跑完。";return;}const st=steps[si];st._pre=arr.slice();si++;if(st.done&&st.swap){arr=st.a.slice();}show(si);}
   function prev(){
     if(si===0){log.innerHTML="已經在開頭。";return;}
     const st=steps[--si];

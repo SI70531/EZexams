@@ -916,11 +916,11 @@ function animFig(svg){
     else if(/function/.test(e.textContent)){pt.push(e);}
     else bd.push(e);
   }
-  bd.forEach((e,k)=>{e.classList.add("fa-bd");e.style.animationDelay=Math.min(k*18,900)+"ms";});
-  const base=Math.min(bd.length*18,900)+250;
-  pt.forEach((e,k)=>{e.classList.add("fa-pt");e.style.animationDelay=(base+k*70)+"ms";});
-  const base2=base+pt.length*70+350;
-  ar.forEach((e,k)=>{e.classList.add("fa-ar");e.style.animationDelay=(base2+k*380)+"ms";});
+  bd.forEach(e=>{e.classList.add("fa-bd");e.style.animationDelay="0ms";});
+  const base=600;
+  pt.forEach(e=>{e.classList.add("fa-pt");e.style.animationDelay=base+"ms";});
+  const base2=base+700;
+  ar.forEach(e=>{e.classList.add("fa-ar");e.style.animationDelay=base2+"ms";});
   svg.classList.add("fa-ready");
   const io=new IntersectionObserver(es=>{
     if(es[0].isIntersecting){svg.classList.remove("fa-play");void svg.getBoundingClientRect();svg.classList.add("fa-play");}

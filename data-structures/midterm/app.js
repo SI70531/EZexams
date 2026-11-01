@@ -569,7 +569,7 @@ function seqvar(el){
     ord:{n:"Algorithm 2-4 Ordered list",code:["1 if (target < list[last])","  1 looker = 0","  2 loop (target > list[looker])","    1 looker = looker + 1","  3 end loop","2 else looker = last","4 if (target equal list[looker]) found = true","5 else found = false","7 locn = looker"]}};
   const s=sel(Object.keys(ALG).map(k=>[k,ALG[k].n]),"seq");const lst=txt("4 21 36 14 62 91 8 22 7 81 77 10","100%");const tg=num(14,"80px");
   const g=$("div","labgrid");const l1=$("label",null,"List（空白分隔；ordered list 會自動排序）");l1.appendChild(lst);const l2=$("label",null,"演算法");l2.appendChild(s);const l3=$("label",null,"target");l3.appendChild(tg);g.append(l1,l2,l3);el.appendChild(g);
-  const r=$("div","labrow");const bN=btn("下一步",true),bA=btn("跑完"),bR=btn("重來");r.append(bN,bA,bR);el.appendChild(r);
+  const r=$("div","labrow");const bP=btn("上一步"),bN=btn("下一步",true),bA=btn("跑完"),bR=btn("重來");r.append(bP,bN,bA,bR);el.appendChild(r);
   const wrap=$("div","llwrap");const view=$("div","llview");const code=$("div");wrap.append(view,code);el.appendChild(wrap);const log=$("div","lablog");el.appendChild(log);
   let arr=[],steps=[],si=0,base="";
   function parse(){let a=lst.value.split(/[^0-9-]+/).filter(Boolean).map(Number).slice(0,20);if(!a.length)a=[4];if(s.value==="ord")a=a.slice().sort((x,y)=>x-y);return a;}
@@ -603,10 +603,18 @@ function seqvar(el){
     code.innerHTML=codeBox(ALG[s.value].code,st?st.line:-1);
   }
   function reset(keep){if(!keep)arr=parse();plan();render(null);log.innerHTML="按「下一步」開始。last = "+(arr.length-1)+"。";}
-  function step(){if(si>=steps.length){log.innerHTML+="<br>已經跑完。";return;}const st=steps[si++];render(st);
-    log.innerHTML="步驟 "+si+" / "+steps.length+"："+st.msg+"<br>比較 target 的次數 <b>"+st.cmp+"</b>　迴圈條件測試 <b>"+st.tests+"</b> 次";
-    if(st.done&&st.swap){arr=st.a.slice();log.innerHTML+="<br>交換已經存回 list，再按一次「重來」或「跑完」找同一個值，會看到它繼續往前。";}}
-  bN.addEventListener("click",step);bA.addEventListener("click",()=>{while(si<steps.length)step();});
+  function show(i){ // i = number of steps executed so far (1-based step shown)
+    const st=steps[i-1];render(st);
+    log.innerHTML="步驟 "+i+" / "+steps.length+"："+st.msg+"<br>比較 target 的次數 <b>"+st.cmp+"</b>　迴圈條件測試 <b>"+st.tests+"</b> 次";
+    if(st.done&&st.swap){log.innerHTML+="<br>交換已經存回 list，再按一次「重來」或「跑完」找同一個值，會看到它繼續往前。";}}
+  function step(){if(si>=steps.length){log.innerHTML+="<br>已經跑完。";return;}const st=steps[si];st._pre=arr.slice();si++;if(st.done&&st.swap){arr=st.a.slice();}show(si);}
+  function prev(){
+    if(si===0){log.innerHTML="已經在開頭。";return;}
+    const st=steps[--si];
+    if(st._pre)arr=st._pre.slice(); // undo a swap that this step performed
+    if(si===0){render(null);log.innerHTML="按「下一步」開始。last = "+(arr.length-1)+"。";}
+    else show(si);}
+  bP.addEventListener("click",prev);bN.addEventListener("click",step);bA.addEventListener("click",()=>{while(si<steps.length)step();});
   bR.addEventListener("click",()=>reset(s.value==="pro"));s.addEventListener("change",()=>reset());lst.addEventListener("change",()=>reset());tg.addEventListener("change",()=>reset(s.value==="pro"));
   reset();
 }

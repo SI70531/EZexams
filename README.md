@@ -43,7 +43,6 @@ subject/exam/       One folder per exam
   app.js            Code for that page
   quiz.js           Multiple-choice questions
 tools/              Helper scripts and the Cloudflare Worker (see below)
-tests/              Automatic checks for the site
 ```
 
 ## Adding a New Subject
@@ -110,17 +109,6 @@ AI grading works without any setup once you are signed in. The pages send reques
 ## Question Order
 
 Each time you open a page, the unanswered questions are shuffled. Answered questions move to the top in the order you answered them. Past exams are never shuffled.
-
-## Tests
-
-To run the automatic checks:
-
-```
-npm i playwright && npx playwright install chromium
-node tests/run.mjs
-```
-
-The tests run against a fake Supabase and Gemini. They open every page in a headless browser and check things like tabs, the phone layout, signing up and in, device PINs, and syncing between two devices. `ONLY="device PIN" node tests/run.mjs` runs just the checks whose name matches. They also run automatically on every push.
 
 ## Health Checks and Error Reports
 

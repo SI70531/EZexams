@@ -403,7 +403,7 @@ async function genNext(env, acct, who, bodyText, json, fail) {
   let made = null, err = null;
   for (let attempt = 0; attempt < 4 && !made; attempt++) {
     const g = await geminiJson(env, mcPrompt(b), attempt ? 0.5 : 0.8, attempt);
-    if (g.error) { err = g.error; if (g.error.status === 429 || ![404, 500, 502, 503, 504].includes(g.error.status)) break; continue; }
+    if (g.error) { err = g.error; if (![404, 429, 500, 502, 503, 504].includes(g.error.status)) break; continue; }
     made = cleanMc(parseJson(g.text), b.zh);
     if (!made) err = { status: 502, bad: true };
   }
@@ -490,7 +490,7 @@ async function wgenNext(env, acct, who, bodyText, json, fail) {
   let made = null, err = null;
   for (let attempt = 0; attempt < 4 && !made; attempt++) {
     const g = await geminiJson(env, wPrompt(b), attempt ? 0.5 : 0.8, attempt);
-    if (g.error) { err = g.error; if (g.error.status === 429 || ![404, 500, 502, 503, 504].includes(g.error.status)) break; continue; }
+    if (g.error) { err = g.error; if (![404, 429, 500, 502, 503, 504].includes(g.error.status)) break; continue; }
     const o = parseJson(g.text);
     if (o && typeof o.q === "string" && o.q.trim().length > 12 && typeof o.ref === "string" && o.ref.trim().length > 2) {
       made = { q: clip(o.q.trim(), 900), ref: clip(o.ref.trim(), 1500) };
@@ -545,7 +545,7 @@ async function wgrade(env, acct, who, bodyText, json, fail) {
   let o = null, err = null;
   for (let attempt = 0; attempt < 3 && !o; attempt++) {
     const g = await geminiJson(env, wGradePrompt(item, notes, ans), 0.2, attempt);
-    if (g.error) { err = g.error; if (g.error.status === 429 || ![404, 500, 502, 503, 504].includes(g.error.status)) break; continue; }
+    if (g.error) { err = g.error; if (![404, 429, 500, 502, 503, 504].includes(g.error.status)) break; continue; }
     const x = parseJson(g.text);
     if (x && (typeof x.score === "number" || /\d/.test(String(x.score)))) o = x; else err = { status: 502, bad: true };
   }

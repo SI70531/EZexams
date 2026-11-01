@@ -14,6 +14,7 @@
   --glass-th:rgba(255,255,255,.2);           /* table header tint */
   --glass-line:rgba(0,0,0,.08);              /* table cell dividers */
   --glass-fallback:rgba(255,255,255,.82);    /* browsers without backdrop-filter */
+  --glass-menu:rgba(246,248,250,.93);        /* popup menus (theme / animation): dense enough to read over text */
   --glass-blur:16px;
   /* blob colours: lavender / sky / peach */
   --blob-a:rgba(167,139,250,.55); --blob-b:rgba(96,165,250,.50); --blob-c:rgba(251,146,60,.38);
@@ -22,11 +23,13 @@
   --glass-bg:rgba(255,255,255,.07); --glass-bg-nested:rgba(255,255,255,.05); --glass-fig:rgba(236,240,240,.86);
   --glass-bd:rgba(255,255,255,.16); --glass-sh:0 10px 30px rgba(0,0,0,.35); --glass-sh-hover:0 16px 40px rgba(0,0,0,.45);
   --glass-th:rgba(255,255,255,.06); --glass-line:rgba(255,255,255,.12); --glass-fallback:rgba(28,46,59,.92);
+  --glass-menu:rgba(22,36,46,.95);
   --blob-a:rgba(139,92,246,.38); --blob-b:rgba(56,130,246,.34); --blob-c:rgba(234,120,40,.22)}}
 :root[data-theme="dark"]{
   --glass-bg:rgba(255,255,255,.07); --glass-bg-nested:rgba(255,255,255,.05); --glass-fig:rgba(236,240,240,.86);
   --glass-bd:rgba(255,255,255,.16); --glass-sh:0 10px 30px rgba(0,0,0,.35); --glass-sh-hover:0 16px 40px rgba(0,0,0,.45);
   --glass-th:rgba(255,255,255,.06); --glass-line:rgba(255,255,255,.12); --glass-fallback:rgba(28,46,59,.92);
+  --glass-menu:rgba(22,36,46,.95);
   --blob-a:rgba(139,92,246,.38); --blob-b:rgba(56,130,246,.34); --blob-c:rgba(234,120,40,.22)}
 
 /* ============ 1. Background glow blobs ============ */
@@ -61,6 +64,8 @@ html::before{
 :root :is(.qitem,.rvsec,.qa,.day,.cheat .two>div,.fig,.next,.pcb) :is(.box,.calc,.fig,.qa,table,.pcb){
   -webkit-backdrop-filter:none;backdrop-filter:none;background:var(--glass-bg-nested);box-shadow:none;
 }
+/* popup menus: a deeper, almost solid glass so the words underneath do not bleed through */
+:root :is(.cheat .two>div,.thmenu){background:var(--glass-menu);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px)}
 /* the coloured note boxes keep their tint (English / Chinese / warning / tip) on top of the glass */
 :root .box.en  {background:linear-gradient(var(--indigo-soft),var(--indigo-soft)),var(--glass-bg)}
 :root .box.zh  {background:linear-gradient(var(--brass-soft),var(--brass-soft)),var(--glass-bg)}

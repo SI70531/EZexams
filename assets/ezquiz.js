@@ -23,7 +23,6 @@
   const UNDO_S=3;
   window.EZundo=function(what,doIt,el,btn){
     const old=document.getElementById("ezundo");if(old&&old._fin)old._fin();
-    if(el)el.style.opacity=".4";
     const t=document.createElement("div");t.id="ezundo";t.setAttribute("role","status");
     const cancel="<button type='button' class='btn' style='margin-left:8px;font:inherit;font-weight:600;padding:1px 12px;cursor:pointer'>取消</button>";
     if(btn&&btn.parentNode){
@@ -37,7 +36,7 @@
     const msg=t.firstChild,end=now()+UNDO_S*1000;
     const draw=()=>{msg.textContent="將清除"+what+"（"+Math.max(1,Math.ceil((end-now())/1000))+" 秒）";};draw();
     let done=false;
-    const stop=()=>{done=true;clearTimeout(tm);clearInterval(iv);t.remove();if(btn)btn.style.display="";if(el)el.style.opacity="";};
+    const stop=()=>{done=true;clearTimeout(tm);clearInterval(iv);t.remove();if(btn)btn.style.display="";};
     const fin=()=>{if(done)return;stop();doIt();};
     const tm=setTimeout(fin,UNDO_S*1000),iv=setInterval(draw,250);t._fin=fin;
     t.querySelector("button").onclick=()=>{if(!done)stop();};

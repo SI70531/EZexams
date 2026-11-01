@@ -58,6 +58,7 @@ html.ezcalm .wow-bg,html.ezcalm #wowp,html.ezcalm #wowt,html.ezcalm .wow-intro,h
 .wow-banner{position:fixed;left:0;right:0;top:max(84px,calc(env(safe-area-inset-top,0px) + 80px));z-index:90;pointer-events:none;padding:14px 20px;text-align:center;color:#fff;
   font:700 clamp(17px,3.4vw,24px)/1.3 var(--f-body);letter-spacing:.04em;background:linear-gradient(90deg,var(--indigo),var(--seal) 55%,var(--brass));box-shadow:0 12px 40px -10px rgba(0,0,0,.5);transform:translateX(-110%) skewX(-12deg)}
 .wow-banner b{font-size:1.35em}
+h3.mo-read::after{content:" ✓";color:var(--ok,#2e7d32);font-size:.8em}
 @media print{.wow-bg,#wowp,#wowt,.wow-intro,.wow-banner,.wow-flash,.wow-fly{display:none}}`;
   const st=document.createElement("style");st.textContent=css;document.head.appendChild(st);
 
@@ -134,6 +135,11 @@ html.ezcalm .wow-bg,html.ezcalm #wowp,html.ezcalm #wowt,html.ezcalm .wow-intro,h
       {duration:1150,easing:"cubic-bezier(.4,0,.2,1)",fill:"forwards"});
     an.onfinish=()=>{el.remove();tab.animate([{transform:"scale(1)"},{transform:"scale(1.25)",boxShadow:"0 0 18px 4px color-mix(in srgb,var(--ok) 55%,transparent)"},{transform:"scale(1)"}],{duration:480,easing:"cubic-bezier(.3,1.6,.5,1)"});};
   }
+  /* a heading counts as read once it is scrolled past or clicked; the ✓ is kept per page in this browser */
+  function markRead(h){
+    if(!h||h.classList.contains("mo-read"))return;
+    h.classList.add("mo-read");read.add(hid(h));saveRead();fly(h);
+  }
   function stamp(h){
     if(calm()||!h.animate)return;
     h.style.transformOrigin="0 50%";
@@ -145,10 +151,12 @@ html.ezcalm .wow-bg,html.ezcalm #wowp,html.ezcalm #wowt,html.ezcalm .wow-intro,h
     document.body.appendChild(d);d.animate([{transform:"scale(.3)",opacity:.9},{transform:"scale(4.5)",opacity:0}],{duration:650,delay:260,easing:"ease-out",fill:"both"}).onfinish=()=>d.remove();
   }
   if("IntersectionObserver"in window){
-    const armed=new WeakSet(),seen=new WeakSet();
+    const armed=new WeakSet(),seen=new WeakSet(),armedList=[];
+    /* a heading that was below the screen when the page opened counts as read once the reader scrolls past it (even in one jump) */
+    const checkPassed=()=>armedList.forEach(h=>{if(!seen.has(h)&&h.offsetParent&&h.getBoundingClientRect().bottom<0){seen.add(h);markRead(h);}});
     const ioH=new IntersectionObserver(es=>es.forEach(e=>{
       const h=e.target;
-      if(e.isIntersecting&&e.intersectionRatio>=.6&&!seen.has(h)&&armed.has(h)){seen.add(h);stamp(h);}
+      if(e.isIntersecting&&e.intersectionRatio>=.6&&!seen.has(h)&&armed.has(h)){seen.add(h);stamp(h);markRead(h);}
     }),{threshold:[0,.6]});
     const ioC=new IntersectionObserver(es=>es.forEach(e=>{
       if(!e.isIntersecting)return;ioC.unobserve(e.target);const c=e.target;if(calm()||!c.animate)return;
@@ -157,16 +165,17 @@ html.ezcalm .wow-bg,html.ezcalm #wowp,html.ezcalm #wowt,html.ezcalm .wow-intro,h
     }),{rootMargin:"0px 0px -14% 0px",threshold:.02});
     function arm(){
       const vh=innerHeight;
-      document.querySelectorAll(".view h3:not([data-wow])").forEach(h=>{
-        if(h.closest("#ezgate,.wcard,.ezs-panel")||!h.offsetParent)return;h.dataset.wow=1;   /* headings of a tab that is not open yet are armed when it opens */
-        const top=h.getBoundingClientRect().top;if(top>vh*.9)armed.add(h);   /* only headings that arrive by scrolling are stamped */
-        ioH.observe(h);
+      document.querySelectorAll(".view h3").forEach(h=>{   /* headings of a tab that is not open yet are armed when it opens */
+        if(h.closest("#ezgate,.wcard,.ezs-panel")||!h.offsetParent)return;
+        if(!h.dataset.wow){h.dataset.wow=1;if(read.has(hid(h)))h.classList.add("mo-read");ioH.observe(h);}
+        /* only headings that arrive by scrolling are stamped: any check that finds one below the screen arms it */
+        if(!armed.has(h)&&h.getBoundingClientRect().top>vh*.9){armed.add(h);armedList.push(h);}
       });
       document.querySelectorAll(".rvsec:not([data-wowc])").forEach(c=>{if(!c.offsetParent)return;c.dataset.wowc=1;if(c.getBoundingClientRect().top>innerHeight*.9)ioC.observe(c);});
     }
-    setTimeout(arm,300);
-    new MutationObserver(()=>setTimeout(arm,120)).observe(document.body,{attributes:true,subtree:true,attributeFilter:["hidden"]});
-    addEventListener("scroll",(()=>{let q=0;return()=>{if(q)return;q=setTimeout(()=>{q=0;arm();},400);};})(),{passive:true});
+    setTimeout(()=>{arm();checkPassed();},300);
+    new MutationObserver(()=>setTimeout(()=>{arm();checkPassed();},120)).observe(document.body,{attributes:true,subtree:true,attributeFilter:["hidden"]});
+    addEventListener("scroll",(()=>{let q=0;return()=>{if(q)return;q=setTimeout(()=>{q=0;arm();checkPassed();},400);};})(),{passive:true});
   }
 
   /* ---------- page turn between tabs ---------- */
@@ -220,6 +229,7 @@ html.ezcalm .wow-bg,html.ezcalm #wowp,html.ezcalm #wowt,html.ezcalm .wow-intro,h
     },260);
   }
   document.addEventListener("click",e=>{
+    const hh=e.target.closest&&e.target.closest(".view h3");if(hh)markRead(hh);
     const o=e.target.closest&&e.target.closest(".opt");if(!o||o.disabled||calm())return;
     const q=o.closest(".qitem");if(!q)return;
     setTimeout(()=>{

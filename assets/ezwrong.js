@@ -124,7 +124,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
     const out=[];
     CH.forEach(ch=>{
       const a=S.quiz&&S.quiz[ch]||{};
-      QUIZ[ch].forEach((it,i)=>{const pk=a[i];if(pk===undefined||pk===it.a)return;
+      QUIZ[ch].forEach((it,i)=>{const pk=a[i];if(pk===undefined||pk===it.a||it.a==null||typeof it.q!=="string")return;
         mc(out,it,i,pk,ch,(NAME[ch]||ch)+" 章末選擇第 "+(i+1)+" 題",ch,ch);});
     });
     /* MC parts embedded in other views (e.g. past/mock exams): answers live in S.quiz[key] like chapter quizzes */
@@ -132,7 +132,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
       if(CH.includes(key))return;
       const box=document.querySelector('[data-quiz="'+key+'"]');const view=box&&box.closest(".view");if(!view)return;
       const a=S.quiz&&S.quiz[key]||{};
-      QUIZ[key].forEach((it,i)=>{const pk=a[i];if(pk===undefined||pk===it.a)return;
+      QUIZ[key].forEach((it,i)=>{const pk=a[i];if(pk===undefined||pk===it.a||it.a==null||typeof it.q!=="string")return;
         mc(out,it,i,pk,chOf(it),(NAME[view.id]||view.id)+" 選擇第 "+(i+1)+" 題",view.id,key);});
     });
     if(typeof MOCK!=="undefined"){
@@ -140,7 +140,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
         /* economics mocks keep their answers in S.quiz[<box key>] and are checked as you go */
         const box=document.querySelector("#"+id+" .quiz[data-quiz]"),key=box&&box.dataset.quiz;
         const st=S.exam&&S.exam[id];const a=key?(S.quiz&&S.quiz[key]||{}):(st&&st.done&&st.ans||{});
-        MOCK[id].forEach((it,i)=>{const pk=a[i];if(pk===undefined||pk===it.a)return;
+        MOCK[id].forEach((it,i)=>{const pk=a[i];if(pk===undefined||pk===it.a||it.a==null||typeof it.q!=="string")return;
           mc(out,it,i,pk,chOf(it),(NAME[id]||id)+" 第 "+(i+1)+" 題",id,key||null);});
       });
     }

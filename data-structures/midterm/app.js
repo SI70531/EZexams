@@ -45,6 +45,9 @@ function nextOf(id){const i=VIEWS.findIndex(v=>v[0]===id);let n=VIEWS[i+1];if(n&
 document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b){show(b.dataset.go);}});
 window.addEventListener("hashchange",()=>{const h=location.hash.slice(1);if(h&&h!==S.last)show(h);});
 
+/* AI practice, one question at a time (assets/ezgen.js); chapter exercises are made on demand, answers stay on the Worker */
+if(window.EZGEN)EZGEN.attach({course:"資料結構",s:"ds",ai:["ch1","ch2","ch3","m1","m2"],fixed:["y24mc","y25mc"],scope:{m1:["ch1","ch2","ch3"],m2:["ch1","ch2","ch3"]},mock:["m1","m2"],get:()=>S,quiz:()=>QUIZ,save:()=>save(),render:c=>{renderQuiz(c);afterAnswer(c)},renderAll:()=>{Object.keys(QUIZ).forEach(renderQuiz);renderTabs(S.last)}});
+
 /* ---------- multiple choice ---------- */
 function renderQuiz(key){
   const box=document.querySelector('[data-quiz="'+key+'"]');if(!box)return;
@@ -56,22 +59,25 @@ function renderQuiz(key){
   }else{
     const p=document.createElement("p");p.className="small";p.textContent="點一個選項就會對答案，答對每題 2 分，會算進上方總分。";box.appendChild(p);
   }
-  qs.forEach((it,i)=>{
-    const d=document.createElement("div");d.className="qitem";
-    const st=document.createElement("div");st.className="stem";st.innerHTML='<span class="num">'+(i+1)+'.</span>';st.appendChild(document.createTextNode(it.q));d.appendChild(st);
+  const SHOW=window.EZGEN&&EZGEN.isAi(key)?EZGEN.order(key,qs):qs.map((_,k)=>k);
+  SHOW.forEach((i,pos)=>{
+    const it=qs[i];
+    const d=document.createElement("div");d.className="qitem";d.dataset.i=i;
+    const st=document.createElement("div");st.className="stem";st.innerHTML='<span class="num">'+(pos+1)+'.</span>';st.appendChild(document.createTextNode(it.q));d.appendChild(st);if(it.gid&&window.EZGEN)EZGEN.tag(d);
     const os=document.createElement("div");os.className="opts";
     const btns=[];
     it.o.forEach((txt,oi)=>{
       const b=EZopt();b.className="opt";b.type="button";
       b.innerHTML='<span class="ab">'+"ABCD"[oi]+'</span>';const t=document.createElement("span");t.textContent=txt;b.appendChild(t);
       b.dataset.oi=oi;btns.push(b);
-      b.addEventListener("click",()=>{if(S.quiz[key]&&S.quiz[key][i]!==undefined)return;S.quiz[key]=S.quiz[key]||{};S.quiz[key][i]=oi;save();mark();renderScore();afterAnswer(key);});
+      b.addEventListener("click",()=>{if(S.quiz[key]&&S.quiz[key][i]!==undefined)return;S.quiz[key]=S.quiz[key]||{};S.quiz[key][i]=oi;if(window.EZGEN&&(EZGEN.isAi(key)||EZGEN.isFixed(key)))EZGEN.stamp(key,i);save();if(it.a==null&&window.EZGEN){btns.forEach(x=>x.disabled=true);EZGEN.reveal(key,i,oi).then(ok=>{if(!ok){delete S.quiz[key][i];save();}renderQuiz(key);afterAnswer(key);});return;}mark();renderScore();afterAnswer(key);});
       os.appendChild(b);
     });
     d.appendChild(os);
     const ex=document.createElement("div");ex.className="expl";ex.hidden=true;d.appendChild(ex);
     function mark(){
       const pick=(S.quiz[key]||{})[i];if(pick===undefined)return;
+      if(it.a==null){btns.forEach(b=>b.disabled=true);return;}
       btns.forEach(b=>{b.disabled=true;const oi=+b.dataset.oi;if(oi===it.a)b.classList.add("right");else if(oi===pick)b.classList.add("wrong");});
       const ok=pick===it.a;
       ex.innerHTML='<span class="tag '+(ok?"ok":"no")+'">'+(ok?"答對":"答錯，正確答案是 ("+"ABCD"[it.a]+")")+'</span>';
@@ -79,6 +85,7 @@ function renderQuiz(key){
     }
     mark();box.appendChild(d);
   });
+  if(window.EZGEN)EZGEN.mount(box,key,()=>{renderQuiz(key);afterAnswer(key);});
   const sc=document.createElement("div");sc.className="qscore";box.appendChild(sc);
   function renderScore(){
     const n=quizCount(key),r=quizRight(key);
@@ -87,7 +94,7 @@ function renderQuiz(key){
     if(isExam)t.textContent="選擇題：已作答 "+n+" / "+qs.length+"，答對 "+r+" 題（"+r*2+" 分）";
     else t.textContent=n<qs.length?("已作答 "+n+" / "+qs.length+"，目前答對 "+r+" 題"):("完成！答對 "+r+" / "+qs.length+(r>=qs.length*0.8?"，觀念很穩。":"，把錯的題目對應段落再讀一次。"));
     sc.appendChild(t);
-    const rb=document.createElement("button");rb.className="btn";rb.type="button";rb.textContent=isExam?"重做選擇題":"重做這章";rb.addEventListener("click",()=>{(window.EZundo||((w,f)=>f()))("這章的作答",()=>{delete S.quiz[key];save();renderQuiz(key);afterAnswer(key);},null,rb);});sc.appendChild(rb);
+    const rb=document.createElement("button");rb.className="btn";rb.type="button";rb.textContent=isExam?"重做選擇題":"重做這章";rb.addEventListener("click",()=>{(window.EZundo||((w,f)=>f()))("這章的作答",()=>{delete S.quiz[key];if(window.EZGEN)EZGEN.reset(key);S.quizReset=S.quizReset||{};S.quizReset[key]=Date.now();save();renderQuiz(key);afterAnswer(key);},null,rb);});sc.appendChild(rb);
     if(!isExam&&n>=qs.length){const nx=nextOf(key);if(nx){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";nb.textContent=key==="ch3"?"開始考古題":"下一章";nb.dataset.go=nx;sc.appendChild(nb);}}
   }
   renderScore();

@@ -48,7 +48,7 @@
   mcss.textContent=".qmodes{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 14px}.qmodes .lb{font-size:13px;color:var(--muted)}.qmodes .btn[aria-pressed=true]{background:var(--indigo,#253745);color:var(--accent-ink,#fff);border-color:var(--indigo,#253745)}.qitem.qhide{display:none!important}.qmodes .qn{font-size:13px;color:var(--muted)}";
   document.head.appendChild(mcss);
   function addModes(box){
-    if(!box||box.querySelector(":scope > .qmodes")||!box.querySelector(".qitem"))return;
+    if(!box||box.dataset.gen||box.querySelector(":scope > .qmodes")||!box.querySelector(".qitem"))return;
     const bar=document.createElement("div");bar.className="qmodes";
     bar.innerHTML="<span class='lb'>練習模式</span>";
     const note=document.createElement("span");note.className="qn";
@@ -123,6 +123,13 @@
     const first=box.querySelector(":scope > .qitem");
     if(!bar){bar=document.createElement("div");bar.className="examtools mcscore";bar.innerHTML='<span class="score"></span>';}
     if(first&&bar.nextElementSibling!==first&&!bar.contains(first))box.insertBefore(bar,first);
+    else if(!first&&!bar.parentNode)box.insertBefore(bar,box.querySelector(":scope > .ezgen-bar"));
+    if(window.EZGEN&&EZGEN.isAi(key)&&!bar.querySelector(".mcredo")){
+      const rb=document.createElement("button");rb.type="button";rb.className="btn mcredo";rb.textContent="重做這章";rb.style.marginLeft="12px";
+      rb.onclick=()=>{window.EZundo("這章的作答（含 AI 題目）",()=>{
+        delete S.quiz[key];EZGEN.reset(key);S.quizReset=S.quizReset||{};S.quizReset[key]=now();save();
+        try{renderQuiz(key);}catch(e){}afterChange(key);},null,rb);};
+      bar.appendChild(rb);}
     const qs=QUIZ[key],a=S.quiz&&S.quiz[key]||{};
     let n=0,r=0;Object.keys(a).forEach(k=>{if(qs[k]){n++;if(a[k]===qs[k].a)r++;}});
     const P=window.EZ_MC_PTS||50; /* a page can set its own total (data structures: 40, like Part I of its exam) */
@@ -172,6 +179,7 @@
   window.EZtodo=function(ch){
     const sec=document.getElementById(ch);if(!sec)return null;
     const mc=[...sec.querySelectorAll(".quiz[data-quiz] > .qitem")].find(it=>!it.querySelector(".opt.right,.opt.wrong"));if(mc)return mc;
+    const gb=[...sec.querySelectorAll(".quiz[data-gen]")].map(b=>EZGEN.bar(b.dataset.quiz)).find(Boolean);if(gb)return gb;
     const w=sec.querySelector(".chw");if(!w)return null;const x=(S.ex2||{})[w.dataset.exam]||{};
     return [...w.querySelectorAll(".exq")].find(q=>!((x.grade||{})[q.id]))||null;
   };
@@ -206,7 +214,9 @@
   /* exercises left in a chapter: unanswered multiple choice + written answers not graded yet */
   function left(v){
     let n=0,t=0;
-    v.querySelectorAll(".quiz[data-quiz] > .qitem").forEach(it=>{t++;if(!it.querySelector(".opt.right,.opt.wrong"))n++;});
+    v.querySelectorAll(".quiz[data-quiz]").forEach(bx=>{
+      if(bx.dataset.gen&&window.EZGEN){const k=bx.dataset.quiz;t+=EZGEN.total(k);n+=EZGEN.left(k);return;}
+      bx.querySelectorAll(":scope > .qitem").forEach(it=>{t++;if(!it.querySelector(".opt.right,.opt.wrong"))n++;});});
     const w=v.querySelector(".chw");
     if(w&&typeof S!=="undefined"){const x=(S.ex2||{})[w.dataset.exam]||{};w.querySelectorAll(".exq").forEach(q=>{t++;if(!((x.grade||{})[q.id]))n++;});}
     return {n,t};

@@ -318,14 +318,14 @@
       t.innerHTML=first?"每一題由 AI 依講義即時出題，涵蓋這章的每個小節，作答後才顯示答案與解析。共 <b>"+N+" 題</b>。":
         "下一題是第 <b>"+(ans+1)+" / "+N+"</b> 題。"+(coveredAll(k)?"每個小節都考過了，接下來優先出你答錯的觀念。":"");
       const b=addBtn(first?"AI 開始出題":"出下一題",async()=>{
-        if(BUSY[k])return;BUSY[k]=true;ERR[k]="";b.disabled=true;b.textContent="AI 出題中…（約 5–15 秒）";
+        if(BUSY[k])return;BUSY[k]=true;ERR[k]="";b.disabled=true;b.textContent="AI 出題中…";
         try{const slot=await generate(k);rerender();
           setTimeout(()=>{const el=box.querySelector('.qitem[data-i="'+slot+'"]');if(el)el.scrollIntoView({block:"center",behavior:"smooth"});},60);
         }catch(e){ERR[k]=errText(e);BUSY[k]=false;draw();return;}
         BUSY[k]=false;
       },true);
       if(ERR[k]){const er=document.createElement("div");er.className="gtxt gerr";er.textContent=ERR[k];bar.appendChild(er);}
-      if(BUSY[k]){b.disabled=true;b.textContent="AI 出題中…（約 5–15 秒）";}
+      if(BUSY[k]){b.disabled=true;b.textContent="AI 出題中…";}
     };
     function addBtn(label,fn,primary){const b=document.createElement("button");b.type="button";b.className="btn"+(primary?" primary":"");b.textContent=label;b.addEventListener("click",fn);bar.appendChild(b);return b;}
     draw.k=k;draw.box=box;

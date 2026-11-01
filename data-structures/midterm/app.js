@@ -894,3 +894,37 @@ document.querySelectorAll("[data-lab]").forEach(el=>{try{LABS[el.dataset.lab](el
 
 const start=(location.hash||"").slice(1)||S.last||"home";
 show(start);
+
+/* Static binary-search figures (Figure 2-4 / 2-5): play in order — array first,
+   then first/mid/last boxes with their values, then the arrows in flow order.
+   Plays on scroll-in and again whenever the figure becomes visible (e.g. after a tab switch). */
+function animFig(svg){
+  if(svg.dataset.faInit)return;svg.dataset.faInit="1";
+  if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  const els=[...svg.querySelectorAll("rect,text,line")];
+  const bd=[],pt=[],ar=[];let pend=0;
+  for(const e of els){
+    if(e.tagName==="line"){if(e.getAttribute("marker-end")){ar.push(e);}else bd.push(e);continue;}
+    if(e.tagName==="rect"){
+      const w=+e.getAttribute("width"),h=+e.getAttribute("height"),fill=e.getAttribute("fill");
+      if(w===34&&h===22){pt.push(e);pend=2;continue;}
+      if(w===110&&h===26){pt.push(e);pend=fill==="#1d2433"?0:1;continue;}
+      bd.push(e);pend=0;continue;
+    }
+    // text
+    if(pend>0){pt.push(e);pend--;}
+    else if(/function/.test(e.textContent)){pt.push(e);}
+    else bd.push(e);
+  }
+  bd.forEach((e,k)=>{e.classList.add("fa-bd");e.style.animationDelay=Math.min(k*18,900)+"ms";});
+  const base=Math.min(bd.length*18,900)+250;
+  pt.forEach((e,k)=>{e.classList.add("fa-pt");e.style.animationDelay=(base+k*70)+"ms";});
+  const base2=base+pt.length*70+350;
+  ar.forEach((e,k)=>{e.classList.add("fa-ar");e.style.animationDelay=(base2+k*380)+"ms";});
+  svg.classList.add("fa-ready");
+  const io=new IntersectionObserver(es=>{
+    if(es[0].isIntersecting){svg.classList.remove("fa-play");void svg.getBoundingClientRect();svg.classList.add("fa-play");}
+  },{threshold:.35});
+  io.observe(svg);
+}
+document.querySelectorAll('figure[data-anim="bs"] svg').forEach(animFig);

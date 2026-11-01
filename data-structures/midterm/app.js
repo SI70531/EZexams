@@ -816,48 +816,76 @@ function multi(el){
 
 /* 3'. Hash table simulator, now with every collision method on the slides */
 function hash(el){
-  frame(el,"雜湊模擬器：自己出題自己對答案","預設是 2024／2025 考古題那組 key。改 key、list size、hashing 或 collision resolution，按「插入下一個」一步步看，或按「全部插入」直接看結果。");
+  frame(el,"雜湊模擬器：自己出題自己對答案","預設是 2024／2025 考古題那組 key。改 key、list size、hashing 或 collision resolution。「下一步」一格一格看每次探測（看一格、碰撞就換下一格），「上一步」可以退回，「全部插入」直接看結果。");
   const g=$("div","labgrid");
   g.innerHTML='<label>Keys<textarea id="hs-keys" rows="2" class="labin">224562, 137456, 214572, 140155, 214576, 162145, 144457, 190255, 234554</textarea></label>'+
    '<label>List size<input id="hs-n" class="labin" type="number" value="19" min="2" max="997"></label>'+
    '<label>Hashing<select id="hs-fold" class="labin"><option value="fb">Fold boundary（每 2 位）＋ MOD</option><option value="fs">Fold shift（每 2 位）＋ MOD</option><option value="mod">Modulo division 直接取餘</option></select></label>'+
    '<label>Collision<select id="hs-col" class="labin"><option value="lin">Linear probe</option><option value="quad">Quadratic probe</option><option value="pr">Pseudorandom y = 3x + 5</option><option value="ko">Key offset</option><option value="chain">Linked list（LIFO overflow）</option><option value="bucket">Bucket（每格 3 筆）＋ linear probe</option></select></label>';
   el.appendChild(g);
-  const ctl=$("div","labrow");const bS=$("button","btn primary","插入下一個"),bA=$("button","btn","全部插入"),bR=$("button","btn","重來");[bS,bA,bR].forEach(b=>b.type="button");ctl.append(bS,bA,bR);el.appendChild(ctl);
+  const ctl=$("div","labrow");const bP=$("button","btn","上一步"),bS=$("button","btn primary","下一步"),bA=$("button","btn","全部插入"),bR=$("button","btn","重來");[bP,bS,bA,bR].forEach(b=>b.type="button");ctl.append(bP,bS,bA,bR);el.appendChild(ctl);
+  const msgEl=$("div","lablog");el.appendChild(msgEl);
   const slots=$("div","slots");el.appendChild(slots);const sum=$("div","lablog");el.appendChild(sum);const tw=$("div","labtbl");el.appendChild(tw);
   const q=id=>el.querySelector("#"+id);
-  let T,keys,idx,rows,col,N,fold,mode,lastAt;
+  let T,keys,idx,rows,col,N,fold,mode,lastAt,msg,hist;
   function folded(k){const s=String(k);if(fold==="mod")return {v:k,expr:String(k)};
     const parts=[];for(let i=0;i<s.length;i+=2)parts.push(s.slice(i,i+2));
     const used=parts.map((p,i)=>fold==="fb"&&(i===0||i===parts.length-1)&&parts.length>1?p.split("").reverse().join(""):p);
     return {v:used.reduce((a,b)=>a+ +b,0),expr:used.join(" + ")};}
-  function reset(){N=Math.max(2,Math.min(997,parseInt(q("hs-n").value)||19));fold=q("hs-fold").value;mode=q("hs-col").value;
-    keys=q("hs-keys").value.split(/[^0-9]+/).filter(Boolean).map(x=>x.replace(/^0+(?=\d)/,"")).map(Number).slice(0,60);
-    T=Array.from({length:N},()=>[]);idx=0;rows=[];col=0;lastAt=null;draw();}
   const CAP=()=>mode==="bucket"?3:1;
-  function insert(){
-    if(idx>=keys.length)return false;
-    const k=keys[idx++];const f=folded(k);const h=f.v%N;let a=h;const path=[h];let c=0,i=0,ok=true,note="";
-    if(mode==="chain"){if(T[h].length){c=1;note="放進 overflow area，接在 ["+h+"] 後面第一個（LIFO）";T[h].splice(1,0,k);}else T[h].push(k);lastAt=h;}
-    else{
-      while(T[a].length>=CAP()&&c<N*2){c++;i++;
-        if(mode==="lin"||mode==="bucket")a=(a+1)%N;else if(mode==="quad")a=(a+i*i)%N;else if(mode==="pr")a=(3*a+5)%N;else a=(Math.floor(f.v/N)+a)%N;
-        path.push(a);}
-      ok=T[a].length<CAP();if(ok)T[a].push(k);lastAt=ok?a:null;
+  function nextSlot(r){
+    r.i++;
+    if(mode==="lin"||mode==="bucket")return (r.a+1)%N;
+    if(mode==="quad")return (r.a+r.i*r.i)%N;
+    if(mode==="pr")return (3*r.a+5)%N;
+    return (Math.floor(r.v/N)+r.a)%N;
+  }
+  // one step: start a new key (computes its home address), or look at one slot of the key in progress
+  function step(){
+    let r=rows.find(x=>!x.done);
+    if(!r){
+      if(idx>=keys.length)return false;
+      const k=keys[idx++];const f=folded(k);const h=f.v%N;
+      r={k,expr:f.expr,v:f.v,h,a:h,i:0,path:[h],c:0,ok:true,done:false};rows.push(r);
+      if(mode==="chain"){
+        if(T[h].length){r.c=1;col++;T[h].splice(1,0,k);lastAt=h;msg="插入 "+k+"：Sum "+f.v+"，home = ["+h+"]。[ "+h+" ] 已有資料 → 碰撞，放進 overflow area，接在 ["+h+"] 後面第一個（LIFO）。";}
+        else{T[h].push(k);lastAt=h;msg="插入 "+k+"：Sum "+f.v+"，home = ["+h+"]。[ "+h+" ] 是空的，直接放入。";}
+        r.done=true;return true;
+      }
+      msg="插入 "+k+"：摺疊 "+(fold==="mod"?"（不摺疊）":f.expr+" = "+f.v)+"，home address = ["+h+"]。下一步檢查 ["+h+"]。";
+      return true;
     }
-    col+=c;rows.push({k,expr:f.expr,v:f.v,h,path,c,ok,off:Math.floor(f.v/N),note});return true;}
+    const full=T[r.a].length>=CAP();
+    if(!full){T[r.a].push(r.k);lastAt=r.a;r.done=true;
+      msg=(r.path.length>1?"[ "+r.a+" ] 是空的，key "+r.k+" 放在這裡。":"[ "+r.a+" ] 是空的，key "+r.k+" 放在 home address。")+(r.c?"（這個 key 總共碰撞 "+r.c+" 次）":"");return true;}
+    r.c++;col++;
+    if(r.c>=N*2){r.ok=false;r.done=true;msg="[ "+r.a+" ] 已滿，探測 "+(N*2)+" 次都找不到空位，key "+r.k+" 放不進去。";return true;}
+    const old=r.a;r.a=nextSlot(r);r.path.push(r.a);
+    msg="[ "+old+" ] 已有 "+T[old].join(" / ")+" → 碰撞（第 "+r.c+" 次）。換成 "+({lin:"linear probe：+1",bucket:"linear probe：+1",quad:"quadratic probe：+i²",pr:"pseudorandom：3x + 5",ko:"key offset：+ 偏移量"}[mode])+"，改看 [ "+r.a+" ]。下一步檢查它。";
+    return true;
+  }
+  function snap(){hist.push(JSON.stringify({T,idx,rows,col,lastAt,msg}));}
+  function restore(st){({T,idx,rows,col,lastAt,msg}=JSON.parse(st));}
   function draw(){
     slots.innerHTML="";
     T.forEach((v,i)=>{const d=$("div","slot");if(v.length)d.classList.add("used");if(i===lastAt)d.classList.add("new");
       const txt=mode==="chain"?v.join(" → "):v.join(" / ");d.append($("span","ci",i),$("b",null,txt));slots.appendChild(d);});
+    msgEl.textContent=msg||"按「下一步」開始插入第一個 key。";
     const filled=T.filter(x=>x.length).length;
     sum.innerHTML="已插入 "+idx+" / "+keys.length+" 個　碰撞 <b>"+col+"</b> 次　load factor = "+filled+" / "+N+" ≈ <b>"+(filled/N*100).toFixed(1)+"%</b>"+
       (mode==="chain"?"（overflow 的節點不算在 prime area 裡）":mode==="bucket"?"（滿 3 筆才算碰撞）":"")+
       (rows.some(r=>!r.ok)?'　<span class="bad">有 key 找不到空位（quadratic／pseudorandom 不一定探得到全部位置）</span>':"");
     let h='<table><tr><th>Key</th><th>'+(fold==="mod"?"—":"摺疊")+'</th><th>Sum</th><th>Home</th>'+(mode==="ko"?"<th>Offset</th>":"")+'<th>探測路徑</th><th>碰撞</th></tr>';
-    rows.forEach(r=>{h+='<tr><td>'+r.k+'</td><td>'+(fold==="mod"?"—":esc(r.expr))+'</td><td>'+r.v+'</td><td>'+r.h+'</td>'+(mode==="ko"?"<td>"+r.off+"</td>":"")+'<td>'+(r.note||r.path.join(" → ")+(r.ok?"":" ✗"))+'</td><td>'+r.c+'</td></tr>';});
+    rows.forEach(r=>{h+='<tr><td>'+r.k+'</td><td>'+(fold==="mod"?"—":esc(r.expr))+'</td><td>'+r.v+'</td><td>'+r.h+'</td>'+(mode==="ko"?"<td>"+Math.floor(r.v/N)+"</td>":"")+'<td>'+r.path.join(" → ")+(r.ok?(r.done?"":" …"):" ✗")+'</td><td>'+r.c+'</td></tr>';});
     tw.innerHTML=h+"</table>";}
-  bS.addEventListener("click",()=>{insert();draw();});bA.addEventListener("click",()=>{while(insert());draw();});bR.addEventListener("click",reset);
+  bS.addEventListener("click",()=>{snap();if(!step())hist.pop();draw();});
+  bP.addEventListener("click",()=>{if(hist.length){restore(hist.pop());draw();}});
+  bA.addEventListener("click",()=>{const before=JSON.stringify({T,idx,rows,col,lastAt,msg});let any=false;let guard=0;
+    while(guard++<5000&&step())any=true;if(any){hist.push(before);}draw();});
+  bR.addEventListener("click",reset);
+  function reset(){N=Math.max(2,Math.min(997,parseInt(q("hs-n").value)||19));fold=q("hs-fold").value;mode=q("hs-col").value;
+    keys=q("hs-keys").value.split(/[^0-9]+/).filter(Boolean).map(x=>x.replace(/^0+(?=\d)/,"")).map(Number).slice(0,60);
+    T=Array.from({length:N},()=>[]);idx=0;rows=[];col=0;lastAt=null;msg="";hist=[];draw();}
   el.querySelectorAll(".labin").forEach(x=>x.addEventListener("change",reset));reset();
 }
 

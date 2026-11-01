@@ -115,7 +115,7 @@ function renderQuiz(ch){
     const a=S.quiz[ch]||{};const n=Object.keys(a).length;const r=Object.keys(a).filter(k=>a[k]===qs[k].a).length;
     sc.innerHTML="";
     const t=document.createElement("span");t.textContent=n<qs.length?("已作答 "+n+" / "+qs.length+"，目前答對 "+r+" 題"):("完成！答對 "+r+" / "+qs.length+(r>=qs.length*0.8?"，觀念很穩。":"，把錯的題目對應段落再讀一次。"));sc.appendChild(t);
-    const rb=document.createElement("button");rb.className="btn";rb.type="button";rb.textContent="重做這章";rb.addEventListener("click",()=>{if(rb.dataset.armed!=="1"){rb.dataset.armed="1";rb.textContent="確定重做？這章作答與分數會清空";setTimeout(()=>{if(rb.dataset.armed==="1"){rb.dataset.armed="";rb.textContent="重做這章";}},4000);return;}rb.dataset.armed="";rb.textContent="重做這章";(window.EZundo||((w,f)=>f()))("這章的作答",()=>{delete S.quiz[ch];S.quizReset=S.quizReset||{};S.quizReset[ch]=Date.now();save();renderQuiz(ch);renderTabs(ch);},null,rb);});sc.appendChild(rb);
+    const rb=document.createElement("button");rb.className="btn";rb.type="button";rb.textContent="重做這章";rb.addEventListener("click",()=>{(window.EZundo||((w,f)=>f()))("這章的作答",()=>{delete S.quiz[ch];S.quizReset=S.quizReset||{};S.quizReset[ch]=Date.now();save();renderQuiz(ch);renderTabs(ch);},null,rb);});sc.appendChild(rb);
     const idx=VIEWS.findIndex(v=>v[0]===ch);const nx=VIEWS[idx+1];
     if(n>=qs.length&&nx&&nx[0]!=="|"){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";nb.textContent="下一章："+nx[1];nb.dataset.go=nx[0];sc.appendChild(nb);}
     else if(n>=qs.length&&ch==="ch5"){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";nb.textContent="開始考古題";nb.dataset.go="past";sc.appendChild(nb);}
@@ -316,11 +316,12 @@ document.querySelectorAll(".exam").forEach(ex=>{
   tEnd.addEventListener("click",()=>{stopTimer();left=FULL;fmt();tBtn.textContent=startLabel;tEnd.hidden=true;});
   tools.querySelector(".reset").addEventListener("click",e=>{
     const b=e.currentTarget;
-    if(b.dataset.armed!=="1"){b.dataset.armed="1";b.textContent="確定清除作答與分數？";setTimeout(()=>{b.dataset.armed="";b.textContent="清除作答";},4000);return;}
+    (window.EZundo||((w,f)=>f()))("全部作答",()=>{
     b.dataset.armed="";b.textContent="清除作答";
     st.ans={};st.grade={};st.resetAt=Date.now();save();
     qs.forEach(q=>{q.querySelector("textarea").value="";q.querySelector(".gstat").textContent="";render(q);});
     ex.querySelectorAll("details.qa").forEach(d=>d.open=false);upd();
+    },null,b);
   });
   EX[id].upd=upd;
 });

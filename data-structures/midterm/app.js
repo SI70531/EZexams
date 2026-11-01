@@ -353,12 +353,12 @@ function bsearch(el){
   const DEF=[4,7,8,10,14,21,22,36,62,77,81,91];let A=DEF.slice();
   const ctl=$("div","labrow");
   const inp=$("input");inp.type="number";inp.value="22";inp.id="bs-target";inp.className="labin";inp.setAttribute("aria-label","target");
-  const bN=$("button","btn primary","下一步"),bR=$("button","btn","重來"),bD=$("button","btn","預設"),bA=$("button","btn","加入 target"),bX=$("button","btn","移除 target");bN.type=bR.type=bD.type=bA.type=bX.type="button";
-  ctl.append($("label","small","target"),inp,bN,bR,bD);const ctl2=$("div","labrow");ctl2.append($("span","small","list 內容："+"可增減；會自動排序"),bA,bX);el.appendChild(ctl2);el.appendChild(ctl);
+  const bN=$("button","btn primary","下一步"),bR=$("button","btn","重來"),bD=$("button","btn","預設");bN.type=bR.type=bD.type="button";
+  ctl.append($("label","small","target"),inp,bN,bR,bD);const lst=txt(DEF.join(" "),"100%");const lw=$("label","small","list（空白分隔；會自動排序）");lw.style.display="block";lw.appendChild(lst);el.appendChild(lw);el.appendChild(ctl);
   const arr=$("div","cells");el.appendChild(arr);
   const log=$("div","lablog");el.appendChild(log);
   let first,last,mid,done,steps;
-  function reset(){first=0;last=A.length-1;mid=null;done=false;steps=0;log.innerHTML="first = 0、last = 11，還沒開始比。";draw();}
+  function reset(){first=0;last=A.length-1;mid=null;done=false;steps=0;log.innerHTML="first = 0、last = "+(A.length-1)+"，還沒開始比。";draw();}
   function draw(){
     arr.innerHTML="";
     A.forEach((v,i)=>{const c=$("div","cell");if(i<first||i>last)c.classList.add("out");if(i===mid)c.classList.add(done&&A[mid]===+inp.value?"hit":"mid");
@@ -375,7 +375,7 @@ function bsearch(el){
     if(!done&&first>last){done=true;log.innerHTML+="<br><b>first "+first+" &gt; last "+last+"，找不到</b>，共 "+steps+" 次迴圈。";}
     draw();
   }
-  bN.addEventListener("click",step);bR.addEventListener("click",reset);bD.addEventListener("click",()=>{inp.value="22";A=DEF.slice();reset();});bA.addEventListener("click",()=>{const v=+inp.value;if(!isNaN(v)&&inp.value!==""&&!A.includes(v)){A=[...A,v].sort((p,q)=>p-q);}reset();});bX.addEventListener("click",()=>{const v=+inp.value;A=A.filter(x=>x!==v);reset();});inp.addEventListener("change",reset);reset();
+  bD.addEventListener("click",()=>{inp.value="22";lst.value=DEF.join(" ");A=DEF.slice();reset();});lst.addEventListener("change",()=>{const a=lst.value.split(/[^0-9-]+/).filter(Boolean).map(Number).slice(0,20);A=a.sort((p,q)=>p-q);reset();});bN.addEventListener("click",step);bR.addEventListener("click",reset);inp.addEventListener("change",reset);reset();
 }
 
 /* 4. Linked list lab */

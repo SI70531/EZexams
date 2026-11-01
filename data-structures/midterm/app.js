@@ -838,7 +838,57 @@ function hash(el){
   el.querySelectorAll(".labin").forEach(x=>x.addEventListener("change",reset));reset();
 }
 
-const LABS={bigo,bsearch,hash,llist,loops,matmul,seqvar,hashm,hash26,quad,getnext,append,circ,dbl,multi};
+function bsfig(el){
+  const A=[4,7,8,10,14,21,22,36,62,77,81,91];
+  const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  frame(el,"Binary search 逐步走（Figure 2-4）","每按一次「下一步」就是一次迴圈：先標出 first、mid、last，再比較 target 和 mid。灰色是已經排除的範圍。");
+  const ctl=$("div","labrow");
+  const inp=$("input");inp.type="number";inp.value="22";inp.className="labin";inp.setAttribute("aria-label","target");
+  const bP=btn("上一步"),bN=btn("下一步",true),bR=btn("重來");
+  ctl.append($("label","small","target"),inp,bP,bN,bR);el.appendChild(ctl);
+  const board=$("div","bsboard");el.appendChild(board);
+  const log=$("div","lablog");el.appendChild(log);
+  let S=[],k=0;
+  function plan(){
+    const t=+inp.value||0;S=[];let f=0,l=A.length-1,m=null,n=0,found=false;
+    S.push({f,l,m:null,ban:null,log:"first = 0、last = "+l+"，還沒開始比。"});
+    while(f<=l){
+      m=Math.floor((f+l)/2);n++;const v=A[m];
+      const pre="第 "+n+" 次：mid = ("+f+" + "+l+") / 2 = "+m+"，a["+m+"] = "+v+"，";
+      if(t===v){S.push({f,l,m,ban:t+" = "+v,hit:true,log:pre+"相等 → found = true，first = last + 1 強制離開迴圈"});found=true;f=l+1;break;}
+      if(t>v){S.push({f,l,m,ban:t+" > "+v,log:pre+t+" > "+v+" → 在後半，first = mid + 1 = "+(m+1)});f=m+1;}
+      else{S.push({f,l,m,ban:t+" < "+v,log:pre+t+" < "+v+" → 在前半，last = mid − 1 = "+(m-1)});l=m-1;}
+    }
+    S.push({f,l,m,ban:"first "+f+" > last "+l,end:true,hit:found,log:"function terminates（first "+f+" > last "+l+"）。"+(found?"找到，locn = mid = "+m:"找不到，locn = mid = "+m)});
+  }
+  function render(intro){
+    const s=S[k];
+    board.className="bsboard"+(intro?" intro":"");
+    board.innerHTML="";
+    [["first",s.f],["mid",s.m],["last",s.l]].forEach(([nm,ix])=>{
+      const row=$("div","bsrow");row.appendChild($("span","bsname",nm));
+      const tr=$("div","bstrack");
+      if(ix!=null){const col=Math.min(Math.max(ix,0),A.length-1);const p=$("div","bsptr "+nm,ix);p.style.left=(col/A.length*100)+"%";p.style.width=(100/A.length)+"%";tr.appendChild(p);}
+      row.appendChild(tr);board.appendChild(row);
+    });
+    const cr=$("div","bsrow");cr.appendChild($("span","bsname","list"));
+    const cells=$("div","bstrack bscells");
+    A.forEach((v,i)=>{const c=$("div","bscell");c.style.setProperty("--i",i);
+      if((i<s.f||i>s.l)&&i!==s.m)c.classList.add("out");
+      if(i===s.m)c.classList.add(s.hit?"hit":"mid");
+      c.append($("span","ci",i),$("b",null,v));cells.appendChild(c);});
+    cr.appendChild(cells);board.appendChild(cr);
+    const b=$("div","bsban"+(s.hit?" ok":"")+(s.ban?"":" empty"),s.ban?esc(s.ban):"&nbsp;");board.appendChild(b);
+    log.textContent=s.log+(k===S.length-1?"　（已經跑完，按「上一步」回頭看，或改 target 再試）":"");
+  }
+  bN.addEventListener("click",()=>{if(k<S.length-1){k++;render(false);}});
+  bP.addEventListener("click",()=>{if(k>0){k--;render(false);}});
+  bR.addEventListener("click",()=>{k=0;plan();render(true);});
+  inp.addEventListener("change",()=>{k=0;plan();render(true);});
+  plan();render(true);
+  if("IntersectionObserver" in window){const io=new IntersectionObserver(es=>{if(es[0].isIntersecting)render(true);},{threshold:.5});io.observe(board);}
+}
+const LABS={bigo,bsearch,bsfig,hash,llist,loops,matmul,seqvar,hashm,hash26,quad,getnext,append,circ,dbl,multi};
 document.querySelectorAll("[data-lab]").forEach(el=>{try{LABS[el.dataset.lab](el);}catch(e){el.textContent="互動圖載入失敗："+e.message;}});
 })();
 

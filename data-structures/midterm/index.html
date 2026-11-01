@@ -174,11 +174,11 @@ pre,.tbl{background:linear-gradient(135deg,color-mix(in srgb,#fff 20%,transparen
 .bsptr.last::after{border-top-color:var(--seal)}
 .bscell{margin:0 2px;border:1.5px solid var(--ink);border-radius:5px;background:var(--paper);display:grid;justify-items:center;padding:3px 0 4px;min-width:0;transition:opacity .2s,background .2s}
 .bscell .ci{font-family:var(--f-mono);font-size:10px;color:var(--muted)}
-.bscell b{font-size:14px;font-variant-numeric:tabular-nums}
+.bscell b{font-size:14px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
 .bscell.out{opacity:.35}
 .bscell.mid{background:var(--warn-soft);border-color:var(--warn)}
 .bscell.hit{background:var(--ok-soft);border-color:var(--ok)}
-.bsban{margin:16px auto 0;width:max-content;max-width:100%;padding:6px 16px;border-radius:999px;border:1.5px solid var(--warn);background:var(--warn-soft);font-weight:700;font-family:var(--f-mono);font-size:14px;text-align:center;box-sizing:border-box}
+.bsban{color:var(--ink);margin:16px auto 0;width:max-content;max-width:100%;padding:6px 16px;border-radius:999px;border:1.5px solid var(--warn);background:var(--warn-soft);font-weight:700;font-family:var(--f-mono);font-size:14px;text-align:center;box-sizing:border-box}
 .bsban.ok{border-color:var(--ok);background:var(--ok-soft)}
 .bsban.empty{visibility:hidden}
 @keyframes bsIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}

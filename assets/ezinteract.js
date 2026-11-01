@@ -20,6 +20,8 @@ svg text.ezgl{cursor:help}
   font:500 13px/1.5 "Noto Sans TC",system-ui,sans-serif;color:#eef2f4;background:rgba(18,22,26,.94);
   box-shadow:0 6px 18px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.12);opacity:0;transform:translateY(4px);transition:opacity .12s,transform .12s}
 #eztip.on{opacity:1;transform:none}
+.slk{color:inherit;font-weight:700;text-decoration:underline dotted;text-underline-offset:3px;cursor:pointer}
+a.slk:hover,a.slk:focus-visible{color:var(--seal,#c0392b)}
 .ez-defrow{display:flex;justify-content:flex-end;margin-top:8px}
 .btn.ez-def{font-size:12px;padding:3px 12px}
 #eztip b{display:block;color:#f2bd5a;font-weight:700;margin-bottom:2px}
@@ -134,6 +136,16 @@ svg text.ezgl{cursor:help}
     b.addEventListener("click",()=>resetW(c));
     row.appendChild(b);c.appendChild(row);
   }
+
+  /* ---------- slide map links: jump to a section, switching chapter tab first ---------- */
+  document.addEventListener("click",e=>{
+    const a=e.target.closest&&e.target.closest("a[data-sec-link]");if(!a)return;
+    const h=document.getElementById(a.dataset.secLink);if(!h)return;
+    e.preventDefault();
+    const view=h.closest("section.view");
+    if(view&&view.hidden){const tab=document.querySelector('#tabs [data-go="'+view.id+'"]');if(tab)tab.click();}
+    setTimeout(()=>h.scrollIntoView({behavior:"smooth",block:"start"}),120);
+  });
 
   /* ---------- wiring ---------- */
   function scan(root){

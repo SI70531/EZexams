@@ -24,7 +24,7 @@
 <script src="../../assets/ezmotion.js?v=c272e3db" defer></script>
 <script src="../../assets/ezfig.js?v=ca9c3aa9" defer></script>
 <script src="../../assets/ezfit.js?v=ac00bac4" defer></script>
-<script src="../../assets/ezinteract.js?v=77cc7356" defer></script>
+<script src="../../assets/ezinteract.js?v=968553f4" defer></script>
 <script src="../../assets/ezjoy.js?v=10cc06f1" defer></script>
 <script src="../../assets/ezwow.js?v=2bcc916e" defer></script>
 <script src="../../assets/ezai.js?v=470f21a1"></script>
@@ -247,8 +247,7 @@ svg.fa-play .fa-bd,svg.fa-play .fa-pt,svg.fa-play .fa-ar{animation:faIn .45s eas
   <li>Write pseudocode fill-ins in the order "link the later node first, then change the earlier one", and write the arrow as <code>-&gt;</code>.<span class="zhn">程式填空按「先接後面、再改前面」的順序寫，箭頭寫 <code>-&gt;</code>。</span></li></ul></div>
 </section>
 <section role="tabpanel" class="view" id="ch1" hidden><div class="vhead"><div class="pcb" data-pcb="ch1" role="img"></div><div class="eyebrow">Chapter 1</div><h1>Ch1 Introduction（導論）</h1><p>Pseudocode, ADT, Big-O. Organized exactly in the order of slides 1–50: the small tag next to each heading is the slide number, every figure is redrawn with a "Figure walkthrough", and loop counts and matrix multiplication have interactive figures. The exam is mostly concept multiple choice plus loop-count and Big-O calculation. After reading, do the Multiple-choice question, Fill-in and Quiz parts at the bottom.<span class="zhn">Pseudocode （虛擬碼）、ADT （抽象資料型態）、Big-O （效率）。完全照投影片 1–50 的順序整理：每段標題旁的小標籤是投影片頁碼，每張圖都重畫並附「圖解」，loop 次數和矩陣相乘有互動圖。考試大多是觀念選擇題，加上 loop 次數與 Big-O 計算。讀完做最下面的 Multiple-choice question、Fill-in 和 Quiz。</span></p></div>
-<div class="box zh slmap"><span class="lbl">這一章的投影片地圖</span>
-<b>1-1 Pseudocode</b>（投影片 3–16）→ <b>1-2 The Abstract Data Type</b>（17–26）→ <b>1-3 A Model for an ADT</b>（27–32）→ <b>1-4 Algorithm Efficiency</b>（33–50）。下面完全照投影片的順序寫，每一段標題後面的小標籤就是投影片頁碼；英文是投影片原句，考卷就是從這些句子改出來的。</div>
+<div class="box slmap"><span class="lbl">Slide map</span>Read in this order: <a class="slk" href="#s1-1" data-sec-link="s1-1">1-1 Pseudocode</a> (slides 3–16) → <a class="slk" href="#s1-2" data-sec-link="s1-2">1-2 The Abstract Data Type</a> (17–26) → <a class="slk" href="#s1-3" data-sec-link="s1-3">1-3 A Model for an ADT</a> (27–32) → <a class="slk" href="#s1-4" data-sec-link="s1-4">1-4 Algorithm Efficiency</a> (33–50).</div>
 
 <h3 id="s1-1" data-sec="1-1">1-1 Pseudocode（虛擬碼）</h3>
 <h4>What is pseudocode <span class="sl">slide 3</span><span class="zhn">什麼是虛擬碼（pseudocode）</span></h4>
@@ -775,8 +774,7 @@ end addMatrix
 </section>
 
 <section role="tabpanel" class="view" id="ch2" hidden><div class="vhead"><div class="pcb" data-pcb="ch2" role="img"></div><div class="eyebrow">Chapter 2</div><h1>Ch2 Searching（搜尋）</h1><p>Sequential / binary search and three variants, the C++ implementation, the eight hashing methods, and collision resolution. Organized exactly in the order of slides 1–97, with all 17 figures redrawn and explained; the four sequential searches, binary search, the eight hashing methods, Algorithm 2-6, quadratic probe and the whole hash table all have interactive figures. Hash calculation is the biggest question in Part III, so you must be able to compute it.<span class="zhn">Sequential／binary search 和三種變形、C++ 實作、八種 hashing method、collision resolution。完全照投影片 1–97 的順序整理，17 張圖都重畫並附圖解；四種循序搜尋、binary search、八種 hashing、Algorithm 2-6、quadratic probe 和整張雜湊表都有互動圖。雜湊計算是 Part III 最大題，一定要會算。</span></p></div>
-<div class="box zh slmap"><span class="lbl">這一章的投影片地圖</span>
-投影片 2 的 Outline 有四段：<b>List Searches</b>（3–38）→ <b>C++ Search Algorithms</b>（39–43）→ <b>Hashed List Searches</b>（44–75）→ <b>Collision Resolution</b>（76–97）。這頁把 C++ 那段放在 2-1 最後面，順序和投影片完全一樣。</div>
+<div class="box slmap"><span class="lbl">Slide map</span>Slide outline: <a class="slk" href="#s2-1" data-sec-link="s2-1">2-1 List Searches</a> (3–38) → <a class="slk" href="#s2-cpp" data-sec-link="s2-cpp">C++ Search Algorithms</a> (39–43) → <a class="slk" href="#s2-2" data-sec-link="s2-2">2-2 Hashed List Searches</a> (44–75) → <a class="slk" href="#s2-3" data-sec-link="s2-3">2-3 Collision Resolution</a> (76–97).</div>
 
 <h3 id="s2-1" data-sec="2-1">2-1 List Searches（串列搜尋）</h3>
 <h4>The two basic searches <span class="sl">slides 3–4</span><span class="zhn">兩種基本搜尋</span></h4>
@@ -1478,8 +1476,7 @@ prime area 每一格多了一個紅色 link 欄位（打叉 = null）。[001] �
 </section>
 
 <section role="tabpanel" class="view" id="ch3" hidden><div class="vhead"><div class="pcb" data-pcb="ch3" role="img"></div><div class="eyebrow">Chapter 3</div><h1>Ch3 Linked Lists（鏈結串列）</h1><p>Linear list concepts, linked list concepts, and the ten basic linked-list algorithms with the six-result searchList table. <b>The midterm covers Ch3 only through 3-3 (slides 1–67)</b>, so this chapter stops there. Organized exactly in slide order, with Algorithm 3-1 to 3-10, every figure redrawn and explained, and interactive figures for search / insert / delete / getNext / destroy. Pseudocode fill-in is tested every year: 2024 tested destroyList, 2025 tested insertNode.<span class="zhn">線性串列觀念、鏈結串列觀念，以及十個基本鏈結串列演算法，還有 searchList 的六種結果表。<b>期中只考到 Ch3 的 3-3（投影片 1–67 頁）</b>，所以本章只寫到這裡。內容完全照投影片順序，收錄 Algorithm 3-1 到 3-10，每張圖都重畫並附圖解；search／insert／delete／getNext／destroy 都有互動圖。程式填空每年必考：2024 考 destroyList，2025 考 insertNode。</span></p></div>
-<div class="box zh slmap"><span class="lbl">這一章的投影片地圖</span>
-Preface（3）→ <b>3-1 Linear List Concepts</b>（4–15）→ <b>3-2 Linked List Concepts</b>（16–23）→ <b>3-3 Linked List Algorithms</b>（24–67，十個基本演算法）。期中只考到這裡（第 67 頁）。程式填空每年必考：2024 考 destroyList，2025 考 insertNode。</div>
+<div class="box slmap"><span class="lbl">Slide map</span>Preface (3) → <a class="slk" href="#s3-1" data-sec-link="s3-1">3-1 Linear List Concepts</a> (4–15) → <a class="slk" href="#s3-2" data-sec-link="s3-2">3-2 Linked List Concepts</a> (16–23) → <a class="slk" href="#s3-3" data-sec-link="s3-3">3-3 Linked List Algorithms</a> (24–67).</div>
 
 <h3 id="s3-1" data-sec="3-1">3-1 Linear List Concepts（線性串列）</h3>
 <h4>Preface: array vs. linked list <span class="sl">Slide 3</span><span class="zhn">前言：陣列 vs. 鏈結串列</span></h4>

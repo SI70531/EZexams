@@ -20,6 +20,7 @@
   const st=()=>C.get();
   const Q=()=>C.quiz();
   const isAi=k=>!!C&&C.ai.includes(k);
+  const isBatch=k=>!!C&&(C.batch||[]).includes(k);
   const isFixed=k=>!!C&&(C.fixed||[]).includes(k);
   const answered=(k,i)=>{const a=st().quiz&&st().quiz[k];return !!a&&a[i]!==undefined;};
   const genOf=(k,i)=>{const g=st().gen&&st().gen[k];return g&&g[i]||null;};
@@ -34,9 +35,9 @@
     for(let i=0;i<qs.length;i++){
       const it=qs[i],g=genOf(k,i);
       if(isAi(k)){
-        ["q","o","a","e","qz","oz","sec","h","fig","gid","ai"].forEach(f=>{delete it[f];});
+        ["q","o","a","e","qz","oz","sec","h","fig","gid","ai","ch"].forEach(f=>{delete it[f];});
         if(g){const c=CACHE[k]&&CACHE[k][i];const ok=c&&c.gid===g.id;
-          putItem(it,{q:g.q,o:g.o,a:ok?c.a:undefined,e:ok?c.e:undefined,qz:g.qz,oz:g.oz,sec:g.sec,gid:g.id,ai:1});}
+          putItem(it,{q:g.q,o:g.o,a:ok?c.a:undefined,e:ok?c.e:undefined,qz:g.qz,oz:g.oz,sec:g.sec,gid:g.id,ai:1,ch:g.v&&/^ch\d+$/.test(g.v)?+g.v.slice(2):undefined});}
         else if(answered(k,i)){const c=CACHE[k]&&CACHE[k][i];if(c)putItem(it,c);}
       }else if(isFixed(k)&&answered(k,i)){
         const c=CACHE[k]&&CACHE[k][i];if(c){it.a=c.a;it.e=c.e;}
@@ -51,6 +52,7 @@
     const at=(st().qat&&st().qat[k])||{};
     const idx=[];
     qs.forEach((it,i)=>{if((answered(k,i)||genOf(k,i))&&hasText(it))idx.push(i);});
+    if(isBatch(k))return idx.sort((a,b)=>a-b);
     const gAt=i=>{const g=genOf(k,i);return g&&g.g||0;};
     idx.sort((a,b)=>{
       const pa=answered(k,a)?0:1,pb=answered(k,b)?0:1;if(pa!==pb)return pa-pb;
@@ -123,7 +125,7 @@
     const cnt={};secs.forEach(s=>cnt[keyOf(s)]=0);
     const seenQ=[];
     qs.forEach((it,i)=>{
-      if(!(answered(k,i)||genOf(k,i))||!hasText(it))return;
+      if(!(answered(k,i)||genOf(k,i))||!(hasText(it)||(genOf(k,i)||{}).p))return;
       const key=secOfItem(k,it,i);
       const s=secs.find(x=>x.k&&x.k===key);if(s)cnt[keyOf(s)]++;
       else if(!key&&secs.length===1)cnt[keyOf(secs[0])]++;
@@ -155,11 +157,11 @@
       pick=low[Math.floor(Math.random()*low.length)];
     }
     const asked=[];
-    qs.forEach((it,i)=>{if((answered(k,i)||genOf(k,i))&&hasText(it))asked.push(it.q.replace(/\s+/g," ").slice(0,150));});
-    return {sec:{k:pick.k||"",title:pick.title,text:pick.text.slice(0,7500)},retest,rt,asked:asked.slice(-60)};
+    qs.forEach((it,i)=>{if((answered(k,i)||genOf(k,i))&&hasText(it)&&!(genOf(k,i)||{}).p)asked.push(it.q.replace(/\s+/g," ").slice(0,150));});
+    return {sec:{k:pick.k||"",title:pick.title,text:pick.text.slice(0,7500)},view:pick.view,retest,rt,asked:asked.slice(-60)};
   }
   const nextSlot=k=>{const qs=Q()[k];for(let i=0;i<qs.length;i++)if(!answered(k,i)&&!genOf(k,i))return i;return -1;};
-  const pendingSlot=k=>{const qs=Q()[k];for(let i=0;i<qs.length;i++)if(!answered(k,i)&&genOf(k,i))return i;return -1;};
+  const pendingSlot=k=>{const qs=Q()[k];for(let i=0;i<qs.length;i++){const g=genOf(k,i);if(!answered(k,i)&&g&&!g.p)return i;}return -1;};
   const answeredCount=k=>Object.keys(st().quiz&&st().quiz[k]||{}).filter(i=>+i<Q()[k].length).length;
 
   /* ---------- making a question ---------- */
@@ -167,14 +169,29 @@
   async function generate(k){
     const slot=nextSlot(k);if(slot<0)return;
     const plan=planNext(k),N=Q()[k].length;
-    const r=await post("/gen/next",{subject:C.course,chapter:chapterTitle(k),sec:plan.sec,n:answeredCount(k)+1,total:N,asked:plan.asked,retest:plan.retest,zh:!!C.zh});
     const S=st();S.gen=S.gen||{};S.gen[k]=S.gen[k]||{};
-    if(S.gen[k][slot])return;   /* another tab made one meanwhile */
-    const g={id:r.id,q:r.q,o:r.o,sec:r.sec||plan.sec.k,g:now()};
-    if(r.qz){g.qz=r.qz;g.oz=r.oz;}
-    if(plan.rt)g.rt=plan.rt;
-    S.gen[k][slot]=g;C.save();fill(k);
+    S.gen[k][slot]={p:1,sec:plan.sec.k,v:plan.view};   /* reserved while the AI works, so a parallel call plans a different section */
+    try{
+      const r=await post("/gen/next",{subject:C.course,chapter:chapterTitle(k),sec:plan.sec,n:slot+1,total:N,asked:plan.asked,retest:plan.retest,zh:!!C.zh});
+      const g={id:r.id,q:r.q,o:r.o,sec:r.sec||plan.sec.k,v:plan.view,g:now()};
+      if(r.qz){g.qz=r.qz;g.oz=r.oz;}
+      if(plan.rt)g.rt=plan.rt;
+      S.gen[k][slot]=g;C.save();fill(k);
+    }catch(e){delete S.gen[k][slot];throw e;}
     return slot;
+  }
+  /* a whole mock exam at once: a few questions are made in parallel; resolves when the paper is complete or something failed */
+  async function generateAll(k,onTick){
+    let err=null;
+    const worker=async()=>{
+      while(!err){
+        if(nextSlot(k)<0)return;
+        try{await generate(k);}catch(e){err=e;return;}
+        onTick&&onTick();
+      }
+    };
+    await Promise.all([worker(),(async()=>{await new Promise(r=>setTimeout(r,400));await worker();})(),(async()=>{await new Promise(r=>setTimeout(r,800));await worker();})()]);
+    if(err)throw err;
   }
   /* an answer is revealed by the Worker (an AI question, or a fixed past-exam question); resolves true when it is known */
   async function reveal(k,i,pick){
@@ -279,6 +296,21 @@
       if(HY.state==="loading"){t.textContent="正在載入你之前作答的題目…";return;}
       if(HY.state==="login"&&Object.keys(missing()).length){t.innerHTML="你之前作答過的題目要登入帳號才能顯示。";addBtn("登入",()=>{if(window.EZGate&&EZGate.open)EZGate.open();});return;}
       if(HY.state==="error"&&Object.keys(missing()).length){t.textContent=HY.msg||"載入失敗。";addBtn("再試一次",()=>{HY.state="idle";hydrate();});return;}
+      if(isBatch(k)){
+        const made=Object.values(st().gen&&st().gen[k]||{}).filter(g=>!g.p).length+Object.keys(st().quiz&&st().quiz[k]||{}).filter(i=>!genOf(k,+i)&&+i<N).length;
+        if(made>=N){bar.remove();return;}
+        const part=made>0;
+        t.innerHTML=part?"還差 <b>"+(N-made)+" 題</b>沒出完。":"AI 會依講義一次出完整份模擬考，共 <b>"+N+" 題</b>（約 1～2 分鐘）。作答後才顯示答案與解析。";
+        const bb=addBtn(part?"繼續出完剩下的題目":"AI 出整份模擬考",async()=>{
+          if(BUSY[k])return;BUSY[k]=true;ERR[k]="";bb.disabled=true;
+          const tick=()=>{const m=Object.values(st().gen&&st().gen[k]||{}).filter(g=>!g.p).length;bb.textContent="AI 出題中… "+m+" / "+N;};tick();
+          try{await generateAll(k,tick);}catch(e){ERR[k]=errText(e);}
+          BUSY[k]=false;rerender();
+        },true);
+        if(BUSY[k]){bb.disabled=true;bb.textContent="AI 出題中…";}
+        if(ERR[k]){const er=document.createElement("div");er.className="gtxt gerr";er.textContent=ERR[k];bar.appendChild(er);}
+        return;
+      }
       if(ans>=N&&pend<0){bar.remove();return;}
       if(pend>=0){t.innerHTML="作答之後會顯示解析，接著就會出現 <b>「出下一題」</b>。（已完成 "+ans+" / "+N+" 題）";return;}
       if(free<0){bar.remove();return;}
@@ -309,13 +341,14 @@
     attach(cfg){
       C=cfg;
       const S=C.get();S.gen=S.gen||{};
+      Object.keys(S.gen).forEach(k=>Object.keys(S.gen[k]||{}).forEach(i=>{if(S.gen[k][i]&&S.gen[k][i].p)delete S.gen[k][i];}));   /* leftovers of an interrupted mock-exam run */
       [...C.ai,...(C.fixed||[])].forEach(fill);
       C.ai.forEach(k=>{const box=document.querySelector('[data-quiz="'+k+'"]');if(box)box.dataset.gen="1";});
       hydrateSoon();
       const sync=window.EZSync;
       if(sync&&sync.onStatus){let was=sync.connected&&sync.connected();sync.onStatus(()=>{const on=sync.connected&&sync.connected();if(on&&!was&&HY.state==="login"){HY.state="idle";hydrate();}was=on;});}
     },
-    isAi,isFixed,order,mount,reveal,stamp,fill,
+    isAi,isFixed,isBatch,order,mount,reveal,stamp,fill,
     /* 「重做這章」: forget this chapter's AI questions (the caller clears the picks) */
     reset(k){const S=st();if(S.gen)delete S.gen[k];if(CACHE[k]){delete CACHE[k];saveCache();}fill(k);},
     /* how many questions of a set are still to do (all slots count, also those not asked yet) */

@@ -46,7 +46,7 @@ document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b
 window.addEventListener("hashchange",()=>{const h=location.hash.slice(1);if(h&&h!==S.last)show(h);});
 
 /* AI practice, one question at a time (assets/ezgen.js); chapter exercises are made on demand, answers stay on the Worker */
-if(window.EZGEN)EZGEN.attach({course:"資料結構",s:"ds",ai:["ch1","ch2","ch3","m1","m2"],fixed:["y24mc","y25mc"],scope:{m1:["ch1","ch2","ch3"],m2:["ch1","ch2","ch3"]},mock:["m1","m2"],get:()=>S,quiz:()=>QUIZ,save:()=>save(),render:c=>{renderQuiz(c);afterAnswer(c)},renderAll:()=>{Object.keys(QUIZ).forEach(renderQuiz);renderTabs(S.last)}});
+if(window.EZGEN)EZGEN.attach({course:"資料結構",s:"ds",ai:["ch1","ch2","ch3","m1","m2"],fixed:["y24mc","y25mc"],scope:{m1:["ch1","ch2","ch3"],m2:["ch1","ch2","ch3"]},mock:["m1","m2"],batch:["m1","m2"],get:()=>S,quiz:()=>QUIZ,save:()=>save(),render:c=>{renderQuiz(c);afterAnswer(c)},renderAll:()=>{Object.keys(QUIZ).forEach(renderQuiz);renderTabs(S.last)}});
 
 /* ---------- multiple choice ---------- */
 function renderQuiz(key){

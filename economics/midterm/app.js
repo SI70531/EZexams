@@ -64,7 +64,9 @@ function answerLine(it){
 }
 
 /* AI practice, one question at a time (assets/ezgen.js); chapter exercises are made on demand, answers stay on the Worker */
-if(window.EZGEN)EZGEN.attach({course:"經濟學",s:"econ",ai:["ch1","ch2","ch3","ch4","ch5","ch6","ch7","ch8","ch9"],fixed:[],scope:{},get:()=>S,quiz:()=>QUIZ,save:()=>save(),render:c=>{renderQuiz(c);renderTabs(c);refreshPCB()},renderAll:()=>{Object.keys(QUIZ).forEach(renderQuiz);renderTabs(S.last)}});
+const EQ=Object.assign({},QUIZ,{mock1mc:MOCK["mock-1"],mock2mc:MOCK["mock-2"],mock3mc:MOCK["mock-3"]});
+const MOCKSET={mock1mc:"mock-1",mock2mc:"mock-2",mock3mc:"mock-3"};
+if(window.EZGEN)EZGEN.attach({course:"經濟學",s:"econ",ai:["ch1","ch2","ch3","ch4","ch5","ch6","ch7","ch8","ch9","mock1mc","mock2mc","mock3mc"],batch:["mock1mc","mock2mc","mock3mc"],mock:["mock1mc","mock2mc","mock3mc"],fixed:[],scope:{mock1mc:CHS,mock2mc:CHS,mock3mc:CHS},titles:{mock1mc:"Economics (mixed chapters)",mock2mc:"Economics (mixed chapters)",mock3mc:"Economics (mixed chapters)"},get:()=>S,quiz:()=>EQ,save:()=>save(),render:c=>{if(MOCKSET[c])renderExam(MOCKSET[c]);else renderQuiz(c);renderTabs(c);refreshPCB()},renderAll:()=>{Object.keys(QUIZ).forEach(renderQuiz);Object.keys(MOCK).forEach(renderExam);renderTabs(S.last)}});
 
 /* ---------- chapter quizzes ---------- */
 function renderQuiz(ch){
@@ -117,20 +119,24 @@ function renderExam(id){
   const qs=MOCK[id],key=MKEY(id);
   box.classList.add("quiz","exmc");box.dataset.quiz=key;
   box.innerHTML="";
-  qs.forEach((it,i)=>{
-    const d=document.createElement("div");d.className="qitem";d.id=id+"-q"+(i+1);d.innerHTML=stemHTML(it,i);
+  const SHOW=window.EZGEN&&EZGEN.isAi(key)?EZGEN.order(key,qs):qs.map((_,k)=>k);
+  SHOW.forEach((i,pos)=>{
+    const it=qs[i];
+    const d=document.createElement("div");d.className="qitem";d.dataset.i=i;d.id=id+"-q"+(pos+1);d.innerHTML=stemHTML(it,pos);if(it.gid&&window.EZGEN)EZGEN.tag(d);
     const os=document.createElement("div");os.className="opts";const btns=[];
     it.o.forEach((_,oi)=>{const b=EZopt();b.className="opt";b.type="button";b.innerHTML=optHTML(it,oi,oi);b.dataset.oi=oi;btns.push(b);
-      b.addEventListener("click",()=>{if(S.quiz[key]&&S.quiz[key][i]!==undefined)return;S.quiz[key]=S.quiz[key]||{};S.quiz[key][i]=oi;save();mark();upd();});os.appendChild(b);});
+      b.addEventListener("click",()=>{if(S.quiz[key]&&S.quiz[key][i]!==undefined)return;S.quiz[key]=S.quiz[key]||{};S.quiz[key][i]=oi;if(window.EZGEN&&EZGEN.isAi(key))EZGEN.stamp(key,i);save();if(it.a==null&&window.EZGEN){btns.forEach(x=>x.disabled=true);EZGEN.reveal(key,i,oi).then(ok=>{if(!ok){delete S.quiz[key][i];save();}renderExam(id);applyZh();});return;}mark();upd();});os.appendChild(b);});
     d.appendChild(os);const ex=document.createElement("div");ex.className="expl";ex.hidden=true;d.appendChild(ex);box.appendChild(d);
     function mark(){
       const pick=(S.quiz[key]||{})[i];if(pick===undefined)return;
+      if(it.a==null){btns.forEach(b=>b.disabled=true);return;}
       btns.forEach(b=>{b.disabled=true;const oi=+b.dataset.oi;if(oi===it.a)b.classList.add("right");else if(oi===pick)b.classList.add("wrong");});
       const ok=pick===it.a;
-      ex.innerHTML='<span class="tag '+(ok?"ok":"no")+'">'+(ok?"答對":"答錯，正確答案是 "+ABCD[it.a])+'</span><span class="small">（'+CHN["ch"+it.ch]+'）</span>'+answerLine(it)+'<div>'+esc(it.e)+'</div>';ex.hidden=false;
+      ex.innerHTML='<span class="tag '+(ok?"ok":"no")+'">'+(ok?"答對":"答錯，正確答案是 "+ABCD[it.a])+'</span><span class="small">（'+(CHN["ch"+it.ch]||"")+'）</span>'+answerLine(it)+'<div>'+esc(it.e)+'</div>';ex.hidden=false;
     }
     mark();
   });
+  if(window.EZGEN)EZGEN.mount(box,key,()=>{renderExam(id);applyZh();});
   function upd(){
     const e=examStat(id),a=S.quiz[key]||{};
     tools.querySelector(".score").textContent="得分 "+Math.round(e.r/e.n*1000)/10+" / 100 分（已作答 "+e.k+" / "+e.n+" 題）";
@@ -149,7 +155,7 @@ function renderExam(id){
     (window.EZundo||((w,f)=>f()))("全部作答",()=>{
     rb.dataset.armed="";rb.textContent="清除作答";
     const a=S.quiz[key]||{};S.qclr=S.qclr||{};const c=S.qclr[key]=S.qclr[key]||{};Object.keys(a).forEach(i=>c[i]=Date.now());
-    delete S.quiz[key];S.quizReset=S.quizReset||{};S.quizReset[key]=Date.now();save();stopT();renderExam(id);applyZh();window.scrollTo(0,0);
+    delete S.quiz[key];if(window.EZGEN)EZGEN.reset(key);S.quizReset=S.quizReset||{};S.quizReset[key]=Date.now();save();stopT();renderExam(id);applyZh();window.scrollTo(0,0);
     },null,rb);
   };
   /* timer: start → 暫停 → 繼續計時 / 結束 (結束 puts it back to 60 minutes), same as the other subjects */

@@ -144,7 +144,11 @@ a.slk:hover,a.slk:focus-visible{color:var(--seal,#c0392b)}
     e.preventDefault();
     const view=h.closest("section.view");
     if(view&&view.hidden){const tab=document.querySelector('#tabs [data-go="'+view.id+'"]');if(tab)tab.click();}
-    setTimeout(()=>h.scrollIntoView({behavior:"smooth",block:"start"}),120);
+    setTimeout(()=>{
+      const tabs=document.querySelector("#tabs");const top=tabs?tabs.getBoundingClientRect().bottom:0;
+      const y=window.scrollY+h.getBoundingClientRect().top-top-18;
+      window.scrollTo({top:Math.max(0,y),behavior:"smooth"});
+    },120);
   });
 
   /* ---------- wiring ---------- */

@@ -1,6 +1,6 @@
 /* EZexams figure motion (UI only: never touches questions, answers or saved progress).
    Works next to the interactive figures (互動圖), it does not replace them:
-   - code / algorithm blocks reveal line by line, tables bring their rows in one after another
+   - code / algorithm blocks show in full at once; tables bring their rows in one after another
    - every diagram (figure.fg / figure.fig) draws itself each time its chapter tab opens or it scrolls back into view:
      axes and curves are traced, bars and areas grow, labels fade in one after another
    - every interactive figure (.ilab) draws in the same way in the same way
@@ -181,14 +181,7 @@
   }
   function drawIn2(box){
     if(box.matches(".lab,.ilab,.widget"))domIn(box);
-    if(box.tagName==="PRE"){
-      /* code / algorithm: the lines appear one by one, top to bottom, with a soft glow on the newest line */
-      const h=box.scrollHeight,cs=getComputedStyle(box),lh=parseFloat(cs.lineHeight)||parseFloat(cs.fontSize)*1.5,
-            n=Math.max(2,Math.min(60,Math.round((h-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom))/lh)));
-      try{box.animate([{clipPath:"inset(0 0 100% 0)"},{clipPath:"inset(0 0 0 0)"}],{duration:Math.min(1800,300+n*70),easing:"steps("+n+",end)",fill:"backwards"});
-          box.animate([{opacity:.35},{opacity:1}],{duration:Math.min(1800,300+n*70),fill:"backwards"});}catch(x){}
-      return;
-    }
+    if(box.tagName==="PRE")return;                                         /* code blocks show in full at once (no line-by-line reveal) */
     if(box.tagName==="TABLE"){
       const rows=[...box.rows],step=Math.min(70,700/Math.max(1,rows.length));
       rows.forEach((r,i)=>{try{r.animate([{opacity:0,transform:"translateY(10px)"},{opacity:1,transform:"none"}],{duration:450,delay:i*step,easing:"cubic-bezier(.2,.9,.3,1)",fill:"backwards"});}catch(x){}});

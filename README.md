@@ -37,7 +37,7 @@ assets/             Shared code and styles used by every page
   ezmotion.js       Tab glide, theme reveal, review motion
   ezfig.js          Diagrams and interactive figures draw themselves on tab switch / scroll
   ezfit.js          Layout fit: narrow tables get their explanation beside them, or stretch to full width
-  ezinteract.js     Light interactivity: sortable and filterable tables, hover/click spotlight on diagrams
+  ezinteract.js     Light interactivity: click a table row to highlight it, hover/click spotlight on diagrams
   ezwow.js          Big effects: intro, page turn, shatter, trail, particles, read marks
 subject/exam/       One folder per exam
   index.html        Notes and exam content for that page

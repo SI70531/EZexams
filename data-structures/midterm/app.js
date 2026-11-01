@@ -94,7 +94,7 @@ function renderQuiz(key){
     if(isExam)t.textContent="選擇題：已作答 "+n+" / "+qs.length+"，答對 "+r+" 題（"+r*2+" 分）";
     else t.textContent=n<qs.length?("已作答 "+n+" / "+qs.length+"，目前答對 "+r+" 題"):("完成！答對 "+r+" / "+qs.length+(r>=qs.length*0.8?"，觀念很穩。":"，把錯的題目對應段落再讀一次。"));
     sc.appendChild(t);
-    const rb=document.createElement("button");rb.className="btn";rb.type="button";rb.textContent=isExam?"重做選擇題":"重做這章";rb.addEventListener("click",()=>{(window.EZundo||((w,f)=>f()))("這章的作答",()=>{delete S.quiz[key];if(window.EZGEN)EZGEN.reset(key);S.quizReset=S.quizReset||{};S.quizReset[key]=Date.now();save();renderQuiz(key);afterAnswer(key);},null,rb);});sc.appendChild(rb);
+    const rb=document.createElement("button");rb.className="btn";rb.type="button";rb.textContent=isExam?"重做選擇題":"重做這章";rb.addEventListener("click",()=>{(window.EZundo||((w,f)=>f()))("這章的作答",()=>{delete S.quiz[key];if(window.EZGEN)EZGEN.reset(key);if(window.EZgenw){EZgenw.reset(key+"w");if(MCVIEW[key])EZgenw.reset(MCVIEW[key]);}S.quizReset=S.quizReset||{};S.quizReset[key]=Date.now();save();renderQuiz(key);afterAnswer(key);},null,rb);});sc.appendChild(rb);
     if(!isExam&&n>=qs.length){const nx=nextOf(key);if(nx){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";nb.textContent=key==="ch3"?"開始考古題":"下一章";nb.dataset.go=nx;sc.appendChild(nb);}}
   }
   renderScore();
@@ -951,3 +951,16 @@ function animFig(svg){
   io.observe(svg);
 }
 document.querySelectorAll('figure[data-anim="bs"] svg').forEach(animFig);
+
+/* AI written questions (assets/ezgenw.js): the chapter-end written parts one at a time, the mock exams' written parts all at once */
+if(window.EZgenw){
+  const T=k=>((VIEWS.find(v=>v[0]===k)||[])[1])||k;
+  const blk=(key,view,views,box,batch)=>({key,exam:key,view,views,title:T(view||key)+(batch?"（混合章節）":""),box,batch});
+  EZgenw.attach({course:"資料與檔案結構 Data and File Structures",subject:"data-structures",s:"ds",get:()=>S,save:()=>save(),blocks:[
+    blk("ch1w","ch1",["ch1"],document.querySelector('[data-exam="ch1w"]'),false),
+    blk("ch2w","ch2",["ch2"],document.querySelector('[data-exam="ch2w"]'),false),
+    blk("ch3w","ch3",["ch3"],document.querySelector('[data-exam="ch3w"]'),false),
+    blk("mock-a",null,["ch1","ch2","ch3"],document.getElementById("mock-a"),true),
+    blk("mock-b",null,["ch1","ch2","ch3"],document.getElementById("mock-b"),true)
+  ].filter(b=>b.box)});
+}

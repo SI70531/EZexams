@@ -1159,7 +1159,7 @@ Binary 欄就是 log₂n（取整）：2⁴ = 16、2¹⁰ ≈ 1,000、2²⁰ ≈
 
 <h4>Locate an element 與 probe <span class="sl">Slide 49</span></h4>
 <ul>
-<li><i>use the same algorithm that we used to insert it</i>: first hash the key, then look at the home address; <i>if it doesn’t contain the desired element, use the collision resolution algorithm to determine the next location</i>.<span class="zhn">找資料時，使用和插入時相同的演算法：先 hash key、看基底位址；如果那裡沒有要找的元素，就用碰撞解決演算法決定下一個位置。</span></li>
+<li><i>Use the same algorithm that we used to insert it</i>: first hash the key, then look at the home address; <i>if it doesn’t contain the desired element, use the collision resolution algorithm to determine the next location</i>.<span class="zhn">找資料時，使用和插入時相同的演算法：先 hash key、看基底位址；如果那裡沒有要找的元素，就用碰撞解決演算法決定下一個位置。</span></li>
 <li><b>Probe</b>: <i>Each calculation of an address and test for success</i> (one address calculation plus one test = one probe).<span class="zhn">探測（probe）：每算一次位址並檢查一次，就是一次 probe。</span></li>
 </ul>
 
@@ -1252,7 +1252,7 @@ key 224562，list size 19：切成 22 | 45 | 62 → 左右反轉 22→22、62→
 
 <h4>Pseudorandom method <span class="sl">Slide 68–70</span><span class="zhn">偽隨機法</span></h4>
 <ul>
-<li><i>pseudorandom number generator</i>,<i>the key is used as the <mark>seed</mark></i>.<span class="zhn">使用偽隨機數產生器，以 key 當作種子（seed）。</span></li>
+<li><i>Pseudorandom number generator</i>,<i>the key is used as the <mark>seed</mark></i>.<span class="zhn">使用偽隨機數產生器，以 key 當作種子（seed）。</span></li>
 <li>Then use <i>modulo division</i> to shrink the random number into the address range: <i>the result is divided by the list size, with the remainder being the hashed address</i>.<span class="zhn">再用 modulo division 把亂數縮到地址範圍內：結果除以 list size，餘數就是雜湊位址。</span></li>
 <li>常見的 RNG：<b>y = ax + c</b>.<i>For maximum efficiency, the factors <b>a</b> and <b>c</b> should be <mark>prime numbers</mark>.</i><span class="zhn">常見的亂數產生器：y = ax + c。為了達到最高效率，a 和 c 應該是質數。</span></li>
 </ul>
@@ -1321,7 +1321,7 @@ end hash
 <h4>Concept 2 of 3: Clustering (聚集) <span class="sl">slides 79–80</span> <span class="star">★★★</span></h4>
 <ul>
 <li><b>Clustering</b>: <i>the tendency of data to build up unevenly across a hashed list</i> (data piles up unevenly in some places).<span class="zhn">Clustering（群集）：資料不平均地堆在雜湊表的某些地方。</span></li>
-<li>clustering 嚴重時：<i>the number of probes to locate an element grows</i>,<i>reduces the processing efficiency of the list</i>.<span class="zhn">聚集嚴重時：找到一個元素所需的探測次數增加，降低串列的處理效率。</span></li>
+<li>Clustering: <i>the number of probes to locate an element grows</i>,<i>reduces the processing efficiency of the list</i>.<span class="zhn">聚集嚴重時：找到一個元素所需的探測次數增加，降低串列的處理效率。</span></li>
 <li><b>Primary clustering</b>: <i>occurs when data cluster <mark>around a home address</mark></i>, <mark>easy to identify</mark> (one region is obviously full).<span class="zhn">Primary clustering（主要群集）：資料聚在某個 home address 附近，很容易辨認（某一區明顯塞滿）。</span></li>
 <li><b>Secondary clustering</b>: <i>occurs when data become grouped <mark>along a collision path</mark> throughout a list</i>, <mark>not easy to identify</mark> (data is spread over the whole table, but all on the same collision path).<span class="zhn">Secondary clustering（次要群集）：資料沿著同一條碰撞路徑散布在整張表上，不容易辨認。</span></li>
 <li><b>Goal</b>:<i>design hashing algorithm to minimize clustering</i>.<span class="zhn">目標：設計雜湊演算法，讓碰撞群集（clustering）降到最低。</span></li>

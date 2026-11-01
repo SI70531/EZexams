@@ -621,30 +621,46 @@ function seqvar(el){
 
 /* 8. Hashing methods calculator (Ch2 slides 51-70) */
 function hashm(el){
-  frame(el,"八種 hashing method 計算機","輸入 key 和 list size，八種方法一次算出地址和過程。預設是投影片的 121267、list size 307；把 key 改成 123456789、摺疊位數 3，就是 Figure 2-11。");
+  frame(el,"八種 hashing method 計算機","選一種 hashing method，只顯示這種方法需要的欄位和計算過程。預設是 Modulo division，用投影片的 key 121267、list size 307；選 Fold boundary 並把 key 改成 123456789、摺疊位數 3，就是 Figure 2-11。");
+  const METHODS=[["direct","Direct"],["sub","Subtraction"],["mod","Modulo division"],["dig","Digit extraction"],["mid","Midsquare"],["fs","Fold shift"],["fb","Fold boundary"],["rot","Rotation"],["pr","Pseudorandom"]];
+  const sel=document.createElement("select");sel.className="labin";METHODS.forEach(([v,t])=>{const o=document.createElement("option");o.value=v;o.textContent=t;sel.appendChild(o);});sel.value="mod";
   const k=txt("121267","140px"),n=num(307,"90px"),p=num(3,"70px"),sb=num(1000,"90px");
-  const g=$("div","labgrid");[["key（數字）",k],["list size",n],["摺疊每段幾位",p],["subtraction 減多少",sb]].forEach(([t,i])=>{const l=$("label",null,t);l.appendChild(i);g.appendChild(l);});el.appendChild(g);
+  const fields={key:[["key（數字）",k]],list:[["list size",n]],fold:[["摺疊每段幾位",p]],sub:[["subtraction 減多少",sb]]};
+  const need={direct:["key"],sub:["key","sub","list"],mod:["key","list"],dig:["key"],mid:["key"],fs:["key","fold","list"],fb:["key","fold","list"],rot:["key"],pr:["key","list"]};
+  const g=$("div","labgrid");
+  const lab=(t,i)=>{const l=$("label",null,t);l.appendChild(i);return l;};
+  const selLab=lab("Method",sel);g.appendChild(selLab);
+  const slots={};Object.keys(fields).forEach(f=>fields[f].forEach(([t,i])=>{slots[f]=slots[f]||[];slots[f].push(lab(t,i));g.appendChild(slots[f][slots[f].length-1]);}));
+  el.appendChild(g);
   const out=$("div","labtbl");el.appendChild(out);
-  function draw(){
-    const ks=(k.value.match(/\d/g)||["0"]).join("").slice(0,18);const K=BigInt(ks);const N=BigInt(Math.max(2,parseInt(n.value)||307));const P=Math.max(1,Math.min(6,parseInt(p.value)||3));const SB=BigInt(parseInt(sb.value)||0);
-    const rows=[];const mod=x=>((x%N)+N)%N;
-    rows.push(["Direct","key 就是地址",K<N?String(K):"✗ key ≥ list size，direct 只能用在每個 key 都有一格的情況"]);
-    rows.push(["Subtraction","key − "+SB+" = "+(K-SB),(K-SB>=0n&&K-SB<N)?String(K-SB):"✗ 超出範圍（key 要連續且密集）"]);
-    rows.push(["Modulo division",K+" / "+N+" = "+(K/N)+" 餘 "+mod(K),String(mod(K))]);
-    if(ks.length>=4)rows.push(["Digit extraction","取第 1、3、4 位："+ks[0]+" "+ks[2]+" "+ks[3],ks[0]+ks[2]+ks[3]]);
-    if(ks.length<=4){const sq=K*K;const L=ks.length*2;const s2=String(sq).padStart(L,"0");const st=Math.floor((L-ks.length)/2);rows.push(["Midsquare",K+"² = "+s2+"，取中間 "+ks.length+" 位",s2.substr(st,ks.length)]);}
-    else{const part=BigInt(ks.slice(0,3));const s2=String(part*part).padStart(6,"0");rows.push(["Midsquare（變形）","取前 3 位 "+ks.slice(0,3)+"，平方 = "+s2+"，取第 3～5 位",s2.slice(2,5)]);}
-    const parts=[];for(let i=0;i<ks.length;i+=P)parts.push(ks.slice(i,i+P));
-    const fs=parts.reduce((a,b)=>a+BigInt(b),0n);const keep=x=>String(x).slice(-P);
-    rows.push(["Fold shift",parts.join(" + ")+" = "+fs+"，丟掉超過 "+P+" 位的進位（考試版：再 MOD "+N+" = "+mod(fs)+"）",keep(fs).padStart(P,"0")]);
-    const rb=parts.map((x,i)=>parts.length>1&&(i===0||i===parts.length-1)?x.split("").reverse().join(""):x);const fb=rb.reduce((a,b)=>a+BigInt(b),0n);
-    rows.push(["Fold boundary",rb.join(" + ")+"（左右兩段反轉）= "+fb+"（考試版：MOD "+N+" = "+mod(fb)+"）",keep(fb).padStart(P,"0")]);
-    const rot=ks.slice(-1)+ks.slice(0,-1);const rp=[];for(let i=0;i<rot.length;i+=2)rp.push(rot.slice(i,i+2));const rs=rp.reduce((a,b)=>a+ +b,0);
-    rows.push(["Rotation","最後一位轉到最前面："+ks+" → "+rot+"；再 fold shift 成兩位："+rp.join(" + ")+" = "+rs,String(rs).slice(-2).padStart(2,"0")]);
-    const y=17n*K+7n;rows.push(["Pseudorandom","y = 17 × "+K+" + 7 = "+y+"，MOD "+N,String(mod(y))]);
-    out.innerHTML="<table><tr><th>Method</th><th>計算過程</th><th>Address</th></tr>"+rows.map(r=>"<tr><td>"+r[0]+"</td><td>"+esc(r[1])+"</td><td><b>"+esc(r[2])+"</b></td></tr>").join("")+"</table>";
+  function rowFor(m,ks,K,N,P,SB){
+    const mod=x=>((x%N)+N)%N;
+    switch(m){
+      case"direct":return["Direct","key 就是地址",K<N?String(K):"✗ key ≥ list size，direct 只能用在每個 key 都有一格的情況"];
+      case"sub":return["Subtraction","key − "+SB+" = "+(K-SB),(K-SB>=0n&&K-SB<N)?String(K-SB):"✗ 超出範圍（key 要連續且密集）"];
+      case"mod":return["Modulo division",K+" / "+N+" = "+(K/N)+" 餘 "+mod(K),String(mod(K))];
+      case"dig":return ks.length>=4?["Digit extraction","取第 1、3、4 位："+ks[0]+" "+ks[2]+" "+ks[3],ks[0]+ks[2]+ks[3]]:["Digit extraction","key 至少要 4 位數",""];
+      case"mid":{
+        if(ks.length<=4){const s2=String(K*K).padStart(ks.length*2,"0");const st=Math.floor((ks.length*2-ks.length)/2);return["Midsquare",K+"² = "+s2+"，取中間 "+ks.length+" 位",s2.substr(st,ks.length)];}
+        const part=BigInt(ks.slice(0,3));const s2=String(part*part).padStart(6,"0");return["Midsquare（變形）","取前 3 位 "+ks.slice(0,3)+"，平方 = "+s2+"，取第 3～5 位",s2.slice(2,5)];}
+      case"fs":{const parts=[];for(let i=0;i<ks.length;i+=P)parts.push(ks.slice(i,i+P));const fs=parts.reduce((a,b)=>a+BigInt(b),0n);
+        return["Fold shift",parts.join(" + ")+" = "+fs+"，丟掉超過 "+P+" 位的進位（考試版：再 MOD "+N+" = "+mod(fs)+"）",String(fs).slice(-P).padStart(P,"0")];}
+      case"fb":{const parts=[];for(let i=0;i<ks.length;i+=P)parts.push(ks.slice(i,i+P));
+        const rb=parts.map((x,i)=>parts.length>1&&(i===0||i===parts.length-1)?x.split("").reverse().join(""):x);const fb=rb.reduce((a,b)=>a+BigInt(b),0n);
+        return["Fold boundary",rb.join(" + ")+"（左右兩段反轉）= "+fb+"（考試版：MOD "+N+" = "+mod(fb)+"）",String(fb).slice(-P).padStart(P,"0")];}
+      case"rot":{const rot=ks.slice(-1)+ks.slice(0,-1);const rp=[];for(let i=0;i<rot.length;i+=2)rp.push(rot.slice(i,i+2));const rs=rp.reduce((a,b)=>a+ +b,0);
+        return["Rotation","最後一位轉到最前面："+ks+" → "+rot+"；再 fold shift 成兩位："+rp.join(" + ")+" = "+rs,String(rs).slice(-2).padStart(2,"0")];}
+      default:{const y=17n*K+7n;return["Pseudorandom","y = 17 × "+K+" + 7 = "+y+"，MOD "+N,String(mod(y))];}
+    }
   }
-  [k,n,p,sb].forEach(i=>i.addEventListener("input",draw));draw();
+  function draw(){
+    const m=sel.value;const need1=need[m];
+    Object.keys(slots).forEach(f=>slots[f].forEach(l=>l.style.display=need1.includes(f)?"":"none"));
+    const ks=(k.value.match(/\d/g)||["0"]).join("").slice(0,18);const K=BigInt(ks);const N=BigInt(Math.max(2,parseInt(n.value)||307));const P=Math.max(1,Math.min(6,parseInt(p.value)||3));const SB=BigInt(parseInt(sb.value)||0);
+    const r=rowFor(m,ks,K,N,P,SB);
+    out.innerHTML="<table><tr><th>Method</th><th>計算過程</th><th>Address</th></tr><tr><td>"+r[0]+"</td><td>"+esc(r[1])+"</td><td><b>"+esc(r[2])+"</b></td></tr></table>";
+  }
+  [sel,k,n,p,sb].forEach(i=>i.addEventListener(i===sel?"change":"input",draw));draw();
 }
 
 /* 9. Algorithm 2-6 (fold shift + rotation + modulo) */

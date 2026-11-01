@@ -841,7 +841,7 @@ function hash(el){
 function bsfig(el){
   const A=[4,7,8,10,14,21,22,36,62,77,81,91];
   const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-  frame(el,"Binary search 逐步走（Figure 2-4）","每按一次「下一步」就是一次迴圈：先標出 first、mid、last，再比較 target 和 mid。灰色是已經排除的範圍。");
+  frame(el,"Binary search 逐步走（可換 target）","每按一次「下一步」就是一次迴圈：先標出 first、mid、last，再比較 target 和 mid。灰色是已經排除的範圍。");
   const ctl=$("div","labrow");
   const inp=$("input");inp.type="number";inp.value="22";inp.className="labin";inp.setAttribute("aria-label","target");
   const bP=btn("上一步"),bN=btn("下一步",true),bR=btn("重來");

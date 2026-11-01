@@ -120,12 +120,12 @@ html.ezcalm .fx-sv{animation:none}
     const vh=innerHeight,scope=root===document?[...document.querySelectorAll("section.view:not([hidden])")]:[root];
     const roots=scope.length?scope:[document];
     if(CSS.supports&&CSS.supports("animation-timeline:view()")){      /* every block fades in and out as it crosses the screen edges while scrolling (only blocks that fit on screen; nested ones fade with their parent) */
-      const cand=[];roots.forEach(r=>r.querySelectorAll(SEL).forEach(el=>{if(!el.dataset.fxSv&&!el.closest("#ezgate,.ezs-panel,.wcard,details:not([open])"))cand.push(el);}));
+      const cand=[];roots.forEach(r=>r.querySelectorAll(SEL).forEach(el=>{if(!el.dataset.fxSv&&el.tagName!=="PRE"&&!el.closest("#ezgate,.ezs-panel,.wcard,details:not([open])"))cand.push(el);   /* code blocks (pre) are never revealed: they show in full at once */}));
       const rc=cand.map(el=>el.getBoundingClientRect());
       cand.forEach((el,i)=>{if(!rc[i].height)return;el.dataset.fxSv=1;if(rc[i].height<vh*.7&&!el.parentElement.closest(".fx-sv"))el.classList.add("fx-sv");});
     }
     if(!io)return;
-    const els=[];roots.forEach(r=>r.querySelectorAll(SEL).forEach(el=>{if(!el.dataset.fxRv&&!el.closest("#ezgate,.ezs-panel,.wcard,details:not([open])"))els.push(el);}));
+    const els=[];roots.forEach(r=>r.querySelectorAll(SEL).forEach(el=>{if(!el.dataset.fxRv&&el.tagName!=="PRE"&&!el.closest("#ezgate,.ezs-panel,.wcard,details:not([open])"))els.push(el);}));
     const rects=els.map(el=>el.getBoundingClientRect());
     els.forEach((el,i)=>{const r=rects[i];if(!r.height)return;el.dataset.fxRv=1;   /* hidden: armed again when its tab opens */
       if(r.top<vh*.92||r.top>vh*4)return;                             /* on screen already, or far below: no animation */

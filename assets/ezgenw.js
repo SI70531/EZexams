@@ -191,7 +191,6 @@
           ctx.st.grade[q.id]={score:sc,verdict:r.verdict||(sc>=(+q.dataset.pts)?"correct":sc>0?"partial":"wrong"),feedback:String(r.feedback||""),missing:Array.isArray(r.missing)?r.missing.map(String):[],ans,ai:true};
           window.EZchw.keep(q.id,r.answer_en,r.answer_zh);
           render(q);window.EZchw.showAnswer(q,true);
-          save();
         }catch(e){failed.push({q,e});}
         done++;stat.textContent="AI 批改中… "+done+" / "+list.length;
       }

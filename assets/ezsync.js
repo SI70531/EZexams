@@ -28,7 +28,7 @@
   /* forget this browser's answers (another person is signing in) */
   function dropLocal(){
     Object.values(subjects).forEach(s=>{clearTimeout(s.timer);s.timer=null;});
-    const drop=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(/-midterm-v\d+$|^ezsync-at:|^ezopt:|^eznum:/.test(k))drop.push(k);}
+    const drop=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(/-midterm-v\d+$|^ezsync-at:|^ezopt:|^eznum:|^ezgen:/.test(k))drop.push(k);}
     drop.forEach(k=>set(k,null));[LS.last,"ezsync-lastpush"].forEach(k=>set(k,null));
   }
   /* an account owns this browser's answers once it has signed in here; progress from before accounts (made under an old
@@ -373,6 +373,21 @@
         ["ans","grade"].forEach(f=>{Rm[f]=Object.assign({},L[f]||{},Rm[f]||{});});
         Object.keys(L.ans||{}).forEach(q=>{if(!Rm.ans[q]&&L.ans[q])Rm.ans[q]=L.ans[q];});
       });}
+    /* AI practice questions (ezgen.js): S.gen[set][slot] = {id,q,o,sec,g,...}. Union by slot; a chapter reset or a
+       per-question clear that is newer than the question removes it (the question itself carries no answer) */
+    if(local.gen||out.gen){
+      out.gen=out.gen||{};
+      const lg=local.gen||{};
+      Object.keys(lr).forEach(ch=>{if((lr[ch]||0)>(rr[ch]||0))out.gen[ch]={};});
+      Object.keys(lg).forEach(ch=>{
+        if((rr[ch]||0)>(lr[ch]||0))return;
+        out.gen[ch]=out.gen[ch]||{};
+        Object.keys(lg[ch]||{}).forEach(i=>{
+          const l=lg[ch][i],r=out.gen[ch][i],c=((local.qclr||{})[ch]||{})[i]||0;
+          if(!r&&(l.g||0)>c)out.gen[ch][i]=l;
+        });
+      });
+    }
     /* per-question 清除作答 (ezquiz.js): answers and clears carry times; the later one wins, so a cleared answer
        does not come back from another device, and an answer given after a clear is kept */
     const mx=(a,b)=>{const o=JSON.parse(JSON.stringify(a||{}));Object.keys(b||{}).forEach(k=>{o[k]=o[k]||{};Object.keys(b[k]).forEach(i=>{o[k][i]=Math.max(o[k][i]||0,b[k][i]||0);});});return o;};
@@ -380,7 +395,7 @@
       out.qat=mx(out.qat,local.qat);out.qclr=mx(out.qclr,local.qclr);
       Object.keys(out.qclr).forEach(ch=>Object.keys(out.qclr[ch]).forEach(i=>{
         const c=out.qclr[ch][i],a=(out.qat[ch]||{})[i]||0;
-        if(c>=a){if(out.quiz[ch])delete out.quiz[ch][i];}
+        if(c>=a){if(out.quiz[ch])delete out.quiz[ch][i];if(out.gen&&out.gen[ch]&&out.gen[ch][i]&&(out.gen[ch][i].g||0)<=c)delete out.gen[ch][i];}
         else if(local.quiz&&local.quiz[ch]&&local.quiz[ch][i]!==undefined&&(local.qat&&local.qat[ch]&&local.qat[ch][i])===a){out.quiz[ch]=out.quiz[ch]||{};out.quiz[ch][i]=local.quiz[ch][i];}
       }));
     }

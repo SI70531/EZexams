@@ -28,6 +28,7 @@ assets/             Shared code and styles used by every page
   ezplan.js         Builds an N-day study plan
   ezwrong.js        Wrong-answer review area
   ezquiz.js         Score bar and answer timestamps
+  ezgen.js          AI practice, one question at a time (chapter exercises and mock exams)
   ezshuffle.js      Shuffles question order each time a page opens
   ezsearch.js       Search bar (press / or Ctrl+K)
   ezpage.js         Shared page features (saving, tabs, chapter scores)
@@ -99,6 +100,10 @@ To turn on sync for a new subject page, add this line just before the page's mai
 ```
 
 ## AI Grading (Free)
+
+### AI practice, one question at a time
+
+Chapter exercises (and the data-structures mock exams) are no longer a fixed list. Press **AI 開始出題** and the Worker asks Gemini for one question based on the chapter notes the page sends (one section at a time). After you answer and read the explanation, **出下一題** appears; when the original number of questions is reached the button disappears. Every section is asked about once first; if slots are left, questions you got wrong come back as new questions on the same idea. The answer and explanation of an AI question stay in the account's Durable Object until you answer (`/gen/answer`), and the legacy question bank lives in `tools/bank.json` inside the Worker (`/bank/open` returns a slot only together with a pick), so neither is in the page source. Progress made before the change is kept: answered slots are re-opened from the bank and cached in the browser. **重做這章** starts a chapter over with new AI questions. Past exams, the statistics midterm assignment, the economics homework and the economics mock exams keep their original questions. This needs a signed-in account and a network connection; after changing the Worker, run the *Deploy Worker* workflow.
 
 AI grading works without any setup once you are signed in. The pages send requests through a small Cloudflare Worker (`tools/ezexams-worker.js`), which talks to Google Gemini. The API key stays on the server, so it never appears on the website.
 

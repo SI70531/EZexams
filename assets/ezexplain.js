@@ -37,7 +37,7 @@
     const q=(QUIZ[key]&&QUIZ[key][i])||(typeof MOCK!=="undefined"&&MOCK[vw]&&MOCK[vw][i]);if(!q)return null;
     const right=it.querySelector(".opt.right");if(!right)return null;
     const wrong=it.querySelector(".opt.wrong");const pick=(wrong||right).dataset.oi;
-    return {key,i,q,pick,ok:!wrong,id:key+"|"+i+"|"+pick};
+    return {key,i,q,pick,ok:!wrong,id:key+"|"+i+"|"+pick+(q.gid?"|"+q.gid:"")};
   }
   const optText=o=>{const e=o.querySelector(".oe");if(e)return e.textContent.trim();const c=o.cloneNode(true);c.querySelectorAll(".ab").forEach(x=>x.remove());return c.textContent.trim();};
   const letterOf=(it,oi)=>{const a=it.querySelector('.opt[data-oi="'+oi+'"] .ab');return a?a.textContent.trim():"?";};

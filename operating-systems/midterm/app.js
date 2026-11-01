@@ -5,46 +5,6 @@
   addEventListener("scroll",()=>tt.classList.toggle("show",scrollY>500),{passive:true});
   tt.addEventListener("click",()=>scrollTo({top:0,behavior:"smooth"}));
 })();
-const HARD={
-ch1:[
- {q:"A device controller moves a 4 KB block to main memory using DMA. How many interrupts does the CPU receive for this block?", o:["0","1","512","4096"], a:1, e:"DMA 的重點：one interrupt per block（每個 block 一次）。如果是一般 interrupt-driven I/O，才會每個 byte 中斷一次（4096 次）。"},
- {q:"If the hardware had NO timer, which problem could the OS NOT stop?", o:["A division by zero in a user program","A user program that enters an infinite loop and never calls the OS","A user program that tries to execute a privileged instruction","A user program that requests I/O"], a:1, e:"除以零、執行特權指令都會產生 trap，OS 自然拿回控制權；要 I/O 會呼叫 system call。只有無窮迴圈不會主動交還控制權，必須靠 timer interrupt（計時器中斷）。"},
- {q:"A system keeps several jobs in memory and switches jobs ONLY when the running job waits for I/O. Users complain that the response time is several seconds. Which description fits?", o:["Timesharing system","Multiprogramming without timesharing","Hard real-time system","Multiprocessor system with graceful degradation"], a:1, e:"只在等 I/O 時才切換 = multiprogramming（目標是效率）。Timesharing 會頻繁切換，讓回應時間 < 1 秒（目標是互動）。"},
- {q:"A server with 10 CPUs keeps running at a lower speed after one CPU fails. This property is called:", o:["Fault tolerance","Graceful degradation","Economy of scale","Asymmetric multiprocessing"], a:1, e:"Graceful degradation（降級運作）：壞一部分，還能用但變慢。Fault tolerance（容錯）更強：壞一部分也像沒事一樣繼續。兩個很容易搞混。"},
- {q:"Which statement is FALSE?", o:["A trap is a software-generated interrupt","A system call switches the mode bit to kernel mode","A system call is a hardware interrupt sent by the device controller","The interrupt architecture must save the address of the interrupted instruction"], a:2, e:"System call 是程式自己發出的 trap（軟體中斷），不是裝置控制器送來的硬體中斷。"}
-],
-ch2:[
- {q:"Which process-state transition is NOT possible?", o:["running → waiting","waiting → ready","ready → running","waiting → running"], a:3, e:"等完 I/O 的 process 要先回到 ready queue 排隊，再由 scheduler 挑中才能 running。不能從 waiting 直接跳到 running。"},
- {q:"A bounded buffer uses in/out pointers with BUFFER_SIZE = 8. At most how many items can it hold at the same time?", o:["6","7","8","9"], a:1, e:"要永遠留一格空的，才能分辨 full（(in+1)%8 == out）和 empty（in == out），所以最多 BUFFER_SIZE − 1 = 7 個。"},
- {q:"Which of the following does NOT happen during a context switch?", o:["The old process's registers are saved into its PCB","The new process's saved state is loaded from its PCB","The new process's program code is reloaded from disk","The CPU does no useful work while switching"], a:2, e:"Context switch 只存／載入狀態（PCB 裡的 registers、PC 等），程式本身已經在記憶體裡，不會重新從硬碟載入。"},
- {q:"After the shared region is set up, why is shared memory usually faster than message passing?", o:["It uses fewer CPU registers","Reads and writes do not need system calls into the kernel","It never needs synchronization","The kernel copies data in larger blocks"], a:1, e:"Shared memory 只有建立時需要 kernel；之後直接讀寫記憶體。Message passing 每次 send()/receive() 都要經過 kernel，所以比較慢。注意它仍然需要同步（synchronization）。"}
-],
-ch3:[
- {q:"P1, P2, P3, P4 all arrive at time 0 with CPU bursts 6, 8, 7, 3. What is the average waiting time under (nonpreemptive) SJF?", o:["6","7","7.75","10.25"], a:1, e:"順序 P4(3) → P1(6) → P3(7) → P2(8)。等待時間 0、3、9、16，平均 28/4 = 7。10.25 是照 P1→P2→P3→P4 的 FCFS 答案，小心不要選到。"},
- {q:"P1 = 24, P2 = 3, P3 = 3 (all arrive at 0, in that order). Round Robin with q = 4. What is the average waiting time?", o:["3","5.66","7","17"], a:1, e:"Gantt：P1(0–4) P2(4–7) P3(7–10) P1(10–30)。等待時間 P1 = 10 − 4 = 6，P2 = 4，P3 = 7，平均 17/3 ≈ 5.66。17 是總和不是平均。"},
- {q:"SRTF (preemptive SJF): P1 arrives 0 burst 8, P2 arrives 1 burst 4, P3 arrives 2 burst 9, P4 arrives 3 burst 5. Average waiting time?", o:["5.75","6.5","7.75","8"], a:1, e:"Gantt：P1(0–1) P2(1–5) P4(5–10) P1(10–17) P3(17–26)。等待 P1 = 10−1 = 9，P2 = 0，P3 = 17−2 = 15，P4 = 5−3 = 2，平均 26/4 = 6.5。7.75 是不搶奪的 SJF 答案。"},
- {q:"A process arrives at time 2, first gets the CPU at time 5, and finishes at time 12. Its CPU burst is 4. What is its waiting time?", o:["3","6","7","10"], a:1, e:"Turnaround = 12 − 2 = 10；waiting = turnaround − burst = 10 − 4 = 6。3 是 response time（第一次拿到 CPU 的時間 − 到達時間），不是 waiting time。"},
- {q:"Exponential averaging with α = 0.5: the last predicted burst τn = 10 and the actual burst tn = 6. What is the next prediction τn+1?", o:["6","8","10","16"], a:1, e:"τn+1 = α·tn + (1 − α)·τn = 0.5×6 + 0.5×10 = 8。"},
- {q:"Which statement is TRUE?", o:["RR always gives a lower average waiting time than FCFS","Preemptive priority scheduling cannot cause starvation","SJF gives the minimum average waiting time for a given set of processes","In a multilevel queue, processes move down when they use too much CPU"], a:2, e:"SJF 是 optimal（平均等待最小）。RR 的平均等待常常比 FCFS 長；preemptive priority 一樣會 starvation；會往下移動的是 multilevel FEEDBACK queue，不是 multilevel queue。"}
-],
-ch4:[
- {q:"An application is 75% parallel and 25% serial. By Amdahl's law, what is the speedup on 4 cores?", o:["1.6","2.29","3","4"], a:1, e:"Speedup = 1 / (S + (1−S)/N) = 1 / (0.25 + 0.75/4) = 1 / 0.4375 ≈ 2.29。1.6 是 2 核心的答案。"},
- {q:"For the same application (25% serial), what is the maximum speedup no matter how many cores are added?", o:["2","4","8","Unlimited"], a:1, e:"N → ∞ 時 speedup → 1/S = 1/0.25 = 4。循序部分決定上限。"},
- {q:"A process uses the many-to-one model with 8 user threads on a 4-core machine. At most how many of its threads can run at the same instant?", o:["1","4","8","Depends on the scheduler"], a:0, e:"Many-to-one 只有一個 kernel thread，一次只有一個 thread 能進 kernel，所以多核心也只能跑 1 個。"},
- {q:"Two threads read the SAME array: one finds the minimum, the other finds the maximum. This is an example of:", o:["Data parallelism","Task parallelism","Concurrency but not parallelism","Pipelining"], a:1, e:"關鍵在「做的事不一樣」（找最小 vs 找最大）→ task parallelism。如果是把陣列切兩半、兩個 thread 都做加總，才是 data parallelism。"},
- {q:"Which of the following is NOT shared by the threads of the same process?", o:["Code section","Global variables","Open files","Stack"], a:3, e:"每個 thread 有自己的 stack、registers 和 PC（thread ID 也是自己的）；code、data（全域變數）、open files 是共用的。"},
- {q:"Which statement is TRUE?", o:["Concurrency is impossible on a single-core CPU","Parallelism is possible on a single-core CPU","It is possible to have concurrency without parallelism","Parallelism and concurrency mean the same thing"], a:2, e:"單核心輪流執行就有 concurrency（每個工作都有進展），但沒有 parallelism（真正同時）。平行需要多核心。"}
-],
-ch5:[
- {q:"A resource-allocation graph contains a cycle, and one resource type in the cycle has 2 instances. What can you conclude?", o:["There is definitely a deadlock","There is definitely no deadlock","There may or may not be a deadlock","The system is in a safe state"], a:2, e:"有環 + 多個 instance → 只是「可能」死結。只有在每種資源都只有一個 instance 時，有環才一定死結。"},
- {q:"Total 12 tape drives. P0: Max 10, Allocation 5; P1: Max 4, Allocation 2; P2: Max 9, Allocation 2. If P2 requests 1 more drive, should it be granted?", o:["Yes, the state stays safe","No, the resulting state is unsafe","Yes, because 1 ≤ Available","No, because P2's request exceeds its Max"], a:1, e:"假裝給：Available = 3 − 1 = 2。P1 還要 2 → 做完 → Available 4。P0 還要 5、P2 還要 6，都 > 4，找不到安全順序 → unsafe，要等。只檢查 request ≤ Available 是陷阱。"},
- {q:"Requiring every process to request and be allocated all its resources before it starts executing denies which condition?", o:["Mutual exclusion","Hold and wait","No preemption","Circular wait"], a:1, e:"一開始就拿齊，執行中就不會「拿著一些、再等另一些」→ 破壞 hold and wait。破壞 circular wait 的方法是資源排序（total ordering）。"},
- {q:"Which statement is TRUE?", o:["Every unsafe state is a deadlock","Every deadlock state is an unsafe state","A safe state can still deadlock","Deadlock avoidance needs no advance information"], a:1, e:"Deadlock ⊂ unsafe：死結一定不安全，但不安全不一定死結。Safe state 一定不會死結；避免法需要事先知道每個 process 的 Max。"},
- {q:"Available = (3,3,2). P1's Need = (1,2,2) and P1 requests (1,0,2). If the Banker's algorithm pretends to grant it, what is the new Available?", o:["(2,3,0)","(4,3,4)","(2,1,0)","(3,3,2)"], a:0, e:"先檢查 (1,0,2) ≤ Need (1,2,2) 且 ≤ Available (3,3,2)。假裝給：Available = (3,3,2) − (1,0,2) = (2,3,0)。之後還要跑 safety algorithm 確認安全才真的給。"}
-]};
-for(const ch in HARD){HARD[ch].forEach(x=>x.h=1);QUIZ[ch].push(...HARD[ch]);}
-if(typeof QUIZ_MORE!=="undefined")for(const ch in QUIZ_MORE)QUIZ[ch].push(...QUIZ_MORE[ch]); /* newer questions go last */
-
 const VIEWS=[["home","首頁"],["ch1","Ch1 簡介"],["ch2","Ch2 Process"],["ch3","Ch3 排班"],["ch4","Ch4 Thread"],["ch5","Ch5 Deadlock"],["|"],["past","考古題"],["mock-a","模擬 A"],["mock-b","模擬 B"],["review","總複習"]];
 const KEY="os-midterm-v1";
 let S={quiz:{},exam:{}};
@@ -79,6 +39,9 @@ document.addEventListener("click",e=>{if(e.target.closest(".opt"))setTimeout(()=
 document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b){show(b.dataset.go);}});
 window.addEventListener("hashchange",()=>{const h=location.hash.slice(1);if(h&&h!==S.last)show(h);});
 
+/* AI practice, one question at a time (assets/ezgen.js); chapter exercises are made on demand, answers stay on the Worker */
+if(window.EZGEN)EZGEN.attach({course:"作業系統",s:"os",ai:["ch1","ch2","ch3","ch4","ch5"],fixed:[],scope:{},get:()=>S,quiz:()=>QUIZ,save:()=>save(),render:c=>{renderQuiz(c);renderTabs(c)},renderAll:()=>{Object.keys(QUIZ).forEach(renderQuiz);renderTabs(S.last)}});
+
 /* ---------- quizzes ---------- */
 function renderQuiz(ch){
   const box=document.querySelector('[data-quiz="'+ch+'"]');if(!box)return;
@@ -86,23 +49,26 @@ function renderQuiz(ch){
   box.innerHTML="";
   const h=document.createElement("h2");h.textContent="Multiple-choice question（"+qs.length+" 題，共 50 分）";box.appendChild(h);
   const p=document.createElement("p");p.className="small";p.textContent="點一個選項就會馬上對答案並顯示解析。錯的題目回上面找對應的段落再讀一次。";box.appendChild(p);
-  qs.forEach((it,i)=>{
-    const d=document.createElement("div");d.className="qitem";
-    const st=document.createElement("div");st.className="stem";st.innerHTML='<span class="num">'+(i+1)+'.</span>';st.appendChild(document.createTextNode(it.q));d.appendChild(st);
+  const SHOW=window.EZGEN&&EZGEN.isAi(ch)?EZGEN.order(ch,qs):qs.map((_,k)=>k);
+  SHOW.forEach((i,pos)=>{
+    const it=qs[i];
+    const d=document.createElement("div");d.className="qitem";d.dataset.i=i;
+    const st=document.createElement("div");st.className="stem";st.innerHTML='<span class="num">'+(pos+1)+'.</span>';st.appendChild(document.createTextNode(it.q));d.appendChild(st);if(it.gid&&window.EZGEN)EZGEN.tag(d);
     const os=document.createElement("div");os.className="opts";
-    const ord=order(it.o.length,i+ch.charCodeAt(2)*7);
+    const ord=it.gid?it.o.map((_,k)=>k):order(it.o.length,i+ch.charCodeAt(2)*7);
     const btns=[];
     ord.forEach((oi,k)=>{
       const b=EZopt();b.className="opt";b.type="button";
       b.innerHTML='<span class="ab">'+"ABCD"[k]+'</span>';const t=document.createElement("span");t.textContent=it.o[oi];b.appendChild(t);
       b.dataset.oi=oi;btns.push(b);
-      b.addEventListener("click",()=>{if(S.quiz[ch]&&S.quiz[ch][i]!==undefined)return;S.quiz[ch]=S.quiz[ch]||{};S.quiz[ch][i]=oi;save();mark();renderScore();renderTabs(ch);});
+      b.addEventListener("click",()=>{if(S.quiz[ch]&&S.quiz[ch][i]!==undefined)return;S.quiz[ch]=S.quiz[ch]||{};S.quiz[ch][i]=oi;if(window.EZGEN&&(EZGEN.isAi(ch)||EZGEN.isFixed(ch)))EZGEN.stamp(ch,i);save();if(it.a==null&&window.EZGEN){btns.forEach(x=>x.disabled=true);EZGEN.reveal(ch,i,oi).then(ok=>{if(!ok){delete S.quiz[ch][i];save();}renderQuiz(ch);renderTabs(ch);});return;}mark();renderScore();renderTabs(ch);});
       os.appendChild(b);
     });
     d.appendChild(os);
     const ex=document.createElement("div");ex.className="expl";ex.hidden=true;d.appendChild(ex);
     function mark(){
       const pick=(S.quiz[ch]||{})[i];if(pick===undefined)return;
+      if(it.a==null){btns.forEach(b=>b.disabled=true);return;}
       btns.forEach(b=>{b.disabled=true;const oi=+b.dataset.oi;if(oi===it.a)b.classList.add("right");else if(oi===pick)b.classList.add("wrong");});
       const ok=pick===it.a;
       ex.innerHTML='<span class="tag '+(ok?"ok":"no")+'">'+(ok?"答對":"答錯，正確答案是 "+"ABCD"[ord.indexOf(it.a)])+'</span>';
@@ -110,12 +76,13 @@ function renderQuiz(ch){
     }
     mark();box.appendChild(d);
   });
+  if(window.EZGEN)EZGEN.mount(box,ch,()=>{renderQuiz(ch);renderTabs(ch);});
   const sc=document.createElement("div");sc.className="qscore";box.appendChild(sc);
   function renderScore(){
     const a=S.quiz[ch]||{};const n=Object.keys(a).length;const r=Object.keys(a).filter(k=>a[k]===qs[k].a).length;
     sc.innerHTML="";
     const t=document.createElement("span");t.textContent=n<qs.length?("已作答 "+n+" / "+qs.length+"，目前答對 "+r+" 題"):("完成！答對 "+r+" / "+qs.length+(r>=qs.length*0.8?"，觀念很穩。":"，把錯的題目對應段落再讀一次。"));sc.appendChild(t);
-    const rb=document.createElement("button");rb.className="btn";rb.type="button";rb.textContent="重做這章";rb.addEventListener("click",()=>{(window.EZundo||((w,f)=>f()))("這章的作答",()=>{delete S.quiz[ch];S.quizReset=S.quizReset||{};S.quizReset[ch]=Date.now();save();renderQuiz(ch);renderTabs(ch);},null,rb);});sc.appendChild(rb);
+    const rb=document.createElement("button");rb.className="btn";rb.type="button";rb.textContent="重做這章";rb.addEventListener("click",()=>{(window.EZundo||((w,f)=>f()))("這章的作答",()=>{delete S.quiz[ch];if(window.EZGEN)EZGEN.reset(ch);S.quizReset=S.quizReset||{};S.quizReset[ch]=Date.now();save();renderQuiz(ch);renderTabs(ch);},null,rb);});sc.appendChild(rb);
     const idx=VIEWS.findIndex(v=>v[0]===ch);const nx=VIEWS[idx+1];
     if(n>=qs.length&&nx&&nx[0]!=="|"){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";nb.textContent="下一章："+nx[1];nb.dataset.go=nx[0];sc.appendChild(nb);}
     else if(n>=qs.length&&ch==="ch5"){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";nb.textContent="開始考古題";nb.dataset.go="past";sc.appendChild(nb);}

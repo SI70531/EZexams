@@ -11,15 +11,25 @@
         POST /pin/clear {t, deviceId}                      forget this device's PIN
       The PIN is only ever stored as an HMAC (needs the Worker's secret), and 5 wrong tries delete it, so the device must
       use the password again. A right PIN needs SUPABASE_SECRET_KEY (a Worker secret) to ask Supabase for a one-time link.
+   5. AI practice (chapter exercises and mock exams are made one question at a time; needs a Supabase sign-in):
+        POST /gen/next   {t, subject, chapter, sec:{k,title,text}, n, total, asked:[...], retest:{q,e}, zh}   → {id, q, o, sec}
+             Gemini writes ONE multiple-choice question from that section of the notes. The answer and the explanation are kept
+             here (Durable Object, per account); the page only gets the question.
+        POST /gen/answer {t, id, pick}                                                       → {a, e, right}  (revealed on answering)
+        POST /bank/open  {t, s, key, picks:{<slot>:<pick>}}   questions that were answered before the move to AI practice
+             (tools/bank.json) and the past-exam answers: the answer of a slot is only returned together with the pick for it.
    Only pages from ALLOWED may use it.
    Secrets (Settings → Variables and Secrets): GEMINI_KEY, SUPABASE_SECRET_KEY (device PINs).
    Deployed by .github/workflows/worker.yml with tools/wrangler.toml. Google does not offer Gemini in Hong Kong, where
    Taiwanese visitors are often served from, so the Gemini call goes through the GeminiRelay Durable Object in North America. */
+import BANK from "./bank.json";
 const ALLOWED = ["https://si70531.github.io"];
 /* the Supabase project; the publishable key is meant to be public (it only works together with Row Level Security) */
 const SUPABASE_URL = "https://jyfmolrqxypufwjqexan.supabase.co";
 const SUPABASE_KEY = "sb_publishable_YJbE5DyYa6UKsAbfsxjnWg_4VW4HVnr";
 const MAX_BODY = 20000;
+const GEN_MAX = 60000;          /* /gen/next carries the notes of one section */
+const BANK_HOUR = 1500;         /* /gen/answer + /bank/open calls per account and hour */
 /* only these Gemini models may be called through the Worker (the site's own list in assets/ezai.js, plus the
    model-list lookup), so a signed-in visitor cannot spend the key on a more expensive model */
 const MODELS = ["gemini-flash-latest", "gemini-2.5-flash", "gemini-flash-lite-latest", "gemini-2.5-flash-lite", "gemini-2.0-flash"];
@@ -102,9 +112,9 @@ export default {
     /* everything below needs a valid sign-in token */
     let tokenIn = url.searchParams.get("t") || (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
     let bodyText = null;
-    if (url.pathname.startsWith("/pin/") && req.method === "POST") {
+    if ((url.pathname.startsWith("/pin/") || url.pathname.startsWith("/gen/") || url.pathname.startsWith("/bank/")) && req.method === "POST") {
       bodyText = await req.text();
-      if (bodyText.length > MAX_BODY) return fail(413, "TOO_BIG", "Request too large");
+      if (bodyText.length > (url.pathname.startsWith("/pin/") ? MAX_BODY : GEN_MAX)) return fail(413, "TOO_BIG", "Request too large");
       try { const b = JSON.parse(bodyText); if (b && b.t) tokenIn = b.t; } catch (e) {}
     }
     /* a Supabase sign-in (3-part JWT); who = "u<account id>" */
@@ -124,6 +134,11 @@ export default {
       await pinStore(env, acct.id + ":" + dev, "put", { h: await pinHash(env, acct.id, dev, pin), email: acct.email });
       return json({ ok: true });
     }
+
+    /* ---------- AI practice: one question at a time, answers kept here ---------- */
+    if (url.pathname === "/gen/next" && req.method === "POST") return genNext(env, acct, who, bodyText, json, fail);
+    if (url.pathname === "/gen/answer" && req.method === "POST") return genAnswer(env, acct, who, bodyText, json, fail);
+    if (url.pathname === "/bank/open" && req.method === "POST") return bankOpen(env, who, bodyText, json, fail);
 
     /* ---------- 1. Gemini ---------- */
     const m = url.pathname.match(/^\/v1beta\/models\/([\w.-]+):generateContent$/);
@@ -209,6 +224,7 @@ export class Guard {
   async fetch(req) {
     const op = new URL(req.url).pathname.slice(1), now = Date.now();
     if (op.startsWith("pin-")) return this.pin(op, req);
+    if (op.startsWith("gen-")) return this.gen(op, req);
     const d = (await this.state.storage.get("d")) || { fails: [], logs: [] };
     d.fails = d.fails.filter(t => now - t < FAIL_WIN); d.logs = (d.logs || []).filter(t => now - t < LOG_WIN);
     d.gfails = (d.gfails || []).filter(t => now - t < GLOBAL_FAIL_WIN);
@@ -222,6 +238,10 @@ export class Guard {
       if (d.ai.n >= AI_HOUR) { blocked = true; aiWait = Math.ceil(((hr + 1) * 3600000 - now) / 1000); }
       else if (d.ai.dn >= AI_DAY) { blocked = true; aiWait = Math.ceil(((day + 1) * 86400000 - now) / 1000); }
       else { d.ai.n++; d.ai.dn++; }
+    }
+    if (op === "bank") {
+      if (!d.bk || d.bk.hr !== hr) d.bk = { hr, n: 0 };
+      if (d.bk.n >= BANK_HOUR) { blocked = true; aiWait = Math.ceil(((hr + 1) * 3600000 - now) / 1000); } else d.bk.n++;
     }
     if (op === "fail") d.fails.push(now);
     if (op === "log") { if (d.logs.length >= LOG_MAX) blocked = true; else d.logs.push(now); }
@@ -268,6 +288,161 @@ export class ErrLog {
     const since = +u.searchParams.get("since") || 0;
     return Response.json({ errors: list.filter(x => x.last > since).map(({ k, ua, ...x }) => x) });
   }
+}
+
+/* ---------- AI practice (see the header, part 5) ---------- */
+const clip = (v, n) => String(v == null ? "" : v).slice(0, n);
+/* the questions of one account live in one Durable Object ("gen:<account id>"): id → {q, o, a, e, ...} */
+async function genStore(env, uid, op, body) {
+  const r = await env.GUARD.get(env.GUARD.idFromName("gen:" + uid)).fetch("https://guard/gen-" + op, { method: "POST", body: JSON.stringify(body || {}) });
+  return r.json();
+}
+Guard.prototype.gen = async function (op, req) {
+  const b = await req.json().catch(() => ({})), st = this.state.storage;
+  if (op === "gen-put") {
+    await st.put("g:" + b.id, b.rec);
+    const all = await st.list({ prefix: "g:" });
+    if (all.size > 2600) {   /* an account keeps its latest ~2500 questions */
+      const old = [...all.entries()].sort((x, y) => (x[1].at || 0) - (y[1].at || 0)).slice(0, all.size - 2500);
+      for (const [k] of old) await st.delete(k);
+    }
+    return Response.json({ ok: true });
+  }
+  if (op === "gen-get") return Response.json({ rec: (await st.get("g:" + String(b.id))) || null });
+  return Response.json({ ok: false });
+};
+const rnd = n => { const a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] % n; };
+function permutation(n) { const a = [...Array(n).keys()]; for (let i = n - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+/* the JSON in a Gemini reply, even when it comes wrapped in a code fence or has trailing commas */
+function parseJson(text) {
+  let t = String(text || "").replace(/^﻿/, "").trim();
+  const fence = t.match(/```(?:json)?\s*([\s\S]*?)```/i); if (fence) t = fence[1].trim();
+  const tries = [t], a = t.indexOf("{"), z = t.lastIndexOf("}");
+  if (a >= 0 && z > a) tries.push(t.slice(a, z + 1));
+  for (const x of tries.slice()) tries.push(x.replace(/[“”]/g, '"').replace(/,\s*([\]}])/g, "$1"));
+  for (const x of tries) { try { return JSON.parse(x); } catch (e) {} }
+  return null;
+}
+/* one Gemini call that moves on to the next model when one is overloaded, over quota or retired */
+async function geminiJson(env, prompt, temperature, attempt) {
+  const body = JSON.stringify({ contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { temperature, responseMimeType: "application/json" } });
+  let last = { status: 502 };
+  for (let k = 0; k < MODELS.length; k++) {
+    const model = MODELS[(attempt + k) % MODELS.length];
+    const target = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent";
+    let r;
+    try {
+      r = env.RELAY ? await env.RELAY.get(env.RELAY.idFromName("gemini-relay-us"), { locationHint: "enam" }).fetch("https://relay/" + encodeURIComponent(target), { method: "POST", body })
+                    : await callGemini(env, target, body);
+    } catch (e) { last = { status: 502 }; continue; }
+    if (!r.ok) { last = { status: r.status }; if ([404, 429, 500, 502, 503, 504].includes(r.status)) continue; return { error: last }; }
+    const j = await r.json().catch(() => null), c = j && j.candidates && j.candidates[0];
+    const text = c && c.content && Array.isArray(c.content.parts) ? c.content.parts.filter(p => !p.thought).map(p => p.text || "").join("") : "";
+    if (text.trim()) return { text };
+    last = { status: 502 };
+  }
+  return { error: last };
+}
+function mcPrompt(b) {
+  return [
+"You are writing ONE multiple-choice question for a university exam. Course: " + b.subject + ". Chapter: " + b.chapter + ".",
+"Base the question ONLY on the COURSE NOTES at the end (the section the student is studying). Use nothing the notes do not support.",
+"Make it a good exam question with some depth:",
+"- Prefer application and reasoning (a short scenario, a small calculation, a comparison, 'which statement is correct') over repeating a definition word for word; it may combine two ideas of the section.",
+"- Exactly four options and exactly one correct option. The wrong options must be tempting: each one should match a real misconception or a near-miss. No 'all of the above', 'none of the above' or 'both A and B'.",
+"- Do not give the answer away: the options are similar in length and style, and the question itself does not contain the answer.",
+"- The question and the options are in English (exam style, plain and precise). Never write 'the notes', 'the slides' or 'the lecture' inside the question.",
+"- e = the explanation, in Traditional Chinese (Taiwan) with technical terms kept in English: why the correct option is right and why each wrong option is wrong, 3-6 sentences. NEVER refer to an option by its letter or position (no 'option A', '(B)', '第二個'): name it by its content.",
+b.zh ? "- Also give qz (the question in Traditional Chinese) and oz (the four options in Traditional Chinese, in the same order as o)." : "",
+"This is question " + b.n + " of " + b.total + " in this set.",
+b.asked.length ? "Already asked in this set (do NOT repeat these ideas or numbers; test something different):\n- " + b.asked.join("\n- ") : "",
+b.retest ? "The student answered the following question WRONG earlier. Write a NEW question on the same underlying concept, from a different angle or with a different situation and different numbers (do not reuse the wording):\nQUESTION: " + b.retest.q + "\nEXPLANATION: " + b.retest.e : "",
+"Reply with ONLY a JSON object: {\"q\":\"...\",\"o\":[\"...\",\"...\",\"...\",\"...\"],\"a\":<index 0-3 of the correct option>,\"e\":\"...\"" + (b.zh ? ",\"qz\":\"...\",\"oz\":[\"...\",\"...\",\"...\",\"...\"]" : "") + "}",
+"",
+"COURSE NOTES - " + b.sec.title + ":",
+b.sec.text,
+  ].filter(x => x !== "").join("\n");
+}
+/* is this a usable question? returns the cleaned object or null */
+const LETTER_REF = /\b(?:option|choice|answer)\s*\(?[A-D]\)?(?![A-Za-z])|\([A-D]\)|選項\s*\(?[A-D]\)?(?![A-Za-z])|第[一二三四]個選項/i;
+function cleanMc(o, zh) {
+  if (!o || typeof o !== "object") return null;
+  const q = clip(o.q, 1200).trim(), e = clip(o.e, 3000).trim(), a = o.a;
+  if (q.length < 20 || e.length < 12 || !Array.isArray(o.o) || o.o.length !== 4 || !Number.isInteger(a) || a < 0 || a > 3) return null;
+  const opts = o.o.map(x => clip(x, 400).trim());
+  if (opts.some(x => !x) || new Set(opts.map(x => x.toLowerCase())).size !== 4) return null;
+  if (opts.some(x => /^(all|none) of the above|^both .* and /i.test(x))) return null;
+  if (/according to the (course )?(notes|slides|lecture)|\bthe (notes|slides)\b/i.test(q)) return null;
+  if (LETTER_REF.test(e)) return null;
+  const out = { q, o: opts, a, e };
+  if (zh) {
+    const qz = clip(o.qz, 1200).trim(), oz = Array.isArray(o.oz) ? o.oz.map(x => clip(x, 400).trim()) : [];
+    if (!qz || oz.length !== 4 || oz.some(x => !x)) return null;
+    out.qz = qz; out.oz = oz;
+  }
+  return out;
+}
+async function genNext(env, acct, who, bodyText, json, fail) {
+  if (!env.GEMINI_KEY) return fail(500, "INTERNAL", "The Worker has no GEMINI_KEY secret yet");
+  if (!env.GUARD) return fail(500, "INTERNAL", "The Worker has no GUARD binding");
+  let r; try { r = JSON.parse(bodyText); } catch (e) { return fail(400, "BAD_JSON", "Body is not JSON"); }
+  const sec = r && r.sec || {};
+  const b = {
+    subject: clip(r.subject, 80), chapter: clip(r.chapter, 120), zh: !!r.zh,
+    n: Math.max(1, Math.min(500, parseInt(r.n, 10) || 1)), total: Math.max(1, Math.min(500, parseInt(r.total, 10) || 1)),
+    sec: { k: clip(sec.k, 40), title: clip(sec.title, 160), text: clip(sec.text, 9000) },
+    asked: (Array.isArray(r.asked) ? r.asked : []).slice(-80).map(x => clip(x, 160)).filter(Boolean),
+    retest: r.retest && r.retest.q ? { q: clip(r.retest.q, 900), e: clip(r.retest.e, 1200) } : null,
+  };
+  if (!b.subject || !b.sec.text) return fail(400, "BAD_CODE", "Missing subject or notes");
+  const q = await guard(env, "pin:" + who, "ai");
+  if (q.blocked) return fail(429, "RESOURCE_EXHAUSTED", "AI limit reached for this sign-in; try again later", { "Retry-After": String(q.aiWait || 60) });
+  let made = null, err = null;
+  for (let attempt = 0; attempt < 4 && !made; attempt++) {
+    const g = await geminiJson(env, mcPrompt(b), attempt ? 0.5 : 0.8, attempt);
+    if (g.error) { err = g.error; if (![404, 429, 500, 502, 503, 504].includes(g.error.status)) break; continue; }
+    made = cleanMc(parseJson(g.text), b.zh);
+    if (!made) err = { status: 502, bad: true };
+  }
+  if (!made) {
+    if (err && err.status === 429) return fail(429, "RESOURCE_EXHAUSTED", "Gemini's free quota is used up for the moment", { "Retry-After": "60" });
+    return fail(502, "GEN_FAILED", "The AI did not produce a usable question (" + (err && err.status || "?") + "); try again");
+  }
+  /* shuffle the options here, so the page never sees the order the AI wrote them in */
+  const p = permutation(4), o = p.map(i => made.o[i]), a = p.indexOf(made.a);
+  const rec = { q: made.q, o, a, e: made.e, sec: b.sec.k, at: Date.now() };
+  if (b.zh) { rec.qz = made.qz; rec.oz = p.map(i => made.oz[i]); }
+  const id = [...crypto.getRandomValues(new Uint8Array(16))].map(x => x.toString(16).padStart(2, "0")).join("");
+  await genStore(env, acct.id, "put", { id, rec });
+  const out = { id, q: rec.q, o: rec.o, sec: rec.sec };
+  if (b.zh) { out.qz = rec.qz; out.oz = rec.oz; }
+  return json(out);
+}
+async function genAnswer(env, acct, who, bodyText, json, fail) {
+  let r; try { r = JSON.parse(bodyText); } catch (e) { return fail(400, "BAD_JSON", "Body is not JSON"); }
+  const id = String(r.id || ""), pick = r.pick;
+  if (!/^[0-9a-f]{32}$/.test(id) || !Number.isInteger(pick) || pick < 0 || pick > 3) return fail(400, "BAD_CODE", "Bad request");
+  const g = await guard(env, "pin:" + who, "bank");
+  if (g.blocked) return fail(429, "RESOURCE_EXHAUSTED", "Too many requests; try again later", { "Retry-After": String(g.aiWait || 60) });
+  const { rec } = await genStore(env, acct.id, "get", { id });
+  if (!rec) return fail(404, "GONE", "This question is no longer kept on the server");
+  const out = { ok: true, a: rec.a, e: rec.e, right: pick === rec.a };
+  return json(out);
+}
+/* questions from before AI practice (tools/bank.json), by slot. The answer of a slot is only sent with the pick for it. */
+async function bankOpen(env, who, bodyText, json, fail) {
+  let r; try { r = JSON.parse(bodyText); } catch (e) { return fail(400, "BAD_JSON", "Body is not JSON"); }
+  const set = BANK[String(r.s || "")] && BANK[String(r.s)][String(r.key || "")];
+  if (!set) return fail(404, "NOT_FOUND", "Unknown question set");
+  const g = await guard(env, "pin:" + who, "bank");
+  if (g.blocked) return fail(429, "RESOURCE_EXHAUSTED", "Too many requests; try again later", { "Retry-After": String(g.aiWait || 60) });
+  const picks = r.picks && typeof r.picks === "object" ? r.picks : {}, items = {};
+  Object.keys(picks).slice(0, 600).forEach(k => {
+    const i = Number(k), it = set[i], pk = picks[k];
+    if (!Number.isInteger(i) || !it || !Number.isInteger(pk) || pk < 0 || pk > 7) return;
+    items[k] = it;
+  });
+  return json({ items });
 }
 
 /* ---------- health: is each secret still good? ---------- */

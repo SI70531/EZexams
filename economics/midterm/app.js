@@ -23,7 +23,7 @@ function applyZh(){document.body.classList.toggle("nozh",!!S.hideZh);document.qu
 document.addEventListener("click",e=>{if(e.target.closest(".zhbtn")){S.hideZh=!S.hideZh;save();applyZh();}});
 
 /* ---------- progress ---------- */
-function quizStat(ch){const a=S.quiz[ch]||{},qs=QUIZ[ch];const k=Object.keys(a).length;const r=Object.keys(a).filter(i=>a[i]===qs[i].a).length;return {k,r,n:qs.length};}
+function quizStat(ch){const a=S.quiz[ch]||{},qs=QUIZ[ch];const k=Object.keys(a).filter(i=>qs[i]).length;const r=Object.keys(a).filter(i=>a[i]===qs[i].a).length;return {k,r,n:qs.length};}
 /* mock exams work like the other subjects' exams: click an option and it is checked right away.
    Answers live in S.quiz["mock1mc"] (like a chapter quiz), so 清除作答, the wrong-answer area and sync treat them the same way. */
 const MKEY=id=>id.replace("-","")+"mc";
@@ -63,6 +63,9 @@ function answerLine(it){
   return '<div class="ansline"><b>Answer: ('+ABCD[k].toLowerCase()+') '+esc(it.o[k])+'</b>'+(z?'<span class="zho">答案：'+esc(z)+'</span>':'')+'</div>';
 }
 
+/* AI practice, one question at a time (assets/ezgen.js); chapter exercises are made on demand, answers stay on the Worker */
+if(window.EZGEN)EZGEN.attach({course:"經濟學",s:"econ",ai:["ch1","ch2","ch3","ch4","ch5","ch6","ch7","ch8","ch9"],fixed:[],scope:{},get:()=>S,quiz:()=>QUIZ,save:()=>save(),render:c=>{renderQuiz(c);renderTabs(c);refreshPCB()},renderAll:()=>{Object.keys(QUIZ).forEach(renderQuiz);renderTabs(S.last)}});
+
 /* ---------- chapter quizzes ---------- */
 function renderQuiz(ch){
   if(!QUIZ[ch]){const m=Object.keys(MOCK).find(id=>MKEY(id)===ch);if(m)renderExam(m);return;}
@@ -72,29 +75,33 @@ function renderQuiz(ch){
   const isHw=/^hw/.test(ch);
   box.innerHTML=isHw?'<h2>作業選擇題（'+qs.length+' 題）</h2><p class="small">老師出的作業原題。點選項就會對答案並顯示中文解析。</p><p><button class="btn zhbtn" type="button"></button></p>':
     '<h2>Multiple-choice question（'+qs.length+' 題，共 100 分）</h2><p class="small">題目和考試一樣是英文，點選項就會對答案，解析是中文。</p><p><button class="btn zhbtn" type="button"></button></p>';
-  qs.forEach((it,i)=>{
-    const d=document.createElement("div");d.className="qitem";d.innerHTML=stemHTML(it,i);
+  const SHOW=window.EZGEN&&EZGEN.isAi(ch)?EZGEN.order(ch,qs):qs.map((_,k)=>k);
+  SHOW.forEach((i,pos)=>{
+    const it=qs[i];
+    const d=document.createElement("div");d.className="qitem";d.dataset.i=i;d.innerHTML=stemHTML(it,pos);if(it.gid&&window.EZGEN)EZGEN.tag(d);
     const os=document.createElement("div");os.className="opts";const btns=[];
     it.o.forEach((_,oi)=>{
       const b=EZopt();b.className="opt";b.type="button";b.innerHTML=optHTML(it,oi,oi);b.dataset.oi=oi;btns.push(b);
-      b.addEventListener("click",()=>{if(S.quiz[ch]&&S.quiz[ch][i]!==undefined)return;S.quiz[ch]=S.quiz[ch]||{};S.quiz[ch][i]=oi;save();mark();renderScore();renderTabs(ch);refreshPCB();});
+      b.addEventListener("click",()=>{if(S.quiz[ch]&&S.quiz[ch][i]!==undefined)return;S.quiz[ch]=S.quiz[ch]||{};S.quiz[ch][i]=oi;if(window.EZGEN&&EZGEN.isAi(ch))EZGEN.stamp(ch,i);save();if(it.a==null&&window.EZGEN){btns.forEach(x=>x.disabled=true);EZGEN.reveal(ch,i,oi).then(ok=>{if(!ok){delete S.quiz[ch][i];save();}renderQuiz(ch);renderTabs(ch);refreshPCB();});return;}mark();renderScore();renderTabs(ch);refreshPCB();});
       os.appendChild(b);
     });
     d.appendChild(os);
     const ex=document.createElement("div");ex.className="expl";ex.hidden=true;d.appendChild(ex);
     function mark(){
       const pick=(S.quiz[ch]||{})[i];if(pick===undefined)return;
+      if(it.a==null){btns.forEach(b=>b.disabled=true);return;}
       btns.forEach(b=>{b.disabled=true;const oi=+b.dataset.oi;if(oi===it.a)b.classList.add("right");else if(oi===pick)b.classList.add("wrong");});
       const ok=pick===it.a;
       ex.innerHTML='<span class="tag '+(ok?"ok":"no")+'">'+(ok?"答對":"答錯，正確答案是 "+ABCD[it.a])+'</span>'+answerLine(it)+'<div>'+esc(it.e)+'</div>';ex.hidden=false;
     }
     mark();box.appendChild(d);
   });
+  if(window.EZGEN)EZGEN.mount(box,ch,()=>{renderQuiz(ch);renderTabs(ch);refreshPCB();});
   const sc=document.createElement("div");sc.className="qscore";box.appendChild(sc);
   function renderScore(){
     const s=quizStat(ch);sc.innerHTML="";
     const t=document.createElement("span");t.textContent=s.k<s.n?("已作答 "+s.k+" / "+s.n+"，目前答對 "+s.r+" 題"):("完成！答對 "+s.r+" / "+s.n+(s.r>=s.n*0.8?"，這章很穩。":"，錯的題目回上面找對應段落再讀一次。"));sc.appendChild(t);
-    const rb=document.createElement("button");rb.className="btn";rb.type="button";rb.textContent="重做這章";rb.addEventListener("click",()=>{(window.EZundo||((w,f)=>f()))("這章的作答",()=>{delete S.quiz[ch];S.quizReset=S.quizReset||{};S.quizReset[ch]=Date.now();save();renderQuiz(ch);renderTabs(ch);refreshPCB();applyZh();},null,rb);});sc.appendChild(rb);
+    const rb=document.createElement("button");rb.className="btn";rb.type="button";rb.textContent="重做這章";rb.addEventListener("click",()=>{(window.EZundo||((w,f)=>f()))("這章的作答",()=>{delete S.quiz[ch];if(window.EZGEN)EZGEN.reset(ch);S.quizReset=S.quizReset||{};S.quizReset[ch]=Date.now();save();renderQuiz(ch);renderTabs(ch);refreshPCB();applyZh();},null,rb);});sc.appendChild(rb);
     const idx=VIEWS.findIndex(v=>v[0]===ch);const nx=VIEWS[idx+1];
     if(isHw&&s.k>=s.n){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";nb.textContent="接著寫第二大題 25 題";nb.addEventListener("click",()=>{const t=document.getElementById("ch"+ch.slice(2)+"-mc");if(t){t.scrollIntoView({block:"start"});scrollBy(0,-76);}});sc.appendChild(nb);}
     else if(s.k>=s.n){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";if(nx&&nx[0]!=="|"){nb.textContent="下一章："+CHN[nx[0]];nb.dataset.go=nx[0];}else{nb.textContent="開始模擬考 1";nb.dataset.go="mock-1";}sc.appendChild(nb);}

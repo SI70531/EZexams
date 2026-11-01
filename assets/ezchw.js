@@ -146,6 +146,7 @@ context(items),
     info,
     /* grade a list of questions (DOM elements) of one chapter-end block; ctx: {st, render, upd, save, btns, stat} */
     async grade(qsEls,ctx){
+      if(window.EZgenw&&qsEls.length&&qsEls.every(q=>EZgenw.owns(q)))return EZgenw.grade(qsEls,ctx);
       const {st,render,upd,save,btns,stat}=ctx;
       const list=qsEls.map(info).filter(it=>it.ans);
       if(!list.length){stat.textContent="還沒有作答。";return;}
@@ -173,6 +174,7 @@ context(items),
     },
     /* per question: the 「看 AI 解答」 button, and the saved answer shown again after a reload */
     setup(q){
+      if(window.EZgenw&&EZgenw.owns(q))return;   /* AI written questions: the model answer comes with the grade */
       const bar=q.querySelector(".gradebar");if(!bar||q.querySelector(".aibtn"))return;
       const b=document.createElement("button");b.type="button";b.className="btn aibtn";b.textContent="看 AI 解答";
       bar.querySelector(".grade").after(b);
@@ -192,6 +194,7 @@ context(items),
       /* an answer graded before keeps its model answer visible */
       if(CACHE[q.id])showAnswer(q,!!q.querySelector(".gres:not([hidden])"));
     },
-    showAnswer
+    showAnswer,
+    keep:(id,en,zh)=>keep(id,en,zh)
   };
 })();

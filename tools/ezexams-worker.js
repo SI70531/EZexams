@@ -137,6 +137,9 @@ export default {
 
     /* ---------- AI practice: one question at a time, answers kept here ---------- */
     if (url.pathname === "/gen/next" && req.method === "POST") return genNext(env, acct, who, bodyText, json, fail);
+    if (url.pathname === "/gen/wnext" && req.method === "POST") return wgenNext(env, acct, who, bodyText, json, fail);
+    if (url.pathname === "/gen/wgrade" && req.method === "POST") return wgrade(env, acct, who, bodyText, json, fail);
+    if (url.pathname === "/bank/wopen" && req.method === "POST") return wbankOpen(env, who, bodyText, json, fail);
     if (url.pathname === "/gen/answer" && req.method === "POST") return genAnswer(env, acct, who, bodyText, json, fail);
     if (url.pathname === "/bank/open" && req.method === "POST") return bankOpen(env, who, bodyText, json, fail);
 
@@ -441,6 +444,131 @@ async function bankOpen(env, who, bodyText, json, fail) {
     const i = Number(k), it = set[i], pk = picks[k];
     if (!Number.isInteger(i) || !it || !Number.isInteger(pk) || pk < 0 || pk > 7) return;
     items[k] = it;
+  });
+  return json({ items });
+}
+
+
+/* ---------- written questions (chapter-end written parts and mock exam written parts) ----------
+   /gen/wnext  {subject, chapter, sec:{k,title,text}, style, pts, label, n, total, asked} → {id, q, l, p, sec}
+               the question and its reference answer are kept on the server (record kind "w")
+   /gen/wgrade {id | s,key,slot} + {ans, notes} → {score, verdict, feedback, missing, answer_en, answer_zh}
+               grades against the kept reference (or the bank's, for the fixed written parts) and writes a model answer
+   /bank/wopen {s, key, slots:[..]} → {items:{slot:{l,q,p}}}   question text of fixed written slots, never the reference */
+function wPrompt(b) {
+  return [
+"You are writing ONE written exam question for a university exam. Course: " + b.subject + ". Chapter: " + b.chapter + ".",
+"Base the question ONLY on the COURSE NOTES at the end (the section the student is studying). Use nothing the notes do not support.",
+"Style: " + b.style + ". The question must be answerable within about " + b.pts + " points' worth of answer.",
+"Make it test understanding with some depth (apply an idea, compare two ideas, or trace a small example); do not ask for a word-for-word definition.",
+"Write it in English, exam style, plain and precise. Never write 'the notes', 'the slides' or 'the lecture' inside the question.",
+"Do not give the answer away in the question. For a fill-in style use one or two blanks written as ______.",
+"ref = the ideal answer in English, short, based only on the notes (it is kept secret and used for grading).",
+"Reply with ONLY a JSON object: {\"q\":\"...\",\"ref\":\"...\"}",
+b.asked.length ? "Already asked in this set (do NOT repeat these ideas): \n- " + b.asked.join("\n- ") : "",
+"This is question " + b.n + " of " + b.total + " in this set.",
+"",
+"COURSE NOTES (" + b.sec.title + "):",
+b.sec.text
+  ].filter(x => x !== "").join("\n");
+}
+async function wgenNext(env, acct, who, bodyText, json, fail) {
+  if (!env.GEMINI_KEY) return fail(500, "INTERNAL", "The Worker has no GEMINI_KEY secret yet");
+  if (!env.GUARD) return fail(500, "INTERNAL", "The Worker has no GUARD binding");
+  let r; try { r = JSON.parse(bodyText); } catch (e) { return fail(400, "BAD_JSON", "Body is not JSON"); }
+  const sec = r && r.sec || {};
+  const b = {
+    subject: clip(r.subject, 80), chapter: clip(r.chapter, 120), style: clip(r.style, 200) || "short answer",
+    pts: Math.max(1, Math.min(50, parseInt(r.pts, 10) || 2)), label: clip(r.label, 20),
+    n: Math.max(1, Math.min(500, parseInt(r.n, 10) || 1)), total: Math.max(1, Math.min(500, parseInt(r.total, 10) || 1)),
+    sec: { k: clip(sec.k, 40), title: clip(sec.title, 160), text: clip(sec.text, 9000) },
+    asked: (Array.isArray(r.asked) ? r.asked : []).slice(-60).map(x => clip(x, 160)).filter(Boolean),
+  };
+  if (!b.subject || !b.sec.text) return fail(400, "BAD_CODE", "Missing subject or notes");
+  const q = await guard(env, "pin:" + who, "ai");
+  if (q.blocked) return fail(429, "RESOURCE_EXHAUSTED", "AI limit reached for this sign-in; try again later", { "Retry-After": String(q.aiWait || 60) });
+  let made = null, err = null;
+  for (let attempt = 0; attempt < 4 && !made; attempt++) {
+    const g = await geminiJson(env, wPrompt(b), attempt ? 0.5 : 0.8, attempt);
+    if (g.error) { err = g.error; if (![404, 429, 500, 502, 503, 504].includes(g.error.status)) break; continue; }
+    const o = parseJson(g.text);
+    if (o && typeof o.q === "string" && o.q.trim().length > 12 && typeof o.ref === "string" && o.ref.trim().length > 2) {
+      made = { q: clip(o.q.trim(), 900), ref: clip(o.ref.trim(), 1500) };
+    } else err = { status: 502, bad: true };
+  }
+  if (!made) {
+    if (err && err.status === 429) return fail(429, "RESOURCE_EXHAUSTED", "Gemini's free quota is used up for the moment", { "Retry-After": "60" });
+    return fail(502, "GEN_FAILED", "The AI did not produce a usable question (" + (err && err.status || "?") + "); try again");
+  }
+  const id = [...crypto.getRandomValues(new Uint8Array(16))].map(x => x.toString(16).padStart(2, "0")).join("");
+  const rec = { kind: "w", q: made.q, ref: made.ref, p: b.pts, l: b.label, sec: b.sec.k, at: Date.now() };
+  await genStore(env, acct.id, "put", { id, rec });
+  return json({ id, q: rec.q, l: rec.l, p: rec.p, sec: rec.sec });
+}
+function wGradePrompt(item, notes, ans) {
+  return [
+"You are grading one written answer of a university exam. Points for this question: " + item.p + ".",
+"The student may answer in English or Traditional Chinese, or a mix; judge only the content, never the language, spelling or grammar.",
+"QUESTION: " + item.q,
+"REFERENCE answer (for reference only; the student does not have to match its wording or order):",
+item.ref,
+"Judge against the COURSE NOTES below. Do not require, and do not reward, ideas that are not in the notes.",
+"Scoring: decide the key points a full answer needs; give each an equal share; present and correct = full share, partly there or vague = half, missing or wrong = 0. Add the shares and round DOWN to the nearest 0.5. An empty or irrelevant answer scores 0.",
+"Also write a model answer based only on the notes: answer_en in English (as long as the question needs), answer_zh the same in Traditional Chinese (Taiwan) with technical terms kept in English.",
+"Reply with ONLY a JSON object: {\"score\":<number 0 to " + item.p + " in steps of 0.5>,\"verdict\":\"correct|partial|wrong\",\"feedback\":\"1-3 sentences in Traditional Chinese\",\"missing\":[\"short English keywords\"],\"answer_en\":\"...\",\"answer_zh\":\"...\"}",
+"",
+"COURSE NOTES:",
+notes || "(no notes given)",
+"",
+"STUDENT ANSWER:",
+ans
+  ].join("\n");
+}
+async function wgrade(env, acct, who, bodyText, json, fail) {
+  if (!env.GEMINI_KEY) return fail(500, "INTERNAL", "The Worker has no GEMINI_KEY secret yet");
+  let r; try { r = JSON.parse(bodyText); } catch (e) { return fail(400, "BAD_JSON", "Body is not JSON"); }
+  const ans = clip(r.ans, 4000), notes = clip(r.notes, 9000);
+  if (!ans) return fail(400, "BAD_CODE", "No answer to grade");
+  let item = null;
+  if (/^[0-9a-f]{32}$/.test(String(r.id || ""))) {
+    const { rec } = await genStore(env, acct.id, "get", { id: String(r.id) });
+    if (!rec || rec.kind !== "w") return fail(404, "GONE", "This question is no longer kept on the server");
+    item = { q: rec.q, ref: rec.ref, p: rec.p };
+  } else {
+    const set = BANK[String(r.s || "")] && BANK[String(r.s)]["w:" + String(r.key || "")];
+    const it = set && set[Number(r.slot)];
+    if (!it) return fail(404, "NOT_FOUND", "Unknown question");
+    item = { q: it.q, ref: it.r, p: it.p };
+  }
+  const q = await guard(env, "pin:" + who, "ai");
+  if (q.blocked) return fail(429, "RESOURCE_EXHAUSTED", "AI limit reached for this sign-in; try again later", { "Retry-After": String(q.aiWait || 60) });
+  let o = null, err = null;
+  for (let attempt = 0; attempt < 3 && !o; attempt++) {
+    const g = await geminiJson(env, wGradePrompt(item, notes, ans), 0.2, attempt);
+    if (g.error) { err = g.error; if (![404, 429, 500, 502, 503, 504].includes(g.error.status)) break; continue; }
+    const x = parseJson(g.text);
+    if (x && (typeof x.score === "number" || /\d/.test(String(x.score)))) o = x; else err = { status: 502, bad: true };
+  }
+  if (!o) return fail(502, "GEN_FAILED", "The AI did not grade this answer (" + (err && err.status || "?") + "); try again");
+  let sc = Math.max(0, Math.min(item.p, Number(o.score) || 0));
+  sc = Math.floor(sc * 2 + 1e-9) / 2;
+  const verdict = sc >= item.p ? "correct" : sc > 0 ? "partial" : "wrong";
+  return json({
+    score: sc, verdict, feedback: clip(o.feedback, 600),
+    missing: (Array.isArray(o.missing) ? o.missing : []).slice(0, 8).map(x => clip(x, 60)),
+    answer_en: clip(o.answer_en, 2000), answer_zh: clip(o.answer_zh, 2000), p: item.p,
+  });
+}
+async function wbankOpen(env, who, bodyText, json, fail) {
+  let r; try { r = JSON.parse(bodyText); } catch (e) { return fail(400, "BAD_JSON", "Body is not JSON"); }
+  const set = BANK[String(r.s || "")] && BANK[String(r.s)]["w:" + String(r.key || "")];
+  if (!set) return fail(404, "NOT_FOUND", "Unknown question set");
+  const g = await guard(env, "pin:" + who, "bank");
+  if (g.blocked) return fail(429, "RESOURCE_EXHAUSTED", "Too many requests; try again later", { "Retry-After": String(g.aiWait || 60) });
+  const items = {};
+  (Array.isArray(r.slots) ? r.slots : []).slice(0, 60).forEach(k => {
+    const i = Number(k), it = set[i];
+    if (Number.isInteger(i) && it) items[i] = { l: it.l, q: it.q, p: it.p };   /* the reference (it.r) is never sent */
   });
   return json({ items });
 }

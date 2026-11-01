@@ -353,8 +353,8 @@ function bsearch(el){
   const A=[4,7,8,10,14,21,22,36,62,77,81,91];
   const ctl=$("div","labrow");
   const inp=$("input");inp.type="number";inp.value="22";inp.id="bs-target";inp.className="labin";inp.setAttribute("aria-label","target");
-  const bN=$("button","btn primary","下一步"),bR=$("button","btn","重來");bN.type=bR.type="button";
-  ctl.append($("label","small","target"),inp,bN,bR);el.appendChild(ctl);
+  const bN=$("button","btn primary","下一步"),bR=$("button","btn","重來"),bD=$("button","btn","預設");bN.type=bR.type=bD.type="button";
+  ctl.append($("label","small","target"),inp,bN,bR,bD);el.appendChild(ctl);
   const arr=$("div","cells");el.appendChild(arr);
   const log=$("div","lablog");el.appendChild(log);
   let first,last,mid,done,steps;
@@ -375,7 +375,7 @@ function bsearch(el){
     if(!done&&first>last){done=true;log.innerHTML+="<br><b>first "+first+" &gt; last "+last+"，找不到</b>，共 "+steps+" 次迴圈。";}
     draw();
   }
-  bN.addEventListener("click",step);bR.addEventListener("click",reset);inp.addEventListener("change",reset);reset();
+  bN.addEventListener("click",step);bR.addEventListener("click",reset);bD.addEventListener("click",()=>{inp.value="22";reset();});inp.addEventListener("change",reset);reset();
 }
 
 /* 4. Linked list lab */

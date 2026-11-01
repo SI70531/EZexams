@@ -1,23 +1,28 @@
 /* EZexams light interactivity (UI only: never touches questions, answers or saved progress; nothing here is stored).
    Works on every subject page, on the notes only (exam / quiz sections are left alone):
    - tables: click a row to keep it highlighted
-   - diagrams (figure.fig / figure.fg): hover or tap a box and only that box, its text and the arrows touching it stay
-             bright; click to keep it, click empty space (or press Esc) to let go
+   - diagrams: hover a labelled term (Key, Address, Hash, Probe ...) inside a figure and a small note pops up
+               next to the pointer, like a title tooltip. Tap it on a phone to show the note for a few seconds.
    Loaded with defer on every subject page. */
 (function(){
   if(window.__ezint)return;window.__ezint=1;
-  const css=`
-table.ezt tr:hover>td{box-shadow:inset 0 0 0 999px color-mix(in srgb,var(--indigo,#9ba8ab) 14%,transparent)}
-table.ezt tr.ezon>td,table.ezt tr.ezon>th{box-shadow:inset 0 0 0 999px color-mix(in srgb,var(--warn,#f2bd5a) 22%,transparent)}
-table.ezt tr{cursor:default}
-svg.ezok{cursor:pointer}
-svg.ezspot :is(rect,text,line,path,polygon,polyline,circle,ellipse):not(.ezh){opacity:.22!important;transition:opacity .15s}
-`;
-  const st=document.createElement("style");st.textContent=css;document.head.appendChild(st);
 
   /* the notes only: exam sections, quiz blocks, labs and the progress table are left alone */
   const SKIP="section.exam,[data-quiz],.lab,.ilab,.quiz,nav,header";
   const inNotes=e=>!e.closest(SKIP);
+
+  const css=`
+table.ezt tr:hover>td{box-shadow:inset 0 0 0 999px color-mix(in srgb,var(--indigo,#9ba8ab) 14%,transparent)}
+table.ezt tr.ezon>td,table.ezt tr.ezon>th{box-shadow:inset 0 0 0 999px color-mix(in srgb,var(--warn,#f2bd5a) 22%,transparent)}
+table.ezt tr{cursor:default}
+svg text.ezgl{cursor:help}
+#eztip{position:fixed;z-index:9999;pointer-events:none;max-width:260px;padding:7px 10px;border-radius:9px;
+  font:500 13px/1.5 "Noto Sans TC",system-ui,sans-serif;color:#eef2f4;background:rgba(18,22,26,.94);
+  box-shadow:0 6px 18px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.12);opacity:0;transform:translateY(4px);transition:opacity .12s,transform .12s}
+#eztip.on{opacity:1;transform:none}
+#eztip b{display:block;color:#f2bd5a;font-weight:700;margin-bottom:2px}
+`;
+  const st=document.createElement("style");st.textContent=css;document.head.appendChild(st);
 
   /* ---------- tables: click a row to keep it highlighted ---------- */
   function initTable(tb){
@@ -31,68 +36,80 @@ svg.ezspot :is(rect,text,line,path,polygon,polyline,circle,ellipse):not(.ezh){op
     });
   }
 
-  /* ---------- diagrams ---------- */
-  const SH="rect,text,line,path,polygon,polyline,circle,ellipse";
-  const R=e=>e.getBoundingClientRect();
-  function endpoints(e){
-    try{
-      const L=e.getTotalLength(),m=e.getScreenCTM();if(!m||!L)return null;
-      const g=at=>{const q=e.getPointAtLength(at);return new DOMPoint(q.x,q.y).matrixTransform(m);};
-      return [g(0),g(L)];
-    }catch(x){return null;}
+  /* ---------- diagram notes: what each term in a figure means ---------- */
+  const GL={
+    "Key":"鍵（key）：要找的資料的識別值，例如學號。雜湊函數用它算出位址。",
+    "Address":"位址（address）：雜湊函數算出的儲存格編號，資料就存在這裡。",
+    "Hash":"雜湊函數（hash function）：把 key 轉成位址的計算方式。",
+    "Home address":"基底位址（home address）：key 經雜湊函數算出的第一個位址。",
+    "Probe":"探測（probe）：檢查一個位置叫做一次探測。",
+    "Collision":"碰撞（collision）：兩個 key 算出同一個位址。",
+    "Synonym":"同義字（synonym）：雜湊到同一個 home address 的 key。",
+    "Overflow area":"溢位區（overflow area）：主表放不下時，碰撞的資料存放的額外區域。",
+    "Load factor":"負載因子（load factor）：已填入元素數 ÷ 總元素數，衡量表有多滿。",
+    "Clustering":"聚集（clustering）：資料在表中連成一串，使後面的探測變慢。",
+    "Head":"head：鏈結串列的起點指標，指向第一個節點。",
+    "Node":"節點（node）：串列中存放資料與 link 的單位。",
+    "Link":"link：節點中指向下一個節點的指標。",
+    "Target":"目標（target）：正在搜尋的值。",
+    "Dummy node":"虛節點（dummy node）：不存資料、只用來簡化邊界處理的空節點。",
+    "Pointer":"指標（pointer）：記錄另一個位置（節點或位址）的變數。",
+    "Index":"索引（index）：陣列中元素的位置編號。",
+    "Key offset":"鍵偏移（key offset）：碰撞時用 key 算出的步長，不是固定 +1。"
+  };
+  const tip=document.createElement("div");tip.id="eztip";document.body.appendChild(tip);
+  let shown=null,touchT=0;
+  const termOf=el=>{
+    if(!el||el.tagName.toLowerCase()!=="text")return null;
+    if(!el.closest("figure"))return null;
+    const t=el.textContent.replace(/\s+/g," ").trim();
+    return Object.prototype.hasOwnProperty.call(GL,t)?t:null;
+  };
+  function place(x,y){
+    const r=tip.getBoundingClientRect();
+    let L=x+14,T=y-r.height-10;
+    if(L+r.width>innerWidth-8)L=innerWidth-r.width-8;
+    if(T<8)T=y+18;
+    tip.style.left=L+"px";tip.style.top=T+"px";
   }
-  function model(svg){
-    const sr=R(svg);if(!sr.width)return null;
-    const all=[...svg.querySelectorAll(SH)].filter(e=>!e.closest("defs,marker,clipPath,mask,symbol,pattern"));
-    const nodes=all.filter(e=>e.tagName==="rect").map(e=>({e,r:R(e)})).filter(n=>n.r.width>=14&&n.r.height>=10&&n.r.width*n.r.height<sr.width*sr.height*.4);
-    if(nodes.length<3)return null;
-    const texts=all.filter(e=>e.tagName==="text").map(e=>{const r=R(e);return {e,x:(r.left+r.right)/2,y:(r.top+r.bottom)/2};});
-    const arrows=all.filter(e=>/^(line|path|polyline)$/.test(e.tagName)&&getComputedStyle(e).markerEnd!=="none").map(e=>({e,p:endpoints(e)})).filter(a=>a.p);
-    return {nodes,texts,arrows};
+  function show(term,x,y){
+    if(shown===term){place(x,y);return;}
+    shown=term;tip.innerHTML="<b>"+term+"</b>"+GL[term];tip.classList.add("on");place(x,y);
   }
-  const dist=(p,r)=>Math.hypot(Math.max(r.left-p.x,0,p.x-r.right),Math.max(r.top-p.y,0,p.y-r.bottom));
-  const inside=(p,r)=>p.x>=r.left-1&&p.x<=r.right+1&&p.y>=r.top-1&&p.y<=r.bottom+1;
-  function family(m,target){
-    const set=new Set();
-    const addNode=n=>{set.add(n.e);m.texts.forEach(t=>{if(inside(t,n.r))set.add(t.e);});m.arrows.forEach(a=>{if(a.p.some(p=>dist(p,n.r)<=14))set.add(a.e);});};
-    if(target.tagName==="rect"){const n=m.nodes.find(n=>n.e===target);if(n){addNode(n);return {set,key:target};}return null;}
-    if(target.tagName==="text"){
-      const t=m.texts.find(t=>t.e===target);if(!t)return null;
-      let best=null,ba=1e12;m.nodes.forEach(n=>{if(inside(t,n.r)){const a=n.r.width*n.r.height;if(a<ba){ba=a;best=n;}}});
-      if(best){addNode(best);return {set,key:best.e};}
-      return null;
-    }
-    const a=m.arrows.find(a=>a.e===target);
-    if(a){set.add(a.e);m.nodes.forEach(n=>{if(a.p.some(p=>dist(p,n.r)<=14))addNode(n);});return {set,key:target};}
-    return null;
-  }
-  function initFig(svg){
-    if(svg.dataset.ezf||!inNotes(svg))return;svg.dataset.ezf="1";
-    let lock=null,raf=0,lastKey=null;
-    const clear=()=>{svg.classList.remove("ezspot");svg.querySelectorAll(".ezh").forEach(e=>e.classList.remove("ezh"));lastKey=null;};
-    const show=f=>{clear();if(!f)return;f.set.forEach(e=>e.classList.add("ezh"));svg.classList.add("ezspot");lastKey=f.key;};
-    const at=e=>{const m=model(svg);if(!m)return null;svg.classList.add("ezok");return family(m,e.target);};
-    svg.addEventListener("pointermove",e=>{
-      if(lock||e.pointerType==="touch")return;
-      cancelAnimationFrame(raf);const t=e.target;
-      raf=requestAnimationFrame(()=>{const m=model(svg);if(!m)return;svg.classList.add("ezok");const f=family(m,t);if(!f){if(lastKey)clear();return;}if(f.key!==lastKey)show(f);});
+  function hide(){shown=null;tip.classList.remove("on");}
+  function scanText(root){
+    root.querySelectorAll("figure svg text").forEach(t=>{
+      if(!t.classList.contains("ezgl")&&termOf(t))t.classList.add("ezgl");
     });
-    svg.addEventListener("pointerleave",()=>{if(!lock)clear();});
-    svg.addEventListener("click",e=>{
-      const f=at(e);
-      if(f&&(!lock||lock!==f.key)){lock=f.key;show(f);}
-      else{lock=null;clear();}
-    });
-    svg.__ezclear=()=>{lock=null;clear();};
   }
-
-  document.addEventListener("click",e=>{document.querySelectorAll("svg.ezspot").forEach(s=>{if(!s.contains(e.target)&&s.__ezclear)s.__ezclear();});});
-  document.addEventListener("keydown",e=>{if(e.key==="Escape")document.querySelectorAll("svg[data-ezf]").forEach(s=>s.__ezclear&&s.__ezclear());});
+  document.addEventListener("pointerover",e=>{
+    if(e.pointerType==="touch")return;
+    const t=e.target.closest&&e.target.closest("svg text");
+    const term=termOf(t);
+    if(term&&inNotes(t))show(term,e.clientX,e.clientY);else hide();
+  });
+  document.addEventListener("pointermove",e=>{
+    if(e.pointerType==="touch"||!shown)return;
+    place(e.clientX,e.clientY);
+  });
+  document.addEventListener("pointerout",e=>{
+    const t=e.target.closest&&e.target.closest("svg text");
+    if(t&&termOf(t)&&!(e.relatedTarget&&t.contains(e.relatedTarget)))hide();
+  });
+  document.addEventListener("click",e=>{
+    const t=e.target.closest&&e.target.closest("svg text");
+    const term=termOf(t);
+    if(term&&inNotes(t)&&(e.pointerType==="touch"||!matchMedia("(hover:hover)").matches)){
+      clearTimeout(touchT);show(term,e.clientX,e.clientY);touchT=setTimeout(hide,3200);
+    }else if(!term)hide();
+  });
+  document.addEventListener("keydown",e=>{if(e.key==="Escape")hide();});
+  addEventListener("scroll",hide,{passive:true});
 
   /* ---------- wiring ---------- */
   function scan(root){
     root.querySelectorAll("table").forEach(initTable);
-    root.querySelectorAll("figure.fig svg,figure.fg svg").forEach(initFig);
+    scanText(root);
   }
   let t=0;const later=()=>{clearTimeout(t);t=setTimeout(()=>scan(document),120);};
   const start=()=>{scan(document);document.querySelectorAll("section.view").forEach(v=>new MutationObserver(later).observe(v,{childList:true,subtree:true}));};

@@ -121,39 +121,55 @@
     C.save();paint(B);
     return slot;
   }
-  /* the bar above a block's first written question */
+  /* the parts of a block: each Part heading (h2/h3) starts a part; a part gets its own AI bar, like each 大題 */
+  function partsOf(B){
+    const parts=[];let cur=null,last=null;
+    [...B.box.querySelectorAll("h2,h3,.exq[data-w]")].forEach(el=>{
+      if(el.tagName==="H2"||el.tagName==="H3"){last=el;cur=null;return;}
+      if(el.dataset.w!==B.key)return;
+      if(!cur){cur={head:last,slots:[]};parts.push(cur);}
+      cur.slots.push(el);
+    });
+    return parts;
+  }
+  const idxOf=q=>+q.dataset.slot;
+  function nextIn(B,list){for(const q of list){if(!madeSlot(B,q,idxOf(q)))return idxOf(q);}return -1;}
+  function madeIn(B,list){return list.filter(q=>madeSlot(B,q,idxOf(q))).length;}
+  /* the bars: one per part, placed before the part's first question (the bar after its heading) */
   function drawBar(B){
-    const slots=slotsOf(B);if(!slots.length)return;
-    let bar=B.box.querySelector(":scope > .ezgenw-bar");
-    if(!bar){bar=document.createElement("div");bar.className="ezgen-bar ezgenw-bar";
-      slots[0].before(bar);}
-    const N=slots.length,made=madeCount(B);
-    bar.innerHTML="";
-    const t=document.createElement("div");t.className="gtxt";bar.appendChild(t);
-    if(made>=N){bar.remove();return;}
-    const addBtn=(label,fn)=>{const b=document.createElement("button");b.type="button";b.className="btn primary";b.textContent=label;b.addEventListener("click",fn);bar.appendChild(b);return b;};
-    if(B.batch){
-      t.innerHTML=made>0?"還差 <b>"+(N-made)+" 題</b>沒出完。":"AI 會依講義一次出完整份，共 <b>"+N+" 題</b>。作答後才顯示解析與參考答案。";
-      const b=addBtn(made>0?"繼續出完剩下的題目":"AI 出整份題目",async()=>{
-        if(BUSY[B.key])return;BUSY[B.key]=true;ERR[B.key]="";b.disabled=true;
-        const tick=()=>{b.textContent="AI 出題中… "+madeCount(B)+" / "+N;};tick();
-        try{for(;;){const k=nextSlot(B);if(k<0)break;await makeOne(B,k);tick();}}
-        catch(e){ERR[B.key]=errText(e);}
-        BUSY[B.key]=false;paint(B);
-      });
-      if(BUSY[B.key]){b.disabled=true;b.textContent="AI 出題中…";}
-    }else{
-      t.innerHTML=made===0?"每一題由 AI 依講義即時出題，作答後才顯示解析。共 <b>"+N+" 題</b>。":"下一題是第 <b>"+(made+1)+" / "+N+"</b> 題。";
-      const b=addBtn(made===0?"AI 開始出題":"出下一題",async()=>{
-        if(BUSY[B.key])return;BUSY[B.key]=true;ERR[B.key]="";b.disabled=true;b.textContent="AI 出題中…";
-        try{const k=nextSlot(B);await makeOne(B,k);
-          setTimeout(()=>{const el=slotsOf(B)[k];if(el)el.scrollIntoView({block:"center",behavior:"smooth"});},60);}
-        catch(e){ERR[B.key]=errText(e);}
-        BUSY[B.key]=false;paint(B);
-      });
-      if(BUSY[B.key]){b.disabled=true;b.textContent="AI 出題中…";}
-    }
-    if(ERR[B.key]){const er=document.createElement("div");er.className="gtxt gerr";er.textContent=ERR[B.key];bar.appendChild(er);}
+    B.box.querySelectorAll(":scope .ezgenw-bar").forEach(x=>x.remove());
+    partsOf(B).forEach((part,pi)=>{
+      const list=part.slots,N=list.length;
+      const made=madeIn(B,list);
+      if(made>=N)return;
+      const key=B.key+"#"+pi;
+      const bar=document.createElement("div");bar.className="ezgen-bar ezgenw-bar";
+      list[0].before(bar);
+      const t=document.createElement("div");t.className="gtxt";bar.appendChild(t);
+      const addBtn=(label,fn)=>{const b=document.createElement("button");b.type="button";b.className="btn primary";b.textContent=label;b.addEventListener("click",fn);bar.appendChild(b);return b;};
+      if(B.batch){
+        t.innerHTML=made>0?"還差 <b>"+(N-made)+" 題</b>沒出完。":"AI 會依講義一次出完整份，共 <b>"+N+" 題</b>。作答後才顯示解析與參考答案。";
+        const b=addBtn(made>0?"繼續出完剩下的題目":"AI 出整份題目",async()=>{
+          if(BUSY[key])return;BUSY[key]=true;ERR[key]="";b.disabled=true;
+          const tick=()=>{b.textContent="AI 出題中… "+madeIn(B,list)+" / "+N;};tick();
+          try{for(;;){const k=nextIn(B,list);if(k<0)break;await makeOne(B,k);tick();}}
+          catch(e){ERR[key]=errText(e);}
+          BUSY[key]=false;paint(B);
+        });
+        if(BUSY[key]){b.disabled=true;b.textContent="AI 出題中…";}
+      }else{
+        t.innerHTML=made===0?"每一題由 AI 依講義即時出題，涵蓋這章的每個小節，作答後才顯示答案與解析。共 <b>"+N+" 題</b>。":"下一題是第 <b>"+(made+1)+" / "+N+"</b> 題。";
+        const b=addBtn(made===0?"AI 開始出題":"出下一題",async()=>{
+          if(BUSY[key])return;BUSY[key]=true;ERR[key]="";b.disabled=true;b.textContent="AI 出題中…";
+          try{const k=nextIn(B,list);await makeOne(B,k);
+            setTimeout(()=>{const el=slotsOf(B)[k];if(el)el.scrollIntoView({block:"center",behavior:"smooth"});},60);}
+          catch(e){ERR[key]=errText(e);}
+          BUSY[key]=false;paint(B);
+        });
+        if(BUSY[key]){b.disabled=true;b.textContent="AI 出題中…";}
+      }
+      if(ERR[key]){const er=document.createElement("div");er.className="gtxt gerr";er.textContent=ERR[key];bar.appendChild(er);}
+    });
   }
   function owns(q){return !!(q&&q.dataset&&q.dataset.w);}
   /* grade the answers of a list of written questions; ctx = {st, render, upd, save, btns, stat} from app.js */

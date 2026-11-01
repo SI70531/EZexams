@@ -24,9 +24,9 @@
   window.EZundo=function(what,doIt,el,btn){
     const old=document.getElementById("ezundo");if(old&&old._fin)old._fin();
     const t=document.createElement("div");t.id="ezundo";t.setAttribute("role","status");
-    const cancel="<button type='button' class='btn' style='margin-left:8px;font:inherit;font-weight:600;padding:1px 12px;cursor:pointer'>取消</button>";
+    const cancel="<button type='button' class='btn' style='margin-left:10px;padding:2px 12px;font:inherit;color:var(--seal,#c0392b)'>取消</button>";
     if(btn&&btn.parentNode){
-      t.style.cssText="display:inline-flex;align-items:center;gap:2px;padding:4px 6px 4px 12px;border:1px solid var(--line,#ccc);border-radius:8px;background:var(--paper,#fff);color:var(--ink,#111);font-size:inherit"+(btn.classList.contains("qclear")?";margin-left:auto":"");
+      t.className=btn.className;t.style.cssText="cursor:default;";   /* same look as the button it replaces: font, size, colour, border */
       btn.style.display="none";btn.after(t);
     }else{
       t.style.cssText="position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:1200;background:var(--paper,#fff);color:var(--ink,#111);border:1.5px solid var(--ink,#111);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.25);padding:10px 16px;font-size:14px";

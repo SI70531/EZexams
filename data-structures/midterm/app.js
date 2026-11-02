@@ -820,7 +820,7 @@ function hash(el){
   const g=$("div","labgrid");
   g.innerHTML='<label>Keys<textarea id="hs-keys" rows="2" class="labin">224562, 137456, 214572, 140155, 214576, 162145, 144457, 190255, 234554</textarea></label>'+
    '<label>List size<input id="hs-n" class="labin" type="number" value="19" min="2" max="997"></label>'+
-   '<label>Hashing<select id="hs-fold" class="labin"><option value="fb">Fold boundary（每 2 位）＋ MOD</option><option value="fs">Fold shift（每 2 位）＋ MOD</option><option value="mod">Modulo division 直接取餘</option></select></label>'+
+   '<label>Hashing<select id="hs-fold" class="labin"><option value="direct">Direct（key 就是地址）</option><option value="sub">Subtraction（key − 1000）</option><option value="mod">Modulo division 直接取餘</option><option value="dig">Digit extraction（取第 1、3、4 位）</option><option value="mid">Midsquare（平方取中間）</option><option value="fs">Fold shift（每 2 位）＋ MOD</option><option value="fb" selected>Fold boundary（每 2 位）＋ MOD</option><option value="rot">Rotation（末位移到最前）＋ fold shift</option></select></label>'+
    '<label>Collision<select id="hs-col" class="labin"><option value="lin">Linear probe</option><option value="quad">Quadratic probe</option><option value="pr">Pseudorandom y = 3x + 5</option><option value="ko">Key offset</option><option value="chain">Linked list（LIFO overflow）</option><option value="bucket">Bucket（每格 3 筆）＋ linear probe</option></select></label>';
   el.appendChild(g);
   const ctl=$("div","labrow");const bP=$("button","btn","上一步"),bS=$("button","btn primary","下一步"),bA=$("button","btn","全部插入"),bR=$("button","btn","重來");[bP,bS,bA,bR].forEach(b=>b.type="button");ctl.append(bP,bS,bA,bR);el.appendChild(ctl);
@@ -828,7 +828,13 @@ function hash(el){
   const slots=$("div","slots");el.appendChild(slots);const sum=$("div","lablog");el.appendChild(sum);const tw=$("div","labtbl");el.appendChild(tw);
   const q=id=>el.querySelector("#"+id);
   let T,keys,idx,rows,col,N,fold,mode,lastAt,msg,hist;
-  function folded(k){const s=String(k);if(fold==="mod")return {v:k,expr:String(k)};
+  function folded(k){const s=String(k);
+    if(fold==="direct")return {v:k,expr:s+" 就是地址"};
+    if(fold==="mod")return {v:k,expr:s+" 直接 MOD "+N};
+    if(fold==="sub")return {v:k-1000,expr:s+" − 1000 = "+(k-1000)};
+    if(fold==="dig"){if(s.length<4)return {v:0,expr:"key 至少要 4 位數"};return {v:Number(s[0]+s[2]+s[3]),expr:"取第 1、3、4 位："+s[0]+" "+s[2]+" "+s[3]};}
+    if(fold==="mid"){const sq=String(BigInt(k)*BigInt(k));const L=s.length;const st=Math.floor((sq.length-L)/2);return {v:Number(sq.substr(st,L)),expr:s+"² = "+sq+"，取中間 "+L+" 位"};}
+    if(fold==="rot"){const rot=s.slice(-1)+s.slice(0,-1);const ps=[];for(let i=0;i<rot.length;i+=2)ps.push(rot.slice(i,i+2));const v=ps.reduce((a,b)=>a+Number(b),0);return {v,expr:"旋轉成 "+rot+"，兩位一組相加："+ps.join(" + ")+" = "+v};}
     const parts=[];for(let i=0;i<s.length;i+=2)parts.push(s.slice(i,i+2));
     const used=parts.map((p,i)=>fold==="fb"&&(i===0||i===parts.length-1)&&parts.length>1?p.split("").reverse().join(""):p);
     return {v:used.reduce((a,b)=>a+ +b,0),expr:used.join(" + ")};}
@@ -845,14 +851,14 @@ function hash(el){
     let r=rows.find(x=>!x.done);
     if(!r){
       if(idx>=keys.length)return false;
-      const k=keys[idx++];const f=folded(k);const h=f.v%N;
+      const k=keys[idx++];const f=folded(k);const h=((f.v%N)+N)%N;
       r={k,expr:f.expr,v:f.v,h,a:h,i:0,path:[h],c:0,ok:true,done:false};rows.push(r);
       if(mode==="chain"){
         if(T[h].length){r.c=1;col++;T[h].splice(1,0,k);lastAt=h;msg="插入 "+k+"：Sum "+f.v+"，home = ["+h+"]。[ "+h+" ] 已有資料 → 碰撞，放進 overflow area，接在 ["+h+"] 後面第一個（LIFO）。";}
         else{T[h].push(k);lastAt=h;msg="插入 "+k+"：Sum "+f.v+"，home = ["+h+"]。[ "+h+" ] 是空的，直接放入。";}
         r.done=true;return true;
       }
-      msg="插入 "+k+"：摺疊 "+(fold==="mod"?"（不摺疊）":f.expr+" = "+f.v)+"，home address = ["+h+"]。下一步檢查 ["+h+"]。";
+      msg="插入 "+k+"："+f.expr+"，home address = ["+h+"]。下一步檢查 ["+h+"]。";
       return true;
     }
     const full=T[r.a].length>=CAP();
@@ -875,8 +881,8 @@ function hash(el){
     sum.innerHTML="已插入 "+idx+" / "+keys.length+" 個　碰撞 <b>"+col+"</b> 次　load factor = "+filled+" / "+N+" ≈ <b>"+(filled/N*100).toFixed(1)+"%</b>"+
       (mode==="chain"?"（overflow 的節點不算在 prime area 裡）":mode==="bucket"?"（滿 3 筆才算碰撞）":"")+
       (rows.some(r=>!r.ok)?'　<span class="bad">有 key 找不到空位（quadratic／pseudorandom 不一定探得到全部位置）</span>':"");
-    let h='<table><tr><th>Key</th><th>'+(fold==="mod"?"—":"摺疊")+'</th><th>Sum</th><th>Home</th>'+(mode==="ko"?"<th>Offset</th>":"")+'<th>探測路徑</th><th>碰撞</th></tr>';
-    rows.forEach(r=>{h+='<tr><td>'+r.k+'</td><td>'+(fold==="mod"?"—":esc(r.expr))+'</td><td>'+r.v+'</td><td>'+r.h+'</td>'+(mode==="ko"?"<td>"+Math.floor(r.v/N)+"</td>":"")+'<td>'+r.path.join(" → ")+(r.ok?(r.done?"":" …"):" ✗")+'</td><td>'+r.c+'</td></tr>';});
+    let h='<table><tr><th>Key</th><th>'+"計算過程"+'</th><th>Sum</th><th>Home</th>'+(mode==="ko"?"<th>Offset</th>":"")+'<th>探測路徑</th><th>碰撞</th></tr>';
+    rows.forEach(r=>{h+='<tr><td>'+r.k+'</td><td>'+esc(r.expr)+'</td><td>'+r.v+'</td><td>'+r.h+'</td>'+(mode==="ko"?"<td>"+Math.floor(r.v/N)+"</td>":"")+'<td>'+r.path.join(" → ")+(r.ok?(r.done?"":" …"):" ✗")+'</td><td>'+r.c+'</td></tr>';});
     tw.innerHTML=h+"</table>";}
   bS.addEventListener("click",()=>{snap();if(!step())hist.pop();draw();});
   bP.addEventListener("click",()=>{if(hist.length){restore(hist.pop());draw();}});

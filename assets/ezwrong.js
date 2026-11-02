@@ -314,7 +314,10 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
   window.addEventListener("storage",later);
   /* a grade can arrive later (Gemini answers after a few seconds): refresh as soon as a grade box changes,
      so 回講義這一段 shows up under a wrong answer right after grading */
-  new MutationObserver(ms=>{if(ms.some(m=>{const t=m.target.nodeType===1?m.target:m.target.parentElement;return t&&t.closest&&t.closest(".gres");}))later();})
+  /* AI practice reveals its answer from the Worker a moment after you pick, so also refresh when a question changes
+     (its options, its explanation) — but not for our own 回講義 row, or the refresh would feed itself */
+  new MutationObserver(ms=>{if(ms.some(m=>{const t=m.target.nodeType===1?m.target:m.target.parentElement;
+      return t&&t.closest&&(t.closest(".gres")||(t.closest(".qitem")&&!t.closest(".qbtns")));}))later();})
     .observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:["hidden","class"]});
   render();
   try{renderTabs(S.last);}catch(e){}

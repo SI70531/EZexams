@@ -820,7 +820,7 @@ function hash(el){
   const g=$("div","labgrid");
   g.innerHTML='<label>Keys<textarea id="hs-keys" rows="2" class="labin">224562, 137456, 214572, 140155, 214576, 162145, 144457, 190255, 234554</textarea></label>'+
    '<label>List size<input id="hs-n" class="labin" type="number" value="19" min="2" max="997"></label>'+
-   '<label>Hashing<select id="hs-fold" class="labin"><option value="direct">Direct（key 就是地址）</option><option value="sub">Subtraction（key − 1000）</option><option value="mod">Modulo division 直接取餘</option><option value="dig">Digit extraction（取第 1、3、4 位）</option><option value="mid">Midsquare（平方取中間）</option><option value="fs">Fold shift（每 2 位）＋ MOD</option><option value="fb" selected>Fold boundary（每 2 位）＋ MOD</option><option value="rot">Rotation（末位移到最前）＋ fold shift</option></select></label>'+
+   '<label>Hashing<select id="hs-fold" class="labin"><option value="direct">Direct（key 就是地址）</option><option value="sub">Subtraction（key − 1000）</option><option value="mod">Modulo division 直接取餘</option><option value="dig">Digit extraction（取第 1、3、4 位）</option><option value="mid">Midsquare（平方取中間）</option><option value="fs">Fold shift（每 2 位）＋ MOD</option><option value="fb" selected>Fold boundary（每 2 位）＋ MOD</option><option value="rot">Rotation（末位移到最前）＋ fold shift</option><option value="pr">Pseudorandom（y = 17k + 7，再 MOD N）</option></select></label>'+
    '<label>Collision<select id="hs-col" class="labin"><option value="lin">Linear probe</option><option value="quad">Quadratic probe</option><option value="pr">Pseudorandom y = 3x + 5</option><option value="ko">Key offset</option><option value="chain">Linked list（LIFO overflow）</option><option value="bucket">Bucket（每格 3 筆）＋ linear probe</option></select></label>';
   el.appendChild(g);
   const ctl=$("div","labrow");const bP=$("button","btn","上一步"),bS=$("button","btn primary","下一步"),bA=$("button","btn","全部插入"),bR=$("button","btn","重來");[bP,bS,bA,bR].forEach(b=>b.type="button");ctl.append(bP,bS,bA,bR);el.appendChild(ctl);
@@ -834,6 +834,7 @@ function hash(el){
     if(fold==="sub")return {v:k-1000,expr:s+" − 1000 = "+(k-1000)};
     if(fold==="dig"){if(s.length<4)return {v:0,expr:"key 至少要 4 位數"};return {v:Number(s[0]+s[2]+s[3]),expr:"取第 1、3、4 位："+s[0]+" "+s[2]+" "+s[3]};}
     if(fold==="mid"){const sq=String(BigInt(k)*BigInt(k));const L=s.length;const st=Math.floor((sq.length-L)/2);return {v:Number(sq.substr(st,L)),expr:s+"² = "+sq+"，取中間 "+L+" 位"};}
+    if(fold==="pr"){const y=Number(17n*BigInt(k)+7n);return {v:y,expr:"y = 17 × "+s+" + 7 = "+y};}
     if(fold==="rot"){const rot=s.slice(-1)+s.slice(0,-1);const ps=[];for(let i=0;i<rot.length;i+=2)ps.push(rot.slice(i,i+2));const v=ps.reduce((a,b)=>a+Number(b),0);return {v,expr:"旋轉成 "+rot+"，兩位一組相加："+ps.join(" + ")+" = "+v};}
     const parts=[];for(let i=0;i<s.length;i+=2)parts.push(s.slice(i,i+2));
     const used=parts.map((p,i)=>fold==="fb"&&(i===0||i===parts.length-1)&&parts.length>1?p.split("").reverse().join(""):p);

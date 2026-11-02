@@ -1392,7 +1392,6 @@ address = ((543 + 001) modulo 307) = 237</pre>
 例：list size 17，home 5，quadratic 連撞三次：5 → 6 (+1) → 10 (+4) → 19 MOD 17 = <b>2</b> (+9)。忘記 MOD 就會寫成 19。</div>
 <div class="box warn"><span class="lbl">碰撞次數怎麼算</span>每 probe 到一個<b>已經有人</b>的格子就算 1 次 collision。第一次算出 home address 就是空的 → 0 次。例：home 8 有人、9 有人、10 有人、11 空 → 這個 key 碰撞 <b>3 次</b>，最後放 11。題目問「總共幾次」就把每個 key 的次數加起來。</div>
 <div class="box warn"><span class="lbl">先摺疊再算 key offset</span>題目寫「fold boundary … then modulo division of the folded sum」時，後面的 key offset 也用<b>摺疊後的數字</b>去除。例：234554 摺疊後是 122，list size 19：home = 122 MOD 19 = 8，offset = 122 ÷ 19 = 6，probe 1 = (6 + 8) MOD 19 = 14。用原本的 6 位數 key 去除會被扣分。</div>
-<div class="lab" data-lab="hash"></div>
 
 <h4>Linked list resolution <span class="sl">Slide 92–94</span><span class="zhn">鏈結串列解決法</span></h4>
 <ul>
@@ -1418,6 +1417,7 @@ prime area 每一格多了一個紅色 link 欄位（打叉 = null）。[001] �
 <h4>Combination approaches <span class="sl">Slide 97</span><span class="zhn">組合式做法</span></h4>
 <p><i>A complex implementation often uses multiple steps.</i> Example: a large database first hashes to a bucket; <i>if the bucket is full, it uses a set number of linear probes, then uses a linked list overflow area</i> (first a fixed number of linear probes, then, if still no room, a linked list overflow area).<span class="zhn">複雜的實作常用多個步驟。例：大型資料庫先雜湊到 bucket；如果 bucket 滿了，先做固定次數的 linear probe，還是不行就放進 linked list 的 overflow area。</span></p>
 
+<div class="lab" data-lab="hash"></div>
 <div class="quiz" data-quiz="ch2"></div>
 <div class="exam chw" data-exam="ch2w">
 <h2>Part II. Fill-in Questions (20%)</h2>
@@ -2138,7 +2138,7 @@ list.pos = null</div></div></div></div>
 <script src="../../assets/ezchw.js?v=7abb63f7"></script>
 <script src="../../assets/ezgen.js?v=cab082c0"></script>
 <script src="../../assets/ezgenw.js?v=d6126c23"></script>
-<script src="app.js?v=c5e132b7"></script>
+<script src="app.js?v=7a292600"></script>
 <script>window.EZ_MC_PTS=40; /* MC 40 + Fill-in Questions 20 + Quiz 40 = 100, like the exam */</script>
 <script src="../../assets/ezquiz.js?v=013d71b0"></script>
 <script src="../../assets/ezwrong.js?v=35f852fd"></script>

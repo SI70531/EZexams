@@ -64,6 +64,8 @@ html::before{
 :root :is(.qitem,.rvsec,.qa,.day,.cheat .two>div,.fig,.next,.pcb) :is(.box,.calc,.fig,.qa,table,.pcb){
   -webkit-backdrop-filter:none;backdrop-filter:none;background:var(--glass-bg-nested);box-shadow:none;
 }
+/* finished items (ezdone) keep their green tint: the glass rule above would otherwise win on specificity */
+:root .ezdone{background:rgba(45,122,62,.16)!important;border-color:var(--ok-line,var(--ok,#2e8b57))!important}
 /* popup menus: a deeper, almost solid glass so the words underneath do not bleed through */
 :root :is(.cheat .two>div,.thmenu){background:var(--glass-menu);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px)}
 /* the coloured note boxes keep their tint (English / Chinese / warning / tip) on top of the glass */

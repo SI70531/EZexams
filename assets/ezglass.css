@@ -15,6 +15,7 @@
   --glass-line:rgba(0,0,0,.08);              /* table cell dividers */
   --glass-fallback:rgba(255,255,255,.82);    /* browsers without backdrop-filter */
   --glass-menu:rgba(246,248,250,.93);        /* popup menus (theme / animation): dense enough to read over text */
+  --glass-score:rgba(255,255,255,.86);       /* the 得分 bar: dense, so the text under it does not show through */
   --glass-blur:16px;
   /* blob colours: lavender / sky / peach */
   --blob-a:rgba(167,139,250,.55); --blob-b:rgba(96,165,250,.50); --blob-c:rgba(251,146,60,.38);
@@ -23,13 +24,13 @@
   --glass-bg:rgba(255,255,255,.07); --glass-bg-nested:rgba(255,255,255,.05); --glass-fig:rgba(236,240,240,.86);
   --glass-bd:rgba(255,255,255,.16); --glass-sh:0 10px 30px rgba(0,0,0,.35); --glass-sh-hover:0 16px 40px rgba(0,0,0,.45);
   --glass-th:rgba(255,255,255,.06); --glass-line:rgba(255,255,255,.12); --glass-fallback:rgba(28,46,59,.92);
-  --glass-menu:rgba(22,36,46,.95);
+  --glass-menu:rgba(22,36,46,.95); --glass-score:rgba(22,36,46,.92);
   --blob-a:rgba(139,92,246,.38); --blob-b:rgba(56,130,246,.34); --blob-c:rgba(234,120,40,.22)}}
 :root[data-theme="dark"]{
   --glass-bg:rgba(255,255,255,.07); --glass-bg-nested:rgba(255,255,255,.05); --glass-fig:rgba(236,240,240,.86);
   --glass-bd:rgba(255,255,255,.16); --glass-sh:0 10px 30px rgba(0,0,0,.35); --glass-sh-hover:0 16px 40px rgba(0,0,0,.45);
   --glass-th:rgba(255,255,255,.06); --glass-line:rgba(255,255,255,.12); --glass-fallback:rgba(28,46,59,.92);
-  --glass-menu:rgba(22,36,46,.95);
+  --glass-menu:rgba(22,36,46,.95); --glass-score:rgba(22,36,46,.92);
   --blob-a:rgba(139,92,246,.38); --blob-b:rgba(56,130,246,.34); --blob-c:rgba(234,120,40,.22)}
 
 /* ============ 1. Background glow blobs ============ */
@@ -85,6 +86,7 @@ html::before{
 :root .pcb .ph{border-radius:15px 15px 0 0}
 :root .pcb{overflow:hidden}
 :root .examtools{border-radius:16px}
+:root .mcscore{background:var(--glass-score)!important}
 
 /* ============ 3. Glass tables ============ */
 /* The table itself is the glass block, shrink-wrapped so no empty glass is left beside narrow tables.

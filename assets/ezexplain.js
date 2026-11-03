@@ -178,7 +178,8 @@ x.q.e?"TEACHER'S SHORT NOTE (use it as the ground truth): "+x.q.e:"",
   }
   /* an option clicked now: explain it right away */
   document.addEventListener("click",e=>{const o=e.target.closest&&e.target.closest(".quiz[data-quiz] .opt");if(!o)return;const it=o.closest(".qitem");if(it&&!it.querySelector(".opt.right"))FRESH.add(it);},true);
-  let t=null;const later=()=>{if(busy)return;clearTimeout(t);t=setTimeout(all,30);};
+  /* run right away (inside the mutation callback, before the browser paints), so nothing shows half-drawn for a frame */
+  const later=()=>{if(busy)return;all();};
   new MutationObserver(ms=>{if(window.EZnoise&&EZnoise(ms))return;later();}).observe(document.body,{childList:true,subtree:true});
   /* only the tab on screen is drawn; opening another tab draws it */
   document.querySelectorAll("section.view").forEach(v=>new MutationObserver(()=>{if(!v.hidden)later();}).observe(v,{attributes:true,attributeFilter:["hidden"]}));

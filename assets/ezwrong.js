@@ -240,9 +240,21 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
     });
     document.querySelectorAll(".wnotes").forEach(b=>{const el=b.closest(".qitem,.exq");if(!keep.has(el)){const r=b.parentElement;b.remove();if(r.classList.contains("qbtns")&&!r.children.length)r.remove();}});
   }
+  /* answered multiple choice that was right: no wrong-answer card for it, but it still gets 回講義這一段 */
+  function answeredRight(){
+    const out=[];
+    document.querySelectorAll(".quiz[data-quiz] > .qitem").forEach(q=>{
+      if(!q.querySelector(".opt.right")||q.querySelector(".opt.wrong"))return;
+      const box=q.parentElement,key=box.dataset.quiz,i=+q.dataset.i;
+      const it=QUIZ[key]&&QUIZ[key][i];if(!it||typeof it.q!=="string")return;
+      const view=box.closest(".view"),ch=CH.includes(key)?key:chOf(it);
+      out.push({m:match(it,ch),ch,go:CH.includes(key)?key:(view?view.id:key),quiz:key,i,q:it.q,e:it.e||""});
+    });
+    return out;
+  }
   function render(){
     let list;try{list=collect();}catch(e){return;}
-    try{notesButtons(list);}catch(e){}
+    try{notesButtons(list.concat(answeredRight()));}catch(e){}
     const by=new Map();list.forEach(w=>{const k=gkey(w);if(!by.has(k))by.set(k,[]);by.get(k).push(w);});
     SECS.forEach(s=>{
       const n=(by.get(s.key)||[]).length;s.h.classList.toggle("missed",n>0);

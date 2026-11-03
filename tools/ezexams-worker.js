@@ -459,11 +459,12 @@ function wPrompt(b) {
   return [
 "You are writing ONE written exam question for a university exam. Course: " + b.subject + ". Chapter: " + b.chapter + ".",
 "Base the question ONLY on the COURSE NOTES at the end (the section the student is studying). Use nothing the notes do not support.",
-"Style: " + b.style + ". The question must be answerable within about " + b.pts + " points' worth of answer.",
-"Make it test understanding with some depth (apply an idea, compare two ideas, or trace a small example); do not ask for a word-for-word definition.",
+"Question type (copy the form of the past exam, do not invent a different kind of question): " + b.style + ".",
+"Difficulty: like the past exam of this course. It is a calculation, a table or a trace that takes a few minutes, never a one-line recall and never an open 'explain why' essay. The question is worth " + b.pts + " points: scale the number of blanks or parts to that.",
+"If the question has several parts or blanks, label them (a), (b), (c) ... and keep their order.",
 "Write it in English, exam style, plain and precise. Never write 'the notes', 'the slides' or 'the lecture' inside the question.",
 "Do not give the answer away in the question. For a fill-in style use one or two blanks written as ______.",
-"ref = the ideal answer in English, short, based only on the notes (it is kept secret and used for grading).",
+"ref must give the answer to EVERY blank or part, in the same order (for example \"(a) 4 (b) 11\"), short, based only on the notes. It is kept secret and used for grading.",
 "Reply with ONLY a JSON object: {\"q\":\"...\",\"ref\":\"...\"}",
 b.asked.length ? "Already asked in this set (do NOT repeat these ideas): \n- " + b.asked.join("\n- ") : "",
 "This is question " + b.n + " of " + b.total + " in this set.",
@@ -493,7 +494,7 @@ async function wgenNext(env, acct, who, bodyText, json, fail) {
     if (g.error) { err = g.error; if (![404, 429, 500, 502, 503, 504].includes(g.error.status)) break; continue; }
     const o = parseJson(g.text);
     if (o && typeof o.q === "string" && o.q.trim().length > 12 && typeof o.ref === "string" && o.ref.trim().length > 2) {
-      made = { q: clip(o.q.trim(), 900), ref: clip(o.ref.trim(), 1500) };
+      made = { q: clip(o.q.trim(), 1600), ref: clip(o.ref.trim(), 1500) };
     } else err = { status: 502, bad: true };
   }
   if (!made) {

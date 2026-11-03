@@ -161,8 +161,7 @@
         t.innerHTML=made===0?"每一題由 AI 依講義即時出題，涵蓋這章的每個小節，作答後才顯示答案與解析。共 <b>"+N+" 題</b>。":"下一題是第 <b>"+(made+1)+" / "+N+"</b> 題。";
         const b=addBtn(made===0?"AI 開始出題":"出下一題",async()=>{
           if(BUSY[key])return;BUSY[key]=true;ERR[key]="";b.disabled=true;b.textContent="AI 出題中…";
-          try{const k=nextIn(B,list);await makeOne(B,k);
-            setTimeout(()=>{const el=slotsOf(B)[k];if(el)el.scrollIntoView({block:"center",behavior:"smooth"});},60);}
+          try{const k=nextIn(B,list);await makeOne(B,k);}
           catch(e){ERR[key]=errText(e);}
           BUSY[key]=false;paint(B);
         });

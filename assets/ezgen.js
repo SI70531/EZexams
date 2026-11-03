@@ -352,9 +352,24 @@
       return secs.length>0&&secs.every(s=>cnt.has(keyOf(s)));}catch(e){return false;}
   }
 
+  /* renderQuiz rebuilds the whole box, which makes every answered question above redraw its explanation and move the page.
+     For AI sets, questions that did not change keep their own nodes (and their explanations); only the changed one is new. */
+  const qsig=n=>[...n.querySelectorAll(".opt")].map(o=>o.className+(o.disabled?"!":"")).join("|")+"#"+((n.querySelector(".stem")||{}).textContent||"");
+  function keepRender(){
+    const orig=window.renderQuiz;if(typeof orig!=="function"||orig.__ezkeep)return;
+    const keep=function(key){
+      const box=isAi(key)?document.querySelector('[data-quiz="'+key+'"]'):null;
+      if(!box)return orig.apply(this,arguments);
+      const old=[...box.querySelectorAll(":scope > .qitem")].map(n=>({n,i:n.dataset.i,sig:qsig(n)}));
+      const r=orig.apply(this,arguments);
+      [...box.querySelectorAll(":scope > .qitem")].forEach((nn,p)=>{const o=old[p];if(o&&o.i===nn.dataset.i&&o.sig===qsig(nn))nn.replaceWith(o.n);});
+      return r;
+    };
+    keep.__ezkeep=true;window.renderQuiz=keep;
+  }
   window.EZGEN={
     attach(cfg){
-      C=cfg;
+      C=cfg;keepRender();
       const S=C.get();S.gen=S.gen||{};
       Object.keys(S.gen).forEach(k=>Object.keys(S.gen[k]||{}).forEach(i=>{if(S.gen[k][i]&&S.gen[k][i].p)delete S.gen[k][i];}));   /* leftovers of an interrupted mock-exam run */
       [...C.ai,...(C.fixed||[])].forEach(fill);

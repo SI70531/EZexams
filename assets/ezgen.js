@@ -194,7 +194,26 @@
     if(err)throw err;
   }
   /* an answer is revealed by the Worker (an AI question, or a fixed past-exam question); resolves true when it is known */
+  /* the question being answered keeps its place on screen: the box is rebuilt when the answer arrives, so put it back */
+  const qEl=(k,i)=>document.querySelector('[data-quiz="'+k+'"] .qitem[data-i="'+i+'"]');
   async function reveal(k,i,pick){
+    const el0=qEl(k,i),top0=el0?el0.getBoundingClientRect().top:null;
+    /* the box is emptied and rebuilt when the answer lands; hold its height so the page does not clamp its scroll meanwhile */
+    const box=document.querySelector('[data-quiz="'+k+'"]');if(box&&top0!=null)box.style.minHeight=box.offsetHeight+"px";
+    const ok=await revealInner(k,i,pick);
+    if(top0!=null)setTimeout(()=>{if(box)box.style.minHeight="";holdAt(k,i,top0);},0);
+    return ok;
+  }
+  /* explanations above the question are drawn again a moment after the rebuild, so keep the question where it was
+     for a short while, and let go as soon as the reader scrolls themselves */
+  function holdAt(k,i,top0){
+    let moved=false;const stop=()=>{moved=true;};
+    ["wheel","touchstart","keydown","pointerdown"].forEach(ev=>window.addEventListener(ev,stop,{once:true,passive:true}));
+    const end=Date.now()+1500;
+    const step=()=>{if(moved||Date.now()>end)return;const el=qEl(k,i);if(el){const d=el.getBoundingClientRect().top-top0;if(Math.abs(d)>1)window.scrollBy(0,d);}requestAnimationFrame(step);};
+    requestAnimationFrame(step);
+  }
+  async function revealInner(k,i,pick){
     const it=Q()[k][i],g=genOf(k,i);
     try{
       if(g){
@@ -283,6 +302,12 @@
   }
   const BARS=new Set();
   function redrawBars(){BARS.forEach(f=>{try{f();}catch(e){}});}
+  /* an answer that was already known (answered before a clear, or revealed earlier) changes the count without a re-render: redraw the bar */
+  document.addEventListener("click",e=>{
+    const o=e.target.closest&&e.target.closest(".quiz[data-gen] .opt");if(!o)return;
+    const k=o.closest(".quiz").dataset.quiz,q=o.closest(".qitem");if(!q)return;
+    setTimeout(()=>{const it=Q()[k]&&Q()[k][+q.dataset.i];if(it&&it.a!=null)redrawBars();},0);
+  });
   /* mount(box, setKey, rerender): puts the "出下一題" row at the end of a set's questions */
   function mount(box,k,rerender){
     if(!isAi(k)){BARS.forEach(f=>{if(f.k===k&&!f.box.isConnected)BARS.delete(f);});return;}

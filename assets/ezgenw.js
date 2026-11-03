@@ -153,7 +153,7 @@
   }
   function nextIn(B,list){for(const q of list){if(!madeSlot(B,q,idxOf(q)))return idxOf(q);}return -1;}
   function madeIn(B,list){return list.filter(q=>madeSlot(B,q,idxOf(q))).length;}
-  /* the bars: one per part, placed before the part's first question (the bar after its heading) */
+  /* the bars: one per part, placed under the part's last question */
   function drawBar(B){
     B.box.querySelectorAll(":scope .ezgenw-bar").forEach(x=>x.remove());
     partsOf(B).forEach((part,pi)=>{
@@ -162,7 +162,7 @@
       if(made>=N)return;
       const key=B.key+"#"+pi;
       const bar=document.createElement("div");bar.className="ezgen-bar ezgenw-bar";
-      list[0].before(bar);
+      list[N-1].after(bar);   /* the next-question row sits under the part's last question, so you do not scroll back up */
       const t=document.createElement("div");t.className="gtxt";bar.appendChild(t);
       const addBtn=(label,fn)=>{const b=document.createElement("button");b.type="button";b.className="btn primary";b.textContent=label;b.addEventListener("click",fn);bar.appendChild(b);return b;};
       if(B.batch){

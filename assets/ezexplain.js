@@ -140,7 +140,8 @@ x.q.e?"TEACHER'S SHORT NOTE (use it as the ground truth): "+x.q.e:"",
     if(box&&box.dataset.sig===sig)return;
     if(!box){box=document.createElement("div");box.className="aiexp";ex.appendChild(box);}
     box.dataset.sig=sig;box.innerHTML=html;
-    ex.classList.toggle("hasai",!!c);
+    /* while the AI explanation is on its way, the page's own text steps aside too (it would otherwise show, then vanish) */
+    ex.classList.toggle("hasai",!!c||!!PEND[x.id]||QD.has(x.id));
     const b=box.querySelector(".aigo");if(b)b.onclick=()=>{delete ERR[x.id];enqueue(it,x,true);};
   }
   const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));

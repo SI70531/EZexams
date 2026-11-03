@@ -37,6 +37,7 @@
   }
   function labelOf(B,i){return (rec(B,i)||{}).l||"";}
   /* a slot's question text: the made one, or the bank's (legacy) one */
+  const nl=s=>esc(s).replace(/\n/g,"<br>");
   function paint(B){
     const slots=slotsOf(B);
     slots.forEach((q,i)=>{
@@ -44,7 +45,7 @@
       if(r){
         if(q.dataset.gid!==r.id){
           q.dataset.gid=r.id;
-          ce.innerHTML='<p class="q"><span class="pts">'+esc(r.l)+'</span>'+esc(r.q)+'</p>';
+          ce.innerHTML='<p class="q"><span class="pts">'+esc(r.l)+'</span>'+nl(r.q)+'</p>';
           const ta=q.querySelector("textarea");if(ta)ta.placeholder="你的答案（英文或中文都可以）";
         }
         q.hidden=false;
@@ -53,7 +54,7 @@
       if(q.dataset.gid)delete q.dataset.gid;
       const b=CACHE[B.key]&&CACHE[B.key][i];
       if(b&&!b.hidden){
-        ce.innerHTML='<p class="q"><span class="pts">'+esc(b.l)+'</span>'+esc(b.q)+'</p>';
+        ce.innerHTML='<p class="q"><span class="pts">'+esc(b.l)+'</span>'+nl(b.q)+'</p>';
         q.hidden=false;return;
       }
       ce.innerHTML="";
@@ -114,7 +115,7 @@
     const sec=plan(B);if(!sec)throw fail("nonotes","這章找不到講義內容");
     const q=slotsOf(B)[slot],lab=((q.querySelector(".pts")||{}).textContent||"").trim(),p=+q.dataset.pts||2;
     const L=lab||("Q"+(slot+1));
-    const style=/^F\d/.test(L)?"fill-in: one or two blanks written as ______":"short answer or a short explanation (a few sentences or a small trace)";
+    const style=styleFor(B,q,p,L);
     const r=await post("/gen/wnext",{subject:C.subject,chapter:B.title,style,pts:p,label:L,sec:{k:sec.key,title:sec.title,text:sec._t},n:slot+1,total:slotsOf(B).length,asked:askedList(B)});
     const S=st();S.gen=S.gen||{};S.gen[B.key]=S.gen[B.key]||{};
     S.gen[B.key][slot]={id:r.id,q:r.q,l:L,p:r.p||p,sec:r.sec||sec.key,g:now(),kind:"w"};
@@ -133,6 +134,23 @@
     return parts;
   }
   const idxOf=q=>+q.dataset.slot;
+  /* what kind of question a slot asks for, like the past exams: Part II is fill-in (a term, or a key/offset table),
+     Part III is a quiz of calculations, table fill-ins, pseudocode fill-ins and traces */
+  const FILL_TERM="fill-in-the-term: one or two sentences taken from the notes, with one or two blanks written as ______. Each blank is a technical term, a short phrase or a number, the kind the exam asks (for example: 'The three main constructs in pseudocode are sequence, selection, and ______.' or 'Secondary clustering occurs when data builds up along a ______ path.'). Do not ask for an explanation.";
+  const FILL_TABLE="key table fill-in: a key and a list size (or similar input from the notes); a small table with blank cells (for example Key | Home address | Key offset | Probe 1 | Probe 2) that the student completes by applying the method in the notes. Put each table row on its own line.";
+  const QUIZ_TYPES=[
+    "calculation with parts: a few keys and a table size, using the method in the notes; numbered parts (a), (b), (c) such as the number of collisions, the final address of one key, or the load factor. Put the keys on their own line.",
+    "table fill-in: a result or trace table from the notes' algorithm, with some cells left as ______ for the student to fill. Put each table row on its own line.",
+    "pseudocode fill-in: a short routine in the style of the notes, with numbered blanks (a), (b), (c) ... for the student to complete. Put each code line on its own line.",
+    "trace: a small linked list or array written as text (for example Dummy → node → node → null), then a few statements; ask what the structure looks like afterwards, in parts (a), (b) if needed."
+  ];
+  function styleFor(B,q,p,L){
+    const part=partsOf(B).find(x=>x.slots.includes(q));
+    const h=(part&&part.head&&part.head.textContent)||"";
+    if(/Part\s+III/i.test(h)){const i=part.slots.indexOf(q);return QUIZ_TYPES[i%QUIZ_TYPES.length];}
+    if(/Part\s+II/i.test(h))return p>=8?FILL_TABLE:FILL_TERM;
+    return /^F\d/.test(L)?FILL_TERM:"short answer or a short explanation (a few sentences or a small trace)";
+  }
   function nextIn(B,list){for(const q of list){if(!madeSlot(B,q,idxOf(q)))return idxOf(q);}return -1;}
   function madeIn(B,list){return list.filter(q=>madeSlot(B,q,idxOf(q))).length;}
   /* the bars: one per part, placed before the part's first question (the bar after its heading) */

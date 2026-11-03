@@ -201,17 +201,8 @@
     /* the box is emptied and rebuilt when the answer lands; hold its height so the page does not clamp its scroll meanwhile */
     const box=document.querySelector('[data-quiz="'+k+'"]');if(box&&top0!=null)box.style.minHeight=box.offsetHeight+"px";
     const ok=await revealInner(k,i,pick);
-    if(top0!=null)setTimeout(()=>{if(box)box.style.minHeight="";holdAt(k,i,top0);},0);
+    if(top0!=null)setTimeout(()=>{if(box)box.style.minHeight="";},0);
     return ok;
-  }
-  /* explanations above the question are drawn again a moment after the rebuild, so keep the question where it was
-     for a short while, and let go as soon as the reader scrolls themselves */
-  function holdAt(k,i,top0){
-    let moved=false;const stop=()=>{moved=true;};
-    ["wheel","touchstart","keydown","pointerdown"].forEach(ev=>window.addEventListener(ev,stop,{once:true,passive:true}));
-    const end=Date.now()+8000;
-    const step=()=>{if(moved||Date.now()>end)return;const el=qEl(k,i);if(el){const d=el.getBoundingClientRect().top-top0;if(Math.abs(d)>1)window.scrollBy(0,d);}requestAnimationFrame(step);};
-    requestAnimationFrame(step);
   }
   async function revealInner(k,i,pick){
     const it=Q()[k][i],g=genOf(k,i);
@@ -344,8 +335,7 @@
         "下一題是第 <b>"+(ans+1)+" / "+N+"</b> 題。"+(coveredAll(k)?"每個小節都考過了，接下來優先出你答錯的觀念。":"");
       const b=addBtn(first?"AI 開始出題":"出下一題",async()=>{
         if(BUSY[k])return;BUSY[k]=true;ERR[k]="";b.disabled=true;b.textContent="AI 出題中…";
-        try{const slot=await generate(k);rerender();
-          setTimeout(()=>{const el=box.querySelector('.qitem[data-i="'+slot+'"]');if(el)el.scrollIntoView({block:"center",behavior:"smooth"});},60);
+        try{await generate(k);rerender();
         }catch(e){ERR[k]=errText(e);BUSY[k]=false;draw();return;}
         BUSY[k]=false;
       },true);

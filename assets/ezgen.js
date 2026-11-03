@@ -209,7 +209,7 @@
   function holdAt(k,i,top0){
     let moved=false;const stop=()=>{moved=true;};
     ["wheel","touchstart","keydown","pointerdown"].forEach(ev=>window.addEventListener(ev,stop,{once:true,passive:true}));
-    const end=Date.now()+1500;
+    const end=Date.now()+8000;
     const step=()=>{if(moved||Date.now()>end)return;const el=qEl(k,i);if(el){const d=el.getBoundingClientRect().top-top0;if(Math.abs(d)>1)window.scrollBy(0,d);}requestAnimationFrame(step);};
     requestAnimationFrame(step);
   }

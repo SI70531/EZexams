@@ -114,7 +114,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
   const L="ABCDEFGH";
   function mc(out,it,i,pk,ch,src,go,quiz){
     const m=match(it,ch),w={m,ch,src,go,quiz,i,q:it.q,e:it.e||""};
-    /* some pages shuffle the options, so use the letter printed next to that option on the page */
+    /* use the letter printed next to that option on the page */
     const el=locate(w);
     const opt=k=>{const ab=el&&el.querySelector('.opt[data-oi="'+k+'"] .ab');return "("+(ab?ab.textContent.trim():L[k])+") "+(it.o?it.o[k]:"");};
     w.yours=opt(pk);w.right=opt(it.a);
@@ -195,7 +195,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
     if(w.i==null)return null;
     const root=w.quiz?document.querySelector('[data-quiz="'+w.quiz+'"]'):document.querySelector("#"+CSS.escape(w.go)+" .exambody");
     if(!root)return null;
-    return root.querySelector('.qitem[data-i="'+w.i+'"]')||root.querySelectorAll(".qitem")[w.i]||null; /* data-i: original position (questions may be shuffled) */
+    return root.querySelector('.qitem[data-i="'+w.i+'"]')||root.querySelectorAll(".qitem")[w.i]||null; /* data-i: original position */
   }
   const wid=w=>w.go+"|"+(w.quiz||"")+"|"+(w.qid||w.i);
   function flash(el,block){setTimeout(()=>{el.scrollIntoView({block});el.classList.remove("wflash");void el.offsetWidth;el.classList.add("wflash");},30);}

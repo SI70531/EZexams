@@ -5,8 +5,8 @@
      one at a time and at most about 9 a minute; the one you just answered goes first.
    - Results are kept in this browser (localStorage "ezexp2:<page>"), so each question is only asked once.
    - Without a key (or if Gemini fails), the original short explanation stays as it is.
-   Option letters are taken from the page, so they match the shuffled order you see.
-   Load after the page's main script, ezai.js and ezshuffle.js. */
+   Option letters are taken from the page, so they match the order you see.
+   Load after the page's main script and ezai.js. */
 (function(){
   if(typeof QUIZ==="undefined")return;
   const css=`.aiexp{margin-top:10px;padding:10px 12px;border:1px solid var(--line,#ccc);border-radius:8px;background:var(--paper,#fff);font-size:.95em;line-height:1.6}

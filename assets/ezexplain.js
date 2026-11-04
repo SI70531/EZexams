@@ -26,6 +26,10 @@
   const LS="ezexp2:"+location.pathname;
   let CACHE={};try{CACHE=JSON.parse(localStorage.getItem(LS)||"{}")||{};}catch(e){}
   const saveCache=()=>{try{localStorage.setItem(LS,JSON.stringify(CACHE));}catch(e){}};
+  /* an explanation that argues with the answer key is thrown away (and asked again) */
+  const BAD=/答案有誤|答案錯誤|答案不正確|答案應為|題目有誤|題目錯誤|題目.{0,6}(有誤|錯誤)|標準答案.{0,8}(有誤|錯誤|不正確)|(題庫|解答|選項)(標示|標記|設定).{0,6}(有誤|錯誤)/;
+  const badExp=c=>!!c&&(BAD.test(c.mistake||"")||BAD.test(c.point||"")||Object.values(c.opts||{}).some(o=>BAD.test(o&&o.why||"")));
+  {let dirty=false;Object.keys(CACHE).forEach(k=>{if(badExp(CACHE[k])){delete CACHE[k];dirty=true;}});if(dirty)saveCache();}
   const PEND={},ERR={},FRESH=new WeakSet();
   const connected=()=>!!(window.EZAI&&EZAI.connected());
 
@@ -51,6 +55,7 @@
 "QUESTION:",x.q.q,
 "OPTIONS:",...lines,
 "CORRECT ANSWER: ("+letterOf(it,x.q.a)+")",
+"ANSWER KEY RULE (mandatory): the CORRECT ANSWER above comes from the verified answer key and is final. Never say that the question, the options or the answer key is wrong or inaccurate (never write 答案有誤, 答案錯誤, 題目有誤). Explain why the keyed option is right and why each other option is wrong.",
 "STUDENT PICKED: ("+letterOf(it,x.pick)+")"+(x.ok?" — correct":" — wrong"),
 x.q.e?"TEACHER'S SHORT NOTE (use it as the ground truth): "+x.q.e:"",
 "Math: write formulas in plain text with Unicode, e.g. O(n log n), n², 2ⁿ, log₂n, 1 + 2 + 4 + … + n. Never use LaTeX, dollar signs or backslash commands.",
@@ -92,6 +97,7 @@ x.q.e?"TEACHER'S SHORT NOTE (use it as the ground truth): "+x.q.e:"",
           /* keep each option's analysis by its original position, so it still fits after the options move */
           const by={};arr.forEach(o=>{const m=optsOi.find(z=>z.L===String(o.letter||"").replace(/[()\s]/g,"").toUpperCase());if(m)by[m.oi]={ok:!!o.correct,why:String(o.why||"")};});
           if(!Object.keys(by).length)throw Object.assign(new Error("invalid_json"),{code:"invalid_json"});
+          if(badExp({mistake:out.mistake,point:out.point,opts:by}))throw Object.assign(new Error("invalid_json"),{code:"invalid_json"});   /* it argued with the answer key: ask again */
           CACHE[x.id]={mistake:x.ok?"":String(out.mistake||""),opts:by,point:String(out.point||""),at:Date.now()};saveCache();
           delete PEND[x.id];redraw(x.id);
         }catch(e){

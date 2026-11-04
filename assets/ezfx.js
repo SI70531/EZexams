@@ -203,7 +203,7 @@ html.ezcalm .fx-sv{animation:none}
   onScroll();
 })();
 
-/* ---------- phone top bar: search, sync, 登出 and the theme button fold into one ⋯ menu ---------- */
+/* ---------- phone top bar: search, sync, sign out and the theme button fold into one ⋯ menu ---------- */
 (function(){
   const css=`.ezmore{display:contents}.ezmore-btn{display:none}.ezmore-panel{display:contents}
 @media (max-width:640px){

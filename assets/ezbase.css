@@ -126,9 +126,9 @@ td.l,th.l{text-align:left}
 .gt b{position:absolute;transform:translateX(-50%);font-weight:400}
 .q{font-weight:700;margin-top:26px;font-size:16.5px}
 /* past exams and mock exams: question text a bit larger, matching the chapter questions */
-.exam .q{font-size:18px}
-.exam .qtext{font-size:17px;line-height:1.7}
-.exam .qtext table{font-size:15.5px}
+.exam .q{font-size:16px}
+.exam .qtext{font-size:16px;line-height:1.8}
+.exam .qtext table{font-size:14.5px}
 .pts{display:inline-block;font-family:var(--f-mono);font-size:12px;font-weight:600;color:var(--accent-ink);background:var(--seal);border-radius:4px;padding:1px 7px;margin-right:8px;vertical-align:2px}
 .qa{border:1px solid var(--line);background:var(--paper);border-radius:8px;margin:8px 0 6px;overflow:hidden}
 .qa summary{cursor:pointer;padding:9px 16px;font-weight:700;font-size:14.5px;color:var(--indigo);list-style:none;display:flex;align-items:center;gap:8px}
@@ -229,9 +229,9 @@ pre{max-width:100%;overflow-x:auto}
 .rvall{margin:46px 0 6px;padding-bottom:6px;border-bottom:2px solid var(--ink)}
 .rvsec{border:1px solid var(--line);border-radius:10px;background:var(--paper);padding:12px 18px 6px;margin:14px 0;scroll-margin-top:80px}
 .rvsh{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
-.rvsh h3{margin:0;flex:1 1 auto;min-width:0;font-size:1.2em}
-.rvsec .rvmn,.rvsec .rvmn li{font-size:16.5px;line-height:1.75}
-.rvsec .rvt{font-size:15.5px}
+.rvsh h3{margin:0;flex:1 1 auto;min-width:0;font-size:1.5em}
+.rvsec .rvmn,.rvsec .rvmn li{font-size:16px;line-height:1.8}
+.rvsec .rvt{font-size:14.5px}
 .rvk{font-family:var(--f-mono);font-size:12px;font-weight:700;color:var(--paper);background:var(--brass);border-radius:5px;padding:2px 7px;white-space:nowrap}
 .rvgo{margin-left:auto;font:inherit;font-size:13px;font-weight:600;color:var(--brass);background:none;border:1px solid var(--brass-line);border-radius:999px;padding:2px 11px;cursor:pointer;white-space:nowrap}
 .rvgo:hover{background:var(--brass-soft)}

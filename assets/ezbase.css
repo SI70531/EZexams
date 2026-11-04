@@ -126,7 +126,7 @@ td.l,th.l{text-align:left}
 .gt b{position:absolute;transform:translateX(-50%);font-weight:400}
 .q{font-weight:700;margin-top:26px;font-size:16.5px}
 /* past exams and mock exams: question text a bit larger, matching the chapter questions */
-.exam .q{font-size:16px}
+.exam .q{font-size:16px;font-weight:400}
 .exam .qtext{font-size:16px;line-height:1.8}
 .exam .qtext table{font-size:14.5px}
 .pts{display:inline-block;font-family:var(--f-mono);font-size:12px;font-weight:600;color:var(--accent-ink);background:var(--seal);border-radius:4px;padding:1px 7px;margin-right:8px;vertical-align:2px}

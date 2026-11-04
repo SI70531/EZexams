@@ -99,7 +99,7 @@ x.q.e?"TEACHER'S SHORT NOTE (use it as the ground truth): "+x.q.e:"",
           const c=e&&e.code;
           /* quota or overload: wait a minute and carry on by itself */
           if((c==="rate_limited"||c==="busy"||c==="invalid_json"||c==="empty_completion")&&job.tries<3){
-            job.tries++;Q.unshift(job);QD.add(x.id);WAITMSG=c==="rate_limited"?"免費額度暫時用完，一分鐘後自動繼續…":"AI 暫時很忙，稍後自動繼續…";redraw(x.id);
+            job.tries++;Q.unshift(job);QD.add(x.id);WAITMSG=c==="rate_limited"?"免費額度暫時用完，一分鐘後自動繼續…":"暫時很忙，稍後自動繼續…";redraw(x.id);
             await sleep(c==="invalid_json"||c==="empty_completion"?3000:60000);WAITMSG="";continue;
           }
           ERR[x.id]=window.EZAI?EZAI.errText(e):"解析失敗。";redraw(x.id);
@@ -131,10 +131,10 @@ x.q.e?"TEACHER'S SHORT NOTE (use it as the ground truth): "+x.q.e:"",
         '<ul>'+os.map(o=>{const a=c.opts[o.dataset.oi];if(!a)return "";const L=o.querySelector(".ab").textContent.trim(),ok=o.dataset.oi===String(x.q.a);
           return '<li class="'+(ok?"ok":"no")+(o.dataset.oi===String(x.pick)?" mine":"")+'"><span class="ab">'+L+'</span><span>'+(ok?"<b>正確。</b>":"")+tx(a.why)+'</span></li>';}).join("")+'</ul>'+
         (c.point?'<p class="aipt">重點：'+tx(c.point)+'</p>':'');
-    }else if(PEND[x.id]){sig="p:"+x.id;html='<div class="aih">解析</div><span class="aimsg">AI 分析中…</span>';}
+    }else if(PEND[x.id]){sig="p:"+x.id;html='<div class="aih">解析</div><span class="aimsg">分析中…</span>';}
     else if(QD.has(x.id)){const m=WAITMSG&&Q[0]&&Q[0].x.id===x.id?WAITMSG:"排隊中，前面的題目分析完就輪到這題…";sig="q:"+x.id+m;html='<div class="aih">解析</div><span class="aimsg">'+m+'</span>';}
     else if(ERR[x.id]){sig="e:"+x.id+ERR[x.id];html='<div class="aih">解析</div><span class="aimsg">'+esc(ERR[x.id])+'</span> <button class="btn aigo" type="button">再試一次</button>';}
-    else if(!x.ok){sig="h:"+x.id;html='<span class="aimsg">到<a href="../../#ai">首頁設定免費的 Gemini 金鑰</a>，這裡就會用 AI 分析你錯在哪、四個選項各自為什麼對或錯。</span>';}
+    else if(!x.ok){sig="h:"+x.id;html='<span class="aimsg">到<a href="../../#ai">首頁設定免費的 Gemini 金鑰</a>，這裡就會分析你錯在哪、四個選項各自為什麼對或錯。</span>';}
     else{const old=ex.querySelector(":scope > .aiexp");if(old)old.remove();ex.classList.remove("hasai");return;}
     let box=ex.querySelector(":scope > .aiexp");
     if(box&&box.dataset.sig===sig)return;

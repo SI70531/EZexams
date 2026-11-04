@@ -261,7 +261,7 @@ html.ezcalm .fx-sv{animation:none}
     const prog=document.querySelector("#progTable");
     const more=document.querySelector(".ezmore-btn");const right=(more&&more.offsetParent)?more:document.querySelector(".ezs-btn");
     return [
-      tabsEl&&{el:tabsEl,t:"章節分頁",d:"每一章先讀白話講義，最下面是章末練習：選擇題寫完馬上對答案，手寫題按「批改」就有 AI 打分。"},
+      tabsEl&&{el:tabsEl,t:"章節分頁",d:"每一章先讀白話講義，最下面是章末練習：選擇題寫完馬上對答案，手寫題按「批改」就會打分。"},
       prog&&{el:prog,t:"進度表",d:"每章的分數和完成度都在這裡。點「ChN 章末練習」會直接跳到還沒寫的那一題。"},
       rv&&{el:rv,t:"總複習",d:"一段一張重點卡，按講義順序排。答錯的題目會自動接在那一段後面，考前看這頁就好。"},
       right&&{el:right,t:more&&more.offsetParent?"更多功能":"搜尋",d:"搜尋整科內容（快捷鍵 /）。右上角還有同步狀態、登出和深淺色切換。"}

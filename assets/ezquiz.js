@@ -126,7 +126,7 @@
     else if(!first&&!bar.parentNode)box.insertBefore(bar,box.querySelector(":scope > .ezgen-bar"));
     if(window.EZGEN&&EZGEN.isAi(key)&&!bar.querySelector(".mcredo")){
       const rb=document.createElement("button");rb.type="button";rb.className="btn mcredo";rb.textContent="重做這章";rb.style.marginLeft="12px";
-      rb.onclick=()=>{window.EZundo("這章的作答（含 AI 題目）",()=>{
+      rb.onclick=()=>{window.EZundo("這章的作答（含題目）",()=>{
         delete S.quiz[key];EZGEN.reset(key);S.quizReset=S.quizReset||{};S.quizReset[key]=now();save();
         try{renderQuiz(key);}catch(e){}afterChange(key);},null,rb);};
       bar.appendChild(rb);}
@@ -184,7 +184,7 @@
     const gb=[...sec.querySelectorAll(".quiz[data-gen]")].map(b=>EZGEN.bar(b.dataset.quiz)).find(shown);if(gb)return gb;
     const w=sec.querySelector(".chw");if(!w)return null;const x=(S.ex2||{})[w.dataset.exam]||{};
     const wq=[...w.querySelectorAll(".exq")].find(q=>shown(q)&&!((x.grade||{})[q.id]));if(wq)return wq;
-    /* nothing made yet in the written part: its 「AI 開始出題」 row */
+    /* nothing made yet in the written part: its 「開始出題」 row */
     return [...w.querySelectorAll(".ezgenw-bar")].find(shown)||null;
   };
   /* the glow class comes off when its animation ends: a class left on an element replays the animation every time

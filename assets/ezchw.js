@@ -6,7 +6,7 @@
    - The AI grades against the chapter's notes (the section the question belongs to): it may not require or reward
      ideas that are not in the notes, and it scores the idea, not the wording of the reference answer.
    - The AI also writes a model answer (English + 中文, the same ANSWER box as before). It appears after grading, and
-     「看 AI 解答」 shows it without answering. Answers are kept in this browser (localStorage "ezaians:<page>").
+     「看解答」 shows it without answering. Answers are kept in this browser (localStorage "ezaians:<page>").
    Used by each subject's app.js (EZchw.is / EZchw.grade / EZchw.setup). Outside a chapter tab, a question's notes are
    the section that shares the most words with it. */
 (function(){
@@ -117,7 +117,7 @@ context(items),
   }
   const arrOf=o=>(Array.isArray(o)?o:(o&&Array.isArray(o.items)?o.items:[])).filter(x=>x&&x.id!=null);
   const sampler=()=>typeof SAMPLE!=="undefined"&&SAMPLE?SAMPLE:(window.EZAI?EZAI.sampler():null);
-  const why=e=>window.EZAI&&EZAI.errText?EZAI.errText(e):"AI 暫時無法使用";
+  const why=e=>window.EZAI&&EZAI.errText?EZAI.errText(e):"暫時無法使用";
 
   /* the AI's model answer under a question (same look as the old ANSWER box) */
   function showAnswer(q,open){
@@ -126,7 +126,7 @@ context(items),
     if(!box){box=document.createElement("div");box.className="box en aians";(q.querySelector(":scope > .gres")||q.lastElementChild).after(box);}
     box.innerHTML='<span class="lbl">ANSWER</span>'+esc(a.en)+(a.zh?'<div class="zhtr"><span>中文</span>'+esc(a.zh)+'</div>':'')+'';
     if(open!==undefined)box.hidden=!open;
-    const b=q.querySelector(".aibtn");if(b)b.textContent=box.hidden?"看 AI 解答":"收起 AI 解答";
+    const b=q.querySelector(".aibtn");if(b)b.textContent=box.hidden?"看解答":"收起解答";
   }
   /* a failure: say why and offer 重試 (no keyword grading, no score) */
   function fail(stat,msg,retry){
@@ -152,8 +152,8 @@ context(items),
       if(!list.length){stat.textContent="還沒有作答。";return;}
       const run=()=>EZchw.grade(qsEls,ctx);
       const S0=sampler();
-      if(!S0){fail(stat,"AI 批改目前無法使用，請稍後再試。",run);return;}
-      btns.forEach(b=>b.disabled=true);stat.textContent="AI 批改中…";
+      if(!S0){fail(stat,"批改目前無法使用，請稍後再試。",run);return;}
+      btns.forEach(b=>b.disabled=true);stat.textContent="批改中…";
       try{
         const arr=arrOf(await S0.json(gradePrompt(list),{modelTier:"default"}));
         let miss=list.filter(it=>!arr.some(x=>String(x.id)===it.id));
@@ -167,23 +167,23 @@ context(items),
           const q=document.getElementById(it.id);render(q);showAnswer(q,true);
         });
         save();upd();
-        if(miss.length)fail(stat,"有 "+miss.length+" 題 AI 沒有回覆，請稍後再試。",()=>EZchw.grade(qsEls.filter(q=>miss.some(m=>m.id===q.id)),ctx));
+        if(miss.length)fail(stat,"有 "+miss.length+" 題沒有回覆，請稍後再試。",()=>EZchw.grade(qsEls.filter(q=>miss.some(m=>m.id===q.id)),ctx));
         else stat.textContent="批改完成。";
       }catch(e){fail(stat,why(e)+"這次沒有批改，請稍後再試。",run);}
       finally{btns.forEach(b=>b.disabled=false);}
     },
-    /* per question: the 「看 AI 解答」 button, and the saved answer shown again after a reload */
+    /* per question: the 「看解答」 button, and the saved answer shown again after a reload */
     setup(q){
       if(window.EZgenw&&EZgenw.owns(q))return;   /* AI written questions: the model answer comes with the grade */
       const bar=q.querySelector(".gradebar");if(!bar||q.querySelector(".aibtn"))return;
-      const b=document.createElement("button");b.type="button";b.className="btn aibtn";b.textContent="看 AI 解答";
+      const b=document.createElement("button");b.type="button";b.className="btn aibtn";b.textContent="看解答";
       bar.querySelector(".grade").after(b);
       b.addEventListener("click",async()=>{
         const box=q.querySelector(":scope > .aians");
-        if(box){box.hidden=!box.hidden;b.textContent=box.hidden?"看 AI 解答":"收起 AI 解答";return;}
+        if(box){box.hidden=!box.hidden;b.textContent=box.hidden?"看解答":"收起解答";return;}
         const stat=q.querySelector(".gstat"),S0=sampler();
-        if(!S0){fail(stat,"AI 目前無法使用，請稍後再試。",()=>b.click());return;}
-        b.disabled=true;stat.textContent="AI 寫解答中…";
+        if(!S0){fail(stat,"目前無法使用，請稍後再試。",()=>b.click());return;}
+        b.disabled=true;stat.textContent="寫解答中…";
         try{
           const it=info(q),r=arrOf(await S0.json(answerPrompt([it]),{modelTier:"default"})).find(x=>String(x.id)===q.id);
           if(!r||!r.answer_en)throw Object.assign(new Error("empty"),{code:"empty_completion"});

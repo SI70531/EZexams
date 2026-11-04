@@ -1,5 +1,5 @@
 /* EZGEN: AI practice, one question at a time (chapter exercises and mock exams of every subject).
-   - A press of 「AI 開始出題」 asks the Worker (tools/ezexams-worker.js, /gen/next) for the first question; once it is answered and
+   - A press of 「開始出題」 asks the Worker (tools/ezexams-worker.js, /gen/next) for the first question; once it is answered and
      its explanation is on screen, 「出下一題」 appears. When the set has its original number of questions the button goes away.
    - Questions come from the notes: every section of the chapter is asked about once first; when every section has been asked and
      slots are left, the questions you got wrong come back (a new question on the same idea), then the least-asked sections.
@@ -68,7 +68,7 @@
   }
   const fail=(code,msg,extra)=>Object.assign(new Error(msg||code),{code},extra||{});
   async function post(path,body,retry){
-    const t=await token(retry);if(!t)throw fail("login","先登入帳號才能使用 AI 出題");
+    const t=await token(retry);if(!t)throw fail("login","先登入帳號才能出題");
     const ac=new AbortController(),to=setTimeout(()=>ac.abort(),70000);
     let r;
     try{r=await fetch(WORKER+path,{method:"POST",headers:{"Content-Type":"text/plain;charset=UTF-8"},body:JSON.stringify(Object.assign({t},body)),signal:ac.signal});}
@@ -85,12 +85,12 @@
   }
   const errText=e=>{
     const c=e&&e.code;
-    if(c==="login")return (e.message&&e.message!==c?e.message:"先登入帳號才能使用 AI 出題")+"（右上角「同步」→ 登入）。";
-    if(c==="rate")return "AI 額度暫時用完，約 "+(e.wait||60)+" 秒後再按一次。你的作答都有保存。";
-    if(c==="timeout")return "等太久了，AI 沒有回應。請再按一次。";
+    if(c==="login")return (e.message&&e.message!==c?e.message:"先登入帳號才能出題")+"（右上角「同步」→ 登入）。";
+    if(c==="rate")return "額度暫時用完，約 "+(e.wait||60)+" 秒後再按一次。你的作答都有保存。";
+    if(c==="timeout")return "等太久了，沒有回應。請再按一次。";
     if(c==="network")return "連不上伺服器，請檢查網路後再試一次。";
     if(c==="gone")return "這題已經過期，請重新出題。";
-    return "AI 這次沒有出好題目（"+String(e&&e.message||"").slice(0,80)+"），請再按一次。";
+    return "這次沒有出好題目（"+String(e&&e.message||"").slice(0,80)+"），請再按一次。";
   };
 
   /* ---------- sections and what to ask next ---------- */
@@ -357,14 +357,14 @@
         const made=Object.values(st().gen&&st().gen[k]||{}).filter(g=>!g.p).length+Object.keys(st().quiz&&st().quiz[k]||{}).filter(i=>!genOf(k,+i)&&+i<N).length;
         if(made>=N){bar.remove();return;}
         const part=made>0;
-        t.innerHTML=part?"還差 <b>"+(N-made)+" 題</b>沒出完。":"AI 會依講義一次出完整份模擬考，共 <b>"+N+" 題</b>（約 1～2 分鐘）。作答後才顯示答案與解析。";
-        const bb=addBtn(part?"繼續出完剩下的題目":"AI 出整份模擬考",async()=>{
+        t.innerHTML=part?"還差 <b>"+(N-made)+" 題</b>沒出完。":"會依講義一次出完整份模擬考，共 <b>"+N+" 題</b>（約 1～2 分鐘）。作答後才顯示答案與解析。";
+        const bb=addBtn(part?"繼續出完剩下的題目":"出整份模擬考",async()=>{
           if(BUSY[k])return;BUSY[k]=true;ERR[k]="";bb.disabled=true;
-          const tick=()=>{const m=Object.values(st().gen&&st().gen[k]||{}).filter(g=>!g.p).length;bb.textContent="AI 出題中… "+m+" / "+N;};tick();
+          const tick=()=>{const m=Object.values(st().gen&&st().gen[k]||{}).filter(g=>!g.p).length;bb.textContent="出題中… "+m+" / "+N;};tick();
           try{await generateAll(k,tick);}catch(e){ERR[k]=errText(e);}
           BUSY[k]=false;rerender();
         },true);
-        if(BUSY[k]){bb.disabled=true;bb.textContent="AI 出題中…";}
+        if(BUSY[k]){bb.disabled=true;bb.textContent="出題中…";}
         if(ERR[k]){const er=document.createElement("div");er.className="gtxt gerr";er.textContent=ERR[k];bar.appendChild(er);}
         return;
       }
@@ -372,16 +372,16 @@
       if(pend>=0){t.innerHTML="作答之後會顯示解析，接著就會出現 <b>「出下一題」</b>。（已完成 "+ans+" / "+N+" 題）";return;}
       if(free<0){bar.remove();return;}
       const first=ans===0&&!Object.keys(st().gen&&st().gen[k]||{}).length;
-      t.innerHTML=first?"每一題由 AI 依講義即時出題，涵蓋這章的每個小節，作答後才顯示答案與解析。共 <b>"+N+" 題</b>。":
+      t.innerHTML=first?"每一題依講義即時出題，涵蓋這章的每個小節，作答後才顯示答案與解析。共 <b>"+N+" 題</b>。":
         "下一題是第 <b>"+(ans+1)+" / "+N+"</b> 題。"+(coveredAll(k)?"每個小節都考過了，接下來優先出你答錯的觀念。":"");
-      const b=addBtn(first?"AI 開始出題":"出下一題",async()=>{
-        if(BUSY[k])return;BUSY[k]=true;ERR[k]="";b.disabled=true;b.textContent="AI 出題中…";
+      const b=addBtn(first?"開始出題":"出下一題",async()=>{
+        if(BUSY[k])return;BUSY[k]=true;ERR[k]="";b.disabled=true;b.textContent="出題中…";
         try{await generate(k);rerender();
         }catch(e){ERR[k]=errText(e);BUSY[k]=false;draw();return;}
         BUSY[k]=false;
       },true);
       if(ERR[k]){const er=document.createElement("div");er.className="gtxt gerr";er.textContent=ERR[k];bar.appendChild(er);}
-      if(BUSY[k]){b.disabled=true;b.textContent="AI 出題中…";}
+      if(BUSY[k]){b.disabled=true;b.textContent="出題中…";}
     };
     function addBtn(label,fn,primary){const b=document.createElement("button");b.type="button";b.className="btn"+(primary?" primary":"");b.textContent=label;b.addEventListener("click",fn);bar.appendChild(b);return b;}
     draw.k=k;draw.box=box;

@@ -1025,7 +1025,10 @@ if(window.EZgenw){
     const id=m.dataset.menu;
     document.querySelectorAll('.algp[data-menu="'+id+'"]').forEach(g=>{g.hidden=g.dataset.alg!==k;});
     m.hidden=!!k;
-    const h=headOf(m);if(!noScroll&&h)h.scrollIntoView({behavior:"smooth",block:"start"});
+    if(!noScroll){
+      const target=k?document.querySelector('.algp[data-alg="'+k+'"][data-menu="'+id+'"] > .alg'):m;
+      if(target){const y=target.getBoundingClientRect().top+scrollY-96;scrollTo({top:Math.max(0,y),behavior:"smooth"});}
+    }
   }
   const menuOf=g=>document.querySelector('.algmenu[data-menu="'+g.dataset.menu+'"]');
   document.addEventListener("click",e=>{

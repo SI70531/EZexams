@@ -71,7 +71,7 @@ html.ezcalm .joy-bit,html.ezcalm .joy-shot{display:none}
   const markFinished=()=>document.querySelectorAll(".quiz[data-quiz]").forEach(b=>{const a=[...b.querySelectorAll(":scope > .qitem")];if(a.length&&a.every(isDone))finished.add(b.dataset.quiz);});
   document.addEventListener("click",e=>{
     const o=e.target.closest&&e.target.closest(".quiz[data-quiz] .opt");if(!o||o.disabled)return;
-    lastClick=Date.now();const q=o.closest(".qitem");setTimeout(()=>judge(q),60);
+    lastClick=Date.now();const q=o.closest(".qitem");setTimeout(()=>{if(window.EZwhenMarked)EZwhenMarked(q,el=>{lastClick=Date.now();judge(el);});else judge(q);},60);
   },true);
   function judge(q){
     if(!q||!isDone(q))return;

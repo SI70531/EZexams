@@ -207,12 +207,12 @@ html.ezcalm .wow-bg,html.ezcalm #wowp,html.ezcalm #wowt,html.ezcalm .wow-intro,h
   document.addEventListener("click",e=>{
     const o=e.target.closest&&e.target.closest(".opt");if(!o||o.disabled||calm())return;
     const q=o.closest(".qitem");if(!q)return;
-    setTimeout(()=>{
-      if(!q.querySelector(".opt.right,.opt.wrong"))return;
-      const w=q.querySelector(".opt.wrong");
+    const go=el=>{
+      const w=el.querySelector(".opt.wrong");
       if(w){streakNow=0;shatter(w);}
       else{streakNow++;flash(streakNow>=5&&streakNow%5===0);}
-    },40);
+    };
+    setTimeout(()=>{if(window.EZwhenMarked)EZwhenMarked(q,go);else if(q.querySelector(".opt.right,.opt.wrong"))go(q);},40);
   },true);
 
   /* ---------- answer text types itself out: the page's own explanation,解析,解答 and the AI grading notes ---------- */

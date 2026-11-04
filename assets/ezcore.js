@@ -64,6 +64,15 @@
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",wireMotion);else wireMotion();
   window.EZcalm=()=>root.classList.contains("ezcalm");
 
+  /* EZwhenMarked(q, cb): run cb(item) once the right/wrong marking of the question q's item has appeared.
+     A first answer is revealed by the Worker (up to a second or two later) and the item may be replaced by a new node,
+     so wait for it (up to 20 s) instead of checking a fixed 30 ms after the click. */
+  window.EZwhenMarked=function(q,cb,max){
+    const box=q.closest&&q.closest(".quiz[data-quiz]"),key=box&&box.dataset.quiz,i=q.dataset?q.dataset.i:null,t0=Date.now();
+    const find=()=>{if(key&&i!=null){const b=document.querySelector('.quiz[data-quiz="'+key+'"]');const el=b&&b.querySelector(':scope > .qitem[data-i="'+i+'"]');if(el)return el;}return q;};
+    (function tick(){const el=find();if(el.isConnected&&el.querySelector(".opt.right,.opt.wrong")){try{cb(el);}catch(e){}return;}
+      if(Date.now()-t0<(max||20000))setTimeout(tick,100);})();
+  };
   /* Answer options are made with EZopt() instead of <button>: browsers never let you select text inside a
      button, so you could not copy an option. EZopt() gives a normal element that still acts like a button:
      click, Tab to focus, Enter/Space to choose, and .disabled locks it (reflected as the disabled attribute). */

@@ -183,7 +183,7 @@ html.ezcalm .fx-sv{animation:none}
     const o=e.target.closest&&e.target.closest(".opt");if(!o||o.disabled)return;
     const q=o.closest(".qitem");
     lastPick={q,at:Date.now()};
-    setTimeout(()=>react(lastPick),30);
+    if(window.EZwhenMarked)setTimeout(()=>EZwhenMarked(q,el=>react({q:el})),30);else setTimeout(()=>react(lastPick),30);
   },true);
   function react(p){
     if(!p||!p.q)return;

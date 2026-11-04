@@ -394,12 +394,13 @@
   }
 
   /* renderQuiz rebuilds the whole box, which makes every answered question above redraw its explanation and move the page.
-     For AI sets, questions that did not change keep their own nodes (and their explanations); only the changed one is new. */
+     Questions that did not change keep their own nodes (and their explanations); only the changed one is new.
+     This covers every set (chapter quizzes, past exams, mock exams), not only the AI ones. */
   const qsig=n=>[...n.querySelectorAll(".opt")].map(o=>o.className+(o.disabled?"!":"")).join("|")+"#"+((n.querySelector(".stem")||{}).textContent||"");
   function keepRender(){
     const orig=window.renderQuiz;if(typeof orig!=="function"||orig.__ezkeep)return;
     const keep=function(key){
-      const box=isAi(key)?document.querySelector('[data-quiz="'+key+'"]'):null;
+      const box=document.querySelector('[data-quiz="'+key+'"]');
       if(!box)return orig.apply(this,arguments);
       const old=[...box.querySelectorAll(":scope > .qitem")].map(n=>({n,i:n.dataset.i,sig:qsig(n)}));
       const r=orig.apply(this,arguments);

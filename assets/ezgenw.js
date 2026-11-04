@@ -237,7 +237,7 @@
   /* grade the answers of a list of written questions; ctx = {st, render, upd, save, btns, stat} from app.js */
   async function grade(qsEls,ctx){
     const {render,upd,save,btns,stat}=ctx;
-    const list=qsEls.filter(q=>q.querySelector("textarea")&&q.querySelector("textarea").value.trim());
+    const list=qsEls.filter(q=>q.querySelector("textarea")&&(ctx.blank||q.querySelector("textarea").value.trim()));
     if(!list.length){stat.textContent="還沒有作答。";return;}
     btns.forEach(b=>b.disabled=true);stat.textContent="批改中…";
     let done=0;

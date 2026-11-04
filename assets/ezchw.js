@@ -148,7 +148,7 @@ context(items),
     async grade(qsEls,ctx){
       if(window.EZgenw&&qsEls.length&&qsEls.every(q=>EZgenw.owns(q)))return EZgenw.grade(qsEls,ctx);
       const {st,render,upd,save,btns,stat}=ctx;
-      const list=qsEls.map(info).filter(it=>it.ans);
+      const list=qsEls.map(info).filter(it=>it.ans||ctx.blank);   /* ctx.blank: the single-question button grades a blank answer too */
       if(!list.length){stat.textContent="還沒有作答。";return;}
       const run=()=>EZchw.grade(qsEls,ctx);
       const S0=sampler();

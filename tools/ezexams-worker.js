@@ -575,8 +575,8 @@ ans
 async function wgrade(env, acct, who, bodyText, json, fail) {
   if (!env.GEMINI_KEY) return fail(500, "INTERNAL", "The Worker has no GEMINI_KEY secret yet");
   let r; try { r = JSON.parse(bodyText); } catch (e) { return fail(400, "BAD_JSON", "Body is not JSON"); }
-  const ans = clip(r.ans, 4000), notes = clip(r.notes, 9000);
-  if (!ans) return fail(400, "BAD_CODE", "No answer to grade");
+  const blank = !clip(r.ans, 4000).trim(), notes = clip(r.notes, 9000);
+  const ans = blank ? "(the student left this blank: could not answer)" : clip(r.ans, 4000);   /* a blank answer is graded too: 0 points and the model answer */
   let item = null;
   if (/^[0-9a-f]{32}$/.test(String(r.id || ""))) {
     const { rec } = await genStore(env, acct.id, "get", { id: String(r.id) });
@@ -601,9 +601,10 @@ async function wgrade(env, acct, who, bodyText, json, fail) {
   if (!o) return fail(502, "GEN_FAILED", "This answer was not graded (" + (err && err.status || "?") + "); try again");
   let sc = Math.max(0, Math.min(item.p, Number(o.score) || 0));
   sc = Math.floor(sc * 2 + 1e-9) / 2;
+  if (blank) sc = 0;
   const verdict = sc >= item.p ? "correct" : sc > 0 ? "partial" : "wrong";
   return json({
-    score: sc, verdict, feedback: clip(o.feedback, 600),
+    score: sc, verdict, feedback: blank ? "沒有作答，這題 0 分。下面是參考解答。" : clip(o.feedback, 600),
     missing: (Array.isArray(o.missing) ? o.missing : []).slice(0, 8).map(x => clip(x, 60)),
     answer_en: clip(o.answer_en, 2000), answer_zh: clip(o.answer_zh, 2000), p: item.p,
   });

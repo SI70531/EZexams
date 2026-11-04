@@ -10,12 +10,12 @@
 (function(){
   if(typeof QUIZ==="undefined")return;
   const css=`.aiexp{margin-top:10px;padding:10px 12px;border:1px solid var(--line,#ccc);border-radius:8px;background:var(--paper,#fff);font-size:.95em;line-height:1.6}
-.aiexp .aih{font-family:var(--f-mono,monospace);font-size:11.5px;font-weight:700;letter-spacing:.08em;color:var(--indigo,#3949ab);margin-bottom:4px}
+.aiexp .aih{font-family:var(--f-mono,monospace);font-size:calc(11.5px*var(--ts,1));font-weight:700;letter-spacing:.08em;color:var(--indigo,#3949ab);margin-bottom:4px}
 .aiexp .aimis{margin:0 0 8px;color:var(--bad,#c62828)}
 .aiexp ul{list-style:none;margin:0;padding:0}
 .aiexp li{display:flex;gap:8px;align-items:flex-start;padding:5px 0;border-top:1px dashed var(--line,#ddd)}
 .aiexp li:first-child{border-top:0}
-.aiexp li .ab{flex:none;display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;font-size:12px;font-weight:700;border:1.5px solid currentColor}
+.aiexp li .ab{flex:none;display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;font-size:calc(12px*var(--ts,1));font-weight:700;border:1.5px solid currentColor}
 .aiexp li.ok .ab{color:var(--ok,#2e7d32)}.aiexp li.no .ab{color:var(--muted,#888)}.aiexp li.mine.no .ab{color:var(--bad,#c62828)}
 .aiexp .aipt{margin:8px 0 0;font-weight:600}
 .aiexp .aimsg{color:var(--muted,#888)}

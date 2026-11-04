@@ -23,7 +23,7 @@ svg text.ezgl{cursor:help}
 .slk{color:inherit;font-weight:700;text-decoration:underline dotted;text-underline-offset:3px;cursor:pointer}
 a.slk:hover,a.slk:focus-visible{color:var(--seal,#c0392b)}
 .ez-defrow{display:flex;justify-content:flex-end;margin-top:8px}
-.btn.ez-def{font-size:12px;padding:3px 12px}
+.btn.ez-def{font-size:calc(12px*var(--ts,1));padding:3px 12px}
 #eztip b{display:block;color:#f2bd5a;font-weight:700;margin-bottom:2px}
 `;
   const st=document.createElement("style");st.textContent=css;document.head.appendChild(st);

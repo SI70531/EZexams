@@ -28,23 +28,23 @@
 <script src="../../assets/ezjoy.js?v=71a4c085" defer></script>
 <script src="../../assets/ezwow.js?v=d48593ff" defer></script>
 <style>.plansep{border:0;border-top:1px dashed var(--line);margin:10px 0}/*EXTRA: notes rewrite (figures, exercises, homework parts) */
-.note h2.grp{font-size:15px;margin:26px 0 4px;padding:6px 10px;border-left:4px solid var(--brass);background:var(--brass-soft);border-radius:4px}
-.note h4{margin:16px 0 6px;font-size:15px}
+.note h2.grp{font-size:calc(15px*var(--ts,1));margin:26px 0 4px;padding:6px 10px;border-left:4px solid var(--brass);background:var(--brass-soft);border-radius:4px}
+.note h4{margin:16px 0 6px;font-size:calc(15px*var(--ts,1))}
 .note figure.fg{margin:10px 0;min-width:0}
-.note figure.fg figcaption,.hwp figure.fg figcaption{font-size:12.5px;color:var(--muted);margin-top:4px;line-height:1.5}
+.note figure.fg figcaption,.hwp figure.fg figcaption{font-size:calc(12.5px*var(--ts,1));color:var(--muted);margin-top:4px;line-height:1.5}
 .note .three,.hwp .three{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;align-items:start}
 .hwp .four,.note .four{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;align-items:start}
 .hwp .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;align-items:start}
 .note .three>*,.note .four>*,.hwp .two>*,.hwp .three>*,.hwp .four>*{min-width:0}
 .hwp svg{width:100%;max-width:420px;height:auto;display:block;background:var(--paper);border:1px solid var(--line);border-radius:8px}
-.hwp svg text{font-size:13px;fill:var(--ink)}
-.note svg .tk,.hwp svg .tk{font-size:11px;fill:var(--muted)}
-.note svg .tkm,.hwp svg .tkm{font-size:11px;fill:var(--seal)}
-.note svg .axl,.hwp svg .axl{font-size:11.5px;fill:var(--muted)}
-.note svg .lb,.hwp svg .lb{font-size:12px;font-weight:600;fill:var(--ink)}
-.note svg .lb2,.hwp svg .lb2{font-size:12px;font-weight:600;fill:var(--seal)}
-.note svg .lb3,.hwp svg .lb3{font-size:12px;font-weight:600;fill:var(--ok)}
-.note svg .ar,.hwp svg .ar{font-size:14px;font-weight:700;fill:var(--ink)}
+.hwp svg text{font-size:calc(13px*var(--ts,1));fill:var(--ink)}
+.note svg .tk,.hwp svg .tk{font-size:calc(11px*var(--ts,1));fill:var(--muted)}
+.note svg .tkm,.hwp svg .tkm{font-size:calc(11px*var(--ts,1));fill:var(--seal)}
+.note svg .axl,.hwp svg .axl{font-size:calc(11.5px*var(--ts,1));fill:var(--muted)}
+.note svg .lb,.hwp svg .lb{font-size:calc(12px*var(--ts,1));font-weight:600;fill:var(--ink)}
+.note svg .lb2,.hwp svg .lb2{font-size:calc(12px*var(--ts,1));font-weight:600;fill:var(--seal)}
+.note svg .lb3,.hwp svg .lb3{font-size:calc(12px*var(--ts,1));font-weight:600;fill:var(--ok)}
+.note svg .ar,.hwp svg .ar{font-size:calc(14px*var(--ts,1));font-weight:700;fill:var(--ink)}
 .hwp svg .ax{stroke:var(--ink);stroke-width:1.5;fill:none}
 .hwp svg .cv,.note svg .cv{stroke:var(--indigo);stroke-width:2.5;fill:none}
 .hwp svg .cv2,.note svg .cv2{stroke:var(--seal);stroke-width:2.5;fill:none}
@@ -76,23 +76,23 @@
 .note .ex summary,.hwp summary{cursor:pointer;font-weight:600;color:var(--brass)}
 .note .ex details[open] summary{margin-bottom:6px}
 .note .sum{border:1px dashed var(--line-strong);border-radius:6px;padding:10px 14px;margin:16px 0}
-h2.part{margin:34px 0 8px;padding:10px 14px;border-radius:8px;background:var(--hard);color:var(--paper);font-size:18px}
-h2.part span{display:inline-block;margin-right:8px;padding:1px 8px;border-radius:4px;background:var(--seal);color:#fff;font-size:14px}
+h2.part{margin:34px 0 8px;padding:10px 14px;border-radius:8px;background:var(--hard);color:var(--paper);font-size:calc(18px*var(--ts,1))}
+h2.part span{display:inline-block;margin-right:8px;padding:1px 8px;border-radius:4px;background:var(--seal);color:#fff;font-size:calc(14px*var(--ts,1))}
 .hwp{border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin:14px 0;background:var(--paper)}
-.hwp h4{margin:0 0 8px;font-size:16px}
+.hwp h4{margin:0 0 8px;font-size:calc(16px*var(--ts,1))}
 .hwp .hwq p{margin:6px 0}
 .hwp details.hwa{margin-top:10px}
 .hwp .hwbody{margin-top:8px}
 .hwp .hwbody table{border-collapse:collapse;width:100%}
-.hwp .hwbody td,.hwp .hwbody th{border:1px solid var(--line);padding:4px 8px;font-size:14px}
+.hwp .hwbody td,.hwp .hwbody th{border:1px solid var(--line);padding:4px 8px;font-size:calc(14px*var(--ts,1))}
 .hwp .tbl{overflow-x:auto}
-.quiz.hwquiz>h2{font-size:16px}
+.quiz.hwquiz>h2{font-size:calc(16px*var(--ts,1))}
 .note .five,.hwp .five{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}.note .five>*,.hwp .five>*{min-width:0}
 
 .qfig{margin:4px 0 10px}.qfig svg{width:100%;max-width:400px;height:auto;display:block;background:var(--paper);border:1px solid var(--line);border-radius:8px}.qfig .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}.qfig .two>*{min-width:0}
-.qfig svg text{font-size:13px;fill:var(--ink)}.qfig svg .tk,.qfig svg .axl{font-size:11px;fill:var(--muted)}.qfig svg .lb{font-size:12px;font-weight:600;fill:var(--ink)}.qfig svg .ar{font-size:14px;font-weight:700;fill:var(--ink)}
+.qfig svg text{font-size:calc(13px*var(--ts,1));fill:var(--ink)}.qfig svg .tk,.qfig svg .axl{font-size:calc(11px*var(--ts,1));fill:var(--muted)}.qfig svg .lb{font-size:calc(12px*var(--ts,1));font-weight:600;fill:var(--ink)}.qfig svg .ar{font-size:calc(14px*var(--ts,1));font-weight:700;fill:var(--ink)}
 .qfig svg .ax{stroke:var(--ink);stroke-width:1.5;fill:none}.qfig svg .cv{stroke:var(--indigo);stroke-width:2.5;fill:none}.qfig svg .cv2{stroke:var(--seal);stroke-width:2.5;fill:none}.qfig svg .cv3{stroke:var(--ok);stroke-width:2.5;fill:none}.qfig svg .cv4{stroke:var(--warn);stroke-width:2.5;fill:none}.qfig svg .gl{stroke:var(--muted);stroke-width:1;stroke-dasharray:4 3;fill:none}.qfig svg .dot{fill:var(--ink)}.qfig svg .ahd{fill:var(--ink)}
-.qfig figure{margin:0}.qfig figcaption{font-size:12px;color:var(--muted)}
+.qfig figure{margin:0}.qfig figcaption{font-size:calc(12px*var(--ts,1));color:var(--muted)}
 .zhbtn{display:none!important}
 </style>
 <script src="../../assets/ezplan.js?v=d1988ff1" defer></script>
@@ -127,24 +127,24 @@ h2.part span{display:inline-block;margin-right:8px;padding:1px 8px;border-radius
   --bad:#ff7d5a; --bad-soft:rgba(255,125,90,.08); --warn:#f2bd5a; --warn-soft:rgba(242,189,90,.09); --warn-line:rgba(242,189,90,.32);
   --code:#0d1b25; --fig:#ccd0cf; --hard:#06141b; --shadow:0 6px 18px rgba(0,0,0,.4);
   color-scheme:dark}
-.zhtr{font-family:var(--f-body);font-size:14.5px;line-height:1.75;color:var(--ink70);margin-top:10px;padding-top:9px;border-top:1px dashed var(--indigo-mid)}
-.zhtr span{display:inline-block;font-family:var(--f-mono);font-size:11px;font-weight:600;color:var(--indigo);border:1px solid var(--indigo-mid);border-radius:4px;padding:0 6px;margin-right:8px;vertical-align:1px}
-.qitem .hard{display:inline-block;font-family:var(--f-mono);font-size:11px;font-weight:600;color:var(--accent-ink);background:var(--seal);border-radius:4px;padding:1px 7px;margin-right:8px;vertical-align:2px}
-h4.cfq{font-family:var(--f-display);font-size:19px;margin:30px 0 8px;padding-left:10px;border-left:4px solid var(--seal)}
+.zhtr{font-family:var(--f-body);font-size:calc(14.5px*var(--ts,1));line-height:1.75;color:var(--ink70);margin-top:10px;padding-top:9px;border-top:1px dashed var(--indigo-mid)}
+.zhtr span{display:inline-block;font-family:var(--f-mono);font-size:calc(11px*var(--ts,1));font-weight:600;color:var(--indigo);border:1px solid var(--indigo-mid);border-radius:4px;padding:0 6px;margin-right:8px;vertical-align:1px}
+.qitem .hard{display:inline-block;font-family:var(--f-mono);font-size:calc(11px*var(--ts,1));font-weight:600;color:var(--accent-ink);background:var(--seal);border-radius:4px;padding:1px 7px;margin-right:8px;vertical-align:2px}
+h4.cfq{font-family:var(--f-display);font-size:calc(19px*var(--ts,1));margin:30px 0 8px;padding-left:10px;border-left:4px solid var(--seal)}
 .box p:first-of-type{margin-top:0}
 .box p:last-child,.box ul:last-child{margin-bottom:0}
 table td{text-align:left}
 .ilab{position:relative;background:var(--paper);border:1.5px solid var(--ink);border-radius:8px;box-shadow:4px 4px 0 var(--hard);padding:14px 18px 16px;margin:22px 0}
-.ilab>.lbl{display:table;font-family:var(--f-mono);font-size:11.5px;font-weight:600;margin:-14px 0 8px -18px;padding:3px 10px;border-radius:0 0 6px 0;background:var(--ink);color:var(--bg)}
+.ilab>.lbl{display:table;font-family:var(--f-mono);font-size:calc(11.5px*var(--ts,1));font-weight:600;margin:-14px 0 8px -18px;padding:3px 10px;border-radius:0 0 6px 0;background:var(--ink);color:var(--bg)}
 .lab-row{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center;margin:8px 0}
-.lab-row label{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink70);font-family:var(--f-mono)}
+.lab-row label{display:flex;align-items:center;gap:8px;font-size:calc(14px*var(--ts,1));color:var(--ink70);font-family:var(--f-mono)}
 .lab-row label b{min-width:3.2em;color:var(--ink);font-variant-numeric:tabular-nums}
 .ilab input[type=range]{accent-color:var(--indigo);width:160px}
-.ilab input[type=number],.ilab select,.ilab textarea{font:inherit;font-size:14px;color:var(--ink);background:var(--paper2);border:1px solid var(--line);border-radius:6px;padding:4px 8px}
+.ilab input[type=number],.ilab select,.ilab textarea{font:inherit;font-size:calc(14px*var(--ts,1));color:var(--ink);background:var(--paper2);border:1px solid var(--line);border-radius:6px;padding:4px 8px}
 .ilab input[type=number]{width:80px}
-.ilab textarea{width:100%;font-family:var(--f-mono);font-size:13px;resize:vertical}
+.ilab textarea{width:100%;font-family:var(--f-mono);font-size:calc(13px*var(--ts,1));resize:vertical}
 .ilab svg{display:block;width:100%;height:auto;margin:8px 0}
-.ilab svg text{font-family:var(--f-mono);font-size:11px;fill:var(--ink70)}
+.ilab svg text{font-family:var(--f-mono);font-size:calc(11px*var(--ts,1));fill:var(--ink70)}
 .ilab svg .ax{stroke:var(--ink);stroke-width:1.2}
 .ilab svg .bar{fill:var(--indigo);fill-opacity:.75;stroke:var(--ink);stroke-width:1}
 .ilab svg .bar2{fill:var(--seal);fill-opacity:.7;stroke:var(--ink);stroke-width:1}
@@ -159,25 +159,25 @@ table td{text-align:left}
 .ilab .calc{margin:8px 0 0}
 .sc-list{display:grid;gap:6px}
 .sc-item{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:var(--paper2)}
-.sc-item .nm{flex:1 1 220px;font-size:14.5px}
+.sc-item .nm{flex:1 1 220px;font-size:calc(14.5px*var(--ts,1))}
 .sc-item.ok{border-color:var(--ok);background:var(--ok-soft)}
 .sc-item.no{border-color:var(--seal);background:var(--seal-soft)}
-.sc-item .why{flex-basis:100%;font-size:13px;color:var(--ink70)}
+.sc-item .why{flex-basis:100%;font-size:calc(13px*var(--ts,1));color:var(--ink70)}
 .sc-score{font-family:var(--f-display);font-weight:700}
 .p-sorted{display:flex;flex-wrap:wrap;gap:4px;margin:8px 0}
-.p-sorted span{font-family:var(--f-mono);font-size:12px;padding:2px 6px;border:1px solid var(--line);border-radius:4px;background:var(--paper2);font-variant-numeric:tabular-nums}
-.p-sorted span i{font-style:normal;color:var(--muted);font-size:10px;margin-right:3px}
+.p-sorted span{font-family:var(--f-mono);font-size:calc(12px*var(--ts,1));padding:2px 6px;border:1px solid var(--line);border-radius:4px;background:var(--paper2);font-variant-numeric:tabular-nums}
+.p-sorted span i{font-style:normal;color:var(--muted);font-size:calc(10px*var(--ts,1));margin-right:3px}
 .p-sorted span.lo,.p-sorted span.hi{border-color:var(--seal);background:var(--seal-soft);color:var(--seal);font-weight:600}
 </style>
 <style>
 .note h3{margin-top:30px}
-.note .star{color:var(--seal);font-family:var(--f-mono);font-size:13px;letter-spacing:1px}
+.note .star{color:var(--seal);font-family:var(--f-mono);font-size:calc(13px*var(--ts,1));letter-spacing:1px}
 .note b.en,.note .en{color:var(--indigo);font-weight:700}
 .note mark{background:var(--warn-soft,#fff1b8);color:inherit;padding:0 .2em;border-radius:2px}
-.note .one{background:var(--indigo-soft);border:1px solid var(--indigo-mid);border-left:4px solid var(--indigo);border-radius:0 8px 8px 0;padding:12px 16px;margin:14px 0;font-family:var(--f-display);font-size:17px}
-.note .f{font-family:var(--f-mono);white-space:pre;font-size:13.5px;line-height:1.8;background:var(--code);border:1px solid var(--line);border-radius:6px;padding:12px 16px;margin:12px 0;overflow-x:auto}
+.note .one{background:var(--indigo-soft);border:1px solid var(--indigo-mid);border-left:4px solid var(--indigo);border-radius:0 8px 8px 0;padding:12px 16px;margin:14px 0;font-family:var(--f-display);font-size:calc(17px*var(--ts,1))}
+.note .f{font-family:var(--f-mono);white-space:pre;font-size:calc(13.5px*var(--ts,1));line-height:1.8;background:var(--code);border:1px solid var(--line);border-radius:6px;padding:12px 16px;margin:12px 0;overflow-x:auto}
 .note .tbl{overflow-x:auto;margin:10px 0}
-.note table{border-collapse:collapse;width:100%;font-size:14.5px}
+.note table{border-collapse:collapse;width:100%;font-size:calc(14.5px*var(--ts,1))}
 .note th,.note td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
 .note th{background:var(--paper2)}
 .note .trap{border:1px solid var(--seal-line);border-left:4px solid var(--seal);background:var(--seal-soft);border-radius:0 8px 8px 0;padding:12px 16px;margin:16px 0}
@@ -185,20 +185,20 @@ table td{text-align:left}
 .note .vocab{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:10px 16px;margin:14px 0}
 .note .vocab summary{cursor:pointer;font-weight:700;color:var(--indigo)}
 .note .terms{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.note .term{border:1px solid var(--line);border-radius:6px;padding:2px 8px;font-size:13.5px;background:var(--paper2)}
+.note .term{border:1px solid var(--line);border-radius:6px;padding:2px 8px;font-size:calc(13.5px*var(--ts,1));background:var(--paper2)}
 .note .term b{color:var(--indigo);font-family:var(--f-en)}
 .note .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;align-items:start}
 .note .two>*{min-width:0}
 .note svg{width:100%;max-width:420px;height:auto;display:block;background:var(--paper);border:1px solid var(--line);border-radius:8px}
-.note svg text{font-size:13px;fill:var(--ink)}
+.note svg text{font-size:calc(13px*var(--ts,1));fill:var(--ink)}
 .note svg .ax{stroke:var(--ink);stroke-width:1.5;fill:none}.note svg .cv{stroke:var(--indigo);stroke-width:2.5;fill:none}.note svg .cv2{stroke:var(--seal);stroke-width:2.5;fill:none}
 .note svg .gl{stroke:var(--muted);stroke-width:1;stroke-dasharray:4 3;fill:none}.note svg .rev{fill:var(--indigo-mid)}.note svg .dwl{fill:var(--warn);fill-opacity:.45}.note svg .dot{fill:var(--ink)}
-.qitem .zhq{color:var(--muted);font-size:14.5px;line-height:1.6;margin:-4px 0 10px}
+.qitem .zhq{color:var(--muted);font-size:calc(14.5px*var(--ts,1));line-height:1.6;margin:-4px 0 10px}
 .opt .ot{display:flex;flex-direction:column;gap:1px}
-.opt .zho,.ansline .zho{display:block;color:var(--muted);font-size:13.5px}
+.opt .zho,.ansline .zho{display:block;color:var(--muted);font-size:calc(13.5px*var(--ts,1))}
 .opt.pick{background:var(--indigo-soft);border-color:var(--indigo)}
 .ansline{margin:6px 0;padding:6px 10px;border-radius:6px;background:var(--paper);font-family:var(--f-en)}
-.qitem .hwtag{display:inline-block;font-family:var(--f-mono);font-size:11px;color:var(--indigo);border:1px solid var(--indigo-mid);border-radius:4px;padding:0 6px;margin-right:8px;vertical-align:2px}
+.qitem .hwtag{display:inline-block;font-family:var(--f-mono);font-size:calc(11px*var(--ts,1));color:var(--indigo);border:1px solid var(--indigo-mid);border-radius:4px;padding:0 6px;margin-right:8px;vertical-align:2px}
 body.nozh .zhq,body.nozh .opt .zho{display:none}
 .ilab svg .line2{fill:none;stroke:var(--seal);stroke-width:1.8}
 .ilab svg .dash{stroke-dasharray:5 4;opacity:.55}
@@ -212,8 +212,8 @@ body.nozh .zhq,body.nozh .opt .zho{display:none}
 .ilab svg .rev{fill:var(--muted);fill-opacity:.35}
 .ilab svg .dwl{fill:var(--warn);fill-opacity:.6}
 .ilab svg .gain{fill:var(--ok);fill-opacity:.3}
-.ilab .ca-t table{border-collapse:collapse;font-size:14px;margin:8px 0}.ilab .ca-t td,.ilab .ca-t th{border:1px solid var(--line);padding:4px 10px}
-.ilab .lab-row .btn{font-size:13px;padding:3px 10px}
+.ilab .ca-t table{border-collapse:collapse;font-size:calc(14px*var(--ts,1));margin:8px 0}.ilab .ca-t td,.ilab .ca-t th{border:1px solid var(--line);padding:4px 10px}
+.ilab .lab-row .btn{font-size:calc(13px*var(--ts,1));padding:3px 10px}
 .examtools .gradeall[disabled]{opacity:.5}
 .ilab .calc{white-space:pre-wrap}
 </style>

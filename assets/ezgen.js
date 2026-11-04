@@ -317,13 +317,13 @@
 
   /* ---------- the button under the questions ---------- */
   const css=`.ezgen-bar{margin:18px 0 6px;padding:14px 16px;border:1.5px dashed var(--line,#bbb);border-radius:12px;background:var(--paper,transparent);display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
-.ezgen-bar .gtxt{font-size:14px;color:var(--muted,#777);line-height:1.6;flex:1 1 220px}
+.ezgen-bar .gtxt{font-size:calc(14px*var(--ts,1));color:var(--muted,#777);line-height:1.6;flex:1 1 220px}
 .ezgen-bar .gtxt b{color:var(--ink,#111)}
 .ezgen-bar .gerr{color:var(--bad,#c62828);flex-basis:100%}
 .ezgen-bar .btn[disabled]{opacity:.6;cursor:progress}
-.ezgen-toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:1200;max-width:min(92vw,460px);background:var(--paper,#fff);color:var(--ink,#111);border:1.5px solid var(--seal,#c4472a);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.25);padding:12px 16px;font-size:14px;line-height:1.6}
+.ezgen-toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:1200;max-width:min(92vw,460px);background:var(--paper,#fff);color:var(--ink,#111);border:1.5px solid var(--seal,#c4472a);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.25);padding:12px 16px;font-size:calc(14px*var(--ts,1));line-height:1.6}
 .ezgen-toast button{margin-left:8px;font:inherit;border:1px solid currentColor;border-radius:6px;background:none;color:inherit;padding:1px 10px;cursor:pointer}
-.qitem .aitag{display:inline-block;margin-left:8px;font-family:var(--f-mono,monospace);font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--indigo,#3949ab);border:1px solid currentColor;border-radius:999px;padding:0 8px;vertical-align:2px}`;
+.qitem .aitag{display:inline-block;margin-left:8px;font-family:var(--f-mono,monospace);font-size:calc(11px*var(--ts,1));font-weight:700;letter-spacing:.06em;color:var(--indigo,#3949ab);border:1px solid currentColor;border-radius:999px;padding:0 8px;vertical-align:2px}`;
   const stl=document.createElement("style");stl.textContent=css;document.head.appendChild(stl);
   let TT=null;
   function toast(msg){

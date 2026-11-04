@@ -12,7 +12,7 @@
 (function(){
   const css=`.aiw details.qa,.aiw .nogradenote{display:none!important}
 .aiw .aians{margin-top:12px}
-.aiw .aians .aisrc{display:block;margin-top:8px;font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+.aiw .aians .aisrc{display:block;margin-top:8px;font-family:var(--f-mono);font-size:calc(11px*var(--ts,1));color:var(--muted)}
 .aiw .aibtn{margin-left:6px}
 .aiw .gretry{margin-left:8px}`;
   const st=document.createElement("style");st.textContent=css;document.head.appendChild(st);

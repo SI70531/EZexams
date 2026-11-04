@@ -50,11 +50,11 @@
   function addModes(box){
     if(!box||box.dataset.gen||box.querySelector(":scope > .qmodes")||!box.querySelector(".qitem"))return;
     const bar=document.createElement("div");bar.className="qmodes";
-    bar.innerHTML="<span class='lb'>練習模式</span>";
+    bar.innerHTML="<span class='lb'>Practice mode</span>";
     const note=document.createElement("span");note.className="qn";
     const items=()=>[...box.querySelectorAll(".qitem")];
     const wrong=i=>!!i.querySelector(".opt.wrong"),done=i=>!!i.querySelector(".opt.right,.opt.wrong");
-    const modes=[["all","全部",()=>true],["new","只看未答",i=>!done(i)],["wrong","只練錯題",wrong],["rand","隨機 10 題",null]];
+    const modes=[["all","All",()=>true],["new","Unanswered",i=>!done(i)],["wrong","Mistakes only",wrong],["rand","Random 10",null]];
     const btns={};
     function apply(k){
       let show;
@@ -62,7 +62,7 @@
       const f=modes.find(m=>m[0]===k)[2];let n=0;
       items().forEach(i=>{const ok=k==="rand"?show.has(i):f(i);i.classList.toggle("qhide",!ok);if(ok)n++;});
       Object.keys(btns).forEach(x=>btns[x].setAttribute("aria-pressed",String(x===k)));
-      note.textContent=k==="all"?"":(n?"顯示 "+n+" 題":(k==="wrong"?"目前沒有錯題。":k==="new"?"全部都答過了。":"沒有未答的題目了。"));
+      note.textContent=k==="all"?"":(n?"Showing "+n:(k==="wrong"?"No mistakes right now.":k==="new"?"All answered.":"No unanswered questions left."));
     }
     modes.forEach(m=>{const b=document.createElement("button");b.type="button";b.className="btn";b.textContent=m[1];b.setAttribute("aria-pressed",String(m[0]==="all"));b.onclick=()=>apply(m[0]);btns[m[0]]=b;bar.appendChild(b);});
     bar.appendChild(note);box.insertBefore(bar,box.firstChild);
@@ -125,7 +125,7 @@
     if(first&&bar.nextElementSibling!==first&&!bar.contains(first))box.insertBefore(bar,first);
     else if(!first&&!bar.parentNode)box.insertBefore(bar,box.querySelector(":scope > .ezgen-bar"));
     if(window.EZGEN&&EZGEN.isAi(key)&&!bar.querySelector(".mcredo")){
-      const rb=document.createElement("button");rb.type="button";rb.className="btn mcredo";rb.textContent="重做這章";rb.style.marginLeft="12px";
+      const rb=document.createElement("button");rb.type="button";rb.className="btn mcredo";rb.textContent="Redo chapter";rb.style.marginLeft="12px";
       rb.onclick=()=>{window.EZundo("這章的作答（含題目）",()=>{
         delete S.quiz[key];EZGEN.reset(key);S.quizReset=S.quizReset||{};S.quizReset[key]=now();save();
         try{renderQuiz(key);}catch(e){}afterChange(key);},null,rb);};
@@ -134,12 +134,12 @@
     let n=0,r=0;Object.keys(a).forEach(k=>{if(qs[k]){n++;if(a[k]===qs[k].a)r++;}});
     const P=window.EZ_MC_PTS||50; /* a page can set its own total (data structures: 40, like Part I of its exam) */
     const sc=Math.round(r*P/qs.length*10)/10;
-    const t="得分 "+sc+" / "+P+" 分（已作答 "+n+" / "+qs.length+" 題）";
+    const t="Score "+sc+" / "+P+" ("+n+" / "+qs.length+" answered)";
     const s=bar.querySelector(".score");if(s.textContent!==t)s.textContent=t;
   }
   function ensureClear(el,on,fn){
     const r=el.querySelector(":scope > .qbtns");let b=r&&r.querySelector(".qclear");
-    if(on){if(!b){b=document.createElement("button");b.type="button";b.className="btn qclear";b.textContent="清除作答";row(el).appendChild(b);}
+    if(on){if(!b){b=document.createElement("button");b.type="button";b.className="btn qclear";b.textContent="Clear answer";row(el).appendChild(b);}
       /* one click starts the 3 s countdown in place of the button (取消 undoes it), no separate confirm step */
       b.onclick=()=>{window.EZundo("這題的作答",fn,el,b);};}
     else if(b){b.remove();if(r&&!r.children.length)r.remove();}
@@ -156,7 +156,7 @@
       if(Date.now()-w.at>180000){WAIT.delete(q);return;}
       const g=q.querySelector(".gres"),d=q.querySelector("details.qa");if(!g||!d)return;
       const st=(w.btn.classList.contains("gradeall")?(w.btn.closest(".examtools")||document).querySelector(".gmsg"):q.querySelector(".gstat"));
-      const finished=!w.btn.disabled&&st&&/完成/.test(st.textContent);
+      const finished=!w.btn.disabled&&st&&/完成|Done/.test(st.textContent);
       if(!g.hidden&&!g.classList.contains("stale")&&(g.innerHTML!==w.snap||finished)){d.open=true;WAIT.delete(q);}
       else if(finished&&g.hidden)WAIT.delete(q);
     });
@@ -233,8 +233,8 @@
     const {n,t}=left(v);
     b.classList.toggle("done",!n);
     b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>章末練習'+
-      '<span class="n">'+(n?"還有 "+n+" 題":"✓ 已完成")+'</span>';
-    b.title=n?"跳到第一題還沒寫的（共 "+t+" 題）":"這章的題目都寫完了，跳到章末練習";
+      '<span class="n">'+(n?n+" left":"✓ Done")+'</span>';
+    b.title=n?"Jump to the first unanswered one ("+t+" total)":"All questions in this chapter are done. Jump to the chapter exercises.";
     b.hidden=false;
   }
   b.addEventListener("click",()=>{
@@ -269,7 +269,7 @@
       const td=tr.children[1];if(!td||td.querySelector(".pxsub"))return;
       const {n,d}=count(v);if(!n)return;
       const s=document.createElement("span");s.className="psub pxsub";
-      s.innerHTML='<span>已寫 '+d+'/'+n+' 題</span>'+(d>=n?'<span class="pok">✓ 完成</span>':'<span class="ptodo">未完成</span>');
+      s.innerHTML='<span>Done '+d+'/'+n+'</span>'+(d>=n?'<span class="pok">✓ Done</span>':'<span class="ptodo">Not done</span>');
       td.appendChild(s);
     });}finally{busy=false;}
   }

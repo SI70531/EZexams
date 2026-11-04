@@ -27,8 +27,8 @@
 html.ezcalm #jump .jp-list,html.ezcalm #jump button.jp-pill{transition:none}`;
   const st=document.createElement("style");st.textContent=css;document.head.appendChild(st);
 
-  const box=document.createElement("nav");box.id="jump";box.setAttribute("aria-label","章節段落跳轉");
-  box.innerHTML='<button type="button" class="jp-pill" aria-expanded="false" aria-controls="jpList"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">章節段落</span></button><ul class="jp-list" id="jpList" role="list"></ul>';
+  const box=document.createElement("nav");box.id="jump";box.setAttribute("aria-label","Jump to section");
+  box.innerHTML='<button type="button" class="jp-pill" aria-expanded="false" aria-controls="jpList"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Sections</span></button><ul class="jp-list" id="jpList" role="list"></ul>';
   document.body.appendChild(box);
   const pill=box.querySelector(".jp-pill"),list=box.querySelector(".jp-list");
 

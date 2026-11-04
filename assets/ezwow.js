@@ -268,7 +268,7 @@ html.ezcalm .wow-bg,html.ezcalm #wowp,html.ezcalm #wowt,html.ezcalm .wow-intro,h
     let fromLogin=false;try{fromLogin=!!sessionStorage.getItem("ezwow-cards");sessionStorage.removeItem("ezwow-cards");}catch(e){}   /* set by ezgate.js when a sign-in sends you to the home page */
     if(!first||!document.body.animate){if(fromLogin)setTimeout(cardsFly,350);return;}
     const el=document.createElement("div");el.className="wow-intro";
-    el.innerHTML='<div class="h l"></div><div class="h r"></div><div class="rg"></div><div class="c"><div class="mk">EZ</div><div class="t">'+[..."EZexams"].map(ch=>"<span>"+ch+"</span>").join("")+'</div><div class="s">考前衝刺</div></div><div class="sk">點一下跳過</div>';
+    el.innerHTML='<div class="h l"></div><div class="h r"></div><div class="rg"></div><div class="c"><div class="mk">EZ</div><div class="t">'+[..."EZexams"].map(ch=>"<span>"+ch+"</span>").join("")+'</div><div class="s">Exam prep</div></div><div class="sk">Click to skip</div>';
     document.body.appendChild(el);
     const C=el.querySelector(".c"),mk=el.querySelector(".mk"),letters=[...el.querySelectorAll(".t span")],sub=el.querySelector(".s"),rg=el.querySelector(".rg");
     mk.animate([{transform:"scale(0) rotate(-220deg)"},{transform:"scale(1.35) rotate(10deg)",offset:.65},{transform:"scale(1)"}],{duration:800,easing:"cubic-bezier(.3,1.3,.5,1)",fill:"backwards"});

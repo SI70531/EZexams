@@ -216,11 +216,11 @@ html.ezcalm .fx-sv{animation:none}
   @keyframes fxmenu{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
   .ezmore-panel>*{width:100%!important;height:38px!important;justify-content:flex-start!important;padding:0 12px!important;gap:8px!important}
   .ezmore-panel .ezs-btn{display:flex!important;align-items:center}
-  .ezmore-panel .ezs-btn::after{content:"搜尋";font:600 13px var(--f-body)}
+  .ezmore-panel .ezs-btn::after{content:"Search";font:600 13px var(--f-body)}
   .ezmore-panel .ezout span,.ezmore-panel .syncchip .synclab{display:inline!important}
   .ezmore-panel .theme{display:block;padding:0!important}
   .ezmore-panel .theme .themebtn{width:100%!important;height:38px!important;display:flex!important;align-items:center;justify-content:flex-start;gap:8px;padding:0 12px}
-  .ezmore-panel .theme .themebtn::after{content:"外觀";font:600 13px var(--f-body)}
+  .ezmore-panel .theme .themebtn::after{content:"Theme";font:600 13px var(--f-body)}
 }`;
   function build(){
     const bar=document.querySelector(".top .bar");if(!bar||document.querySelector(".ezmore"))return;
@@ -228,7 +228,7 @@ html.ezcalm .fx-sv{animation:none}
     if(items.length<2)return;
     const st=document.createElement("style");st.textContent=css;document.head.appendChild(st);
     const box=document.createElement("div");box.className="ezmore";
-    box.innerHTML='<button type="button" class="ezmore-btn" aria-label="更多" aria-expanded="false">⋯</button><div class="ezmore-panel" role="menu"></div>';
+    box.innerHTML='<button type="button" class="ezmore-btn" aria-label="More" aria-expanded="false">⋯</button><div class="ezmore-panel" role="menu"></div>';
     bar.insertBefore(box,items[0]);
     const panel=box.lastElementChild,btn=box.firstElementChild;
     items.forEach(x=>panel.appendChild(x));
@@ -261,10 +261,10 @@ html.ezcalm .fx-sv{animation:none}
     const prog=document.querySelector("#progTable");
     const more=document.querySelector(".ezmore-btn");const right=(more&&more.offsetParent)?more:document.querySelector(".ezs-btn");
     return [
-      tabsEl&&{el:tabsEl,t:"章節分頁",d:"每一章先讀白話講義，最下面是章末練習：選擇題寫完馬上對答案，手寫題按「批改」就會打分。"},
-      prog&&{el:prog,t:"進度表",d:"每章的分數和完成度都在這裡。點「ChN 章末練習」會直接跳到還沒寫的那一題。"},
-      rv&&{el:rv,t:"總複習",d:"一段一張重點卡，按講義順序排。答錯的題目會自動接在那一段後面，考前看這頁就好。"},
-      right&&{el:right,t:more&&more.offsetParent?"更多功能":"搜尋",d:"搜尋整科內容（快捷鍵 /）。右上角還有同步狀態、登出和深淺色切換。"}
+      tabsEl&&{el:tabsEl,t:"Chapter tabs",d:"Read each chapter's notes first. The chapter exercises are at the bottom: multiple-choice answers are checked right away, and written answers are graded when you press Grade."},
+      prog&&{el:prog,t:"Progress",d:"Each chapter's score and completion are shown here. Click a chapter's exercises to jump to the first unanswered question."},
+      rv&&{el:rv,t:"Review",d:"One key-point card per section, in lecture order. Questions you got wrong are added after their section, so this page is all you need before the exam."},
+      right&&{el:right,t:more&&more.offsetParent?"More":"Search",d:"Search the whole subject (shortcut /). The top right also has the sync status, sign-out, and the light/dark switch."}
     ].filter(x=>x&&x.el.getBoundingClientRect().width>0);
   }
   function start(){
@@ -272,8 +272,8 @@ html.ezcalm .fx-sv{animation:none}
     const g=document.getElementById("ezgate");if(g&&!g.hidden&&!g.classList.contains("out"))return setTimeout(start,1500);
     const S=steps();if(S.length<2)return;
     const st=document.createElement("style");st.textContent=css;document.head.appendChild(st);
-    const root=document.createElement("div");root.id="eztour";root.setAttribute("role","dialog");root.setAttribute("aria-label","使用導覽");
-    root.innerHTML='<div class="hole"></div><div class="tip"><div class="body"></div><div class="row"><span class="cnt"></span><span><button type="button" class="skip">略過</button> <button type="button" class="next">下一步</button></span></div></div>';
+    const root=document.createElement("div");root.id="eztour";root.setAttribute("role","dialog");root.setAttribute("aria-label","Site tour");
+    root.innerHTML='<div class="hole"></div><div class="tip"><div class="body"></div><div class="row"><span class="cnt"></span><span><button type="button" class="skip">Skip</button> <button type="button" class="next">Next</button></span></div></div>';
     document.body.appendChild(root);
     const hole=root.querySelector(".hole"),tip=root.querySelector(".tip");let i=0;
     const finish=()=>{try{localStorage.setItem(KEY,"1");}catch(e){}root.remove();removeEventListener("resize",place);removeEventListener("scroll",place,true);};
@@ -289,7 +289,7 @@ html.ezcalm .fx-sv{animation:none}
       const s=S[i];
       tip.querySelector(".body").innerHTML="<b>"+s.t+"</b>"+s.d;
       tip.querySelector(".cnt").textContent=(i+1)+" / "+S.length;
-      tip.querySelector(".next").textContent=i===S.length-1?"開始使用":"下一步";
+      tip.querySelector(".next").textContent=i===S.length-1?"Get started":"Next";
       const r=s.el.getBoundingClientRect();if(r.top<60||r.bottom>innerHeight-60)s.el.scrollIntoView({block:"center"});
       requestAnimationFrame(place);
     }

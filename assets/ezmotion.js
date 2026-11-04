@@ -93,7 +93,7 @@ html.mo-theme::view-transition-new(root){animation:motheme .95s cubic-bezier(.4,
           if(!calm()){c.style.setProperty("--d",Math.min(i++,8)*.06+"s");c.classList.add("mo-rise");}});
         if(before&&ids.size<before.size&&!calm()){
           const n=before.size-ids.size;
-          toast(ids.size?"✓ 清掉 <b>"+n+"</b> 題錯題，還剩 <b>"+ids.size+"</b> 題":"✓ <b>錯題全部清空了</b>");
+          toast(ids.size?"✓ Cleared <b>"+n+"</b> mistake(s), <b>"+ids.size+"</b> left":"✓ <b>No mistakes left</b>");
         }
       }
       before=ids;

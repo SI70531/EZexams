@@ -35,11 +35,11 @@ function normAns(s){
 
 function errCopy(e){
   const c=e&&e.code;
-  if(c==="not_granted"||c==="sampling_disabled"||c==="not_declared"||c==="capability_disabled"||c==="capability_removed")return "這個瀏覽器不能使用自動批改。請稍後再試，你的作答都會保留。";
-  if(c==="rate_limited")return "批改次數太頻繁或用量到上限，請過幾分鐘再按一次。";
-  if(c==="session_expired")return "登入已過期，請重新登入 Claude 後再批改。";
-  if(c==="invalid_json"||c==="empty_completion")return "批改結果讀取失敗，請再按一次。";
-  return "批改時連線中斷，請再按一次。";
+  if(c==="not_granted"||c==="sampling_disabled"||c==="not_declared"||c==="capability_disabled"||c==="capability_removed")return "This browser can't use automatic grading. Try again later. Your answers are kept.";
+  if(c==="rate_limited")return "Too many grading requests or usage limit reached. Try again in a few minutes.";
+  if(c==="session_expired")return "Your session has expired. Sign in to Claude again, then grade.";
+  if(c==="invalid_json"||c==="empty_completion")return "Could not read the grading result. Please try again.";
+  return "Connection lost during grading. Please try again.";
 }
 
 function renderTabs(cur){

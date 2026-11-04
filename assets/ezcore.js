@@ -16,7 +16,7 @@
 })();
 (function(){
   const TK="ezexams-theme",root=document.documentElement,host=root.getAttribute("data-theme");
-  const NAME={system:"跟隨裝置",light:"淺色",dark:"深色"};
+  const NAME={system:"System",light:"Light",dark:"Dark"};
   let mode="system";try{const t=localStorage.getItem(TK);if(t==="light"||t==="dark")mode=t;}catch(e){}
   function applyRoot(m){
     if(m==="light"||m==="dark")root.setAttribute("data-theme",m);
@@ -29,7 +29,7 @@
     if(!btn||!menu)return;
     function apply(m){
       applyRoot(m);
-      btn.dataset.mode=m;btn.title="外觀："+NAME[m];const lab=btn.querySelector(".lab");if(lab)lab.textContent=NAME[m];
+      btn.dataset.mode=m;btn.title="Theme: "+NAME[m];const lab=btn.querySelector(".lab");if(lab)lab.textContent=NAME[m];
       menu.querySelectorAll("[data-t]").forEach(b=>b.setAttribute("aria-checked",String(b.dataset.t===m)));
     }
     apply(mode);
@@ -54,9 +54,9 @@
   function wireMotion(){
     const menu=document.getElementById("themeMenu");if(!menu||menu.querySelector("[data-m]"))return;
     const sep=document.createElement("div");sep.className="thsep";sep.setAttribute("role","separator");
-    const head=document.createElement("div");head.className="thhead";head.textContent="動畫";
+    const head=document.createElement("div");head.className="thhead";head.textContent="Motion";
     menu.append(sep,head);
-    [["full","完整動畫"],["calm","減少動畫"]].forEach(([k,t])=>{const b=document.createElement("button");b.type="button";b.setAttribute("role","menuitemradio");b.dataset.m=k;b.textContent=t;menu.appendChild(b);});
+    [["full","Full motion"],["calm","Reduced motion"]].forEach(([k,t])=>{const b=document.createElement("button");b.type="button";b.setAttribute("role","menuitemradio");b.dataset.m=k;b.textContent=t;menu.appendChild(b);});
     const mark=()=>menu.querySelectorAll("[data-m]").forEach(b=>b.setAttribute("aria-checked",String((b.dataset.m==="calm")===calm)));mark();
     menu.addEventListener("click",e=>{const b=e.target.closest("[data-m]");if(!b)return;e.stopPropagation();calm=b.dataset.m==="calm";root.classList.toggle("ezcalm",calm);
       try{calm?localStorage.setItem(MK,"calm"):localStorage.removeItem(MK);}catch(err){}mark();});
@@ -110,7 +110,7 @@
     document.querySelectorAll("nav.tabs").forEach(nav=>{
       const row=nav.querySelector(".row");if(!row||nav.querySelector(".tarr"))return;
       const mk=(c,t,lab)=>{const a=document.createElement("div");a.className="tarr "+c;a.textContent=t;a.setAttribute("role","button");a.setAttribute("aria-label",lab);a.hidden=true;nav.appendChild(a);return a;};
-      const L=mk("l","‹","往左捲動分頁"),R=mk("r","›","往右捲動分頁");
+      const L=mk("l","‹","Scroll tabs left"),R=mk("r","›","Scroll tabs right");
       const home=row.querySelector('[data-go="home"]');
       const upd=()=>{const max=row.scrollWidth-row.clientWidth;const hl=!(row.scrollLeft>2),hr=!(row.scrollLeft<max-2);if(L.hidden!==hl)L.hidden=hl;if(R.hidden!==hr)R.hidden=hr;
         row.classList.toggle("scrolled",!hl);const h=home&&home.isConnected?home:(row.querySelector('[data-go="home"]'));const lx=h?h.offsetWidth+"px":"0px";if(L.style.left!==lx)L.style.left=lx;};   /* ‹ sits just right of the pinned 首頁 */

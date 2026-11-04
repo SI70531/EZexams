@@ -23,7 +23,7 @@
       const ti=Math.round((today-start)/DAY);
       const rows=[];for(let i=0;i<N;i++){const last=rows[rows.length-1];
         if(last&&last.u.join()===slots[i].join())last.z=i;else rows.push({a:i,z:i,u:slots[i].slice()});}
-      if(title)title.textContent=N+" 天讀書計畫（考試 "+(EXAM.getMonth()+1)+"/"+EXAM.getDate()+"）";
+      if(title)title.textContent=N+"-day study plan (exam "+(EXAM.getMonth()+1)+"/"+EXAM.getDate()+")";
       let h="";
       rows.forEach((r,k)=>{if(!r.u.length)return;
         h+='<div class="day'+(ti>=r.a&&ti<=r.z?' today':'')+'"><div class="d">Day '+(r.a+1)+(r.z>r.a?"–"+(r.z+1):"")+'<br><span class="small">'+lab(r.a)+(r.z>r.a?"–"+lab(r.z):"")+'</span></div><div class="t">'+r.u.map(u=>units[u]).join('<hr class="plansep">')+'</div></div>';});

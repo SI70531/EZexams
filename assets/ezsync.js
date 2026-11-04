@@ -128,25 +128,25 @@
   }
   function errMsg(e){
     const c=e&&e.code;
-    if(c==="badcode")return "PIN 碼是 4 位數字。";
-    if(c==="badcreds")return "帳號名稱或密碼不對。";
-    if(c==="badname")return "帳號名稱最多 20 個字，只能用英文、數字和底線。";
-    if(c==="longpass")return "密碼太長了（最多約 70 個英文字）。";
-    if(c==="nopin")return "這台裝置沒有設定 PIN，請用帳號和密碼登入。";
-    if(c==="badpin")return "PIN 碼不對"+(e.left!=null?"，還剩 "+e.left+" 次機會":"")+"。";
-    if(c==="pinlocked")return "PIN 碼錯太多次，這台裝置的 PIN 已移除，請用帳號和密碼登入。";
-    if(c==="taken")return "這個帳號名稱已經有人用了，換一個。";
-    if(c==="weak")return "密碼太短或太好猜，至少要 6 個字。";
-    if(c==="nosignup")return "現在不開放註冊。";
-    if(c==="emailinvalid")return "系統暫時不能註冊（帳號格式被拒絕）。請把這句話告訴管理員。";
-    if(c==="confirm")return "註冊功能還在設定中（Email 確認沒有關閉），暫時不能註冊。";
-    if(c==="locked"){const m=Math.max(1,Math.ceil((e.wait||0)/60000));return "PIN 碼輸入錯太多次，請 "+m+" 分鐘後再試。";}
-    if(c==="login")return sess2()?"登入已過期，請重新登入。":"請先登入。";
-    if(c==="server")return "同步伺服器設定有問題（"+(e.why||"")+"）。作答先存在這台裝置。";
-    if(c==="rate")return "伺服器暫時忙碌。作答已存在這台裝置，稍後會自動上傳。";
-    if(c==="big")return "進度資料太大，同步伺服器拒收。";
-    if(c==="net")return "暫時連不上網路。作答已存在這台裝置，恢復連線後會自動上傳。";
-    return "暫時無法同步"+(e&&e.status?"（HTTP "+e.status+"）":"")+"。作答已存在這台裝置，稍後會自動再試。";
+    if(c==="badcode")return "PIN must be 4 digits.";
+    if(c==="badcreds")return "Wrong username or password.";
+    if(c==="badname")return "Username: up to 20 characters, letters, numbers, and underscores only.";
+    if(c==="longpass")return "Password is too long (up to about 70 characters).";
+    if(c==="nopin")return "No PIN is set on this device. Sign in with your username and password.";
+    if(c==="badpin")return "Wrong PIN"+(e.left!=null?", "+e.left+" tries left":"")+".";
+    if(c==="pinlocked")return "Too many wrong PIN tries. The PIN was removed from this device. Sign in with your username and password.";
+    if(c==="taken")return "That username is taken. Try another.";
+    if(c==="weak")return "Password is too short or too easy to guess. Use at least 6 characters.";
+    if(c==="nosignup")return "Sign-up is closed right now.";
+    if(c==="emailinvalid")return "Sign-up is unavailable right now (username format rejected). Please tell the administrator.";
+    if(c==="confirm")return "Sign-up is still being set up (email confirmation is still on). Sign-up is unavailable for now.";
+    if(c==="locked"){const m=Math.max(1,Math.ceil((e.wait||0)/60000));return "Too many wrong PIN tries. Try again in "+m+" minute(s).";}
+    if(c==="login")return sess2()?"Your sign-in has expired. Please sign in again.":"Please sign in first.";
+    if(c==="server")return "Sync server configuration problem ("+(e.why||"")+"). Your answers are saved on this device for now.";
+    if(c==="rate")return "Server is busy for now. Your answers are saved on this device and will upload automatically later.";
+    if(c==="big")return "Progress data is too large; the sync server rejected it.";
+    if(c==="net")return "Can't reach the network for now. Your answers are saved on this device and will upload when you're back online.";
+    return "Sync unavailable for now"+(e&&e.status?" (HTTP "+e.status+")":"")+". Your answers are saved on this device and will retry automatically.";
   }
 
   /* ---- sign in / up, device PIN, importing the old PIN progress ---- */
@@ -169,7 +169,7 @@
     startForAcct(s.uid);
     const d=devRec();
     setDev(d&&d.uid===s.uid?Object.assign(d,{username:u}):{uid:s.uid,username:u,dev:newId(),pin:false,imp:{}});
-    emit("ok","已登入");return s;
+    emit("ok","Signed in");return s;
   }
   async function withToken(fn){
     try{return await fn(await token());}
@@ -184,7 +184,7 @@
     catch(e){if(e.code==="nopin"||e.code==="pinlocked")setDev(Object.assign(d,{pin:false}));throw e;}
     const j=await sb("POST","/auth/v1/verify",{body:{type:"magiclink",token_hash:t.token_hash}});
     if(!j||!j.access_token)throw Object.assign(new Error("no session"),{code:"server",why:"Supabase gave no session"});
-    const s=adopt(j,d.username);startForAcct(s.uid);emit("ok","已登入");return s;
+    const s=adopt(j,d.username);startForAcct(s.uid);emit("ok","Signed in");return s;
   }
   async function setPin(pin){
     const d=devRec(),s=sess2();
@@ -214,7 +214,7 @@
   function failed(e,what){
     fails++;
     if(e.code==="off")emit("off","");
-    else if(fails<3&&!["badcode","server","locked"].includes(e.code))emit("dirty","同步暫時沒成功，作答已存在這台裝置，稍後會自動再試…",e.code);
+    else if(fails<3&&!["badcode","server","locked"].includes(e.code))emit("dirty","Sync didn't succeed for now. Your answers are saved on this device and will retry automatically…",e.code);
     else emit("err",errMsg(e),e.code);
     try{console.warn("[EZSync] "+what,e);}catch(_){}
     const k=what+":"+e.code+":"+(e.status||"");
@@ -230,7 +230,7 @@
 
   async function pull(key,{reloadOnChange=true}={}){
     const sub=subjects[key];if(!sub||!on())return;
-    emit("sync","同步中…");
+    emit("sync","Syncing…");
     try{
       const raw=await readRemote(key);
       const localAt=+get(metaKey(key))||0;
@@ -245,7 +245,7 @@
         const changedFromRemote=sub.sig(merged)!==sub.sig(remote.data);
         if(changedFromRemote){set(metaKey(key),String(Date.now()));await push(key);}
         set(LS.last,String(Date.now()));
-        emit("ok","已同步");okNow();
+        emit("ok","Synced");okNow();
         if(reloadOnChange&&(!localStr||sub.sig(merged)!==sub.sig(JSON.parse(localStr)))){
           const n=+(sessionStorage.getItem("ezsync-reload")||0);
           if(n<2){sessionStorage.setItem("ezsync-reload",String(n+1));location.reload();return;}
@@ -257,7 +257,7 @@
         const local=localStr?JSON.parse(localStr):null;
         if(local&&sub.merge){const merged=sub.merge(local,remote.data);if(sub.sig(merged)!==sub.sig(local))set(key,JSON.stringify(merged));}
         await push(key);}
-      else{set(LS.last,String(Date.now()));emit("ok","已同步");okNow();sessionStorage.removeItem("ezsync-reload");}
+      else{set(LS.last,String(Date.now()));emit("ok","Synced");okNow();sessionStorage.removeItem("ezsync-reload");}
     }catch(e){failed(e,"pull");retryLater(key,e);}
   }
   /* every upload waits for its turn: at most one every 7.2 s from this browser (about 500 an hour) */
@@ -272,7 +272,7 @@
            if the browser freezes it, the next visit uploads the change (it is newer than the cloud copy) */
         keepalive=false;
       }
-      for(let w;(w=lastAny()+GAP-Date.now())>0;){emit("dirty","有新的作答，幾秒後自動上傳…");await new Promise(r=>setTimeout(r,w+Math.random()*500));}
+      for(let w;(w=lastAny()+GAP-Date.now())>0;){emit("dirty","New answers. Uploading in a few seconds…");await new Promise(r=>setTimeout(r,w+Math.random()*500));}
       await pushNow(key,keepalive);
     }finally{
       const again=busyPush[key]==="again";busyPush[key]=false;
@@ -282,7 +282,7 @@
   async function pushNow(key,keepalive){
     const data=get(key);if(data==null)return;
     const at=+get(metaKey(key))||Date.now();
-    emit("sync","同步中…");
+    emit("sync","Syncing…");
     try{
       set(LASTK,String(Date.now()));   /* claim the slot before sending, so another tab waits its turn */
       let up=JSON.parse(data);
@@ -297,7 +297,7 @@
       }
       await writeRemote(key,{updatedAt:at,data:up},keepalive);
       if((+get(metaKey(key))||0)<=at)delete dirty[key];
-      set(LS.last,String(Date.now()));emit("ok","已同步");okNow();
+      set(LS.last,String(Date.now()));emit("ok","Synced");okNow();
     }catch(e){failed(e,"push");retryLater(key,e);}
   }
 
@@ -316,7 +316,7 @@
     changed(key){
       set(metaKey(key),String(Date.now()));dirty[key]=true;
       const sub=subjects[key];if(!sub||!on())return;
-      clearTimeout(sub.timer);emit("dirty","有新的作答，幾秒後自動上傳…");
+      clearTimeout(sub.timer);emit("dirty","New answers. Uploading in a few seconds…");
       /* upload soon,
          but never sooner than 30 s after the last upload from this browser; leaving the page uploads right away */
       const wait=()=>Math.max(10000,lastAny()+GAP-Date.now());   /* 10 s gathers a burst of answers into one upload */
@@ -348,7 +348,7 @@
     async syncNow(){
       for(const k of Object.keys(subjects)){const sub=subjects[k];if(sub.timer){clearTimeout(sub.timer);sub.timer=null;}await pull(k);}
     },
-    async syncAll(){const ks=Object.keys(subjects);for(const k of ks)await pull(k,{reloadOnChange:false});if(!ks.length){emit("sync","同步中…");try{if(sess2())await token(true);set(LS.last,String(Date.now()));emit("ok","已同步");}catch(e){emit("err",errMsg(e));}}},
+    async syncAll(){const ks=Object.keys(subjects);for(const k of ks)await pull(k,{reloadOnChange:false});if(!ks.length){emit("sync","Syncing…");try{if(sess2())await token(true);set(LS.last,String(Date.now()));emit("ok","Synced");}catch(e){emit("err",errMsg(e));}}},
     connected:()=>on(),
     lastSync:()=>+get(LS.last)||0,
     status:()=>status,
@@ -464,7 +464,7 @@
     st.textContent='.syncchip{flex:0 0 auto;display:flex;align-items:center;gap:6px;height:36px;padding:0 10px;border:1.5px solid var(--ink);border-radius:8px;background:var(--paper);color:var(--muted);font-family:var(--f-mono,monospace);font-size:12px;text-decoration:none;white-space:nowrap}.syncchip svg{width:16px;height:16px}.syncchip::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--muted)}.syncchip[data-state="ok"]{color:var(--ok)}.syncchip[data-state="ok"]::before{background:var(--ok)}.syncchip[data-state="sync"],.syncchip[data-state="dirty"]{color:var(--warn)}.syncchip[data-state="sync"]::before,.syncchip[data-state="dirty"]::before{background:var(--warn)}.syncchip[data-state="err"]{color:var(--seal)}.syncchip[data-state="err"]::before{background:var(--seal)}.syncchip:hover{background:var(--indigo-soft)}@media (max-width:1200px){.syncchip .synclab{display:none}}@media (max-width:640px){.syncchip{height:32px;padding:0 8px}}';
     document.head.appendChild(st);
     const a=document.createElement("a");a.className="syncchip";a.id="syncChip";a.href="../../";a.dataset.state="off";a.setAttribute("role","button");
-    a.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 9a4 4 0 0 1 .5 8"/><path d="M12 12v7M9 16l3 3 3-3"/></svg><span class="synclab">未同步</span>';
+    a.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 9a4 4 0 0 1 .5 8"/><path d="M12 12v7M9 16l3 3 3-3"/></svg><span class="synclab">Not synced</span>';
     theme.parentNode.insertBefore(a,theme);
     a.addEventListener("click",e=>{
       const s=window.EZSync.status();
@@ -476,14 +476,14 @@
     window.EZSync.onStatus(s=>{
       const on=window.EZSync.connected();
       a.dataset.state=on?s.state:"off";
-      a.querySelector(".synclab").textContent=!on?"未同步":s.state==="sync"?"同步中":s.state==="dirty"?"待同步":s.state==="err"?"暫時離線":"已同步";
-      a.title=!on?"只存在這台裝置。點這裡登入。":(s.msg&&s.state==="err"?s.msg+"（點一下可以馬上再試）":s.msg&&s.state==="dirty"?s.msg+"（點一下馬上上傳）":"已同步（帳號 "+window.EZSync.account().username+"）。點一下立即同步。");
+      a.querySelector(".synclab").textContent=!on?"Not synced":s.state==="sync"?"Syncing":s.state==="dirty"?"Pending":s.state==="err"?"Offline for now":"Synced";
+      a.title=!on?"Stored on this device only. Click here to sign in.":(s.msg&&s.state==="err"?s.msg+"(click to retry now)":s.msg&&s.state==="dirty"?s.msg+"(click to upload now)":"Synced (account "+window.EZSync.account().username+"). Click to sync now.");
     });
   }
   function updateNote(){
     let n=document.getElementById("storeNote");
-    if(!n)n=[...document.querySelectorAll("p.small")].find(p=>/只存在這台裝置/.test(p.textContent));
-    if(n){const c=window.EZSync.connected();n.hidden=c;if(!c)n.textContent="目前只存在這台裝置。點右上角的同步按鈕登入，所有裝置就會同步。";}
+    if(!n)n=[...document.querySelectorAll("p.small")].find(p=>/Stored on this device only/.test(p.textContent));
+    if(n){const c=window.EZSync.connected();n.hidden=c;if(!c)n.textContent="Stored on this device only for now. Use the sync button at the top right to sign in and sync all devices.";}
   }
   window.addEventListener("load",()=>setTimeout(()=>{
     let cur=null;try{cur=localStorage.getItem(autoKey);}catch(e){}

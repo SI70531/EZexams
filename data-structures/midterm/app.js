@@ -6,11 +6,11 @@
   tt.addEventListener("click",()=>scrollTo({top:0,behavior:"smooth"}));
 })();
 
-const VIEWS=[["home","首頁"],["ch1","Ch1 導論"],["ch2","Ch2 搜尋"],["ch3","Ch3 鏈結串列"],["|"],["y24","2024 考古"],["y25","2025 考古"],["mock-a","模擬 A"],["mock-b","模擬 B"],["review","總複習"]];
+const VIEWS=[["home","Home"],["ch1","Ch1 Intro"],["ch2","Ch2 Search"],["ch3","Ch3 Linked lists"],["|"],["y24","2024 Past"],["y25","2025 Past"],["mock-a","Mock A"],["mock-b","Mock B"],["review","Review"]];
 const EXMC={y24:"y24mc",y25:"y25mc","mock-a":"m1","mock-b":"m2"};
 const MCVIEW=Object.fromEntries(Object.entries(EXMC).map(([v,k])=>[k,v]));
 const CHAPTERS=["ch1","ch2","ch3"];
-const EXAMS=[["y24","2024 考古題"],["y25","2025 考古題"],["mock-a","模擬試題 A"],["mock-b","模擬試題 B"]];
+const EXAMS=[["y24","2024 past exam"],["y25","2025 past exam"],["mock-a","Mock exam A"],["mock-b","Mock exam B"]];
 const EXAM_DAY=(window.EZDATES&&EZDATES.day())||new Date(2026,10,6);   /* the date lives in assets/ezdates.js */
 const EXAM_TAG='<span class="cdk">EXAM '+(EXAM_DAY.getMonth()+1)+'/'+EXAM_DAY.getDate()+'</span>';
 const KEY="ds-midterm-v1";
@@ -89,11 +89,11 @@ function renderQuiz(key){
     const n=quizCount(key),r=quizRight(key);
     sc.innerHTML="";
     const t=document.createElement("span");
-    if(isExam)t.textContent="選擇題：已作答 "+n+" / "+qs.length+"，答對 "+r+" 題（"+r*2+" 分）";
-    else t.textContent=n<qs.length?("已作答 "+n+" / "+qs.length+"，目前答對 "+r+" 題"):("完成！答對 "+r+" / "+qs.length+(r>=qs.length*0.8?"，觀念很穩。":"，把錯的題目對應段落再讀一次。"));
+    if(isExam)t.textContent="Multiple choice: answered "+n+" / "+qs.length+", correct "+r+" ("+r*2+" pts)";
+    else t.textContent=n<qs.length?("Answered "+n+" / "+qs.length+", "+r+" correct so far"):("Done! "+r+" / "+qs.length+" correct"+(r>=qs.length*0.8?". Solid understanding.":". Reread the sections for the ones you missed."));
     sc.appendChild(t);
-    const rb=document.createElement("button");rb.className="btn";rb.type="button";rb.textContent=isExam?"重做選擇題":"重做這章";rb.addEventListener("click",()=>{(window.EZundo||((w,f)=>f()))("這章的作答",()=>{delete S.quiz[key];if(window.EZGEN)EZGEN.reset(key);if(window.EZgenw){EZgenw.reset(key+"w");if(MCVIEW[key])EZgenw.reset(MCVIEW[key]);}S.quizReset=S.quizReset||{};S.quizReset[key]=Date.now();save();renderQuiz(key);afterAnswer(key);},null,rb);});sc.appendChild(rb);
-    if(!isExam&&n>=qs.length){const nx=nextOf(key);if(nx){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";nb.textContent=key==="ch3"?"開始考古題":"下一章";nb.dataset.go=nx;sc.appendChild(nb);}}
+    const rb=document.createElement("button");rb.className="btn";rb.type="button";rb.textContent=isExam?"Redo multiple choice":"Redo chapter";rb.addEventListener("click",()=>{(window.EZundo||((w,f)=>f()))("This chapter's answers",()=>{delete S.quiz[key];if(window.EZGEN)EZGEN.reset(key);if(window.EZgenw){EZgenw.reset(key+"w");if(MCVIEW[key])EZgenw.reset(MCVIEW[key]);}S.quizReset=S.quizReset||{};S.quizReset[key]=Date.now();save();renderQuiz(key);afterAnswer(key);},null,rb);});sc.appendChild(rb);
+    if(!isExam&&n>=qs.length){const nx=nextOf(key);if(nx){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";nb.textContent=key==="ch3"?"Start past exam":"Next chapter";nb.dataset.go=nx;sc.appendChild(nb);}}
   }
   renderScore();
 }
@@ -199,17 +199,17 @@ document.querySelectorAll(".exam").forEach(ex=>{
     box.className="gres "+(stale?"stale":g.verdict);
     box.innerHTML="";
     const h=document.createElement("div");h.className="ghead";
-    h.textContent=(g.verdict==="correct"?"✓ 正確":g.verdict==="partial"?"△ 部分正確":"✗ 錯誤")+"　"+g.score+" / "+q.dataset.pts+" 分"+(stale?"（答案改過了，請重新批改）":"");
+    h.textContent=(g.verdict==="correct"?"✓ Correct":g.verdict==="partial"?"△ Partly correct":"✗ Wrong")+"　"+g.score+" / "+q.dataset.pts+" 分"+(stale?" (answer changed; grade again)":"");
     box.appendChild(h);
     const f=document.createElement("div");f.textContent=g.feedback||"";box.appendChild(f);
-    if(!g.ai&&!CHW&&g.missing&&g.missing.length){ /* AI feedback already says what is missing */const m=document.createElement("div");m.className="miss";m.textContent="缺少的關鍵字："+g.missing.join("、");box.appendChild(m);}
+    if(!g.ai&&!CHW&&g.missing&&g.missing.length){ /* AI feedback already says what is missing */const m=document.createElement("div");m.className="miss";m.textContent="Missing keywords: "+g.missing.join("、");box.appendChild(m);}
   }
   function upd(){
     let got=0,graded=0;
     qs.forEach(q=>{const g=st.grade[q.id];if(g){got+=+g.score||0;graded++;}});
     const mn=mk?QUIZ[mk].length:0,mDone=mk?quizCount(mk):0,mGot=mk?quizRight(mk)*2:0; /* a chapter's written block has no MC part */
     const total=wTotal+mn*2;
-    score.textContent="得分 "+(Math.round((got+mGot)*10)/10)+" / "+total+" 分（"+(mk?"選擇 "+mDone+"/"+mn+"，手寫已批改 ":"已批改 ")+graded+"/"+qs.length+"）";
+    score.textContent="Score "+(Math.round((got+mGot)*10)/10)+" / "+total+" 分（"+(mk?"選擇 "+mDone+"/"+mn+"，手寫已批改 ":"已批改 ")+graded+"/"+qs.length+"）";
     EX[id]=Object.assign(EX[id]||{},{total,got:got+mGot,graded,n:qs.length,touched:graded+mDone});
     refreshPCB();renderTabs(S.last);
   }
@@ -220,9 +220,9 @@ document.querySelectorAll(".exam").forEach(ex=>{
   async function grade(list,btns,stat,one){   /* one: the single 批改這題 button — a blank answer (can't write it) is graded too, as 0 with the model answer */
     if(CHW)return EZchw.grade((one?list:list.filter(it=>it.ans)).map(it=>document.getElementById(it.id)),{st,render,upd,save,btns,stat,blank:!!one});
     if(!one)list=list.filter(it=>it.ans);
-    if(!list.length){stat.textContent="還沒有作答。";return;}
-    if(!SAMPLE){kwGrade(list);stat.textContent="批改完成（關鍵字比對）。";return;}
-    btns.forEach(b=>b.disabled=true);stat.textContent="批改中…";
+    if(!list.length){stat.textContent="Nothing answered yet.";return;}
+    if(!SAMPLE){kwGrade(list);stat.textContent="Graded (keyword matching).";return;}
+    btns.forEach(b=>b.disabled=true);stat.textContent="Grading…";
     try{
       const out=await SAMPLE.json(rubricPrompt(list),{modelTier:"default"});
       const arr=(Array.isArray(out)?out:(out&&Array.isArray(out.items)?out.items:[])).slice();
@@ -240,8 +240,8 @@ document.querySelectorAll(".exam").forEach(ex=>{
         render(document.getElementById(it.id));
       });
       save();upd();
-      stat.textContent=miss.length?(n?"批改完成（"+miss.length+" 題沒有回覆，改用關鍵字批改）。":"沒有回覆結果，這次先用關鍵字批改。"):"批改完成。";
-    }catch(e){if(window.EZAI&&EZAI.isOwn(SAMPLE)){/* keep grades Gemini already gave for unchanged answers */kwGrade(list.filter(it=>!(st.grade[it.id]&&st.grade[it.id].ai&&st.grade[it.id].ans===it.ans)));stat.textContent=EZAI.errText(e)+"這次先用關鍵字比對。";return;}SAMPLE=null;setGradingMode();kwGrade(list);stat.textContent="批改完成（關鍵字比對）。";}
+      stat.textContent=miss.length?(n?"Graded ("+miss.length+" with no reply; used keyword matching).":"No reply; this time graded by keyword matching."):"Grading complete.";
+    }catch(e){if(window.EZAI&&EZAI.isOwn(SAMPLE)){/* keep grades Gemini already gave for unchanged answers */kwGrade(list.filter(it=>!(st.grade[it.id]&&st.grade[it.id].ai&&st.grade[it.id].ans===it.ans)));stat.textContent=EZAI.errText(e)+" Graded by keyword matching this time.";return;}SAMPLE=null;setGradingMode();kwGrade(list);stat.textContent="Graded (keyword matching).";}
     finally{btns.forEach(b=>b.disabled=false);}
   }
   qs.forEach(q=>{
@@ -259,7 +259,7 @@ document.querySelectorAll(".exam").forEach(ex=>{
     const list=qs.map(q=>{st.ans[q.id]=q.querySelector("textarea").value;return qInfo(q);})
       .filter(it=>it.ans); /* re-grade everything answered, including questions graded before */
     save();
-    if(!list.length){gMsg.textContent="還沒有作答。";return;}
+    if(!list.length){gMsg.textContent="Nothing answered yet.";return;}
     grade(list,[gAll,...qs.map(q=>q.querySelector(".grade"))],gMsg);
   });
   EX[id]={upd};
@@ -271,19 +271,19 @@ document.querySelectorAll(".exam").forEach(ex=>{
   fmt();
   const FULL=left,startLabel=tBtn.textContent;
   /* paused: 「繼續計時」 + 「結束」; 結束 puts the clock back to the full time */
-  const tEnd=document.createElement("button");tEnd.type="button";tEnd.className=tBtn.className.replace(/\btbtn\b/,"").trim()+" tend";tEnd.textContent="結束";tEnd.hidden=true;
+  const tEnd=document.createElement("button");tEnd.type="button";tEnd.className=tBtn.className.replace(/\btbtn\b/,"").trim()+" tend";tEnd.textContent="End";tEnd.hidden=true;
   tBtn.after(tEnd);
   function stopTimer(){clearInterval(h);h=null;}
   tBtn.addEventListener("click",()=>{
-    if(h){stopTimer();tBtn.textContent="繼續計時";tEnd.hidden=false;return;}
-    tEnd.hidden=true;tBtn.textContent="暫停";
-    h=setInterval(()=>{left--;fmt();if(left<=0){stopTimer();tEl.textContent="時間到";tBtn.textContent="重新計時";left=FULL;}},1000);
+    if(h){stopTimer();tBtn.textContent="Resume";tEnd.hidden=false;return;}
+    tEnd.hidden=true;tBtn.textContent="Pause";
+    h=setInterval(()=>{left--;fmt();if(left<=0){stopTimer();tEl.textContent="Time's up";tBtn.textContent="Restart timer";left=FULL;}},1000);
   });
   tEnd.addEventListener("click",()=>{stopTimer();left=FULL;fmt();tBtn.textContent=startLabel;tEnd.hidden=true;});
   tools.querySelector(".reset").addEventListener("click",e=>{
     const b=e.currentTarget;
-    (window.EZundo||((w,f)=>f()))("全部作答",()=>{
-    b.dataset.armed="";b.textContent="清除作答";
+    (window.EZundo||((w,f)=>f()))("All answers",()=>{
+    b.dataset.armed="";b.textContent="Clear answers";
     st.ans={};st.grade={};if(mk)delete S.quiz[mk];save();
     qs.forEach(q=>{q.querySelector("textarea").value="";q.querySelector(".gstat").textContent="";render(q);});
     ex.querySelectorAll("details.qa").forEach(d=>d.open=false);if(mk)renderQuiz(mk);upd();
@@ -295,31 +295,31 @@ setGradingMode();
 
 /* ---------- home ---------- */
 function chRow(c,n){const s=chScore(c);return '<tr><td class="l"><button class="btn" data-go="'+c+'" data-goend="'+c+'">'+n+'</button></td><td  class="l">'+((s.k||s.g)?('<b class="pscore">得分 '+s.got+' / '+s.tot+' 分</b><span class="psub"><span>選擇 '+(s.k?s.r+'/'+s.k:'還沒寫')+'（共 '+s.n+' 題）</span>'+(s.m?'<span>手寫 '+(s.g?s.wr+'/'+s.g:'還沒寫')+'（共 '+s.m+' 題）</span>':'')+(s.done?'<span class="pok">✓ 完成</span>':'<span class="ptodo">未完成</span>')+'</span>'):"還沒寫")+'</td></tr>';}
-/* 章末練習 in the progress table: jump straight to the chapter's exercises (multiple choice, or the written part once the MC is done) */
+/* chapter exercises in the progress table: jump straight to the chapter's exercises (multiple choice, or the written part once the MC is done) */
 document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-goend]");if(!b)return;const c=b.dataset.goend;
   setTimeout(()=>{const todo=window.EZtodo&&EZtodo(c);if(todo){EZglow(todo);return;}const s=chScore(c),w=document.querySelector("#"+c+" .chw"),t=(s.k>=s.n&&w)?w:document.querySelector("#"+c+" .quiz");if(t){t.scrollIntoView({block:"start"});scrollBy(0,-76);}},80);});
 function renderHome(){
   const cd=document.getElementById("countdown");
   const today=new Date();today.setHours(0,0,0,0);
   const days=Math.round((EXAM_DAY-today)/86400000);
-  cd.innerHTML=days>0?EXAM_TAG+'<b>'+days+'</b><span>天後考試</span>':days===0?EXAM_TAG+'<b>今天</b><span>考試，加油</span>':EXAM_TAG+'<b>考完了</b><span>辛苦了</span>';
+  cd.innerHTML=days>0?EXAM_TAG+'<b>'+days+'</b><span>days to exam</span>':days===0?EXAM_TAG+'<b>Today</b><span>Exam day. Good luck.</span>':EXAM_TAG+'<b>Exam over</b><span>Well done.</span>';
   const t=document.getElementById("progTable");
-  let html='<tr><th class="l">項目</th><th class="l">狀態</th></tr>';
+  let html='<tr><th class="l">Item</th><th class="l">Status</th></tr>';
   let next=null;
-  [["ch1","Ch1 章末練習"],["ch2","Ch2 章末練習"],["ch3","Ch3 章末練習"]].forEach(([c,n])=>{
+  [["ch1","Ch1 chapter exercises"],["ch2","Ch2 chapter exercises"],["ch3","Ch3 chapter exercises"]].forEach(([c,n])=>{
     html+=chRow(c,n);
-    if(!next&&!chScore(c).done)next=[c,n.replace(" 章末練習","")];
+    if(!next&&!chScore(c).done)next=[c,n.replace(" chapter exercises","")];
   });
   EXAMS.forEach(([id,n])=>{
     const e=EX[id]||{touched:0,total:100,got:0};
-    html+='<tr><td class="l"><button class="btn" data-go="'+id+'">'+n+'</button></td><td class="l">'+(e.touched?("得分 "+(Math.round(e.got*10)/10)+" / "+e.total+" 分"):"還沒寫")+'</td></tr>';
+    html+='<tr><td class="l"><button class="btn" data-go="'+id+'">'+n+'</button></td><td class="l">'+(e.touched?("Score "+(Math.round(e.got*10)/10)+" / "+e.total):"Not started")+'</td></tr>';
     if(!next&&!e.touched)next=[id,n];
   });
   t.innerHTML=html;
   const ns=document.getElementById("nextStep");
   ns.innerHTML="";const p=document.createElement("b");
-  if(next){p.textContent="下一步："+(next[0].startsWith("ch")?"讀 "+next[1]+" 再做章末練習":"寫"+next[1]+"（限時 110 分鐘）");ns.appendChild(p);const b=document.createElement("button");b.className="btn primary";b.textContent="開始";b.dataset.go=next[0];ns.appendChild(b);}
-  else{p.textContent="全部完成了。考前一天看「總複習」，然後早點睡。";ns.appendChild(p);const b=document.createElement("button");b.className="btn primary";b.textContent="總複習";b.dataset.go="review";ns.appendChild(b);}
+  if(next){p.textContent="Next: "+(next[0].startsWith("ch")?"讀 "+next[1]+" 再做chapter exercises":"write "+next[1]+" (110 min)");ns.appendChild(p);const b=document.createElement("button");b.className="btn primary";b.textContent="Start";b.dataset.go=next[0];ns.appendChild(b);}
+  else{p.textContent="All done. The day before the exam, read Review, then get some sleep.";ns.appendChild(p);const b=document.createElement("button");b.className="btn primary";b.textContent="Review";b.dataset.go="review";ns.appendChild(b);}
 }
 
 /* ---------- interactive labs ---------- */

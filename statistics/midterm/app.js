@@ -45,7 +45,6 @@ function renderQuiz(ch){
   const qs=QUIZ[ch];const ans=S.quiz[ch]||{};
   box.innerHTML="";
   const h=document.createElement("h2");h.textContent="Multiple-choice question（"+qs.length+" 題，共 50 分）";box.appendChild(h);
-  const p=document.createElement("p");p.className="small";p.textContent="點一個選項就會馬上對答案並顯示解析。錯的題目回上面找對應的段落再讀一次。";box.appendChild(p);
   const SHOW=window.EZGEN&&EZGEN.isAi(ch)?EZGEN.order(ch,qs):qs.map((_,k)=>k);
   SHOW.forEach((i,pos)=>{
     const it=qs[i];

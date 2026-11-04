@@ -75,8 +75,8 @@ function renderQuiz(ch){
   const qs=QUIZ[ch];
   const nh=qs.filter(q=>q.h).length;
   const isHw=/^hw/.test(ch);
-  box.innerHTML=isHw?'<h2>作業選擇題（'+qs.length+' 題）</h2><p class="small">老師出的作業原題。點選項就會對答案並顯示中文解析。</p><p><button class="btn zhbtn" type="button"></button></p>':
-    '<h2>Multiple-choice question（'+qs.length+' 題，共 100 分）</h2><p class="small">題目和考試一樣是英文，點選項就會對答案，解析是中文。</p><p><button class="btn zhbtn" type="button"></button></p>';
+  box.innerHTML=isHw?'<h2>作業選擇題（'+qs.length+' 題）</h2><p><button class="btn zhbtn" type="button"></button></p>':
+    '<h2>Multiple-choice question（'+qs.length+' 題，共 100 分）</h2><p><button class="btn zhbtn" type="button"></button></p>';
   const SHOW=window.EZGEN&&EZGEN.isAi(ch)?EZGEN.order(ch,qs):qs.map((_,k)=>k);
   SHOW.forEach((i,pos)=>{
     const it=qs[i];

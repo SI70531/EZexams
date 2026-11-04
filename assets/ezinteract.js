@@ -130,9 +130,9 @@ a.slk:hover,a.slk:focus-visible{color:var(--seal,#c0392b)}
   function addDefault(c){
     if(c.dataset.ezdef||!c.parentElement||!inNotes(c.parentElement))return;
     c.dataset.ezdef="1";snapshot(c);
-    if([...c.querySelectorAll("button")].some(b=>b.textContent.includes("預設")))return;
+    if([...c.querySelectorAll("button")].some(b=>b.textContent.includes("Default")))return;
     const row=document.createElement("div");row.className="ez-defrow";
-    const b=document.createElement("button");b.type="button";b.className="btn ez-def";b.textContent="預設";
+    const b=document.createElement("button");b.type="button";b.className="btn ez-def";b.textContent="Default";
     b.addEventListener("click",()=>resetW(c));
     row.appendChild(b);c.appendChild(row);
   }

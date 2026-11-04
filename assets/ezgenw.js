@@ -70,7 +70,7 @@
         if(q.dataset.gid!==r.id){
           q.dataset.gid=r.id;
           ce.innerHTML='<p class="q"><span class="pts">'+esc(lab(r.l))+'</span>'+nl(r.q)+'</p>';
-          const ta=q.querySelector("textarea");if(ta)ta.placeholder="你的答案（英文或中文都可以）";
+          const ta=q.querySelector("textarea");if(ta)ta.placeholder="Your answer (English or Chinese is fine)";
         }
         q.hidden=false;
         return;
@@ -121,26 +121,26 @@
   async function token(force){const S=window.EZSync;if(!S||!S.session)return null;try{return await S.session(!!force);}catch(e){return null;}}
   const fail=(code,msg,extra)=>Object.assign(new Error(msg||code),{code},extra||{});
   async function post(path,body,retry){
-    const t=await token(retry);if(!t)throw fail("login","先登入帳號才能出題");
+    const t=await token(retry);if(!t)throw fail("login","Sign in to generate questions");
     const ac=new AbortController(),to=setTimeout(()=>ac.abort(),70000);let res;
     try{res=await fetch(WORKER+path,{method:"POST",headers:{"Content-Type":"text/plain;charset=UTF-8"},body:JSON.stringify(Object.assign({t},body)),signal:ac.signal});}
-    catch(e){throw fail(e&&e.name==="AbortError"?"timeout":"network","連不上伺服器");}
+    catch(e){throw fail(e&&e.name==="AbortError"?"timeout":"network","Can't reach the server");}
     finally{clearTimeout(to);}
     let j=null;try{j=await res.json();}catch(e){}
     if(res.ok&&j)return j;
     if(res.status===401&&!retry)return post(path,body,true);
     const er=(j&&j.error)||{},msg=er.message||("HTTP "+res.status);
-    if(res.status===401)throw fail("login","登入已過期，請重新登入");
+    if(res.status===401)throw fail("login","Your sign-in has expired. Please sign in again.");
     if(res.status===429)throw fail("rate",msg,{wait:+res.headers.get("retry-after")||60});
     if(res.status===404&&er.status==="GONE")throw fail("gone",msg);
     throw fail("http",msg);
   }
   const errText=e=>{const c=e&&e.code;
-    if(c==="login")return "先登入帳號才能出題（右上角「同步」→ 登入）。";
-    if(c==="rate")return "額度暫時用完，約 "+(e.wait||60)+" 秒後再按一次。你的作答都有保存。";
-    if(c==="timeout")return "逾時，請再按一次。";
-    if(c==="network")return "連不上伺服器，請檢查網路後再試一次。";
-    return "這次沒有出好題目（"+String(e&&e.message||"").slice(0,80)+"），請再按一次。";};
+    if(c==="login")return "Sign in first to generate questions (top right: Sync → Sign in).";
+    if(c==="rate")return "Quota used up for now. Try again in about "+(e.wait||60)+" seconds. Your answers are saved.";
+    if(c==="timeout")return "Timed out. Please try again.";
+    if(c==="network")return "Can't reach the server. Check your connection and try again.";
+    return "No question was generated this time ("+String(e&&e.message||"").slice(0,80)+"). Please try again.";};
 
   /* a slot is made when it has a question, or it was answered before the move (its question is the bank's); only the others are made */
   const madeSlot=(B,q,i)=>!!rec(B,i)||answeredQ(B,q)||!!(CACHE[B.key]&&CACHE[B.key][i]);
@@ -156,7 +156,7 @@
   }
   const askedList=B=>slotsOf(B).map((q,i)=>rec(B,i)?rec(B,i).q:(CACHE[B.key]&&CACHE[B.key][i]?CACHE[B.key][i].q:null)).filter(Boolean).map(x=>x.replace(/\s+/g," ").slice(0,150));
   async function makeOne(B,slot){
-    const sec=plan(B);if(!sec)throw fail("nonotes","這章找不到講義內容");
+    const sec=plan(B);if(!sec)throw fail("nonotes","No lecture notes found for this chapter");
     const q=slotsOf(B)[slot],lab=((q.querySelector(".pts")||{}).textContent||"").trim(),p=+q.dataset.pts||2;
     const L=lab||("Q"+(slot+1));
     const style=styleFor(B,q,p,L);
@@ -211,24 +211,24 @@
       const t=document.createElement("div");t.className="gtxt";bar.appendChild(t);
       const addBtn=(label,fn)=>{const b=document.createElement("button");b.type="button";b.className="btn primary";b.textContent=label;b.addEventListener("click",fn);bar.appendChild(b);return b;};
       if(B.batch){
-        t.innerHTML=made>0?"還差 <b>"+(N-made)+" 題</b>沒出完。":"共 <b>"+N+" 題</b>。";
-        const b=addBtn(made>0?"繼續出完剩下的題目":"出整份題目",async()=>{
+        t.innerHTML=made>0?"<b>"+(N-made)+" questions</b> left to generate.":"<b>"+N+" questions</b>.";
+        const b=addBtn(made>0?"Generate the rest":"Generate full set",async()=>{
           if(BUSY[key])return;BUSY[key]=true;ERR[key]="";b.disabled=true;
-          const tick=()=>{b.textContent="出題中… "+madeIn(B,list)+" / "+N;};tick();
+          const tick=()=>{b.textContent="Generating… "+madeIn(B,list)+" / "+N;};tick();
           try{for(;;){const k=nextIn(B,list);if(k<0)break;await makeOne(B,k);tick();}}
           catch(e){ERR[key]=errText(e);}
           BUSY[key]=false;paint(B);
         });
-        if(BUSY[key]){b.disabled=true;b.textContent="出題中…";}
+        if(BUSY[key]){b.disabled=true;b.textContent="Generating…";}
       }else{
-        t.innerHTML=made===0?"共 <b>"+N+" 題</b>。":"下一題是第 <b>"+(made+1)+" / "+N+"</b> 題。";
-        const b=addBtn(made===0?"開始出題":"出下一題",async()=>{
-          if(BUSY[key])return;BUSY[key]=true;ERR[key]="";b.disabled=true;b.textContent="出題中…";
+        t.innerHTML=made===0?"<b>"+N+" questions</b>.":"Next: question <b>"+(made+1)+" / "+N+"</b>.";
+        const b=addBtn(made===0?"Start":"Next question",async()=>{
+          if(BUSY[key])return;BUSY[key]=true;ERR[key]="";b.disabled=true;b.textContent="Generating…";
           try{const k=nextIn(B,list);await makeOne(B,k);}
           catch(e){ERR[key]=errText(e);}
           BUSY[key]=false;paint(B);
         });
-        if(BUSY[key]){b.disabled=true;b.textContent="出題中…";}
+        if(BUSY[key]){b.disabled=true;b.textContent="Generating…";}
       }
       if(ERR[key]){const er=document.createElement("div");er.className="gtxt gerr";er.textContent=ERR[key];bar.appendChild(er);}
     });
@@ -238,14 +238,14 @@
   async function grade(qsEls,ctx){
     const {render,upd,save,btns,stat}=ctx;
     const list=qsEls.filter(q=>q.querySelector("textarea")&&(ctx.blank||q.querySelector("textarea").value.trim()));
-    if(!list.length){stat.textContent="還沒有作答。";return;}
-    btns.forEach(b=>b.disabled=true);stat.textContent="批改中…";
+    if(!list.length){stat.textContent="Nothing answered yet.";return;}
+    btns.forEach(b=>b.disabled=true);stat.textContent="Grading…";
     let done=0;
     try{
       for(const q of list){
         const B=BLOCKS[q.dataset.w],i=+q.dataset.slot,ta=q.querySelector("textarea"),ans=ta.value.trim();
         const body=q.dataset.gid?{id:q.dataset.gid,ans,notes:notesFor(B,q)}:{s:C.s,key:B.key,slot:i,ans,notes:notesFor(B,q)};
-        stat.textContent="批改中… "+(done+1)+" / "+list.length;
+        stat.textContent="Grading… "+(done+1)+" / "+list.length;
         const r=await post("/gen/wgrade",body);
         const sc=Math.max(0,Math.min(+r.p||+q.dataset.pts,+r.score||0));
         ctx.st.grade[q.id]={score:sc,verdict:r.verdict||(sc>=(+q.dataset.pts)?"correct":sc>0?"partial":"wrong"),feedback:String(r.feedback||""),missing:Array.isArray(r.missing)?r.missing.map(String):[],ans,ai:true};
@@ -254,10 +254,10 @@
         done++;
       }
       save();upd();
-      stat.textContent="批改完成。";
+      stat.textContent="Grading complete.";
     }catch(e){
       save();upd();
-      stat.textContent=errText(e)+(done?"（已批改 "+done+" 題）":"");
+      stat.textContent=errText(e)+(done?" ("+done+" graded)":"");
     }finally{btns.forEach(b=>b.disabled=false);}
   }
   /* blocks: [{key:'ch1w', exam:'ch1w', view:'ch1', views:['ch1'], title, box, batch}] ; attach({course, subject, blocks, get, save, s}) */

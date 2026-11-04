@@ -79,7 +79,7 @@ x.q.e?"TEACHER'S SHORT NOTE (use it as the ground truth): "+x.q.e:"",
       while(Q.length){
         const wait=lastStart+6800-Date.now();if(wait>0){await sleep(wait);if(!Q.length)break;}   /* pick the job only after waiting, so a fresh answer can still jump ahead */
         /* written answers being graded go first: wait until grading is done */
-        if(window.EZAI&&EZAI.gradingBusy&&EZAI.gradingBusy()){WAITMSG="手寫題批改中，批改完就接著分析…";if(Q[0])redraw(Q[0].x.id);while(EZAI.gradingBusy())await sleep(1000);WAITMSG="";if(!Q.length)break;}
+        if(window.EZAI&&EZAI.gradingBusy&&EZAI.gradingBusy()){WAITMSG="Written question still being graded. Analysis continues when it finishes…";if(Q[0])redraw(Q[0].x.id);while(EZAI.gradingBusy())await sleep(1000);WAITMSG="";if(!Q.length)break;}
         const job=Q.shift(),x=job.x;
         if(CACHE[x.id]){QD.delete(x.id);continue;}
         const it=findItem(x.id)||job.it;if(!it||!it.isConnected){QD.delete(x.id);continue;}
@@ -99,10 +99,10 @@ x.q.e?"TEACHER'S SHORT NOTE (use it as the ground truth): "+x.q.e:"",
           const c=e&&e.code;
           /* quota or overload: wait a minute and carry on by itself */
           if((c==="rate_limited"||c==="busy"||c==="invalid_json"||c==="empty_completion")&&job.tries<3){
-            job.tries++;Q.unshift(job);QD.add(x.id);WAITMSG=c==="rate_limited"?"免費額度暫時用完，一分鐘後自動繼續…":"暫時很忙，稍後自動繼續…";redraw(x.id);
+            job.tries++;Q.unshift(job);QD.add(x.id);WAITMSG=c==="rate_limited"?"Free quota used up for now. Continuing automatically in a minute…":"Busy for now. Continuing automatically shortly…";redraw(x.id);
             await sleep(c==="invalid_json"||c==="empty_completion"?3000:60000);WAITMSG="";continue;
           }
-          ERR[x.id]=window.EZAI?EZAI.errText(e):"解析失敗。";redraw(x.id);
+          ERR[x.id]=window.EZAI?EZAI.errText(e):"Analysis failed.";redraw(x.id);
         }
       }
     }finally{running=false;}
@@ -126,15 +126,15 @@ x.q.e?"TEACHER'S SHORT NOTE (use it as the ground truth): "+x.q.e:"",
     if(c){
       const os=[...it.querySelectorAll(".opt[data-oi]")];
       sig="r2:"+x.id+":"+os.map(o=>o.dataset.oi+o.querySelector(".ab").textContent).join("");
-      html='<div class="aih">解析</div>'+(c.mistake?'<p class="aimis"><b>你選 ('+letterOf(it,x.pick)+') 錯在：</b>'+tx(c.mistake)+'</p>':'')+
+      html='<div class="aih">解析</div>'+(c.mistake?'<p class="aimis"><b>Your choice ('+letterOf(it,x.pick)+') is wrong:</b>'+tx(c.mistake)+'</p>':'')+
         /* right or wrong comes from the answer key, not from the AI's own "correct" flag (it sometimes gets it wrong) */
         '<ul>'+os.map(o=>{const a=c.opts[o.dataset.oi];if(!a)return "";const L=o.querySelector(".ab").textContent.trim(),ok=o.dataset.oi===String(x.q.a);
-          return '<li class="'+(ok?"ok":"no")+(o.dataset.oi===String(x.pick)?" mine":"")+'"><span class="ab">'+L+'</span><span>'+(ok?"<b>正確。</b>":"")+tx(a.why)+'</span></li>';}).join("")+'</ul>'+
-        (c.point?'<p class="aipt">重點：'+tx(c.point)+'</p>':'');
-    }else if(PEND[x.id]){sig="p:"+x.id;html='<div class="aih">解析</div><span class="aimsg">分析中…</span>';}
-    else if(QD.has(x.id)){const m=WAITMSG&&Q[0]&&Q[0].x.id===x.id?WAITMSG:"排隊中，前面的題目分析完就輪到這題…";sig="q:"+x.id+m;html='<div class="aih">解析</div><span class="aimsg">'+m+'</span>';}
+          return '<li class="'+(ok?"ok":"no")+(o.dataset.oi===String(x.pick)?" mine":"")+'"><span class="ab">'+L+'</span><span>'+(ok?"<b>Correct.</b>":"")+tx(a.why)+'</span></li>';}).join("")+'</ul>'+
+        (c.point?'<p class="aipt">Key point: '+tx(c.point)+'</p>':'');
+    }else if(PEND[x.id]){sig="p:"+x.id;html='<div class="aih">解析</div><span class="aimsg">Analyzing…</span>';}
+    else if(QD.has(x.id)){const m=WAITMSG&&Q[0]&&Q[0].x.id===x.id?WAITMSG:"Queued. This question is next after the ones ahead.";sig="q:"+x.id+m;html='<div class="aih">解析</div><span class="aimsg">'+m+'</span>';}
     else if(ERR[x.id]){sig="e:"+x.id+ERR[x.id];html='<div class="aih">解析</div><span class="aimsg">'+esc(ERR[x.id])+'</span> <button class="btn aigo" type="button">再試一次</button>';}
-    else if(!x.ok){sig="h:"+x.id;html='<span class="aimsg">到<a href="../../#ai">首頁設定免費的 Gemini 金鑰</a>，這裡就會分析你錯在哪、四個選項各自為什麼對或錯。</span>';}
+    else if(!x.ok){sig="h:"+x.id;html='<span class="aimsg">Set up a free Gemini key on the <a href="../../#ai">home page</a>, and this area will explain why you were wrong and why each of the four options is right or wrong.</span>';}
     else{const old=ex.querySelector(":scope > .aiexp");if(old)old.remove();ex.classList.remove("hasai");return;}
     let box=ex.querySelector(":scope > .aiexp");
     if(box&&box.dataset.sig===sig)return;

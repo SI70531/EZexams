@@ -5,8 +5,8 @@
   addEventListener("scroll",()=>tt.classList.toggle("show",scrollY>500),{passive:true});
   tt.addEventListener("click",()=>scrollTo({top:0,behavior:"smooth"}));
 })();
-const CHN={ch1:"Ch1 十大原理",ch2:"Ch2 像經濟學家思考",ch3:"Ch3 相互依賴與貿易",ch4:"Ch4 供給與需求",ch5:"Ch5 彈性",ch6:"Ch6 政府政策",ch7:"Ch7 消費者與生產者剩餘",ch8:"Ch8 課稅的成本",ch9:"Ch9 國際貿易"};
-const VIEWS=[["home","首頁"],["ch1","Ch1 十大原理"],["ch2","Ch2 思考方式"],["ch3","Ch3 貿易"],["ch4","Ch4 供需"],["ch5","Ch5 彈性"],["ch6","Ch6 政府政策"],["ch7","Ch7 剩餘"],["ch8","Ch8 課稅"],["ch9","Ch9 國際貿易"],["|"],["sheet","總複習"],["mock-1","模擬考 1"],["mock-2","模擬考 2"],["mock-3","模擬考 3"]];
+const CHN={ch1:"Ch1 Ten principles",ch2:"Ch2 Economic thinking",ch3:"Ch3 Interdependence and trade",ch4:"Ch4 Supply and demand",ch5:"Ch5 Elasticity",ch6:"Ch6 Government policy",ch7:"Ch7 Consumer and producer surplus",ch8:"Ch8 The costs of taxation",ch9:"Ch9 International trade"};
+const VIEWS=[["home","Home"],["ch1","Ch1 Ten principles"],["ch2","Ch2 Economic thinking"],["ch3","Ch3 Trade"],["ch4","Ch4 Supply & demand"],["ch5","Ch5 Elasticity"],["ch6","Ch6 Government policy"],["ch7","Ch7 Surplus"],["ch8","Ch8 Taxes"],["ch9","Ch9 International trade"],["|"],["sheet","Review"],["mock-1","Mock exam 1"],["mock-2","Mock exam 2"],["mock-3","Mock exam 3"]];
 const KEY="econ-midterm-v2"; /* v2 (2026-10-29): notes rewritten; each chapter = 第一大題 作業 (QUIZ.hwN) + 第二大題 25 題 (QUIZ.chN) */
 let S={quiz:{},exam:{}};
 try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(S,JSON.parse(raw));
@@ -103,7 +103,7 @@ function renderQuiz(ch){
   function renderScore(){
     const s=quizStat(ch);sc.innerHTML="";
     const t=document.createElement("span");t.textContent=s.k<s.n?("已作答 "+s.k+" / "+s.n+"，目前答對 "+s.r+" 題"):("完成！答對 "+s.r+" / "+s.n+(s.r>=s.n*0.8?"，這章很穩。":"，錯的題目回上面找對應段落再讀一次。"));sc.appendChild(t);
-    const rb=document.createElement("button");rb.className="btn";rb.type="button";rb.textContent="重做這章";rb.addEventListener("click",()=>{(window.EZundo||((w,f)=>f()))("這章的作答",()=>{delete S.quiz[ch];if(window.EZGEN)EZGEN.reset(ch);S.quizReset=S.quizReset||{};S.quizReset[ch]=Date.now();save();renderQuiz(ch);renderTabs(ch);refreshPCB();applyZh();},null,rb);});sc.appendChild(rb);
+    const rb=document.createElement("button");rb.className="btn";rb.type="button";rb.textContent="重做這章";rb.addEventListener("click",()=>{(window.EZundo||((w,f)=>f()))("This chapter's answers",()=>{delete S.quiz[ch];if(window.EZGEN)EZGEN.reset(ch);S.quizReset=S.quizReset||{};S.quizReset[ch]=Date.now();save();renderQuiz(ch);renderTabs(ch);refreshPCB();applyZh();},null,rb);});sc.appendChild(rb);
     const idx=VIEWS.findIndex(v=>v[0]===ch);const nx=VIEWS[idx+1];
     if(isHw&&s.k>=s.n){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";nb.textContent="接著寫第二大題 25 題";nb.addEventListener("click",()=>{const t=document.getElementById("ch"+ch.slice(2)+"-mc");if(t){t.scrollIntoView({block:"start"});scrollBy(0,-76);}});sc.appendChild(nb);}
     else if(s.k>=s.n){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";if(nx&&nx[0]!=="|"){nb.textContent="下一章："+CHN[nx[0]];nb.dataset.go=nx[0];}else{nb.textContent="開始模擬考 1";nb.dataset.go="mock-1";}sc.appendChild(nb);}
@@ -152,15 +152,15 @@ function renderExam(id){
   /* 清除作答: press twice, like the other subjects */
   const rb=tools.querySelector(".reset");
   rb.onclick=()=>{
-    (window.EZundo||((w,f)=>f()))("全部作答",()=>{
-    rb.dataset.armed="";rb.textContent="清除作答";
+    (window.EZundo||((w,f)=>f()))("All answers",()=>{
+    rb.dataset.armed="";rb.textContent="Clear answers";
     const a=S.quiz[key]||{};S.qclr=S.qclr||{};const c=S.qclr[key]=S.qclr[key]||{};Object.keys(a).forEach(i=>c[i]=Date.now());
     delete S.quiz[key];if(window.EZGEN)EZGEN.reset(key);S.quizReset=S.quizReset||{};S.quizReset[key]=Date.now();save();stopT();renderExam(id);applyZh();window.scrollTo(0,0);
     },null,rb);
   };
   /* timer: start → 暫停 → 繼續計時 / 結束 (結束 puts it back to 60 minutes), same as the other subjects */
   const tb=tools.querySelector(".tbtn"),tt=tools.querySelector(".timer");
-  let tEnd=tools.querySelector(".tend");if(!tEnd){tEnd=document.createElement("button");tEnd.type="button";tEnd.className="btn tend";tEnd.textContent="結束";tEnd.hidden=true;tb.after(tEnd);}
+  let tEnd=tools.querySelector(".tend");if(!tEnd){tEnd=document.createElement("button");tEnd.type="button";tEnd.className="btn tend";tEnd.textContent="End";tEnd.hidden=true;tb.after(tEnd);}
   let left=3600;
   const draw=()=>{tt.textContent=String(Math.floor(left/60)).padStart(2,"0")+":"+String(left%60).padStart(2,"0");};
   function stopT(){if(timers[id]){clearInterval(timers[id]);timers[id]=null;}left=3600;tb.textContent="開始 60 分鐘計時";tEnd.hidden=true;draw();}
@@ -176,7 +176,7 @@ function renderExam(id){
 Object.keys(MOCK).forEach(renderExam);
 
 /* ---------- home ---------- */
-/* 章末練習 in the progress table: jump straight to the chapter's multiple choice */
+/* chapter exercises in the progress table: jump straight to the chapter's multiple choice */
 document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-goend]");if(!b)return;const c=b.dataset.goend;
   setTimeout(()=>{const todo=window.EZtodo&&EZtodo(c);if(todo){EZglow(todo);return;}const t=document.querySelector("#"+c+" .quiz");if(t){t.scrollIntoView({block:"start"});scrollBy(0,-76);}},80);});
 function renderHome(){
@@ -184,14 +184,14 @@ function renderHome(){
   let html='<tr><th class="l">項目</th><th>狀態</th></tr>';let next=null;
   CHS.forEach(c=>{const s=quizStat(c);const hk="hw"+c.slice(2),h=QUIZ[hk]?quizStat(hk):null;
     const sc=Math.round(s.r*100/s.n*10)/10; /* a chapter is 25 multiple-choice questions, 100 分 */
-    html+='<tr><td class="l"><button class="btn" data-go="'+c+'" data-goend="'+c+'">'+c.replace("ch","Ch")+' 章末練習</button></td><td>'+(s.k?('<b class="pscore">得分 '+sc+' / 100 分</b><span class="psub"><span>選擇 '+(s.k?s.r+'/'+s.k:'還沒寫')+'（共 '+s.n+' 題）</span>'+(h?'<span>作業 '+(h.k?h.r+'/'+h.k:'還沒寫')+'（共 '+h.n+' 題）</span>':'')+(s.k>=s.n?'<span class="pok">✓ 完成</span>':'<span class="ptodo">未完成</span>')+'</span>'):(h&&h.k?'作業 '+h.r+'/'+h.k+'，25 題還沒寫':"還沒寫"))+'</td></tr>';
-    if(!next&&s.k<s.n)next=[c,"讀 "+CHN[c]+"，再做章末練習"];});
+    html+='<tr><td class="l"><button class="btn" data-go="'+c+'" data-goend="'+c+'">'+c.replace("ch","Ch")+' chapter exercises</button></td><td>'+(s.k?('<b class="pscore">得分 '+sc+' / 100 分</b><span class="psub"><span>選擇 '+(s.k?s.r+'/'+s.k:'還沒寫')+'（共 '+s.n+' 題）</span>'+(h?'<span>作業 '+(h.k?h.r+'/'+h.k:'還沒寫')+'（共 '+h.n+' 題）</span>':'')+(s.k>=s.n?'<span class="pok">✓ 完成</span>':'<span class="ptodo">未完成</span>')+'</span>'):(h&&h.k?'作業 '+h.r+'/'+h.k+'，25 題還沒寫':"還沒寫"))+'</td></tr>';
+    if(!next&&s.k<s.n)next=[c,"讀 "+CHN[c]+"，再做chapter exercises"];});
   Object.keys(MOCK).forEach((id,j)=>{const e=examStat(id);
     html+='<tr><td class="l"><button class="btn" data-go="'+id+'">模擬考 '+(j+1)+'</button></td><td>'+(e.k?('<b class="pscore">得分 '+Math.round(e.r/e.n*1000)/10+' / 100 分</b><span class="psub"><span>選擇 '+(e.k?e.r+'/'+e.k:'還沒寫')+'（共 '+e.n+' 題）</span>'+(e.done?'<span class="pok">✓ 完成</span>':'<span class="ptodo">未完成</span>')+'</span>'):"還沒寫")+'</td></tr>';
     if(!next&&!e.done)next=[id,"寫模擬考 "+(j+1)+"（限時 60 分鐘）"];});
   t.innerHTML=html;
   const ns=document.getElementById("nextStep");ns.innerHTML="";const p=document.createElement("b");
-  if(next){p.textContent="下一步："+next[1];ns.appendChild(p);const b=document.createElement("button");b.className="btn primary";b.style.marginLeft="10px";b.textContent="開始";b.dataset.go=next[0];ns.appendChild(b);}
+  if(next){p.textContent="Next: "+next[1];ns.appendChild(p);const b=document.createElement("button");b.className="btn primary";b.style.marginLeft="10px";b.textContent="Start";b.dataset.go=next[0];ns.appendChild(b);}
   else{p.textContent="全部完成了。考前看一次「總複習」，先把最上面的錯題清掉。";ns.appendChild(p);}
 }
 applyZh();

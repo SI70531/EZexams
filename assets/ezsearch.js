@@ -28,7 +28,7 @@
   const st=document.createElement("style");st.textContent=css;document.head.appendChild(st);
 
   /* button, placed before the sync chip / theme button */
-  const btn=document.createElement("button");btn.type="button";btn.className="ezs-btn";btn.title="搜尋這一科（/ 或 Ctrl+K）";btn.setAttribute("aria-label","搜尋");
+  const btn=document.createElement("button");btn.type="button";btn.className="ezs-btn";btn.title="Search this subject (/ or Ctrl+K)";btn.setAttribute("aria-label","搜尋");
   btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>';
   const anchor=bar.querySelector(".syncchip")||bar.querySelector(".theme");
   if(anchor)bar.insertBefore(btn,anchor);else bar.appendChild(btn);
@@ -36,7 +36,7 @@
   new MutationObserver(()=>{const c=bar.querySelector(".syncchip");if(c&&c.parentNode===btn.parentNode&&c.nextElementSibling!==btn&&btn.nextElementSibling!==c)c.parentNode.insertBefore(btn,c);}).observe(bar,{childList:true});
 
   const panel=document.createElement("div");panel.className="ezs-panel";panel.hidden=true;panel.setAttribute("role","dialog");panel.setAttribute("aria-label","搜尋");
-  panel.innerHTML='<div class="ezs-top"><svg class="ezs-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg><input type="search" placeholder="搜尋講義和題目" aria-label="搜尋關鍵字" autocomplete="off" spellcheck="false"></div><div class="ezs-info"></div><div class="ezs-list" role="listbox"></div>';
+  panel.innerHTML='<div class="ezs-top"><svg class="ezs-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg><input type="search" placeholder="Search notes and questions" aria-label="Search terms" autocomplete="off" spellcheck="false"></div><div class="ezs-info"></div><div class="ezs-list" role="listbox"></div>';
   document.body.appendChild(panel);
   const input=panel.querySelector("input"),info=panel.querySelector(".ezs-info"),list=panel.querySelector(".ezs-list");
 
@@ -51,7 +51,7 @@
       if(view.id==="home"||view.id==="wrong"||!NAME[view.id])return;
       let sec="";
       view.querySelectorAll(SEL).forEach(el=>{
-        if(/^H[23]$/.test(el.tagName))sec=el.textContent.replace(/✗ 錯.*$/,"").trim();
+        if(/^H[23]$/.test(el.tagName))sec=el.textContent.replace(/✗ (?:Wrong|錯).*$/,"").trim();
         if(el.querySelector(SEL))return;                 /* keep only the innermost blocks */
         if(el.closest(".ezs-panel,.wback,.missbadge,.pcb,.rvwrong,.wrongsum,.aiw details.qa")||hiddenInside(el,view))return;
         const text=el.textContent.replace(/\s+/g," ").trim();if(text.length<2)return;
@@ -80,7 +80,7 @@
     if(!terms.length)return;
     if(!INDEX)build();
     hits=INDEX.filter(b=>terms.every(t=>b.low.includes(t)));
-    info.textContent=hits.length?"找到 "+hits.length+" 筆"+(hits.length>80?"，先列出前 80 筆":""):"找不到「"+q+"」。換個寫法試試（英文縮寫、中文名稱都可以）。";
+    info.textContent=hits.length?"Found "+hits.length+" result(s)"+(hits.length>80?", showing the first 80":""):"No results for “"+q+"”. Try other wording (abbreviations or Chinese terms both work).";
     let lastGroup=null;
     hits.slice(0,80).forEach((h,i)=>{
       if(h.view!==lastGroup){lastGroup=h.view;const g=document.createElement("div");g.className="ezs-g";g.textContent=NAME[h.view]||h.view;list.appendChild(g);}

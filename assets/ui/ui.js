@@ -38,7 +38,7 @@
     const btns = $$("button", el);
     const paint = n => btns.forEach((b, i) => b.classList.toggle("on", i < n));
     btns.forEach((b, i) => {
-      b.setAttribute("aria-label", (i + 1) + " 顆星");
+      b.setAttribute("aria-label", (i + 1) + " star(s)");
       b.addEventListener("click", () => { el.dataset.value = i + 1; paint(i + 1); onChange && onChange(i + 1); });
       b.addEventListener("mouseenter", () => paint(i + 1));
     });
@@ -49,7 +49,7 @@
     const input = el.querySelector("input[type=file]"), bar = el.querySelector(".bar i"), big = el.querySelector(".big");
     const handle = files => {
       if (!files || !files.length) return;
-      if (big) big.textContent = files[0].name + "（" + files.length + " 個檔案）";
+      if (big) big.textContent = files[0].name + " (" + files.length + " files)";
       let p = 0; const tm = setInterval(() => { p = Math.min(100, p + 12 + Math.random() * 14); bar && (bar.style.width = p + "%"); if (p >= 100) { clearInterval(tm); onFiles && onFiles(files); } }, 90);
     };
     el.addEventListener("click", e => { if (e.target !== input) input.click(); });

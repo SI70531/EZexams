@@ -68,29 +68,29 @@
   }
   const fail=(code,msg,extra)=>Object.assign(new Error(msg||code),{code},extra||{});
   async function post(path,body,retry){
-    const t=await token(retry);if(!t)throw fail("login","先登入帳號才能出題");
+    const t=await token(retry);if(!t)throw fail("login","Sign in to generate questions");
     const ac=new AbortController(),to=setTimeout(()=>ac.abort(),70000);
     let r;
     try{r=await fetch(WORKER+path,{method:"POST",headers:{"Content-Type":"text/plain;charset=UTF-8"},body:JSON.stringify(Object.assign({t},body)),signal:ac.signal});}
-    catch(e){throw fail(e&&e.name==="AbortError"?"timeout":"network","連不上伺服器");}
+    catch(e){throw fail(e&&e.name==="AbortError"?"timeout":"network","Can't reach the server");}
     finally{clearTimeout(to);}
     let j=null;try{j=await r.json();}catch(e){}
     if(r.ok&&j)return j;
     if(r.status===401&&!retry)return post(path,body,true);
     const er=(j&&j.error)||{},msg=er.message||("HTTP "+r.status);
-    if(r.status===401)throw fail("login","登入已過期，請重新登入");
+    if(r.status===401)throw fail("login","Your sign-in has expired. Please sign in again.");
     if(r.status===429)throw fail("rate",msg,{wait:+r.headers.get("retry-after")||60});
     if(r.status===404&&er.status==="GONE")throw fail("gone",msg);
     throw fail("http",msg);
   }
   const errText=e=>{
     const c=e&&e.code;
-    if(c==="login")return (e.message&&e.message!==c?e.message:"先登入帳號才能出題")+"（右上角「同步」→ 登入）。";
-    if(c==="rate")return "額度暫時用完，約 "+(e.wait||60)+" 秒後再按一次。你的作答都有保存。";
-    if(c==="timeout")return "逾時，請再按一次。";
-    if(c==="network")return "連不上伺服器，請檢查網路後再試一次。";
-    if(c==="gone")return "這題已經過期，請重新出題。";
-    return "這次沒有出好題目（"+String(e&&e.message||"").slice(0,80)+"），請再按一次。";
+    if(c==="login")return (e.message&&e.message!==c?e.message:"Sign in to generate questions")+" (top right: Sync → Sign in).";
+    if(c==="rate")return "Quota used up for now. Try again in about "+(e.wait||60)+" seconds. Your answers are saved.";
+    if(c==="timeout")return "Timed out. Please try again.";
+    if(c==="network")return "Can't reach the server. Check your connection and try again.";
+    if(c==="gone")return "This question has expired. Generate a new one.";
+    return "No question was generated this time ("+String(e&&e.message||"").slice(0,80)+"). Please try again.";
   };
 
   /* ---------- sections and what to ask next ---------- */
@@ -121,7 +121,7 @@
   }
   function planNext(k){
     const qs=Q()[k],N=qs.length,S=st();
-    const secs=sectionsOf(k);if(!secs.length)throw fail("nonotes","這章找不到講義內容");
+    const secs=sectionsOf(k);if(!secs.length)throw fail("nonotes","No lecture notes found for this chapter");
     const cnt={};secs.forEach(s=>cnt[keyOf(s)]=0);
     const seenQ=[];
     qs.forEach((it,i)=>{
@@ -212,7 +212,7 @@
         if(!(c0&&c0.gid===g.id)){const r=await post("/gen/answer",{id:g.id,pick});CACHE[k]=CACHE[k]||{};CACHE[k][i]={gid:g.id,a:r.a,e:r.e};saveCache();}
       }else if(it.a==null){
         const r=await post("/bank/open",{s:C.s,key:k,picks:{[i]:pick}});
-        const x=r.items&&r.items[i];if(!x)throw fail("http","題庫沒有這一題");
+        const x=r.items&&r.items[i];if(!x)throw fail("http","This question is not in the bank");
         CACHE[k]=CACHE[k]||{};CACHE[k][i]=isFixed(k)?{a:x.a,e:x.e}:x;saveCache();
       }
       fill(k);return true;
@@ -329,7 +329,7 @@
   function toast(msg){
     const old=document.getElementById("ezgentoast");if(old)old.remove();clearTimeout(TT);
     const el=document.createElement("div");el.id="ezgentoast";el.className="ezgen-toast";el.setAttribute("role","alert");
-    el.innerHTML=esc(msg)+" <button type='button'>知道了</button>";
+    el.innerHTML=esc(msg)+" <button type='button'>OK</button>";
     el.querySelector("button").onclick=()=>el.remove();document.body.appendChild(el);TT=setTimeout(()=>el.remove(),9000);
   }
   const BARS=new Set();
@@ -350,38 +350,38 @@
       const N=Q()[k].length,ans=answeredCount(k),pend=pendingSlot(k),free=nextSlot(k);
       bar.innerHTML="";
       const t=document.createElement("div");t.className="gtxt";bar.appendChild(t);
-      if(HY.state==="loading"){t.textContent="正在載入你之前作答的題目…";return;}
-      if(HY.state==="login"&&Object.keys(missing()).length){t.innerHTML="你之前作答過的題目要登入帳號才能顯示。";addBtn("登入",()=>{if(window.EZGate&&EZGate.open)EZGate.open();});return;}
-      if(HY.state==="error"&&Object.keys(missing()).length){t.textContent=HY.msg||"載入失敗。";addBtn("再試一次",()=>{HY.state="idle";hydrate();});return;}
+      if(HY.state==="loading"){t.textContent="Loading the questions you answered before…";return;}
+      if(HY.state==="login"&&Object.keys(missing()).length){t.innerHTML="Sign in to see the questions you answered before.";addBtn("Sign in",()=>{if(window.EZGate&&EZGate.open)EZGate.open();});return;}
+      if(HY.state==="error"&&Object.keys(missing()).length){t.textContent=HY.msg||"Failed to load.";addBtn("Try again",()=>{HY.state="idle";hydrate();});return;}
       if(isBatch(k)){
         const made=Object.values(st().gen&&st().gen[k]||{}).filter(g=>!g.p).length+Object.keys(st().quiz&&st().quiz[k]||{}).filter(i=>!genOf(k,+i)&&+i<N).length;
         if(made>=N){bar.remove();return;}
         const part=made>0;
-        t.innerHTML=part?"還差 <b>"+(N-made)+" 題</b>沒出完。":"共 <b>"+N+" 題</b>（約 1～2 分鐘）。";
-        const bb=addBtn(part?"繼續出完剩下的題目":"出整份模擬考",async()=>{
+        t.innerHTML=part?"<b>"+(N-made)+" questions</b> left to generate.":"<b>"+N+" questions</b> (about 1–2 minutes).";
+        const bb=addBtn(part?"Generate the rest":"Generate full mock exam",async()=>{
           if(BUSY[k])return;BUSY[k]=true;ERR[k]="";bb.disabled=true;
-          const tick=()=>{const m=Object.values(st().gen&&st().gen[k]||{}).filter(g=>!g.p).length;bb.textContent="出題中… "+m+" / "+N;};tick();
+          const tick=()=>{const m=Object.values(st().gen&&st().gen[k]||{}).filter(g=>!g.p).length;bb.textContent="Generating… "+m+" / "+N;};tick();
           try{await generateAll(k,tick);}catch(e){ERR[k]=errText(e);}
           BUSY[k]=false;rerender();
         },true);
-        if(BUSY[k]){bb.disabled=true;bb.textContent="出題中…";}
+        if(BUSY[k]){bb.disabled=true;bb.textContent="Generating…";}
         if(ERR[k]){const er=document.createElement("div");er.className="gtxt gerr";er.textContent=ERR[k];bar.appendChild(er);}
         return;
       }
       if(ans>=N&&pend<0){bar.remove();return;}
-      if(pend>=0){t.innerHTML="作答之後會顯示解析，接著就會出現 <b>「出下一題」</b>。（已完成 "+ans+" / "+N+" 題）";return;}
+      if(pend>=0){t.innerHTML="Answer to see the explanation; then <b>Next question</b> appears. ("+ans+" / "+N+" done)";return;}
       if(free<0){bar.remove();return;}
       const first=ans===0&&!Object.keys(st().gen&&st().gen[k]||{}).length;
-      t.innerHTML=first?"共 <b>"+N+" 題</b>。":
-        "下一題是第 <b>"+(ans+1)+" / "+N+"</b> 題。"+(coveredAll(k)?"每個小節都考過了，接下來優先出你答錯的觀念。":"");
-      const b=addBtn(first?"開始出題":"出下一題",async()=>{
-        if(BUSY[k])return;BUSY[k]=true;ERR[k]="";b.disabled=true;b.textContent="出題中…";
+      t.innerHTML=first?"<b>"+N+" questions</b>.":
+        "Next: question <b>"+(ans+1)+" / "+N+"</b>."+(coveredAll(k)?" Every section has been covered. Next, focusing on the ideas you got wrong.":"");
+      const b=addBtn(first?"Start":"Next question",async()=>{
+        if(BUSY[k])return;BUSY[k]=true;ERR[k]="";b.disabled=true;b.textContent="Generating…";
         try{await generate(k);rerender();
         }catch(e){ERR[k]=errText(e);BUSY[k]=false;draw();return;}
         BUSY[k]=false;
       },true);
       if(ERR[k]){const er=document.createElement("div");er.className="gtxt gerr";er.textContent=ERR[k];bar.appendChild(er);}
-      if(BUSY[k]){b.disabled=true;b.textContent="出題中…";}
+      if(BUSY[k]){b.disabled=true;b.textContent="Generating…";}
     };
     function addBtn(label,fn,primary){const b=document.createElement("button");b.type="button";b.className="btn"+(primary?" primary":"");b.textContent=label;b.addEventListener("click",fn);bar.appendChild(b);return b;}
     draw.k=k;draw.box=box;

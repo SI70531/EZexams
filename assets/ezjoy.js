@@ -38,7 +38,7 @@ html.ezcalm .joy-bit,html.ezcalm .joy-shot{display:none}
   const isDone=it=>!!it.querySelector(".opt.right,.opt.wrong");
 
   const wrap=document.createElement("div");wrap.id="joy";
-  const combo=document.createElement("div");combo.id="joyCombo";combo.className="joy-chip";combo.innerHTML="連對 <b>0</b>";
+  const combo=document.createElement("div");combo.id="joyCombo";combo.className="joy-chip";combo.innerHTML="Streak <b>0</b>";
   wrap.appendChild(combo);document.body.appendChild(wrap);
 
   let tt=null;
@@ -86,7 +86,7 @@ html.ezcalm .joy-bit,html.ezcalm .joy-shot{display:none}
     if(all.length&&all.every(isDone)&&!finished.has(key)){
       finished.add(key);const ok=all.filter(it=>it.querySelector(".opt.right")&&!it.querySelector(".opt.wrong")).length;
       const pct=Math.round(ok/all.length*100),sec=document.getElementById(key),h=sec&&sec.querySelector(".vhead h1");
-      toast("CHAPTER CLEAR",(h?h.textContent.trim().slice(0,20):key)+"　"+pct+"%","首次答對 "+ok+" / "+all.length+" 題"+(pct===100?"，全對！":"，錯的可到「錯題」複習"));
+      toast("CHAPTER CLEAR",(h?h.textContent.trim().slice(0,20):key)+"　"+pct+"%","First try correct: "+ok+" / "+all.length+(pct===100?". All correct!":". Review the ones you missed in Review."));
     }
   }
   /* saved answers are restored shortly after load (and again when the cloud copy arrives): those chapters must not celebrate */

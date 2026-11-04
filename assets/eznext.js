@@ -29,7 +29,7 @@
     if(li>=0&&Date.now()-lastAt<3000)next=list[li+1]||list[0];
     else next=list.find(it=>it.getBoundingClientRect().top>mid+10)||list[0];
     last=next;lastAt=Date.now();
-    if(window.EZglow)EZglow(next);else next.scrollIntoView({block:"center"});
+    if(window.EZfastScroll)EZfastScroll(next);else if(window.EZglow)EZglow(next);else next.scrollIntoView({block:"center"});
   }
   btn.addEventListener("click",go);
   addEventListener("hashchange",sync);

@@ -177,7 +177,7 @@
       ensureClear(q,!!(ta&&ta.value.trim())||!!(g&&!g.hidden),()=>clearW(q));
     });
   }
-  /* 首頁進度表「ChN 章末練習」: the first question of the chapter you have not done yet, in the order shown on screen
+  /* 首頁進度表"ChN chapter exercises": the first question of the chapter you have not done yet, in the order shown on screen
      (multiple choice first, then the written part). The page scrolls there and it glows for a moment. */
   window.EZtodo=function(ch){
     const sec=document.getElementById(ch);if(!sec)return null;
@@ -201,8 +201,8 @@
   update();
 })();
 
-/* 「章末練習」 pill: while you read a chapter's notes, a button at the bottom right says how many of the chapter's
-   exercises are left and jumps straight to the first one you have not done (like ChN 章末練習 on the home table).
+/* "Chapter exercises" pill: while you read a chapter's notes, a button at the bottom right says how many of the chapter's
+   exercises are left and jumps straight to the first one you have not done (like ChN chapter exercises on the home table).
    It hides once the exercises are on screen. */
 (function(){
   const css=`.ezgo{position:fixed;right:calc(20px + env(safe-area-inset-right,0px));bottom:calc(72px + env(safe-area-inset-bottom,0px));z-index:39;
@@ -235,7 +235,7 @@
     if(q.getBoundingClientRect().top<innerHeight*.85){b.hidden=true;return;}
     const {n,t}=left(v);
     b.classList.toggle("done",!n);
-    b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>章末練習'+
+    b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>Chapter exercises'+
       '<span class="n">'+(n?n+" left":"✓ Done")+'</span>';
     b.title=n?"Jump to the first unanswered one ("+t+" total)":"All questions in this chapter are done. Jump to the chapter exercises.";
     b.hidden=false;

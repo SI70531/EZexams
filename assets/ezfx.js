@@ -23,7 +23,7 @@
 @keyframes fxsout{from{opacity:1;transform:none}to{opacity:0;transform:translateY(-34px) scale(.97)}}
 html.ezcalm .fx-sv{animation:none}
 }
-@media (prefers-reduced-motion:reduce){.fx-sv{animation:none!important}}
+
 @keyframes fxrise{from{opacity:0;transform:translateY(34px) scale(.94)}to{opacity:1;transform:none}}
 .vhead h1,.hero h1{animation:fxrise .95s cubic-bezier(.2,1.1,.3,1) both}
 .vhead p,.hero p{animation:fxrise .95s .16s cubic-bezier(.2,1.1,.3,1) both}

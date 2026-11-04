@@ -9,7 +9,7 @@
 (function(){
   if(window.__ezfig)return;window.__ezfig=1;
   const root=document.documentElement;
-  const calm=()=>root.classList.contains("ezcalm")||matchMedia("(prefers-reduced-motion:reduce)").matches;
+  const calm=()=>false;
   /* ---- draw one diagram: trace strokes, grow fills, fade labels, staggered (total stagger <= ~0.9s) ---- */
   /* while pieces slide / scale in they would briefly make scrollable containers overflow (a flashing scrollbar): lock those containers until the motion ends */
   function lockScroll(box,ms){

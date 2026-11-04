@@ -8,7 +8,7 @@
 (function(){
   if(window.__ezmotion)return;window.__ezmotion=1;
   const root=document.documentElement;
-  const calm=()=>root.classList.contains("ezcalm")||matchMedia("(prefers-reduced-motion:reduce)").matches;
+  const calm=()=>false;
   const css=`
 #tabs{position:relative}
 .mo-glide{position:absolute;bottom:0;left:0;height:5px;width:0;border-radius:4px 4px 0 0;pointer-events:none;z-index:2;background:linear-gradient(90deg,var(--brass),var(--seal));box-shadow:0 0 14px 2px color-mix(in srgb,var(--brass) 70%,transparent)}

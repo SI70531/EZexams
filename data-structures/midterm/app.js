@@ -1007,4 +1007,14 @@ if(window.EZgenw){
     blk("mock-a",null,["ch1","ch2","ch3"],document.getElementById("mock-a"),true),
     blk("mock-b",null,["ch1","ch2","ch3"],document.getElementById("mock-b"),true)
   ].filter(b=>b.box)});
+/* Ch2 written questions: show the percent labels from the page (F1 · 2%, Q1 · 5% …) on every question, answered or not.
+   Only the label text changes; the stored questions and answers are left as they are. */
+(function(){
+  const box=document.querySelector('[data-exam="ch2w"]');if(!box)return;
+  const fix=()=>{box.querySelectorAll(".exq").forEach(q=>{
+    const src=q.querySelector(":scope > .pts"),t=q.querySelector(".qtext .pts");
+    if(src&&t&&t.textContent!==src.textContent)t.textContent=src.textContent;});};
+  new MutationObserver(fix).observe(box,{subtree:true,childList:true,characterData:true});
+  fix();
+})();
 }

@@ -15,7 +15,7 @@
 .aiexp ul{list-style:none;margin:0;padding:0}
 .aiexp li{display:flex;gap:8px;align-items:flex-start;padding:5px 0;border-top:1px dashed var(--line,#ddd)}
 .aiexp li:first-child{border-top:0}
-.aiexp li .ab{flex:none;display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;font-size:calc(12px*var(--ts,1));font-weight:700;border:1.5px solid currentColor}
+.aiexp li .ab{flex:none;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;width:calc(24px*var(--ts,1));height:calc(24px*var(--ts,1));padding:0;line-height:1;font-family:var(--f-display);font-size:calc(12px*var(--ts,1));font-weight:700;border:1.5px solid currentColor;border-radius:50%;margin-top:calc(2px*var(--ts,1))}
 .aiexp li.ok .ab{color:var(--ok,#2e7d32)}.aiexp li.no .ab{color:var(--muted,#888)}.aiexp li.mine.no .ab{color:var(--bad,#c62828)}
 .aiexp .aipt{margin:8px 0 0;font-weight:600}
 .aiexp .aimsg{color:var(--muted,#888)}

@@ -178,10 +178,14 @@
      (multiple choice first, then the written part). The page scrolls there and it glows for a moment. */
   window.EZtodo=function(ch){
     const sec=document.getElementById(ch);if(!sec)return null;
-    const mc=[...sec.querySelectorAll(".quiz[data-quiz] > .qitem")].find(it=>!it.querySelector(".opt.right,.opt.wrong"));if(mc)return mc;
-    const gb=[...sec.querySelectorAll(".quiz[data-gen]")].map(b=>EZGEN.bar(b.dataset.quiz)).find(Boolean);if(gb)return gb;
+    /* only what is on screen can be scrolled to: a question that is still hidden (not made yet) is skipped */
+    const shown=el=>el&&el.offsetParent!==null;
+    const mc=[...sec.querySelectorAll(".quiz[data-quiz] > .qitem")].find(it=>shown(it)&&!it.querySelector(".opt.right,.opt.wrong"));if(mc)return mc;
+    const gb=[...sec.querySelectorAll(".quiz[data-gen]")].map(b=>EZGEN.bar(b.dataset.quiz)).find(shown);if(gb)return gb;
     const w=sec.querySelector(".chw");if(!w)return null;const x=(S.ex2||{})[w.dataset.exam]||{};
-    return [...w.querySelectorAll(".exq")].find(q=>!((x.grade||{})[q.id]))||null;
+    const wq=[...w.querySelectorAll(".exq")].find(q=>shown(q)&&!((x.grade||{})[q.id]));if(wq)return wq;
+    /* nothing made yet in the written part: its 「AI 開始出題」 row */
+    return [...w.querySelectorAll(".ezgenw-bar")].find(shown)||null;
   };
   /* the glow class comes off when its animation ends: a class left on an element replays the animation every time
      its tab is shown again, which made earlier targets light up together with the new one */

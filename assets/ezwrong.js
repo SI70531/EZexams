@@ -125,7 +125,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
     CH.forEach(ch=>{
       const a=S.quiz&&S.quiz[ch]||{};
       QUIZ[ch].forEach((it,i)=>{const pk=a[i];if(pk===undefined||pk===it.a||it.a==null||typeof it.q!=="string")return;
-        mc(out,it,i,pk,ch,(NAME[ch]||ch)+" 章末選擇第 "+(i+1)+" questions",ch,ch);});
+        mc(out,it,i,pk,ch,(NAME[ch]||ch)+" chapter MC, Q"+(i+1),ch,ch);});
     });
     /* MC parts embedded in other views (e.g. past/mock exams): answers live in S.quiz[key] like chapter quizzes */
     Object.keys(QUIZ).forEach(key=>{
@@ -133,7 +133,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
       const box=document.querySelector('[data-quiz="'+key+'"]');const view=box&&box.closest(".view");if(!view)return;
       const a=S.quiz&&S.quiz[key]||{};
       QUIZ[key].forEach((it,i)=>{const pk=a[i];if(pk===undefined||pk===it.a||it.a==null||typeof it.q!=="string")return;
-        mc(out,it,i,pk,chOf(it),(NAME[view.id]||view.id)+" 選擇第 "+(i+1)+" questions",view.id,key);});
+        mc(out,it,i,pk,chOf(it),(NAME[view.id]||view.id)+" MC, Q"+(i+1),view.id,key);});
     });
     if(typeof MOCK!=="undefined"){
       Object.keys(MOCK).forEach(id=>{

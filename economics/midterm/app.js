@@ -75,8 +75,8 @@ function renderQuiz(ch){
   const qs=QUIZ[ch];
   const nh=qs.filter(q=>q.h).length;
   const isHw=/^hw/.test(ch);
-  box.innerHTML=isHw?'<h2>作業選擇題（'+qs.length+' 題）</h2><p><button class="btn zhbtn" type="button"></button></p>':
-    '<h2>Multiple-choice question（'+qs.length+' 題，共 100 分）</h2><p><button class="btn zhbtn" type="button"></button></p>';
+  box.innerHTML=isHw?'<h2>Homework multiple choice ('+qs.length+' questions)</h2><p><button class="btn zhbtn" type="button"></button></p>':
+    '<h2>Multiple-choice questions ('+qs.length+' questions, 100 pts)</h2><p><button class="btn zhbtn" type="button"></button></p>';
   const SHOW=window.EZGEN&&EZGEN.isAi(ch)?EZGEN.order(ch,qs):qs.map((_,k)=>k);
   SHOW.forEach((i,pos)=>{
     const it=qs[i];
@@ -139,7 +139,7 @@ function renderExam(id){
   if(window.EZGEN)EZGEN.mount(box,key,()=>{renderExam(id);applyZh();});
   function upd(){
     const e=examStat(id),a=S.quiz[key]||{};
-    tools.querySelector(".score").textContent="Score "+Math.round(e.r/e.n*1000)/10+" / 100 分（已作答 "+e.k+" / "+e.n+" questions)";
+    tools.querySelector(".score").textContent="Score "+Math.round(e.r/e.n*1000)/10+" / 100 pts (answered "+e.k+" / "+e.n+" questions)";
     const rep=sec.querySelector(".report");
     if(e.done){
       const by={};qs.forEach((q,i)=>{const c="ch"+q.ch;by[c]=by[c]||[0,0];by[c][1]++;if(a[i]===q.a)by[c][0]++;});
@@ -184,11 +184,11 @@ function renderHome(){
   let html='<tr><th class="l">Item</th><th>Status</th></tr>';let next=null;
   CHS.forEach(c=>{const s=quizStat(c);const hk="hw"+c.slice(2),h=QUIZ[hk]?quizStat(hk):null;
     const sc=Math.round(s.r*100/s.n*10)/10; /* a chapter is 25 multiple-choice questions, 100 分 */
-    html+='<tr><td class="l"><button class="btn" data-go="'+c+'" data-goend="'+c+'">'+c.replace("ch","Ch")+' chapter exercises</button></td><td>'+(s.k?('<b class="pscore">Score '+sc+' / 100 分</b><span class="psub"><span>選擇 '+(s.k?s.r+'/'+s.k:'Not started')+'(total '+s.n+' 題）</span>'+(h?'<span>Assignment '+(h.k?h.r+'/'+h.k:'Not started')+'(total '+h.n+' 題）</span>':'')+(s.k>=s.n?'<span class="pok">✓ Done</span>':'<span class="ptodo">Not done</span>')+'</span>'):(h&&h.k?'Assignment '+h.r+'/'+h.k+'，25 題還沒寫':"Not started"))+'</td></tr>';
+    html+='<tr><td class="l"><button class="btn" data-go="'+c+'" data-goend="'+c+'">'+c.replace("ch","Ch")+' chapter exercises</button></td><td>'+(s.k?('<b class="pscore">Score '+sc+' / 100 pts</b><span class="psub"><span>MC '+(s.k?s.r+'/'+s.k:'Not started')+'(total '+s.n+' questions)</span>'+(h?'<span>Assignment '+(h.k?h.r+'/'+h.k:'Not started')+'(total '+h.n+' 題）</span>':'')+(s.k>=s.n?'<span class="pok">✓ Done</span>':'<span class="ptodo">Not done</span>')+'</span>'):(h&&h.k?'Assignment '+h.r+'/'+h.k+'，25 題還沒寫':"Not started"))+'</td></tr>';
     if(!next&&s.k<s.n)next=[c,"Read "+CHN[c]+", then do the chapter exercises"];});
   Object.keys(MOCK).forEach((id,j)=>{const e=examStat(id);
-    html+='<tr><td class="l"><button class="btn" data-go="'+id+'">模擬考 '+(j+1)+'</button></td><td>'+(e.k?('<b class="pscore">Score '+Math.round(e.r/e.n*1000)/10+' / 100 分</b><span class="psub"><span>選擇 '+(e.k?e.r+'/'+e.k:'Not started')+'(total '+e.n+' 題）</span>'+(e.done?'<span class="pok">✓ Done</span>':'<span class="ptodo">Not done</span>')+'</span>'):"Not started")+'</td></tr>';
-    if(!next&&!e.done)next=[id,"寫模擬考 "+(j+1)+"(60 min)"];});
+    html+='<tr><td class="l"><button class="btn" data-go="'+id+'">Mock exam '+(j+1)+'</button></td><td>'+(e.k?('<b class="pscore">Score '+Math.round(e.r/e.n*1000)/10+' / 100 pts</b><span class="psub"><span>MC '+(e.k?e.r+'/'+e.k:'Not started')+'(total '+e.n+' 題）</span>'+(e.done?'<span class="pok">✓ Done</span>':'<span class="ptodo">Not done</span>')+'</span>'):"Not started")+'</td></tr>';
+    if(!next&&!e.done)next=[id,"Take mock exam "+(j+1)+" (60 min)"];});
   t.innerHTML=html;
   const ns=document.getElementById("nextStep");ns.innerHTML="";const p=document.createElement("b");
   if(next){p.textContent="Next: "+next[1];ns.appendChild(p);const b=document.createElement("button");b.className="btn primary";b.style.marginLeft="10px";b.textContent="Start";b.dataset.go=next[0];ns.appendChild(b);}

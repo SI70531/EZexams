@@ -197,6 +197,10 @@
     seq(of("bg"),70,100);
     const free=info.filter(i=>i.k==="line"&&!i.conn);seq(free,Math.min(70,520/Math.max(1,free.length)),120);
     seq(nodes.concat(info.filter(i=>i.k==="node"&&i.a<150)),Math.min(60,520/Math.max(1,of("node").length)),160);
+    /* a drop-shadow copy of a box shows up together with the box, not before it */
+    nodes.forEach(n=>{const m=nodes.find(m=>m!==n&&Math.abs(m.r.width-n.r.width)<=1.5&&Math.abs(m.r.height-n.r.height)<=1.5&&Math.abs(m.r.left-n.r.left)<=8&&Math.abs(m.r.top-n.r.top)<=8
+      &&(Math.abs(m.r.left-n.r.left)>1||Math.abs(m.r.top-n.r.top)>1)&&(n.e.compareDocumentPosition(m.e)&Node.DOCUMENT_POSITION_FOLLOWING));
+      if(m&&D.has(m.e))D.set(n.e,D.get(m.e));});
     const conn=info.filter(i=>i.k==="line"&&i.conn);seq(conn,Math.min(110,700/Math.max(1,conn.length)),0);
     const lines=info.filter(i=>i.k==="line"&&D.has(i.e));
     const center=r=>({x:(r.left+r.right)/2,y:(r.top+r.bottom)/2});

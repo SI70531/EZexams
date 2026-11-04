@@ -987,6 +987,15 @@ function animFig(svg){
 }
 document.querySelectorAll('figure[data-anim="bs"] svg').forEach(animFig);
 
+/* one-time: clear the AI-written questions of Ch2 Part II (slots 0-5) so they are generated again. Each slot gets a
+   per-question clear time, which the sync merge uses to remove the question on every device. */
+if(!(S.migr&&S.migr["ch2w-slots0-5-v1"])){
+  S.migr=S.migr||{};S.migr["ch2w-slots0-5-v1"]=Date.now();
+  S.qclr=S.qclr||{};S.qclr.ch2w=S.qclr.ch2w||{};
+  S.gen=S.gen||{};S.gen.ch2w=S.gen.ch2w||{};
+  for(let i=0;i<=5;i++){S.qclr.ch2w[i]=Date.now();delete S.gen.ch2w[i];}
+  save();
+}
 /* AI written questions (assets/ezgenw.js): the chapter-end written parts one at a time, the mock exams' written parts all at once */
 if(window.EZgenw){
   const T=k=>((VIEWS.find(v=>v[0]===k)||[])[1])||k;

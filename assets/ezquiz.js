@@ -192,6 +192,33 @@
   };
   /* the glow class comes off when its animation ends: a class left on an element replays the animation every time
      its tab is shown again, which made earlier targets light up together with the new one */
+  /* EZfastScroll(el, {start}): a quick swoosh down (or up) to el instead of a jump: 0.35-0.9 s, eased, the longer the
+     distance the slightly longer it takes. Ends with the same highlight as EZglow. Wheel, touch or keys stop it at once. */
+  let fsRaf=0;
+  window.EZfastScroll=function(el,opt){
+    if(!el)return;opt=opt||{};
+    const r=el.getBoundingClientRect(),max=Math.max(0,document.documentElement.scrollHeight-innerHeight);
+    let to=opt.start?r.top+scrollY-76:(r.height<innerHeight-120?r.top+scrollY-(innerHeight-r.height)/2:r.top+scrollY-90);
+    to=Math.max(0,Math.min(max,to));
+    const from=scrollY,dist=to-from;
+    const mark=()=>{document.querySelectorAll(".ezhere").forEach(x=>x.classList.remove("ezhere"));void el.offsetWidth;el.classList.add("ezhere");};
+    cancelAnimationFrame(fsRaf);
+    if(Math.abs(dist)<4){mark();return;}
+    const dur=Math.min(900,Math.max(350,250+Math.sqrt(Math.abs(dist))*9)),t0=performance.now();
+    const root=document.documentElement,prev=root.style.scrollBehavior;root.style.scrollBehavior="auto";
+    const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+    let stopped=false;
+    const stop=()=>{stopped=true;cancelAnimationFrame(fsRaf);root.style.scrollBehavior=prev;off();};
+    const off=()=>{["wheel","touchstart","keydown","mousedown"].forEach(ev=>removeEventListener(ev,stop,true));};
+    ["wheel","touchstart","keydown","mousedown"].forEach(ev=>addEventListener(ev,stop,{capture:true,passive:true}));
+    (function step(now){
+      if(stopped)return;
+      const p=Math.min(1,(now-t0)/dur);
+      scrollTo(0,from+dist*ease(p));
+      if(p<1){fsRaf=requestAnimationFrame(step);}
+      else{root.style.scrollBehavior=prev;off();mark();}
+    })(t0);
+  };
   window.EZglow=function(el){el.scrollIntoView({block:"center"});document.querySelectorAll(".ezhere").forEach(x=>x.classList.remove("ezhere"));void el.offsetWidth;el.classList.add("ezhere");};
   document.addEventListener("animationend",e=>{const n=e.animationName,t=e.target;if(n==="ezhere")t.classList.remove("ezhere");else if(n==="wflash")t.classList.remove("wflash");else if(n==="ezsflash")t.classList.remove("ezs-flash");},true);
   let t=null;const later=()=>{clearTimeout(t);t=setTimeout(update,40);};
@@ -243,8 +270,8 @@
   b.addEventListener("click",()=>{
     const v=cur();if(!v)return;
     const todo=window.EZtodo&&EZtodo(v.id);
-    if(todo&&window.EZglow){EZglow(todo);return;}
-    const q=v.querySelector(".quiz[data-quiz]");if(q){q.scrollIntoView({block:"start"});scrollBy(0,-76);}
+    if(todo){EZfastScroll(todo);return;}
+    const q=v.querySelector(".quiz[data-quiz]");if(q)EZfastScroll(q,{start:true});
   });
   let raf=0;const later=()=>{if(raf)return;raf=requestAnimationFrame(()=>{raf=0;draw();});};
   addEventListener("scroll",later,{passive:true});addEventListener("resize",later);

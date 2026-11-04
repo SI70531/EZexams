@@ -1018,3 +1018,20 @@ if(window.EZgenw){
   fix();
 });
 }
+
+/* Ch3 3-3: the ten algorithms as a menu. Click one card to show only that algorithm; the button at its bottom returns to the menu. */
+;(function(){
+  const menu=document.querySelector(".algmenu");if(!menu)return;
+  const head=document.getElementById("s3-3"),groups=[...document.querySelectorAll(".algp")];
+  function open(k,noScroll){
+    groups.forEach(g=>{g.hidden=g.dataset.alg!==k;});
+    menu.hidden=!!k;
+    if(!noScroll&&head)head.scrollIntoView({behavior:"smooth",block:"start"});
+  }
+  document.addEventListener("click",e=>{
+    const o=e.target.closest("[data-alg-open]");if(o){open(o.dataset.algOpen);return;}
+    if(e.target.closest("[data-alg-back]"))open(null);
+  });
+  function reveal(){const h=decodeURIComponent(location.hash.slice(1));if(!h)return;const t=document.getElementById(h);const g=t&&t.closest(".algp");if(g&&g.hidden){open(g.dataset.alg,true);t.scrollIntoView();}}
+  window.addEventListener("hashchange",reveal);reveal();
+})();

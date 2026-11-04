@@ -125,13 +125,12 @@ html::before{
 @media (prefers-color-scheme: dark){html:root:not([data-theme="light"]) :is(code,pre){background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.22);color:#f1f5f4}}
 html:root[data-theme="dark"] :is(code,pre){background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.22);color:#f1f5f4}
 
-/* ============ 5. Lecture notes: same as browser zoom 120%, but only inside the notes ============ */
+/* ============ 5. Lecture notes: text 1.2x bigger (font sizes scaled, layout stays at 100%) in the notes, past/mock exams and review ============ */
 /* Only the chapter views (#ch1, #ch2 …). The top bar, tabs and everything else stay at 100%.
    Chapter-end practice (.chw) is zoomed back so it keeps its normal size. */
-:root .view[id^="ch"]{zoom:1.2}
-:root .view[id^="ch"] .chw{zoom:.8333}
-/* past exams, mock exams and the review / cheat-sheet tab get the same text size as the notes */
-:root .view.exam,:root #review,:root #sheet{zoom:1.2}
+:root .view[id^="ch"],:root .view.exam,:root #review,:root #sheet{--ts:1.2;font-size:calc(16px*var(--ts))}
+/* chapter-end practice and figures keep their normal size */
+:root .view[id^="ch"] .chw,:root .lab,:root .fig{--ts:1;font-size:16px}
 
 /* section headings (h3 is a flex row with a dotted rule): put the Chinese line on its own row under the title */
 :root h3:has(>.zhn){flex-wrap:wrap}

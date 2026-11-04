@@ -29,7 +29,7 @@
       t.className=btn.className;t.style.cssText="cursor:default;";   /* same look as the button it replaces: font, size, colour, border */
       btn.style.display="none";btn.after(t);
     }else{
-      t.style.cssText="position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:1200;background:var(--paper,#fff);color:var(--ink,#111);border:1.5px solid var(--ink,#111);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.25);padding:10px 16px;font-size:14px";
+      t.style.cssText="position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:1200;background:var(--paper,#fff);color:var(--ink,#111);border:1.5px solid var(--ink,#111);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.25);padding:10px 16px;font-size:calc(14px*var(--ts,1))";
       document.body.appendChild(t);
     }
     t.innerHTML="<span></span>"+cancel;
@@ -45,7 +45,7 @@
 
   /* quick practice modes on every chapter quiz: all / 只看未答 / 只練錯題 / 隨機 10 題 */
   const mcss=document.createElement("style");
-  mcss.textContent=".qmodes{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 14px}.qmodes .lb{font-size:13px;color:var(--muted)}.qmodes .btn[aria-pressed=true]{background:var(--indigo,#253745);color:var(--accent-ink,#fff);border-color:var(--indigo,#253745)}.qitem.qhide{display:none!important}.qmodes .qn{font-size:13px;color:var(--muted)}";
+  mcss.textContent=".qmodes{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 14px}.qmodes .lb{font-size:calc(13px*var(--ts,1));color:var(--muted)}.qmodes .btn[aria-pressed=true]{background:var(--indigo,#253745);color:var(--accent-ink,#fff);border-color:var(--indigo,#253745)}.qitem.qhide{display:none!important}.qmodes .qn{font-size:calc(13px*var(--ts,1));color:var(--muted)}";
   document.head.appendChild(mcss);
   function addModes(box){
     if(!box||box.dataset.gen||box.querySelector(":scope > .qmodes")||!box.querySelector(".qitem"))return;
@@ -208,10 +208,10 @@
   transition:transform .2s,opacity .2s,box-shadow .15s}
 .ezgo:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--hard)}
 .ezgo[hidden]{display:none}
-.ezgo .n{font-family:var(--f-mono);font-size:12px;font-weight:600;color:var(--paper);background:var(--seal);border-radius:999px;padding:1px 8px}
+.ezgo .n{font-family:var(--f-mono);font-size:calc(12px*var(--ts,1));font-weight:600;color:var(--paper);background:var(--seal);border-radius:999px;padding:1px 8px}
 .ezgo.done .n{background:var(--ok)}
 .ezgo svg{width:16px;height:16px;flex:none}
-@media (max-width:640px){.ezgo{right:12px;bottom:calc(66px + env(safe-area-inset-bottom,0px));padding:8px 12px;font-size:13px}}`;
+@media (max-width:640px){.ezgo{right:12px;bottom:calc(66px + env(safe-area-inset-bottom,0px));padding:8px 12px;font-size:calc(13px*var(--ts,1))}}`;
   const st=document.createElement("style");st.textContent=css;document.head.appendChild(st);
   const b=document.createElement("button");b.type="button";b.className="ezgo";b.hidden=true;document.body.appendChild(b);
   const cur=()=>{const v=document.querySelector("section.view:not([hidden])");return v&&/^ch\d+$/.test(v.id)?v:null;};

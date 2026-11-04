@@ -138,7 +138,7 @@
   const errText=e=>{const c=e&&e.code;
     if(c==="login")return "先登入帳號才能出題（右上角「同步」→ 登入）。";
     if(c==="rate")return "額度暫時用完，約 "+(e.wait||60)+" 秒後再按一次。你的作答都有保存。";
-    if(c==="timeout")return "等太久了，沒有回應。請再按一次。";
+    if(c==="timeout")return "逾時，請再按一次。";
     if(c==="network")return "連不上伺服器，請檢查網路後再試一次。";
     return "這次沒有出好題目（"+String(e&&e.message||"").slice(0,80)+"），請再按一次。";};
 
@@ -211,7 +211,7 @@
       const t=document.createElement("div");t.className="gtxt";bar.appendChild(t);
       const addBtn=(label,fn)=>{const b=document.createElement("button");b.type="button";b.className="btn primary";b.textContent=label;b.addEventListener("click",fn);bar.appendChild(b);return b;};
       if(B.batch){
-        t.innerHTML=made>0?"還差 <b>"+(N-made)+" 題</b>沒出完。":"會依講義一次出完整份，共 <b>"+N+" 題</b>。作答後才顯示解析與參考答案。";
+        t.innerHTML=made>0?"還差 <b>"+(N-made)+" 題</b>沒出完。":"共 <b>"+N+" 題</b>。";
         const b=addBtn(made>0?"繼續出完剩下的題目":"出整份題目",async()=>{
           if(BUSY[key])return;BUSY[key]=true;ERR[key]="";b.disabled=true;
           const tick=()=>{b.textContent="出題中… "+madeIn(B,list)+" / "+N;};tick();
@@ -221,7 +221,7 @@
         });
         if(BUSY[key]){b.disabled=true;b.textContent="出題中…";}
       }else{
-        t.innerHTML=made===0?"每一題依講義即時出題，涵蓋這章的每個小節，作答後才顯示答案與解析。共 <b>"+N+" 題</b>。":"下一題是第 <b>"+(made+1)+" / "+N+"</b> 題。";
+        t.innerHTML=made===0?"共 <b>"+N+" 題</b>。":"下一題是第 <b>"+(made+1)+" / "+N+"</b> 題。";
         const b=addBtn(made===0?"開始出題":"出下一題",async()=>{
           if(BUSY[key])return;BUSY[key]=true;ERR[key]="";b.disabled=true;b.textContent="出題中…";
           try{const k=nextIn(B,list);await makeOne(B,k);}

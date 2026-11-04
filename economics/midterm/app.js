@@ -105,7 +105,7 @@ function renderQuiz(ch){
     const t=document.createElement("span");t.textContent=s.k<s.n?("answered "+s.k+" / "+s.n+", correct so far "+s.r+" questions"):("Done! Correct "+s.r+" / "+s.n+(s.r>=s.n*0.8?"，這章很穩。":"，錯的題目回上面找對應段落再讀一次。"));sc.appendChild(t);
     const rb=document.createElement("button");rb.className="btn";rb.type="button";rb.textContent="Redo chapter";rb.addEventListener("click",()=>{(window.EZundo||((w,f)=>f()))("This chapter's answers",()=>{delete S.quiz[ch];if(window.EZGEN)EZGEN.reset(ch);S.quizReset=S.quizReset||{};S.quizReset[ch]=Date.now();save();renderQuiz(ch);renderTabs(ch);refreshPCB();applyZh();},null,rb);});sc.appendChild(rb);
     const idx=VIEWS.findIndex(v=>v[0]===ch);const nx=VIEWS[idx+1];
-    if(isHw&&s.k>=s.n){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";nb.textContent="接著寫第二大題 25 題";nb.addEventListener("click",()=>{const t=document.getElementById("ch"+ch.slice(2)+"-mc");if(t){t.scrollIntoView({block:"start"});scrollBy(0,-76);}});sc.appendChild(nb);}
+    if(isHw&&s.k>=s.n){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";nb.textContent="Next: Part 2, 25 questions";nb.addEventListener("click",()=>{const t=document.getElementById("ch"+ch.slice(2)+"-mc");if(t){t.scrollIntoView({block:"start"});scrollBy(0,-76);}});sc.appendChild(nb);}
     else if(s.k>=s.n){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";if(nx&&nx[0]!=="|"){nb.textContent="Next chapter: "+CHN[nx[0]];nb.dataset.go=nx[0];}else{nb.textContent="Start mock exam 1";nb.dataset.go="mock-1";}sc.appendChild(nb);}
   }
   renderScore();

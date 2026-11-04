@@ -229,14 +229,16 @@ pre{max-width:100%;overflow-x:auto}
 .rvall{margin:46px 0 6px;padding-bottom:6px;border-bottom:2px solid var(--ink)}
 .rvsec{border:1px solid var(--line);border-radius:10px;background:var(--paper);padding:12px 18px 6px;margin:14px 0;scroll-margin-top:80px}
 .rvsh{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
-.rvsh h3{margin:0;flex:1 1 auto;min-width:0;font-size:1.06em}
+.rvsh h3{margin:0;flex:1 1 auto;min-width:0;font-size:1.2em}
+.rvsec .rvmn,.rvsec .rvmn li{font-size:16.5px;line-height:1.75}
+.rvsec .rvt{font-size:15.5px}
 .rvk{font-family:var(--f-mono);font-size:12px;font-weight:700;color:var(--paper);background:var(--brass);border-radius:5px;padding:2px 7px;white-space:nowrap}
 .rvgo{margin-left:auto;font:inherit;font-size:13px;font-weight:600;color:var(--brass);background:none;border:1px solid var(--brass-line);border-radius:999px;padding:2px 11px;cursor:pointer;white-space:nowrap}
 .rvgo:hover{background:var(--brass-soft)}
 .rvsec .rvmn{margin:10px 0}
 .rvsec .rvmn ul{margin:4px 0 0;padding-left:18px}
 .rvpts{margin:10px 0;padding-left:20px}.rvpts li{margin:5px 0}
-.rvone{border-left:3px solid var(--brass);background:var(--brass-soft);border-radius:0 6px 6px 0;padding:7px 12px;margin:10px 0;font-size:.95em}
+.rvone{border-left:3px solid var(--brass);background:var(--brass-soft);border-radius:0 6px 6px 0;padding:7px 12px;margin:10px 0;font-size:1em}
 .rvone .lbl{font-family:var(--f-mono);font-size:11.5px;font-weight:700;color:var(--brass);margin-right:8px}
 .rvsec .rvt{margin:10px 0}
 .rvsec.missed{border-color:var(--bad,#c62828);border-left:5px solid var(--bad,#c62828)}

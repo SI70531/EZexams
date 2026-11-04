@@ -3,7 +3,7 @@
      then why each of the four options is right or wrong, and the one point to remember.
    - Every answered question in the open tab is analysed automatically (also ones answered on an earlier visit),
      one at a time and at most about 9 a minute; the one you just answered goes first.
-   - Results are kept in this browser (localStorage "ezexp:<page>"), so each question is only asked once.
+   - Results are kept in this browser (localStorage "ezexp2:<page>"), so each question is only asked once.
    - Without a key (or if Gemini fails), the original short explanation stays as it is.
    Option letters are taken from the page, so they match the shuffled order you see.
    Load after the page's main script, ezai.js and ezshuffle.js. */
@@ -23,7 +23,7 @@
 .expl.hasai .oexp{display:none}`;
   const st=document.createElement("style");st.textContent=css;document.head.appendChild(st);
 
-  const LS="ezexp:"+location.pathname;
+  const LS="ezexp2:"+location.pathname;
   let CACHE={};try{CACHE=JSON.parse(localStorage.getItem(LS)||"{}")||{};}catch(e){}
   const saveCache=()=>{try{localStorage.setItem(LS,JSON.stringify(CACHE));}catch(e){}};
   const PEND={},ERR={},FRESH=new WeakSet();
@@ -47,7 +47,7 @@
     const lines=os.map(o=>"("+o.querySelector(".ab").textContent.trim()+") "+optText(o));
     return [
 "You are a patient tutor explaining one multiple-choice question from a university course ("+document.title+").",
-"Write in Traditional Chinese (Taiwan). Keep technical terms in English, e.g. 中斷（interrupt）.",
+"LANGUAGE RULE (mandatory): every explanation string (mistake, why, point) MUST be written in Traditional Chinese (Taiwan). Do NOT write those fields in English, even though the question and options are in English. Only technical terms stay in English inside the Chinese sentence, e.g. 中斷（interrupt）.",
 "QUESTION:",x.q.q,
 "OPTIONS:",...lines,
 "CORRECT ANSWER: ("+letterOf(it,x.q.a)+")",
@@ -58,7 +58,7 @@ x.q.e?"TEACHER'S SHORT NOTE (use it as the ground truth): "+x.q.e:"",
 '{"mistake":"","options":[{"letter":"A","correct":false,"why":""}],"point":""}',
 "- mistake: if the student was wrong, 1-2 sentences on the exact misunderstanding behind their pick (what they probably confused). Empty string if they were right.",
 "- options: one entry for EVERY option in the order given, with its letter; correct=true only for the right answer; why = 1-2 sentences on why that option is right or wrong. Refer to options by their content, not by letter.",
-"- point: one short sentence, the key idea to remember for the exam."
+"- point: one short sentence in Traditional Chinese, the key idea to remember for the exam.\n"+"REMINDER: mistake, why and point are Traditional Chinese sentences. English only for technical terms and the letters in the JSON keys."
     ].filter(Boolean).join("\n");
   }
 

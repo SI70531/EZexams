@@ -16,6 +16,9 @@
              Gemini writes ONE multiple-choice question from that section of the notes. The answer and the explanation are kept
              here (Durable Object, per account); the page only gets the question.
         POST /gen/answer {t, id, pick}                                                       → {a, e, right}  (revealed on answering)
+        POST /gen/adopt {t, s, key, kind:'mc'|'w', slots:[..]}  → {items:{slot:{id,q,o,...}}}  moves questions of tools/bank.json that were
+             answered before the move into this account's question store, content unchanged; the id is fixed by (account, set, slot), so every
+             device gets the same one. The answer and the reference stay here (read later with /gen/answer or /gen/wgrade).
         POST /bank/open  {t, s, key, picks:{<slot>:<pick>}}   questions that were answered before the move to AI practice
              (tools/bank.json) and the past-exam answers: the answer of a slot is only returned together with the pick for it.
    Only pages from ALLOWED may use it.
@@ -141,6 +144,7 @@ export default {
     if (url.pathname === "/gen/wgrade" && req.method === "POST") return wgrade(env, acct, who, bodyText, json, fail);
     if (url.pathname === "/bank/wopen" && req.method === "POST") return wbankOpen(env, who, bodyText, json, fail);
     if (url.pathname === "/gen/answer" && req.method === "POST") return genAnswer(env, acct, who, bodyText, json, fail);
+    if (url.pathname === "/gen/adopt" && req.method === "POST") return genAdopt(env, acct, who, bodyText, json, fail);
     if (url.pathname === "/bank/open" && req.method === "POST") return bankOpen(env, who, bodyText, json, fail);
 
     /* ---------- 1. Gemini ---------- */
@@ -311,6 +315,15 @@ Guard.prototype.gen = async function (op, req) {
     }
     return Response.json({ ok: true });
   }
+  if (op === "gen-putmany") {
+    for (const it of (Array.isArray(b.items) ? b.items : [])) await st.put("g:" + it.id, it.rec);
+    const all = await st.list({ prefix: "g:" });
+    if (all.size > 2600) {
+      const old = [...all.entries()].sort((x, y) => (x[1].at || 0) - (y[1].at || 0)).slice(0, all.size - 2500);
+      for (const [k] of old) await st.delete(k);
+    }
+    return Response.json({ ok: true });
+  }
   if (op === "gen-get") return Response.json({ rec: (await st.get("g:" + String(b.id))) || null });
   return Response.json({ ok: false });
 };
@@ -431,6 +444,40 @@ async function genAnswer(env, acct, who, bodyText, json, fail) {
   if (!rec) return fail(404, "GONE", "This question is no longer kept on the server");
   const out = { ok: true, a: rec.a, e: rec.e, right: pick === rec.a };
   return json(out);
+}
+/* move bank questions into the account's own store (same question, same answer), so they behave like every other question:
+   a fixed id, the question travels with the progress, and the answer is read with /gen/answer or /gen/wgrade.
+   The id comes from (account, set, slot), so two devices adopting the same slot get the same id and nothing doubles. */
+async function adoptId(uid, s, key, slot) {
+  const d = await crypto.subtle.digest("SHA-256", new TextEncoder().encode([uid, s, key, slot].join("|")));
+  return [...new Uint8Array(d)].slice(0, 16).map(x => x.toString(16).padStart(2, "0")).join("");
+}
+async function genAdopt(env, acct, who, bodyText, json, fail) {
+  if (!env.GUARD) return fail(500, "INTERNAL", "The Worker has no GUARD binding");
+  let r; try { r = JSON.parse(bodyText); } catch (e) { return fail(400, "BAD_JSON", "Body is not JSON"); }
+  const kind = r.kind === "w" ? "w" : "mc", s = String(r.s || ""), key = String(r.key || ""), setKey = kind === "w" ? "w:" + key : key;
+  const set = BANK[s] && BANK[s][setKey];
+  if (!set) return fail(404, "NOT_FOUND", "Unknown question set");
+  const g = await guard(env, "pin:" + who, "bank");
+  if (g.blocked) return fail(429, "RESOURCE_EXHAUSTED", "Too many requests; try again later", { "Retry-After": String(g.aiWait || 60) });
+  const items = {}, put = [], at = Date.now();
+  for (const k of (Array.isArray(r.slots) ? r.slots : []).slice(0, 600)) {
+    const i = Number(k), it = set[i];
+    if (!Number.isInteger(i) || !it) continue;
+    const id = await adoptId(acct.id, s, setKey, i);
+    if (kind === "w") {
+      put.push({ id, rec: { kind: "w", q: it.q, ref: it.r, p: Number(it.p) || 2, l: it.l, sec: "", at, from: "bank" } });
+      items[i] = { id, q: it.q, l: it.l, p: Number(it.p) || 2 };
+    } else {
+      if (!Array.isArray(it.o) || typeof it.q !== "string") continue;
+      put.push({ id, rec: Object.assign({}, it, { sec: "", at, from: "bank" }) });
+      const out = { id, q: it.q, o: it.o };
+      ["qz", "oz", "ch", "h", "fig", "hw"].forEach(f => { if (it[f] !== undefined) out[f] = it[f]; });   /* never a or e */
+      items[i] = out;
+    }
+  }
+  if (put.length) await genStore(env, acct.id, "putmany", { items: put });
+  return json({ items });
 }
 /* questions from before AI practice (tools/bank.json), by slot. The answer of a slot is only sent with the pick for it. */
 async function bankOpen(env, who, bodyText, json, fail) {

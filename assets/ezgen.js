@@ -37,7 +37,7 @@
       if(isAi(k)){
         ["q","o","a","e","qz","oz","sec","h","fig","gid","ai","ch"].forEach(f=>{delete it[f];});
         if(g){const c=CACHE[k]&&CACHE[k][i];const ok=c&&c.gid===g.id;
-          putItem(it,{q:g.q,o:g.o,a:ok?c.a:undefined,e:ok?c.e:undefined,qz:g.qz,oz:g.oz,sec:g.sec,gid:g.id,ai:1,ch:g.v&&/^ch\d+$/.test(g.v)?+g.v.slice(2):undefined});}
+          putItem(it,{q:g.q,o:g.o,a:ok?c.a:undefined,e:ok?c.e:undefined,qz:g.qz,oz:g.oz,sec:g.sec,gid:g.id,ai:1,h:g.h,fig:g.fig,hw:g.hw,ch:g.v&&/^ch\d+$/.test(g.v)?+g.v.slice(2):undefined});}
         else if(answered(k,i)){const c=CACHE[k]&&CACHE[k][i];if(c)putItem(it,c);}
       }else if(isFixed(k)&&answered(k,i)){
         const c=CACHE[k]&&CACHE[k][i];if(c){it.a=c.a;it.e=c.e;}
@@ -240,12 +240,53 @@
     });
     return need;
   }
+  /* ---------- moving questions answered before the move into the new mechanism ----------
+     A slot with a pick but no S.gen record still shows a bank question. /gen/adopt copies those into this account's store
+     (same question, same answer, a fixed id), and the slot then carries its question in S.gen like every other one, so it
+     syncs with the progress. Past-exam sets ('fixed') stay as they are. If the Worker does not know /gen/adopt yet, the old
+     way keeps working. */
+  let NOADOPT=false;const TRIED=new Set();   /* slots already asked about this session */
+  function legacySlots(){
+    const out={};
+    (C.ai||[]).forEach(k=>{
+      const a=st().quiz&&st().quiz[k]||{};
+      Object.keys(a).forEach(i=>{if(+i<Q()[k].length&&!genOf(k,+i)&&!TRIED.has(k+":"+i))(out[k]=out[k]||[]).push(+i);});
+    });
+    return out;
+  }
+  async function adopt(k,idx){
+    const r=await post("/gen/adopt",{s:C.s,key:k,kind:"mc",slots:idx});
+    idx.forEach(i=>TRIED.add(k+":"+i));
+    const S=st();S.gen=S.gen||{};S.gen[k]=S.gen[k]||{};
+    Object.keys(r.items||{}).forEach(i=>{
+      const x=r.items[i];if(!x||!x.id||genOf(k,+i))return;
+      const g={id:x.id,q:x.q,o:x.o,g:now(),from:"bank"};
+      ["qz","oz","h","fig","hw"].forEach(f=>{if(x[f]!==undefined)g[f]=x[f];});
+      let m=null;const W=window.EZWrong;
+      if(W&&W.match){try{m=W.match({q:x.q,o:x.o},scopeOf(k).length===1?scopeOf(k)[0]:null);}catch(e){}}
+      g.sec=m&&m.s?m.s.key:"";
+      g.v=m&&m.s&&m.s.ch?m.s.ch:(x.ch!==undefined?"ch"+x.ch:undefined);
+      if(g.v===undefined)delete g.v;
+      S.gen[k][i]=g;
+      /* the answer this browser already fetched stays valid for the same question */
+      const c=CACHE[k]&&CACHE[k][i];
+      if(c&&c.a!=null&&c.q===x.q)CACHE[k][i]={gid:x.id,a:c.a,e:c.e};
+      else if(CACHE[k])delete CACHE[k][i];
+    });
+    saveCache();C.save();fill(k);
+  }
   let hyBusy=false;
   async function hydrate(){
     if(hyBusy||!C)return;
-    const need=missing();if(!Object.keys(need).length){HY.state="idle";return;}
+    const leg=NOADOPT?{}:legacySlots();
+    let need=missing();if(!Object.keys(need).length&&!Object.keys(leg).length){HY.state="idle";return;}
     hyBusy=true;HY.state="loading";redrawBars();
     try{
+      for(const k of Object.keys(leg)){
+        try{await adopt(k,leg[k]);}
+        catch(e){if(e&&["login","rate","network","timeout"].includes(e.code))throw e;NOADOPT=true;break;}   /* an older Worker: keep the old way */
+      }
+      need=missing();
       for(const k of Object.keys(need)){
         const legacy={};
         for(const i of Object.keys(need[k])){
@@ -268,7 +309,7 @@
   }
   /* the sign-in is restored a moment after the page loads: try again then */
   function hydrateSoon(){
-    if(!Object.keys(missing()).length){HY.state="idle";return;}
+    if(!Object.keys(missing()).length&&(NOADOPT||!Object.keys(legacySlots()).length)){HY.state="idle";return;}
     const S=window.EZSync;
     if(S&&S.connected&&!S.connected()){HY.state="login";return;}
     setTimeout(hydrate,50);

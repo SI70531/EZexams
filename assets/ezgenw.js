@@ -32,6 +32,7 @@
     const r=rec(B,+q.dataset.slot);
     const secs=sectionsFor(B);
     const pick=r&&r.sec?secs.find(s=>s.key===r.sec):null;
+    if(pick&&r&&r.from==="bank")return (pick._t+"\n"+secs.filter(x=>x!==pick).map(x=>x._t).join("\n")).slice(0,9000);   /* matched by keywords: keep the rest of the chapter in reach */
     if(pick)return pick._t;
     /* a question without a recorded section (an older one from the bank): find the notes section it is about from its
        text, and send that section first. Sending only the chapter's first 9000 characters made the grader say
@@ -48,6 +49,14 @@
     if(hit)return (hit._t+"\n"+secs.filter(s=>s!==hit).map(s=>s._t).join("\n")).slice(0,9000);
     return secs.map(s=>s._t).join("\n").slice(0,9000);
   }
+  /* a label like "F1 · 2" is worth 2%: show it as "F1 · 2%" (labels that already carry the % stay) */
+  const lab=l=>String(l==null?"":l).replace(/^(\S+ · \d+)$/,"$1%");
+  /* the notes section a question's text is about ("" when none matches) */
+  function secOfText(B,text){
+    try{const W=window.EZWrong,views=B.views||[B.view];
+      if(W&&W.match){const m=W.match({q:text,e:""},views.length===1?views[0]:null);return m&&m.s?m.s.key:"";}}catch(e){}
+    return "";
+  }
   function labelOf(B,i){return (rec(B,i)||{}).l||"";}
   /* a slot's question text: the made one, or the bank's (legacy) one */
   const nl=s=>esc(s).replace(/\n/g,"<br>");
@@ -58,7 +67,7 @@
       if(r){
         if(q.dataset.gid!==r.id){
           q.dataset.gid=r.id;
-          ce.innerHTML='<p class="q"><span class="pts">'+esc(r.l)+'</span>'+nl(r.q)+'</p>';
+          ce.innerHTML='<p class="q"><span class="pts">'+esc(lab(r.l))+'</span>'+nl(r.q)+'</p>';
           const ta=q.querySelector("textarea");if(ta)ta.placeholder="你的答案（英文或中文都可以）";
         }
         q.hidden=false;
@@ -67,7 +76,7 @@
       if(q.dataset.gid)delete q.dataset.gid;
       const b=CACHE[B.key]&&CACHE[B.key][i];
       if(b&&!b.hidden){
-        ce.innerHTML='<p class="q"><span class="pts">'+esc(b.l)+'</span>'+nl(b.q)+'</p>';
+        ce.innerHTML='<p class="q"><span class="pts">'+esc(lab(b.l))+'</span>'+nl(b.q)+'</p>';
         q.hidden=false;return;
       }
       ce.innerHTML="";
@@ -77,8 +86,27 @@
     });
     drawBar(B);
   }
+  /* answered slots that still show a bank question are moved into the account's store (/gen/adopt): the same question, the
+     reference stays on the Worker, and from then on the slot is an ordinary made question that syncs with the progress.
+     An older Worker without /gen/adopt keeps working the old way. */
+  let NOADOPT=false;const TRIED=new Set();
+  async function adoptLegacy(B){
+    if(NOADOPT)return;
+    const need=[];slotsOf(B).forEach((q,i)=>{if(!rec(B,i)&&answeredQ(B,q)&&!TRIED.has(B.key+":"+i))need.push(i);});
+    if(!need.length)return;
+    try{
+      const r=await post("/gen/adopt",{s:C.s,key:B.key,kind:"w",slots:need});
+      need.forEach(i=>TRIED.add(B.key+":"+i));
+      const S=st();S.gen=S.gen||{};S.gen[B.key]=S.gen[B.key]||{};
+      Object.keys(r.items||{}).forEach(i=>{const x=r.items[i];if(!x||!x.id||rec(B,+i))return;
+        S.gen[B.key][i]={id:x.id,q:x.q,l:lab(x.l),p:x.p,sec:secOfText(B,x.q),g:now(),kind:"w",from:"bank"};});
+      if(CACHE[B.key]){need.forEach(i=>{delete CACHE[B.key][i];});saveCache();}
+      C.save();paint(B);
+    }catch(err){if(err&&["login","rate","network","timeout"].includes(err.code))throw err;NOADOPT=true;}
+  }
   /* the bank's text for legacy slots that were answered: fetched once, kept in this browser */
   async function fetchLegacy(B){
+    await adoptLegacy(B);
     const slots=slotsOf(B);
     const need=[];slots.forEach((q,i)=>{if(!rec(B,i)&&answeredQ(B,q)&&!(CACHE[B.key]&&CACHE[B.key][i]))need.push(i);});
     if(!need.length)return;

@@ -386,7 +386,7 @@
     total(k){return Q()[k]?Q()[k].length:0;},
     bar(k){const box=document.querySelector('[data-quiz="'+k+'"]');return box&&box.querySelector(":scope > .ezgen-bar");},
     toast,errText,
-    tag(el){const s=el.querySelector(".stem");if(s&&!s.querySelector(".aitag")){const t=document.createElement("span");t.className="aitag";t.textContent="AI";t.title="AI 依講義即時出的題目";s.appendChild(t);}},
+    tag(el){ /* no AI badge on questions */ },
     _debug:{planNext,generate,sectionsOf,hydrate,missing,cache:()=>CACHE}
   };
 })();

@@ -161,13 +161,14 @@ function renderExam(id){
   /* timer: start → 暫停 → 繼續計時 / 結束 (結束 puts it back to 60 minutes), same as the other subjects */
   const tb=tools.querySelector(".tbtn"),tt=tools.querySelector(".timer");
   let tEnd=tools.querySelector(".tend");if(!tEnd){tEnd=document.createElement("button");tEnd.type="button";tEnd.className="btn tend";tEnd.textContent="End";tEnd.hidden=true;tb.after(tEnd);}
-  let left=3600;
+  let full=3600,left=full;
   const draw=()=>{tt.textContent=String(Math.floor(left/60)).padStart(2,"0")+":"+String(left%60).padStart(2,"0");};
-  function stopT(){if(timers[id]){clearInterval(timers[id]);timers[id]=null;}left=3600;tb.textContent="Start 60-min timer";tEnd.hidden=true;draw();}
+  function stopT(){if(timers[id]){clearInterval(timers[id]);timers[id]=null;}left=full;tb.textContent="Start timer";tEnd.hidden=true;draw();}
   tb.onclick=()=>{
     if(timers[id]){clearInterval(timers[id]);timers[id]=null;tb.textContent="Resume";tEnd.hidden=false;return;}
+    if(tb.textContent!=="Resume"){full=(window.EZtimer?EZtimer.minutes(tools,60):60)*60;left=full;}
     tb.textContent="Pause";tEnd.hidden=true;draw();
-    timers[id]=setInterval(()=>{left--;if(left<=0){clearInterval(timers[id]);timers[id]=null;tt.textContent="Time's up";tb.textContent="Restart timer";left=3600;return;}draw();},1000);
+    timers[id]=setInterval(()=>{left--;if(left<=0){clearInterval(timers[id]);timers[id]=null;tt.textContent="Time's up";tb.textContent="Restart timer";left=full;return;}draw();},1000);
   };
   tEnd.onclick=()=>stopT();
   if(!timers[id])draw();

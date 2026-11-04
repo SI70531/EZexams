@@ -266,16 +266,17 @@ document.querySelectorAll(".exam").forEach(ex=>{
   upd();
   const mins=+(ex.dataset.mins||110);
   const tEl=tools.querySelector(".timer"),tBtn=tools.querySelector(".tbtn");
-  let left=mins*60,h=null;
+  let FULL=mins*60,left=FULL,h=null;
   function fmt(){const hh=Math.floor(left/3600),m=Math.floor(left%3600/60),s=left%60;tEl.textContent=(hh?hh+":":"")+String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");}
   fmt();
-  const FULL=left,startLabel=tBtn.textContent;
+  const startLabel=tBtn.textContent;
   /* paused: 「繼續計時」 + 「結束」; 結束 puts the clock back to the full time */
   const tEnd=document.createElement("button");tEnd.type="button";tEnd.className=tBtn.className.replace(/\btbtn\b/,"").trim()+" tend";tEnd.textContent="End";tEnd.hidden=true;
   tBtn.after(tEnd);
   function stopTimer(){clearInterval(h);h=null;}
   tBtn.addEventListener("click",()=>{
     if(h){stopTimer();tBtn.textContent="Resume";tEnd.hidden=false;return;}
+    if(tBtn.textContent!=="Resume"){FULL=(window.EZtimer?EZtimer.minutes(tools,mins):mins)*60;left=FULL;fmt();}
     tEnd.hidden=true;tBtn.textContent="Pause";
     h=setInterval(()=>{left--;fmt();if(left<=0){stopTimer();tEl.textContent="Time's up";tBtn.textContent="Restart timer";left=FULL;}},1000);
   });

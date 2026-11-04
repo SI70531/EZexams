@@ -1408,7 +1408,13 @@ end hash
 <h4>Open addressing <span class="sl">Slide 82</span><span class="zhn">開放定址法（open addressing）</span></h4>
 <p><i>Resolve collisions <mark>in the prime area</mark>, that contains all of the home addresses.</i> The slides list four: <b>linear probe, quadratic probe, double hashing, key offset</b> (Figure 2-13 draws this cell of double hashing as pseudorandom; pseudorandom and key offset both count as double hashing).<span class="zhn">在 prime area 內解決碰撞，prime area 包含所有 home address。投影片列出四種：linear probe、quadratic probe、double hashing、key offset（圖 2-13 把 double hashing 這一格畫成 pseudorandom；pseudorandom 和 key offset 都屬於 double hashing）。</span></p>
 
-<div class="algmenu" role="list" data-menu="m23"><button type="button" class="algcard" role="listitem" data-alg-open="m23-2"><span class="an">Method</span><b>Linear probe<span class="star">★★★</span></b><span class="zhn2">線性探測</span><span class="sl">Slide 83–84</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m23-3"><span class="an">Method</span><b>Quadratic probe</b><span class="zhn2">二次探測</span><span class="sl">Slide 85–86</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m23-4"><span class="an">Method</span><b>Pseudorandom resolution</b><span class="zhn2">偽隨機碰撞解決法</span><span class="sl">Slide 87–88</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m23-5"><span class="an">Method</span><b>Key offset <span class="star">★★★</span></b><span class="zhn2">鍵偏移</span><span class="sl">Slide 89–91</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m23-6"><span class="an">Method</span><b>Linked list resolution</b><span class="zhn2">鏈結串列解決法</span><span class="sl">Slide 92–94</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m23-7"><span class="an">Method</span><b>Bucket hashing</b><span class="zhn2">桶雜湊</span><span class="sl">Slide 95–96</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m23-8"><span class="an">Method</span><b>Combination approaches</b><span class="zhn2">組合式做法</span><span class="sl">Slide 97</span></button></div>
+<div class="algmenu" role="list" data-menu="m23"><button type="button" class="algcard" role="listitem" data-alg-open="m23-2"><span class="an">Method</span><b>Linear probe<span class="star">★★★</span></b><span class="zhn2">線性探測</span><span class="sl">Slide 83–84</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m23-3"><span class="an">Method</span><b>Quadratic probe</b><span class="zhn2">二次探測</span><span class="sl">Slide 85–86</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m23-4"><span class="an">Method</span><b>Pseudorandom resolution</b><span class="zhn2">偽隨機碰撞解決法</span><span class="sl">Slide 87–88</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m23-5"><span class="an">Method</span><b>Key offset <span class="star">★★★</span></b><span class="zhn2">鍵偏移</span><span class="sl">Slide 89–91</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m23-6"><span class="an">Method</span><b>Linked list resolution</b><span class="zhn2">鏈結串列解決法</span><span class="sl">Slide 92–94</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m23-7"><span class="an">Method</span><b>Bucket hashing</b><span class="zhn2">桶雜湊</span><span class="sl">Slide 95–96</span></button></div>
+<div class="algafter" data-menu="m23">
+<h4 class="alg"><span class="an">Method</span>Combination approaches<span class="sl">Slide 97</span><span class="zhn">組合式做法</span></h4>
+<p><i>A complex implementation often uses multiple steps.</i> Example: a large database first hashes to a bucket; <i>if the bucket is full, it uses a set number of linear probes, then uses a linked list overflow area</i> (first a fixed number of linear probes, then, if still no room, a linked list overflow area).<span class="zhn">複雜的實作常用多個步驟。例：大型資料庫先雜湊到 bucket；如果 bucket 滿了，先做固定次數的 linear probe，還是不行就放進 linked list 的 overflow area。</span></p>
+
+<div class="lab" data-lab="hash"></div>
+</div>
 
 <div class="algp" data-alg="m23-2" data-menu="m23" hidden>
 <h4 class="alg"><span class="an">Method</span>Linear probe<span class="sl">Slide 83–84</span><span class="star">★★★</span><span class="zhn">線性探測</span></h4>
@@ -1534,13 +1540,6 @@ prime area 每一格多了一個紅色 link 欄位（打叉 = null）。[001] �
 <div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
 </div>
 
-<div class="algp" data-alg="m23-8" data-menu="m23" hidden>
-<h4 class="alg"><span class="an">Method</span>Combination approaches<span class="sl">Slide 97</span><span class="zhn">組合式做法</span></h4>
-<p><i>A complex implementation often uses multiple steps.</i> Example: a large database first hashes to a bucket; <i>if the bucket is full, it uses a set number of linear probes, then uses a linked list overflow area</i> (first a fixed number of linear probes, then, if still no room, a linked list overflow area).<span class="zhn">複雜的實作常用多個步驟。例：大型資料庫先雜湊到 bucket；如果 bucket 滿了，先做固定次數的 linear probe，還是不行就放進 linked list 的 overflow area。</span></p>
-
-<div class="lab" data-lab="hash"></div>
-<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
-</div>
 
 <div class="quiz" data-quiz="ch2"></div>
 <div class="exam chw" data-exam="ch2w">

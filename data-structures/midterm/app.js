@@ -1026,6 +1026,7 @@ if(window.EZgenw){
     const id=m.dataset.menu;
     document.querySelectorAll('.algp[data-menu="'+id+'"]').forEach(g=>{g.hidden=g.dataset.alg!==k;});
     m.hidden=!!k;
+    document.querySelectorAll('.algafter[data-menu="'+id+'"]').forEach(g=>{g.hidden=!!k;});   /* content under the menu is shown only together with the menu */
     if(!noScroll){
       const target=k?document.querySelector('.algp[data-alg="'+k+'"][data-menu="'+id+'"] > .alg'):m;
       if(target){const y=target.getBoundingClientRect().top+scrollY-96;scrollTo({top:Math.max(0,y),behavior:"smooth"});}

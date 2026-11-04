@@ -33,6 +33,19 @@
     const secs=sectionsFor(B);
     const pick=r&&r.sec?secs.find(s=>s.key===r.sec):null;
     if(pick)return pick._t;
+    /* a question without a recorded section (an older one from the bank): find the notes section it is about from its
+       text, and send that section first. Sending only the chapter's first 9000 characters made the grader say
+       "the notes do not cover this" for anything that sits in a later section. */
+    let hit=null;
+    try{
+      const W=window.EZWrong,views=B.views||[B.view];
+      if(W&&W.match){
+        const qt=((q.querySelector(".qtext")||q).innerText||"").trim();
+        const m=W.match({q:qt,e:((q.querySelector(".qa")||{}).textContent||""),sec:q.dataset.sec},views.length===1?views[0]:null);
+        if(m&&m.s)hit=secs.find(s=>s.key===m.s.key)||null;
+      }
+    }catch(e){}
+    if(hit)return (hit._t+"\n"+secs.filter(s=>s!==hit).map(s=>s._t).join("\n")).slice(0,9000);
     return secs.map(s=>s._t).join("\n").slice(0,9000);
   }
   function labelOf(B,i){return (rec(B,i)||{}).l||"";}
@@ -222,7 +235,7 @@
       C.blocks.forEach(B=>{BLOCKS[B.key]=B;B.box.dataset.gen="1";B.box.dataset.w=B.key;});
       C.blocks.forEach(B=>{paint(B);fetchLegacy(B).catch(()=>{});});
     },
-    owns,grade,paint,
+    owns,grade,paint,notesFor:q=>notesFor(BLOCKS[q.dataset.w],q),
     reset(key){const S=st();if(S.gen)delete S.gen[key];if(CACHE[key]){delete CACHE[key];saveCache();}if(S.ex2&&S.ex2[key]){S.ex2[key]={ans:{},grade:{}};}if(BLOCKS[key])paint(BLOCKS[key]);},
   };
 })();

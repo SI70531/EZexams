@@ -13,7 +13,7 @@
 #tabs{position:relative}
 .mo-glide{position:absolute;bottom:0;left:0;height:5px;width:0;border-radius:4px 4px 0 0;pointer-events:none;z-index:2;background:linear-gradient(90deg,var(--brass),var(--seal));box-shadow:0 0 14px 2px color-mix(in srgb,var(--brass) 70%,transparent)}
 .mo-draw{background:linear-gradient(var(--brass),var(--brass)) 0 100%/0 5px no-repeat;transition:background-size 1.2s cubic-bezier(.2,1.3,.3,1)}
-.mo-draw.mo-in{background-size:120px 5px}
+.mo-draw.mo-in{background-size:var(--mo-w,120px) 5px}
 @keyframes moroll{from{opacity:0;transform:translateY(120%) scale(.4) rotate(-14deg);filter:blur(6px)}60%{transform:translateY(-8%) scale(1.25) rotate(3deg)}to{opacity:1;transform:none;filter:none}}
 .stub .v{animation:moroll 1s .25s cubic-bezier(.2,.8,.2,1) backwards}
 .exam-subj:nth-child(2) .stub .v{animation-delay:.35s}.exam-subj:nth-child(3) .stub .v{animation-delay:.45s}.exam-subj:nth-child(4) .stub .v{animation-delay:.55s}
@@ -52,7 +52,15 @@ html.mo-theme::view-transition-new(root){animation:motheme .95s cubic-bezier(.4,
   /* ---- section titles draw their underline ---- */
   if("IntersectionObserver"in window){
     const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("mo-in");io.unobserve(e.target);}}),{threshold:.6});
-    document.querySelectorAll(".quiz > h2,.vhead h1").forEach(h=>{h.classList.add("mo-draw");io.observe(h);});
+    /* every section title gets the underline (chapter title, Part I / II / III), as long as the text itself */
+    const textW=h=>{try{const r=document.createRange();r.selectNodeContents(h);return Math.ceil(Math.max(0,...[...r.getClientRects()].map(x=>x.width)));}catch(e){return 0;}};
+    const setW=h=>{const w=textW(h);if(w>0)h.style.setProperty("--mo-w",w+"px");};
+    const io2=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){const h=e.target;setW(h);h.classList.add("mo-in");io2.unobserve(h);setTimeout(()=>setW(h),1100);}   /* measured again once the title has finished rising into place */}),{threshold:.6});
+    const heads=[...document.querySelectorAll(".quiz > h2,.vhead h1,.exam > h2,.exam > h3")];
+    heads.forEach(h=>{h.classList.add("mo-draw");io2.observe(h);});
+    let rt=null;const remeasure=()=>{clearTimeout(rt);rt=setTimeout(()=>heads.forEach(h=>{if(h.classList.contains("mo-in")&&h.offsetParent)setW(h);}),150);};
+    addEventListener("resize",remeasure);
+    if(document.fonts&&document.fonts.ready)document.fonts.ready.then(remeasure);
   }
 
   /* ---- theme change spreads from the pressed button ---- */

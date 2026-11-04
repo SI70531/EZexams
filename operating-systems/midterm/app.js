@@ -220,9 +220,9 @@ document.querySelectorAll(".exam").forEach(ex=>{
     list.forEach(it=>{const r=keywordGrade(it.id,it.pts,it.ans);if(!r)return;r.ans=it.ans;st.grade[it.id]=r;render(document.getElementById(it.id));});
     save();upd();
   }
-  async function grade(list,btns,stat){
-    if(CHW)return EZchw.grade(list.filter(it=>it.ans).map(it=>document.getElementById(it.id)),{st,render,upd,save,btns,stat});
-    list=list.filter(it=>it.ans);
+  async function grade(list,btns,stat,one){   /* one: the single 批改這題 button — a blank answer (can't write it) is graded too, as 0 with the model answer */
+    if(CHW)return EZchw.grade((one?list:list.filter(it=>it.ans)).map(it=>document.getElementById(it.id)),{st,render,upd,save,btns,stat,blank:!!one});
+    if(!one)list=list.filter(it=>it.ans);
     if(!list.length){stat.textContent="還沒有作答。";return;}
     if(!SAMPLE){kwGrade(list);stat.textContent="批改完成（關鍵字比對）。";return;}
     btns.forEach(b=>b.disabled=true);stat.textContent="批改中…";
@@ -254,7 +254,7 @@ document.querySelectorAll(".exam").forEach(ex=>{
     let tmr=null;
     ta.addEventListener("input",()=>{clearTimeout(tmr);tmr=setTimeout(()=>{st.ans[q.id]=ta.value;save();render(q);},400);});
     const btn=q.querySelector(".grade"),stat=q.querySelector(".gstat");
-    btn.addEventListener("click",()=>{st.ans[q.id]=ta.value;save();grade([qInfo(q)],[btn,gAll],stat);});
+    btn.addEventListener("click",()=>{st.ans[q.id]=ta.value;save();grade([qInfo(q)],[btn,gAll],stat,true);});
     const pts=+q.dataset.pts;
     render(q);if(CHW)EZchw.setup(q);
   });

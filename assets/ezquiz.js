@@ -34,11 +34,13 @@
     }
     t.innerHTML="<span></span>"+cancel;
     const msg=t.firstChild,end=now()+UNDO_S*1000;
-    const draw=()=>{msg.textContent="Clearing "+what.charAt(0).toLowerCase()+what.slice(1)+" in "+Math.max(1,Math.ceil((end-now())/1000))+" s";};draw();
+    /* whole seconds while more than 1 s is left, then 1, 0.9, 0.8 … in tenths */
+    const fmtLeft=r=>{if(r>1)return String(Math.ceil(r));const v=Math.max(0,Math.ceil(r*10)/10);return v===1?"1":v.toFixed(1);};
+    const draw=()=>{msg.textContent="Clearing "+what.charAt(0).toLowerCase()+what.slice(1)+" in "+fmtLeft((end-now())/1000)+" s";};draw();
     let done=false;
     const stop=()=>{done=true;clearTimeout(tm);clearInterval(iv);t.remove();if(btn)btn.style.display="";};
     const fin=()=>{if(done)return;stop();doIt();};
-    const tm=setTimeout(fin,UNDO_S*1000),iv=setInterval(draw,250);t._fin=fin;
+    const tm=setTimeout(fin,UNDO_S*1000),iv=setInterval(draw,100);t._fin=fin;
     t.querySelector(".undo-now").onclick=()=>fin();
     t.querySelector(".undo-cancel").onclick=()=>{if(!done)stop();};
     addEventListener("pagehide",()=>{if(!done)stop();},{once:true});   /* leaving the page cancels, nothing is lost */

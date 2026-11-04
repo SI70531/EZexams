@@ -25,6 +25,28 @@
     });
     if(locked.length)setTimeout(()=>locked.forEach(([e,o])=>{e.style.overflow=o;}),ms);
   }
+  /* ---- explicit order: an svg whose parts carry data-step="N" plays step by step (N = 0,1,2,...):
+     boxes/nodes of a step appear first, a connector (line with an arrowhead) draws in its own step, so it never shows before its boxes ---- */
+  function stepIn(svg){
+    const els=[...svg.querySelectorAll("[data-step]")];
+    if(!els.length)return false;
+    const STEP=450;
+    els.forEach(e=>{
+      const d=(+e.dataset.step)*STEP,tag=e.tagName.toLowerCase();
+      try{
+        if(tag==="line"){
+          const L=e.getTotalLength();
+          e.animate([{strokeDasharray:L+" "+L,strokeDashoffset:L},{strokeDasharray:L+" "+L,strokeDashoffset:0}],{duration:420,delay:d,easing:"cubic-bezier(.4,0,.2,1)",fill:"backwards"});
+          if(e.getAttribute("marker-end")){e.style.markerEnd="none";setTimeout(()=>{e.style.markerEnd="";},d+400);}
+          return;
+        }
+        if(tag==="text"){e.animate([{opacity:0,transform:"translateY(5px)"},{opacity:1,transform:"none"}],{duration:420,delay:d+150,easing:"ease-out",fill:"backwards"});return;}
+        e.style.transformBox="fill-box";e.style.transformOrigin="50% 50%";
+        e.animate([{opacity:0,transform:"scale(.6)"},{opacity:1,transform:"none"}],{duration:520,delay:d,easing:"cubic-bezier(.2,1.2,.3,1)",fill:"backwards"});
+      }catch(x){}
+    });
+    return true;
+  }
   /* ---- flow diagrams (boxes joined by arrows): play in the order of the arrows, slowly, so the direction is clear ----
      the start box appears, each arrow is then drawn from its tail to its head, and only when the head arrives does the box it points to appear */
   let flowMs=0;
@@ -198,6 +220,7 @@
     }
     const svgs=[...box.querySelectorAll("svg")];
     svgs.forEach(svg=>{
+      try{if(stepIn(svg))return;}catch(x){}
       try{if(flowIn(svg))return;}catch(x){}
       const els=[...svg.querySelectorAll("path,line,polyline,polygon,rect,circle,ellipse,text")]
         .filter(e=>!e.closest("defs,marker,clipPath,mask,symbol,pattern"));

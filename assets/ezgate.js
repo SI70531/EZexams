@@ -376,8 +376,8 @@
   }
   function close(){if(!root)return;root.classList.add("out");document.documentElement.classList.remove("ezgate-on","ezlock");setTimeout(()=>{root.hidden=true;},450);opened=false;}
   window.EZGate={open,close,isOpen:()=>opened};
-  /* 登出 at the top right (next to the theme button), in case the wrong PIN was entered: signs this tab out and
-     opens the gate again. Without a PIN (先不同步) it reads 登入. */
+  /* Sign out at the top right (next to the theme button), in case the wrong PIN was entered: signs this tab out and
+     opens the gate again. Without a PIN (先不同步) it reads Sign in. */
   function outButton(){
     const theme=document.querySelector(".top .bar .theme, .topline .theme");if(!theme||document.getElementById("ezOut"))return;
     const st=document.createElement("style");
@@ -388,13 +388,13 @@
     const b=document.createElement("button");b.type="button";b.id="ezOut";b.className="ezout";
     theme.parentNode.insertBefore(b,theme);
     const draw=()=>{const on=!!(window.EZSync&&EZSync.connected());
-      b.innerHTML=on?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg><span>登出</span>'
-        :'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5M15 12H3"/></svg><span>登入</span>';
+      b.innerHTML=on?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg><span>Sign out</span>'
+        :'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5M15 12H3"/></svg><span>Sign in</span>';
       b.title=on?"Sign out":"Sign in";b.setAttribute("aria-label",on?"Sign out":"Sign in");};
     draw();if(window.EZSync&&EZSync.onStatus)EZSync.onStatus(draw);
     b.addEventListener("click",async()=>{
       if(b.disabled)return;
-      /* signed in: ask first (not when it reads 登入) */
+      /* signed in: ask first (not when it reads Sign in) */
       if(window.EZSync&&EZSync.connected()){const a=await askOut();if(a==="pin"){open({mode:"setpin",change:true});return;}if(!a)return;}
       /* upload answers that are still waiting before letting go of the PIN (at most 8 s) */
       if(window.EZSync&&EZSync.connected()&&EZSync.pending&&EZSync.pending()){

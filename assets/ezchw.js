@@ -124,7 +124,7 @@ context(items),
     const a=CACHE[q.id];let box=q.querySelector(":scope > .aians");
     if(!a){if(box)box.remove();return;}
     if(!box){box=document.createElement("div");box.className="box en aians";(q.querySelector(":scope > .gres")||q.lastElementChild).after(box);}
-    box.innerHTML='<span class="lbl">ANSWER</span>'+esc(a.en)+(a.zh?'<div class="zhtr"><span>中文</span>'+esc(a.zh)+'</div>':'')+'<span class="aisrc">AI 依講義寫的解答</span>';
+    box.innerHTML='<span class="lbl">ANSWER</span>'+esc(a.en)+(a.zh?'<div class="zhtr"><span>中文</span>'+esc(a.zh)+'</div>':'')+'';
     if(open!==undefined)box.hidden=!open;
     const b=q.querySelector(".aibtn");if(b)b.textContent=box.hidden?"看 AI 解答":"收起 AI 解答";
   }
@@ -192,7 +192,7 @@ context(items),
         finally{b.disabled=false;}
       });
       /* an answer graded before keeps its model answer visible */
-      if(CACHE[q.id])showAnswer(q,!!q.querySelector(".gres:not([hidden])"));
+      if(CACHE[q.id])showAnswer(q,true);   /* the ANSWER box shows for right and wrong answers alike */
     },
     showAnswer,
     keep:(id,en,zh)=>keep(id,en,zh)

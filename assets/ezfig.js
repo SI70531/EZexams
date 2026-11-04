@@ -25,19 +25,24 @@
     });
     if(locked.length)setTimeout(()=>locked.forEach(([e,o])=>{e.style.overflow=o;}),ms);
   }
+  /* a drawn line: the arrowhead shows only when the line has arrived (tied to the end of the animation, not a timer, so a later delay shift keeps it right) */
+  function drawLine(e,L,dl,du,ease,hideHead){
+    const an=e.animate([{strokeDasharray:L+" "+L,strokeDashoffset:L},{strokeDasharray:L+" "+L,strokeDashoffset:0}],{duration:du,delay:dl,easing:ease,fill:"backwards"});
+    if(hideHead){e.style.markerEnd="none";const back=()=>{e.style.markerEnd="";};an.finished.then(back,back);}
+    return an;
+  }
   /* ---- explicit order: an svg whose parts carry data-step="N" plays step by step (N = 0,1,2,...):
      boxes/nodes of a step appear first, a connector (line with an arrowhead) draws in its own step, so it never shows before its boxes ---- */
   function stepIn(svg){
     const els=[...svg.querySelectorAll("[data-step]")];
     if(!els.length)return false;
-    const STEP=450;
+    const STEP=330;
+    flowMs=Math.max(flowMs,Math.max(...els.map(e=>+e.dataset.step||0))*STEP+900);
     els.forEach(e=>{
       const d=(+e.dataset.step)*STEP,tag=e.tagName.toLowerCase();
       try{
         if(tag==="line"){
-          const L=e.getTotalLength();
-          e.animate([{strokeDasharray:L+" "+L,strokeDashoffset:L},{strokeDasharray:L+" "+L,strokeDashoffset:0}],{duration:420,delay:d,easing:"cubic-bezier(.4,0,.2,1)",fill:"backwards"});
-          if(e.getAttribute("marker-end")){e.style.markerEnd="none";setTimeout(()=>{e.style.markerEnd="";},d+400);}
+          drawLine(e,e.getTotalLength(),d,420,"cubic-bezier(.4,0,.2,1)",!!e.getAttribute("marker-end"));
           return;
         }
         if(tag==="text"){e.animate([{opacity:0,transform:"translateY(5px)"},{opacity:1,transform:"none"}],{duration:420,delay:d+150,easing:"ease-out",fill:"backwards"});return;}
@@ -58,36 +63,64 @@
     /* boxes */
     let nodes=all.filter(e=>/^(rect|ellipse)$/.test(tag(e))).map(e=>({e,r:R(e),txt:[],t:null})).filter(n=>n.r.width>=28&&n.r.height>=14&&n.r.width*n.r.height<sR.width*sR.height*.5);
     nodes=nodes.filter(n=>nodes.filter(m=>m!==n&&m.r.left>=n.r.left-1&&m.r.right<=n.r.right+1&&m.r.top>=n.r.top-1&&m.r.bottom<=n.r.bottom+1).length<2);   /* not a group frame */
-    if(nodes.length<3)return false;
     const dist=(p,r)=>Math.hypot(Math.max(r.left-p.x,0,p.x-r.right),Math.max(r.top-p.y,0,p.y-r.bottom));
-    const near=(p,not)=>{let b=null,d=1e9;nodes.forEach(n=>{if(n===not)return;const k=dist(p,n.r);if(k<d){d=k;b=n;}});return[b,d];};
     const pt=(e,at)=>{const q=e.getPointAtLength(at),m=e.getScreenCTM();return m?new DOMPoint(q.x,q.y).matrixTransform(m):q;};
     const lenOf=e=>{try{return e.getTotalLength()}catch(x){return 0}};
-    const isNode=e=>nodes.some(n=>n.e===e);
-    /* arrows: strokes that carry an arrowhead marker */
-    const arrows=all.filter(e=>!isNode(e)&&!/^(text|circle)$/.test(tag(e))&&e.getTotalLength&&getComputedStyle(e).markerEnd!=="none"&&lenOf(e)>0).map(e=>{
-      const L=lenOf(e),a=pt(e,0),b=pt(e,L),[tn,td]=near(b);return{e,L,a,b,tn,td};});
+    /* arrows: strokes that carry an arrowhead marker (found first: a small box that an arrow starts or ends at is a box too) */
+    const nodeEls=new Set(nodes.map(n=>n.e));
+    const arrows=all.filter(e=>!nodeEls.has(e)&&!/^(text|circle)$/.test(tag(e))&&e.getTotalLength&&getComputedStyle(e).markerEnd!=="none"&&lenOf(e)>0).map(e=>{
+      const L=lenOf(e);return{e,L,a:pt(e,0),b:pt(e,L)};});
+    /* small boxes (pointer squares, link cells): one that touches a bigger box is a part of that box and plays with it;
+       a stand-alone one at the end of an arrow (pHead, pLoc ...) is a box of its own */
+    const smalls=all.filter(e=>tag(e)==="rect"&&!nodeEls.has(e)).map(e=>({e,r:R(e),txt:[],t:null,small:1}))
+      .filter(m=>m.r.width>=8&&m.r.height>=8&&m.r.width<=44&&m.r.height<=44);
+    /* the cells of an array sit edge to edge in a row: they are not pointer squares */
+    const cell=m=>smalls.some(o=>o!==m&&Math.abs(o.r.width-m.r.width)<=1.5&&Math.abs(o.r.height-m.r.height)<=1.5&&
+      ((Math.abs(Math.abs(o.r.left-m.r.left)-m.r.width)<=2.5&&Math.abs(o.r.top-m.r.top)<=2)||(Math.abs(Math.abs(o.r.top-m.r.top)-m.r.height)<=2.5&&Math.abs(o.r.left-m.r.left)<=2)));
+    smalls.forEach(m=>{
+        const host=nodes.find(n=>!n.small&&m.r.left<=n.r.right+2&&m.r.right>=n.r.left-2&&m.r.top<=n.r.bottom+2&&m.r.bottom>=n.r.top-2&&n.r.width*n.r.height>m.r.width*m.r.height*1.5);
+        if(host){host.shadow=(host.shadow||[]).concat(m.e);m.part=1;return;}
+        if(!cell(m)&&arrows.some(a=>dist(a.a,m.r)<=8||dist(a.b,m.r)<=8))nodes.push(m);});
+    /* a drop-shadow copy of a box (same size, a few px offset, drawn just before it) is not a box of its own: it travels with the box */
+    const shadows=[];
+    nodes.forEach(n=>{const m=nodes.find(m=>m!==n&&Math.abs(m.r.width-n.r.width)<=1.5&&Math.abs(m.r.height-n.r.height)<=1.5
+      &&Math.abs(m.r.left-n.r.left)<=8&&Math.abs(m.r.top-n.r.top)<=8&&(Math.abs(m.r.left-n.r.left)>1||Math.abs(m.r.top-n.r.top)>1)
+      &&(n.e.compareDocumentPosition(m.e)&Node.DOCUMENT_POSITION_FOLLOWING)&&!shadows.includes(m));
+      if(m){shadows.push(n);m.shadow=(m.shadow||[]).concat(n.e);m.small=m.small||n.small;}});
+    nodes=nodes.filter(n=>!shadows.includes(n));
+    if(nodes.length<3)return false;
+    const near=(p,not)=>{let b=null,d=1e9;nodes.forEach(n=>{if(n===not)return;const k=dist(p,n.r);if(k<d){d=k;b=n;}});return[b,d];};
+    arrows.forEach(ar=>{const [tn,td]=near(ar.b);ar.tn=tn;ar.td=td;});
     if(arrows.filter(a=>a.td<22).length<2)return false;                      /* axes of a graph etc. are not flow */
     arrows.forEach(a=>{const [sn]=near(a.a,a.tn);a.sn=sn;});
+    const isNode=e=>nodes.some(n=>n.e===e);
     /* text that belongs to a box */
     const texts=all.filter(e=>tag(e)==="text");
-    texts.forEach(t=>{const r=R(t),c={x:(r.left+r.right)/2,y:(r.top+r.bottom)/2};let best=null,ba=1e12;nodes.forEach(n=>{if(dist(c,n.r)===0){const ar=n.r.width*n.r.height;if(ar<ba){ba=ar;best=n;}}});if(best){best.txt.push(t);t._n=best;}});
+    texts.forEach(t=>{const r=R(t),c={x:(r.left+r.right)/2,y:(r.top+r.bottom)/2};let best=null,ba=1e12;nodes.forEach(n=>{if(dist(c,n.r)===0){const ar=n.r.width*n.r.height;if(ar<ba){ba=ar;best=n;}}});
+      if(!best){let bd=16;nodes.forEach(n=>{if(!n.small)return;const k=dist(c,n.r);if(k<bd){bd=k;best=n;}});}     /* the name written right under a pointer square */
+      if(best){best.txt.push(t);t._n=best;}});
     /* schedule */
     const inc=new Set(arrows.map(a=>a.tn));
     let roots=nodes.filter(n=>!inc.has(n)).sort((a,b)=>a.r.left-b.r.left||a.r.top-b.r.top);
     if(!roots.length)roots=[nodes.slice().sort((a,b)=>a.r.left-b.r.left||a.r.top-b.r.top)[0]];
     const POP=380,SPEED=.24;                                                  /* px per ms of arrow drawing */
-    const q=roots.slice(0,1).concat(roots.slice(1));roots.forEach(n=>{n.t=0;});
+    /* order of play: the start box -> the box it points to -> the arrow between them (drawn only when BOTH boxes exist) -> the next box ... */
+    roots.forEach(n=>{n.t=0;n.rd=POP*.55;});
+    const q=roots.slice();
     const sched=[];let qi=0;
     while(qi<q.length){
       const n=q[qi++];
       arrows.filter(a=>a.sn===n&&!a.done).sort((a,b)=>a.b.y-b.b.y).forEach((a,k)=>{
-        a.done=1;a.t=n.t+POP*.8+k*140;a.d=Math.max(520,Math.min(1200,a.L/SPEED));sched.push(a);
-        const t=a.tn;if(t&&t.t===null){t.t=a.t+a.d*.92;q.push(t);}
+        a.done=1;const c=a.tn;
+        if(c&&c.t===null){c.t=n.rd+k*140;q.push(c);}
+        a.t=Math.max(n.rd,c?c.t+POP*.7:n.rd)+k*60;a.d=Math.max(520,Math.min(1200,a.L/SPEED));sched.push(a);
+        if(c&&c.rd===undefined)c.rd=a.t+a.d*.9;
       });
     }
     let end=0;sched.forEach(a=>{end=Math.max(end,a.t+a.d);});
-    arrows.filter(a=>!a.done).forEach(a=>{a.done=1;a.t=end*.5;a.d=700;sched.push(a);if(a.tn&&a.tn.t===null){a.tn.t=a.t+a.d*.9;}});
+    arrows.filter(a=>!a.done).forEach(a=>{a.done=1;
+      [a.sn,a.tn].forEach(n=>{if(n&&n.t===null){n.t=end*.4;}});
+      a.t=Math.max(end*.5,...[a.sn,a.tn].filter(Boolean).map(n=>n.t+POP*.7));a.d=700;sched.push(a);});
     nodes.forEach(n=>{if(n.t===null)n.t=end*.6;});
     end=Math.max(end,...sched.map(a=>a.t+a.d),...nodes.map(n=>n.t+POP));
     const f=Math.min(1,10000/end);                                          /* whole figure never takes longer than ~10 s */
@@ -100,16 +133,15 @@
     const T=x=>x*f+OFF;
     flowMs=Math.max(flowMs,T(end)+300);
     /* every other element joins the box / arrow it is closest to */
-    const done=new Set([...nodes.map(n=>n.e),...arrows.map(a=>a.e),...texts.filter(t=>t._n)]);
+    const done=new Set([...nodes.map(n=>n.e),...shadows.map(n=>n.e),...nodes.flatMap(n=>n.shadow||[]),...arrows.map(a=>a.e),...texts.filter(t=>t._n)]);
     const rest=all.filter(e=>!done.has(e)&&!backs.includes(e));
     const bound=(e,fn)=>{try{fn()}catch(x){}};
     backs.forEach((e,i)=>bound(e,()=>{e.style.transformBox="fill-box";e.style.transformOrigin="50% 50%";e.animate([{opacity:0,transform:"scale(.94)"},{opacity:1,transform:"none"}],{duration:520,delay:i*80,easing:"cubic-bezier(.2,.9,.3,1)",fill:"backwards"});}));
-    nodes.forEach(n=>{[n.e,...n.txt].forEach(e=>bound(e,()=>{e.style.transformBox="fill-box";e.style.transformOrigin="50% 50%";
+    nodes.forEach(n=>{[n.e,...n.txt,...(n.shadow||[])].forEach(e=>bound(e,()=>{e.style.transformBox="fill-box";e.style.transformOrigin="50% 50%";
       e.animate([{opacity:0,transform:"scale(.82)"},{opacity:1,transform:"none"}],{duration:POP,delay:T(n.t),easing:"cubic-bezier(.2,1.2,.3,1)",fill:"backwards"});}));});
     sched.forEach(a=>bound(a.e,()=>{
       const dl=T(a.t),du=T(a.d);
-      a.e.animate([{strokeDasharray:a.L+" "+a.L,strokeDashoffset:a.L},{strokeDasharray:a.L+" "+a.L,strokeDashoffset:0}],{duration:du,delay:dl,easing:"cubic-bezier(.35,0,.25,1)",fill:"backwards"});
-      a.e.style.markerEnd="none";setTimeout(()=>{a.e.style.markerEnd="";},dl+du*.97);       /* the head appears when the line arrives */
+      drawLine(a.e,a.L,dl,du,"cubic-bezier(.35,0,.25,1)",true);       /* the head appears when the line arrives */
     }));
     rest.forEach(e=>bound(e,()=>{
       const r=R(e),c={x:(r.left+r.right)/2,y:(r.top+r.bottom)/2};let bt=T(end)*.5,bd=1e9;
@@ -119,7 +151,9 @@
         [g(0),g(L0)].forEach(pp=>nodes.forEach(n=>{if(dist(pp,n.r)<=14)touch=Math.max(touch,T(n.t)+POP*.7);}));}catch(x2){}}
       if(touch>=0){const cs0=getComputedStyle(e);if(cs0.stroke!=="none"&&cs0.fill==="none"){const L1=lenOf(e);if(L1>8){e.animate([{strokeDasharray:L1+" "+L1,strokeDashoffset:L1},{strokeDasharray:L1+" "+L1,strokeDashoffset:0}],{duration:520,delay:touch,fill:"backwards"});return;}}
         e.animate([{opacity:0},{opacity:1}],{duration:380,delay:touch,fill:"backwards"});return;}
-      sched.forEach(a=>{[a.a,a.b].forEach((p,i)=>{const k=Math.hypot(p.x-c.x,p.y-c.y);if(k<bd){bd=k;bt=T(a.t)+(i?T(a.d)*.95:0);}});});
+      /* a label belongs to the arrow it sits next to and shows up when that arrow's line reaches it */
+      sched.forEach(a=>{if(!a.pts){a.pts=[];for(let k=0;k<=10;k++){try{a.pts.push([pt(a.e,a.L*k/10),k/10]);}catch(x3){}}}
+        a.pts.forEach(([p,fr])=>{const k=Math.hypot(p.x-c.x,p.y-c.y);if(k<bd){bd=k;bt=T(a.t)+T(a.d)*Math.min(.95,fr);}});});
       const L=lenOf(e),cs=getComputedStyle(e),stroked=cs.stroke!=="none"&&parseFloat(cs.strokeWidth)>0,filled=cs.fill!=="none";
       if(tag(e)!=="text"&&stroked&&!filled&&L>8&&e.getTotalLength){e.animate([{strokeDasharray:L+" "+L,strokeDashoffset:L},{strokeDasharray:L+" "+L,strokeDashoffset:0}],{duration:520*f+120,delay:Math.max(0,bt-260),fill:"backwards"});return;}
       e.animate([{opacity:0},{opacity:1}],{duration:380,delay:bt,fill:"backwards"});
@@ -179,11 +213,44 @@
     flowMs=Math.max(flowMs,mx*f+900);
     return{d:e=>(D.get(e)||0)*f};
   }
-  function drawIn(box){
+  /* the order across a page: figure -> its text explanation -> the next figure.
+     busyUntil is when the figure that is playing now (with its caption / explanation box) is done; a figure that scrolls in meanwhile waits for it */
+  let busyUntil=0,lastBox=null;
+  function explain(box,at){
+    const els=[...box.querySelectorAll(":scope > figcaption, :scope > .cap")];
+    let n=box.nextElementSibling;
+    for(let i=0;n&&i<2&&n.matches(".box,.note");i++,n=n.nextElementSibling)els.push(n);
+    let t=at;
+    els.forEach(e=>{try{e.animate([{opacity:0,transform:"translateY(8px)"},{opacity:1,transform:"none"}],{duration:480,delay:t,easing:"cubic-bezier(.2,.9,.3,1)",fill:"backwards"});t+=260;}catch(x){}});
+    return els.length?t+300:at;
+  }
+  /* measure and play only when the block has stopped sliding in (the tab switch and the page's reveal move it with a transform, which would skew every distance) */
+  function drawIn(box,tries){
     if(calm()||!box.animate)return;
+    const pend=[];
+    for(let e=box;e&&e!==document.body&&e!==document.documentElement;e=e.parentElement){
+      if(e.classList.contains("fx-rv")&&!e.classList.contains("fx-in"))pend.push(new Promise(r=>setTimeout(r,140)));
+      if(e!==box)e.getAnimations().forEach(a=>{try{if(a.playState==="running"&&isFinite(a.effect.getComputedTiming().endTime))pend.push(a.finished.catch(()=>0));}catch(x){}});
+    }
+    if(pend.length&&(tries||0)<12){Promise.all(pend).then(()=>setTimeout(()=>drawIn(box,(tries||0)+1),40));return;}
+    drawNow(box);
+  }
+  function drawNow(box){
     flowMs=0;
+    /* a second call while the first is still playing (a tab switch re-arms the figure): drop the old motion first, otherwise the half-scaled boxes
+       would be measured as they are right now and the two plays would pile up */
+    box.getAnimations({subtree:true}).forEach(a=>{try{
+      if(a.effect&&a.effect.target!==box&&!(window.CSSAnimation&&a instanceof CSSAnimation)&&!(window.CSSTransition&&a instanceof CSSTransition))a.cancel();}catch(x){}});
+    const t0=performance.now();
     drawIn2(box);
-    lockScroll(box,Math.max(2300,flowMs+500));
+    /* wait only for a figure that is still on screen (one that was scrolled past does not hold up the next) */
+    let off=Math.min(1200,Math.max(0,busyUntil-t0));
+    if(off>0&&lastBox&&lastBox!==box){const r=lastBox.getBoundingClientRect();if(r.bottom<0||r.top>innerHeight)off=0;}
+    lastBox=box;
+    if(off>0)box.getAnimations({subtree:true}).forEach(a=>{try{const d=+a.effect.getTiming().delay||0;a.effect.updateTiming({delay:d+off});}catch(x){}});
+    const end=explain(box,off+flowMs);
+    busyUntil=t0+end+150;
+    lockScroll(box,Math.max(2300,end+500));
   }
   /* interactive figures built from HTML (array cells, list nodes, matrices, bars, tables): pieces pop / rise / grow in one after another */
   function domIn(box){
@@ -191,6 +258,7 @@
       .filter(e=>!e.closest("svg"));
     if(!els.length)return;
     const step=Math.min(28,1100/els.length);
+    flowMs=Math.max(flowMs,els.length*step+500);
     els.forEach((e,i)=>{
       const d=i*step;
       try{
@@ -220,8 +288,9 @@
     }
     const svgs=[...box.querySelectorAll("svg")];
     svgs.forEach(svg=>{
-      try{if(stepIn(svg))return;}catch(x){}
-      try{if(flowIn(svg))return;}catch(x){}
+      try{if(stepIn(svg)){svg.dataset.fp="step";return;}}catch(x){}
+      try{if(flowIn(svg)){svg.dataset.fp="flow";return;}}catch(x){console.warn("ezfig flow:",x);}
+      svg.dataset.fp="order";
       const els=[...svg.querySelectorAll("path,line,polyline,polygon,rect,circle,ellipse,text")]
         .filter(e=>!e.closest("defs,marker,clipPath,mask,symbol,pattern"));
       if(!els.length)return;
@@ -237,8 +306,7 @@
           const dashed=cs.strokeDasharray&&cs.strokeDasharray!=="none";
           if(stroked&&!filled&&!dashed&&e.getTotalLength){
             const L=e.getTotalLength();
-            if(L>0&&isFinite(L)){e.animate([{strokeDasharray:L+" "+L,strokeDashoffset:L},{strokeDasharray:L+" "+L,strokeDashoffset:0}],{duration:650,delay,easing:"cubic-bezier(.4,0,.2,1)",fill:"backwards"});
-            if(plan&&cs.markerEnd&&cs.markerEnd!=="none"){e.style.markerEnd="none";setTimeout(()=>{e.style.markerEnd="";},delay+630);}   /* the arrowhead shows when the line arrives */
+            if(L>0&&isFinite(L)){drawLine(e,L,delay,650,"cubic-bezier(.4,0,.2,1)",!!(plan&&cs.markerEnd&&cs.markerEnd!=="none"));   /* the arrowhead shows when the line arrives */
             return;}
           }
           if(tag==="rect"&&filled){e.style.transformBox="fill-box";e.style.transformOrigin="50% 100%";

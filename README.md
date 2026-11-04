@@ -29,7 +29,6 @@ assets/             Shared code and styles used by every page
   ezwrong.js        Wrong-answer review area
   ezquiz.js         Score bar and answer timestamps
   ezgen.js          AI practice, one question at a time (chapter exercises and mock exams)
-  ezshuffle.js      Shuffles question order each time a page opens
   ezsearch.js       Search bar (press / or Ctrl+K)
   ezpage.js         Shared page features (saving, tabs, chapter scores)
   ezcore.js         Theme switching and offline support
@@ -114,10 +113,6 @@ AI grading works without any setup once you are signed in. The pages send reques
 - If the free quota runs out or Gemini can't be reached, short answers are graded by keyword matching instead.
 - Written questions are graded only by AI, and the AI also writes a model answer after grading.
 - The AI explains why each wrong multiple-choice answer is wrong. Each explanation is saved, so each question is only explained once.
-
-## Question Order
-
-Each time you open a page, the unanswered questions are shuffled. Answered questions move to the top in the order you answered them. Past exams are never shuffled.
 
 ## Health Checks and Error Reports
 

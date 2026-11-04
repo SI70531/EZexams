@@ -219,12 +219,20 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
   /* switching tabs yourself means you are done with it */
   document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest("#tabs [data-go], .brand"))backPill.hidden=true;},true);
   function numOf(el){const n=el&&el.querySelector(".stem .num, .pts");return n?n.textContent.replace(/[.\s·].*$/,"").replace(/\.$/,""):"";}
+  /* scroll to a notes heading, but a little higher: the chapter heading above it stays in view, below the sticky bar */
+  function revealNotes(el){
+    let top=el;
+    const hs=[...document.querySelectorAll("h2")].filter(h=>h.offsetParent!==null&&(h.compareDocumentPosition(el)&Node.DOCUMENT_POSITION_FOLLOWING));
+    if(hs.length)top=hs[hs.length-1];
+    const bar=document.querySelector("header.top");const off=(bar?bar.offsetHeight:0)+16;
+    setTimeout(()=>{window.scrollTo({top:top.getBoundingClientRect().top+window.scrollY-off,behavior:"auto"});},30);
+  }
   function toNotes(w){
     const s=w.m.s;
     document.querySelectorAll(".wback").forEach(b=>b.remove());
     if(s){show(s.ch);}else if(w.ch){show(w.ch);}else return;
     const anchor=s?s.h:document.getElementById(w.ch).querySelector("h1,h2,h3");
-    if(anchor)setTimeout(()=>{anchor.scrollIntoView({block:"start"});},30);
+    if(anchor)revealNotes(anchor);
     const n=numOf(locate(w));
     offerBack("↩ 回到剛才的題目"+(n?"（第 "+n+" 題）":""),()=>{show(w.go);const el=locate(w);if(el)flash(el,"center");});
   }
@@ -252,9 +260,21 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
     });
     return out;
   }
+  /* written questions answered in full: no wrong-answer card, but they still get 回講義這一段 */
+  function answeredRightWritten(){
+    const out=[];
+    document.querySelectorAll(".exam .exq").forEach(q=>{
+      const id=q.closest(".exam").dataset.exam;const g=(S.ex2&&S.ex2[id]&&S.ex2[id].grade||{})[q.id];
+      if(!g||+g.score<+q.dataset.pts)return;
+      const qt=(q.querySelector(".qtext")||q).innerText.trim();const ref=q.querySelector(".qa");
+      const vw=q.closest(".view"),vid=vw?vw.id:id,ch=CH.includes(vid)?vid:null;
+      out.push({m:match({q:qt,e:ref?ref.textContent:"",sec:q.dataset.sec},ch),ch,go:vid,qid:q.id,q:qt.slice(0,700),yours:"",right:"",e:""});
+    });
+    return out;
+  }
   function render(){
     let list;try{list=collect();}catch(e){return;}
-    try{notesButtons(list.concat(answeredRight()));}catch(e){}
+    try{notesButtons(list.concat(answeredRight(),answeredRightWritten()));}catch(e){}
     const by=new Map();list.forEach(w=>{const k=gkey(w);if(!by.has(k))by.set(k,[]);by.get(k).push(w);});
     SECS.forEach(s=>{
       const n=(by.get(s.key)||[]).length;s.h.classList.toggle("missed",n>0);
@@ -298,7 +318,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
         add("src",w.src);add("wq2",w.q);add("yours","你的答案："+w.yours);add("right","正確答案："+w.right);if(w.e)add("",w.e);
         const bar=document.createElement("div");bar.className="wbar";
         bar.appendChild(btn("回原題",()=>goto(w)));
-        if(s)bar.appendChild(btn("回講義這一段",()=>{show(s.ch);setTimeout(()=>s.h.scrollIntoView({block:"start"}),30);offerBack("↩ 回總複習（回到這張卡）",()=>{pendingCard=wid(w);showWrong();later();});}));
+        if(s)bar.appendChild(btn("回講義這一段",()=>{show(s.ch);revealNotes(s.h);offerBack("↩ 回總複習（回到這張卡）",()=>{pendingCard=wid(w);showWrong();later();});}));
         else if(w.ch)bar.appendChild(btn("回 "+(NAME[w.ch]||w.ch)+" 講義",()=>show(w.ch)));
         c.appendChild(bar);
         if(s){

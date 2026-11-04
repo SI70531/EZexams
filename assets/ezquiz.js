@@ -54,7 +54,7 @@
     const note=document.createElement("span");note.className="qn";
     const items=()=>[...box.querySelectorAll(".qitem")];
     const wrong=i=>!!i.querySelector(".opt.wrong"),done=i=>!!i.querySelector(".opt.right,.opt.wrong");
-    const modes=[["all","All",()=>true],["new","Unanswered",i=>!done(i)],["wrong","Mistakes only",wrong],["rand","Random 10",null]];
+    const modes=[["all","All",()=>true],["new","Unanswered",i=>!done(i)]];
     const btns={};
     function apply(k){
       let show;

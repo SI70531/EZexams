@@ -11,10 +11,12 @@
   --bad:#c4472a; --bad-soft:rgba(196,71,42,.06); --warn:#a26300; --warn-soft:rgba(196,128,20,.09); --warn-line:rgba(196,128,20,.32);
   --code:#e3e7e7; --fig:#f3f5f5; --hard:#06141b; --shadow:0 6px 18px rgba(6,20,27,.12);
   --f-display:"Iansui","DFKai-SB","BiauKai","Kaiti TC","Noto Sans TC",serif;
-  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-body:"EZapos","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
   --f-en:"Source Serif 4","Georgia","Noto Serif TC",serif;
   --f-mono:"JetBrains Mono","Menlo","Consolas","Noto Sans TC",monospace;
 }
+/* ’ and ‘ are full-width in Chinese fonts (it looked like "node ’ s"): draw just those two characters with a Latin font */
+@font-face{font-family:"EZapos";src:local("Arial"),local("Helvetica Neue"),local("Helvetica"),local("Segoe UI"),local("Liberation Sans"),local("DejaVu Sans");unicode-range:U+2018-2019}
 *{box-sizing:border-box}
 body{background:radial-gradient(1100px 700px at 8% -6%,color-mix(in srgb,var(--line-strong) 34%,transparent),transparent 68%) fixed,var(--bg);color:var(--ink);font-family:var(--f-body);font-size:calc(16px*var(--ts,1));line-height:1.8;-webkit-font-smoothing:antialiased;transition:background .25s,color .25s}
 /* the entry/scale animations of headings can briefly stick out to the right; clip that sideways overflow so tabs never make the page scroll sideways */

@@ -19,7 +19,7 @@ const ABCD="ABCD";
 const CHS=Object.keys(QUIZ).filter(k=>/^ch\d+$/.test(k));
 
 /* ---------- Chinese toggle ---------- */
-function applyZh(){document.body.classList.toggle("nozh",!!S.hideZh);document.querySelectorAll(".zhbtn").forEach(b=>{b.textContent=S.hideZh?"顯示中文翻譯":"隱藏中文翻譯（模擬真實考試）";b.setAttribute("aria-pressed",String(!!S.hideZh));});}
+function applyZh(){document.body.classList.toggle("nozh",!!S.hideZh);document.querySelectorAll(".zhbtn").forEach(b=>{b.textContent=S.hideZh?"Show Chinese translation":"Hide Chinese translation (exam mode)";b.setAttribute("aria-pressed",String(!!S.hideZh));});}
 document.addEventListener("click",e=>{if(e.target.closest(".zhbtn")){S.hideZh=!S.hideZh;save();applyZh();}});
 
 /* ---------- progress ---------- */
@@ -44,7 +44,7 @@ function refreshPCB(){
       '<div class="pr"><span>state</span><b class="st '+p.state+'">'+p.state+'</b></div>'+
       '<div class="pr"><span>'+lab+'</span><b>'+(p.n?p.done+" / "+p.n:"—")+'</b></div>'+
       '<div class="bar"><i style="width:'+pct+'%"></i></div>';
-    el.setAttribute("aria-label","進度："+p.state+(p.n?"，"+p.done+"/"+p.n:""));
+    el.setAttribute("aria-label","Progress: "+p.state+(p.n?"，"+p.done+"/"+p.n:""));
   });
 }
 document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b){show(b.dataset.go);}});
@@ -60,13 +60,13 @@ function optHTML(it,oi,k){
 }
 function answerLine(it){
   const k=it.a,z=null;
-  return '<div class="ansline"><b>Answer: ('+ABCD[k].toLowerCase()+') '+esc(it.o[k])+'</b>'+(z?'<span class="zho">答案：'+esc(z)+'</span>':'')+'</div>';
+  return '<div class="ansline"><b>Answer: ('+ABCD[k].toLowerCase()+') '+esc(it.o[k])+'</b>'+(z?'<span class="zho">Answer: '+esc(z)+'</span>':'')+'</div>';
 }
 
 /* AI practice, one question at a time (assets/ezgen.js); chapter exercises are made on demand, answers stay on the Worker */
 const EQ=Object.assign({},QUIZ,{mock1mc:MOCK["mock-1"],mock2mc:MOCK["mock-2"],mock3mc:MOCK["mock-3"]});
 const MOCKSET={mock1mc:"mock-1",mock2mc:"mock-2",mock3mc:"mock-3"};
-if(window.EZGEN)EZGEN.attach({course:"經濟學",s:"econ",ai:["ch1","ch2","ch3","ch4","ch5","ch6","ch7","ch8","ch9","mock1mc","mock2mc","mock3mc"],batch:["mock1mc","mock2mc","mock3mc"],mock:["mock1mc","mock2mc","mock3mc"],fixed:[],scope:{mock1mc:CHS,mock2mc:CHS,mock3mc:CHS},titles:{mock1mc:"Economics (mixed chapters)",mock2mc:"Economics (mixed chapters)",mock3mc:"Economics (mixed chapters)"},get:()=>S,quiz:()=>EQ,save:()=>save(),render:c=>{if(MOCKSET[c])renderExam(MOCKSET[c]);else renderQuiz(c);renderTabs(c);refreshPCB()},renderAll:()=>{Object.keys(QUIZ).forEach(renderQuiz);Object.keys(MOCK).forEach(renderExam);renderTabs(S.last)}});
+if(window.EZGEN)EZGEN.attach({course:"Economics",s:"econ",ai:["ch1","ch2","ch3","ch4","ch5","ch6","ch7","ch8","ch9","mock1mc","mock2mc","mock3mc"],batch:["mock1mc","mock2mc","mock3mc"],mock:["mock1mc","mock2mc","mock3mc"],fixed:[],scope:{mock1mc:CHS,mock2mc:CHS,mock3mc:CHS},titles:{mock1mc:"Economics (mixed chapters)",mock2mc:"Economics (mixed chapters)",mock3mc:"Economics (mixed chapters)"},get:()=>S,quiz:()=>EQ,save:()=>save(),render:c=>{if(MOCKSET[c])renderExam(MOCKSET[c]);else renderQuiz(c);renderTabs(c);refreshPCB()},renderAll:()=>{Object.keys(QUIZ).forEach(renderQuiz);Object.keys(MOCK).forEach(renderExam);renderTabs(S.last)}});
 
 /* ---------- chapter quizzes ---------- */
 function renderQuiz(ch){
@@ -94,7 +94,7 @@ function renderQuiz(ch){
       if(it.a==null){btns.forEach(b=>b.disabled=true);return;}
       btns.forEach(b=>{b.disabled=true;const oi=+b.dataset.oi;if(oi===it.a)b.classList.add("right");else if(oi===pick)b.classList.add("wrong");});
       const ok=pick===it.a;
-      ex.innerHTML='<span class="tag '+(ok?"ok":"no")+'">'+(ok?"答對":"答錯，正確答案是 "+ABCD[it.a])+'</span>'+answerLine(it)+'<div>'+esc(it.e)+'</div>';ex.hidden=false;
+      ex.innerHTML='<span class="tag '+(ok?"ok":"no")+'">'+(ok?"Correct":"Wrong, correct answer is "+ABCD[it.a])+'</span>'+answerLine(it)+'<div>'+esc(it.e)+'</div>';ex.hidden=false;
     }
     mark();box.appendChild(d);
   });
@@ -102,11 +102,11 @@ function renderQuiz(ch){
   const sc=document.createElement("div");sc.className="qscore";box.appendChild(sc);
   function renderScore(){
     const s=quizStat(ch);sc.innerHTML="";
-    const t=document.createElement("span");t.textContent=s.k<s.n?("已作答 "+s.k+" / "+s.n+"，目前答對 "+s.r+" 題"):("完成！答對 "+s.r+" / "+s.n+(s.r>=s.n*0.8?"，這章很穩。":"，錯的題目回上面找對應段落再讀一次。"));sc.appendChild(t);
-    const rb=document.createElement("button");rb.className="btn";rb.type="button";rb.textContent="重做這章";rb.addEventListener("click",()=>{(window.EZundo||((w,f)=>f()))("This chapter's answers",()=>{delete S.quiz[ch];if(window.EZGEN)EZGEN.reset(ch);S.quizReset=S.quizReset||{};S.quizReset[ch]=Date.now();save();renderQuiz(ch);renderTabs(ch);refreshPCB();applyZh();},null,rb);});sc.appendChild(rb);
+    const t=document.createElement("span");t.textContent=s.k<s.n?("answered "+s.k+" / "+s.n+", correct so far "+s.r+" questions"):("Done! Correct "+s.r+" / "+s.n+(s.r>=s.n*0.8?"，這章很穩。":"，錯的題目回上面找對應段落再讀一次。"));sc.appendChild(t);
+    const rb=document.createElement("button");rb.className="btn";rb.type="button";rb.textContent="Redo chapter";rb.addEventListener("click",()=>{(window.EZundo||((w,f)=>f()))("This chapter's answers",()=>{delete S.quiz[ch];if(window.EZGEN)EZGEN.reset(ch);S.quizReset=S.quizReset||{};S.quizReset[ch]=Date.now();save();renderQuiz(ch);renderTabs(ch);refreshPCB();applyZh();},null,rb);});sc.appendChild(rb);
     const idx=VIEWS.findIndex(v=>v[0]===ch);const nx=VIEWS[idx+1];
     if(isHw&&s.k>=s.n){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";nb.textContent="接著寫第二大題 25 題";nb.addEventListener("click",()=>{const t=document.getElementById("ch"+ch.slice(2)+"-mc");if(t){t.scrollIntoView({block:"start"});scrollBy(0,-76);}});sc.appendChild(nb);}
-    else if(s.k>=s.n){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";if(nx&&nx[0]!=="|"){nb.textContent="下一章："+CHN[nx[0]];nb.dataset.go=nx[0];}else{nb.textContent="開始模擬考 1";nb.dataset.go="mock-1";}sc.appendChild(nb);}
+    else if(s.k>=s.n){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";if(nx&&nx[0]!=="|"){nb.textContent="Next chapter: "+CHN[nx[0]];nb.dataset.go=nx[0];}else{nb.textContent="Start mock exam 1";nb.dataset.go="mock-1";}sc.appendChild(nb);}
   }
   renderScore();
 }
@@ -132,14 +132,14 @@ function renderExam(id){
       if(it.a==null){btns.forEach(b=>b.disabled=true);return;}
       btns.forEach(b=>{b.disabled=true;const oi=+b.dataset.oi;if(oi===it.a)b.classList.add("right");else if(oi===pick)b.classList.add("wrong");});
       const ok=pick===it.a;
-      ex.innerHTML='<span class="tag '+(ok?"ok":"no")+'">'+(ok?"答對":"答錯，正確答案是 "+ABCD[it.a])+'</span><span class="small">（'+(CHN["ch"+it.ch]||"")+'）</span>'+answerLine(it)+'<div>'+esc(it.e)+'</div>';ex.hidden=false;
+      ex.innerHTML='<span class="tag '+(ok?"ok":"no")+'">'+(ok?"Correct":"Wrong, correct answer is "+ABCD[it.a])+'</span><span class="small">（'+(CHN["ch"+it.ch]||"")+'）</span>'+answerLine(it)+'<div>'+esc(it.e)+'</div>';ex.hidden=false;
     }
     mark();
   });
   if(window.EZGEN)EZGEN.mount(box,key,()=>{renderExam(id);applyZh();});
   function upd(){
     const e=examStat(id),a=S.quiz[key]||{};
-    tools.querySelector(".score").textContent="得分 "+Math.round(e.r/e.n*1000)/10+" / 100 分（已作答 "+e.k+" / "+e.n+" 題）";
+    tools.querySelector(".score").textContent="Score "+Math.round(e.r/e.n*1000)/10+" / 100 分（已作答 "+e.k+" / "+e.n+" questions)";
     const rep=sec.querySelector(".report");
     if(e.done){
       const by={};qs.forEach((q,i)=>{const c="ch"+q.ch;by[c]=by[c]||[0,0];by[c][1]++;if(a[i]===q.a)by[c][0]++;});
@@ -163,11 +163,11 @@ function renderExam(id){
   let tEnd=tools.querySelector(".tend");if(!tEnd){tEnd=document.createElement("button");tEnd.type="button";tEnd.className="btn tend";tEnd.textContent="End";tEnd.hidden=true;tb.after(tEnd);}
   let left=3600;
   const draw=()=>{tt.textContent=String(Math.floor(left/60)).padStart(2,"0")+":"+String(left%60).padStart(2,"0");};
-  function stopT(){if(timers[id]){clearInterval(timers[id]);timers[id]=null;}left=3600;tb.textContent="開始 60 分鐘計時";tEnd.hidden=true;draw();}
+  function stopT(){if(timers[id]){clearInterval(timers[id]);timers[id]=null;}left=3600;tb.textContent="Start 60-min timer";tEnd.hidden=true;draw();}
   tb.onclick=()=>{
-    if(timers[id]){clearInterval(timers[id]);timers[id]=null;tb.textContent="繼續計時";tEnd.hidden=false;return;}
-    tb.textContent="暫停";tEnd.hidden=true;draw();
-    timers[id]=setInterval(()=>{left--;if(left<=0){clearInterval(timers[id]);timers[id]=null;tt.textContent="時間到";tb.textContent="重新計時";left=3600;return;}draw();},1000);
+    if(timers[id]){clearInterval(timers[id]);timers[id]=null;tb.textContent="Resume";tEnd.hidden=false;return;}
+    tb.textContent="Pause";tEnd.hidden=true;draw();
+    timers[id]=setInterval(()=>{left--;if(left<=0){clearInterval(timers[id]);timers[id]=null;tt.textContent="Time's up";tb.textContent="Restart timer";left=3600;return;}draw();},1000);
   };
   tEnd.onclick=()=>stopT();
   if(!timers[id])draw();
@@ -181,18 +181,18 @@ document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest
   setTimeout(()=>{const todo=window.EZtodo&&EZtodo(c);if(todo){EZglow(todo);return;}const t=document.querySelector("#"+c+" .quiz");if(t){t.scrollIntoView({block:"start"});scrollBy(0,-76);}},80);});
 function renderHome(){
   const t=document.getElementById("progTable");
-  let html='<tr><th class="l">項目</th><th>狀態</th></tr>';let next=null;
+  let html='<tr><th class="l">Item</th><th>Status</th></tr>';let next=null;
   CHS.forEach(c=>{const s=quizStat(c);const hk="hw"+c.slice(2),h=QUIZ[hk]?quizStat(hk):null;
     const sc=Math.round(s.r*100/s.n*10)/10; /* a chapter is 25 multiple-choice questions, 100 分 */
-    html+='<tr><td class="l"><button class="btn" data-go="'+c+'" data-goend="'+c+'">'+c.replace("ch","Ch")+' chapter exercises</button></td><td>'+(s.k?('<b class="pscore">得分 '+sc+' / 100 分</b><span class="psub"><span>選擇 '+(s.k?s.r+'/'+s.k:'還沒寫')+'（共 '+s.n+' 題）</span>'+(h?'<span>作業 '+(h.k?h.r+'/'+h.k:'還沒寫')+'（共 '+h.n+' 題）</span>':'')+(s.k>=s.n?'<span class="pok">✓ 完成</span>':'<span class="ptodo">未完成</span>')+'</span>'):(h&&h.k?'作業 '+h.r+'/'+h.k+'，25 題還沒寫':"還沒寫"))+'</td></tr>';
-    if(!next&&s.k<s.n)next=[c,"讀 "+CHN[c]+"，再做chapter exercises"];});
+    html+='<tr><td class="l"><button class="btn" data-go="'+c+'" data-goend="'+c+'">'+c.replace("ch","Ch")+' chapter exercises</button></td><td>'+(s.k?('<b class="pscore">Score '+sc+' / 100 分</b><span class="psub"><span>選擇 '+(s.k?s.r+'/'+s.k:'Not started')+'(total '+s.n+' 題）</span>'+(h?'<span>Assignment '+(h.k?h.r+'/'+h.k:'Not started')+'(total '+h.n+' 題）</span>':'')+(s.k>=s.n?'<span class="pok">✓ Done</span>':'<span class="ptodo">Not done</span>')+'</span>'):(h&&h.k?'Assignment '+h.r+'/'+h.k+'，25 題還沒寫':"Not started"))+'</td></tr>';
+    if(!next&&s.k<s.n)next=[c,"Read "+CHN[c]+", then do the chapter exercises"];});
   Object.keys(MOCK).forEach((id,j)=>{const e=examStat(id);
-    html+='<tr><td class="l"><button class="btn" data-go="'+id+'">模擬考 '+(j+1)+'</button></td><td>'+(e.k?('<b class="pscore">得分 '+Math.round(e.r/e.n*1000)/10+' / 100 分</b><span class="psub"><span>選擇 '+(e.k?e.r+'/'+e.k:'還沒寫')+'（共 '+e.n+' 題）</span>'+(e.done?'<span class="pok">✓ 完成</span>':'<span class="ptodo">未完成</span>')+'</span>'):"還沒寫")+'</td></tr>';
-    if(!next&&!e.done)next=[id,"寫模擬考 "+(j+1)+"（限時 60 分鐘）"];});
+    html+='<tr><td class="l"><button class="btn" data-go="'+id+'">模擬考 '+(j+1)+'</button></td><td>'+(e.k?('<b class="pscore">Score '+Math.round(e.r/e.n*1000)/10+' / 100 分</b><span class="psub"><span>選擇 '+(e.k?e.r+'/'+e.k:'Not started')+'(total '+e.n+' 題）</span>'+(e.done?'<span class="pok">✓ Done</span>':'<span class="ptodo">Not done</span>')+'</span>'):"Not started")+'</td></tr>';
+    if(!next&&!e.done)next=[id,"寫模擬考 "+(j+1)+"(60 min)"];});
   t.innerHTML=html;
   const ns=document.getElementById("nextStep");ns.innerHTML="";const p=document.createElement("b");
   if(next){p.textContent="Next: "+next[1];ns.appendChild(p);const b=document.createElement("button");b.className="btn primary";b.style.marginLeft="10px";b.textContent="Start";b.dataset.go=next[0];ns.appendChild(b);}
-  else{p.textContent="全部完成了。考前看一次「總複習」，先把最上面的錯題清掉。";ns.appendChild(p);}
+  else{p.textContent="All done. Before the exam, go over Review and clear the top mistakes first.";ns.appendChild(p);}
 }
 applyZh();
 const start=(location.hash||"").slice(1)||S.last||"home";

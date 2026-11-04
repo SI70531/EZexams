@@ -38,7 +38,7 @@ function refreshPCB(){
       '<div class="pr"><span>state</span><b class="st '+p.state+'">'+p.state+'</b></div>'+
       '<div class="pr"><span>'+lab+'</span><b>'+(p.n?p.done+" / "+p.n:"—")+'</b></div>'+
       '<div class="bar"><i style="width:'+pct+'%"></i></div>';
-    el.setAttribute("aria-label","進度："+p.state+(p.n?"，"+p.done+"/"+p.n:""));
+    el.setAttribute("aria-label","Progress: "+p.state+(p.n?"，"+p.done+"/"+p.n:""));
   });
 }
 function nextOf(id){const i=VIEWS.findIndex(v=>v[0]===id);let n=VIEWS[i+1];if(n&&n[0]==="|")n=VIEWS[i+2];return n?n[0]:null;}
@@ -46,7 +46,7 @@ document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b
 window.addEventListener("hashchange",()=>{const h=location.hash.slice(1);if(h&&h!==S.last)show(h);});
 
 /* AI practice, one question at a time (assets/ezgen.js); chapter exercises are made on demand, answers stay on the Worker */
-if(window.EZGEN)EZGEN.attach({course:"資料結構",s:"ds",ai:["ch1","ch2","ch3","m1","m2"],fixed:["y24mc","y25mc"],scope:{m1:["ch1","ch2","ch3"],m2:["ch1","ch2","ch3"]},mock:["m1","m2"],batch:["m1","m2"],get:()=>S,quiz:()=>QUIZ,save:()=>save(),render:c=>{renderQuiz(c);afterAnswer(c)},renderAll:()=>{Object.keys(QUIZ).forEach(renderQuiz);renderTabs(S.last)}});
+if(window.EZGEN)EZGEN.attach({course:"Data Structures",s:"ds",ai:["ch1","ch2","ch3","m1","m2"],fixed:["y24mc","y25mc"],scope:{m1:["ch1","ch2","ch3"],m2:["ch1","ch2","ch3"]},mock:["m1","m2"],batch:["m1","m2"],get:()=>S,quiz:()=>QUIZ,save:()=>save(),render:c=>{renderQuiz(c);afterAnswer(c)},renderAll:()=>{Object.keys(QUIZ).forEach(renderQuiz);renderTabs(S.last)}});
 
 /* ---------- multiple choice ---------- */
 function renderQuiz(key){
@@ -78,7 +78,7 @@ function renderQuiz(key){
       if(it.a==null){btns.forEach(b=>b.disabled=true);return;}
       btns.forEach(b=>{b.disabled=true;const oi=+b.dataset.oi;if(oi===it.a)b.classList.add("right");else if(oi===pick)b.classList.add("wrong");});
       const ok=pick===it.a;
-      ex.innerHTML='<span class="tag '+(ok?"ok":"no")+'">'+(ok?"答對":"答錯，正確答案是 ("+"ABCD"[it.a]+")")+'</span>';
+      ex.innerHTML='<span class="tag '+(ok?"ok":"no")+'">'+(ok?"Correct":"Wrong, correct answer is ("+"ABCD"[it.a]+")")+'</span>';
       ex.appendChild(document.createTextNode(it.e));ex.hidden=false;
     }
     mark();box.appendChild(d);
@@ -146,8 +146,8 @@ function keywordGrade(qid,pts,ans){
   groups.forEach(g=>{let ok=false;try{ok=new RegExp(g.re,"im").test(a);}catch(e){}if(ok)got+=g.w;else miss.push(g.k);});
   const score=Math.round(Math.min(pts,got)*2)/2;
   const verdict=score>=pts?"correct":score>0?"partial":"wrong";
-  const feedback=verdict==="correct"?"必要的關鍵字和數字都有寫到。":verdict==="partial"?"有寫到一部分，下面是缺少的重點，對照參考答案補上。":"沒有比對到必要的關鍵字或數字，展開參考答案看看。";
-  return {score,verdict,feedback:feedback+"（關鍵字比對，僅供參考）",missing:miss};
+  const feedback=verdict==="correct"?"All required keywords and numbers are present.":verdict==="partial"?"Part of it is covered. The missing points are listed below; compare with the reference answer.":"The required keywords or numbers were not matched. Open the reference answer to see them.";
+  return {score,verdict,feedback:feedback+"(keyword matching, for reference only)",missing:miss};
 }
 
 /* ---------- exams ---------- */
@@ -209,7 +209,7 @@ document.querySelectorAll(".exam").forEach(ex=>{
     qs.forEach(q=>{const g=st.grade[q.id];if(g){got+=+g.score||0;graded++;}});
     const mn=mk?QUIZ[mk].length:0,mDone=mk?quizCount(mk):0,mGot=mk?quizRight(mk)*2:0; /* a chapter's written block has no MC part */
     const total=wTotal+mn*2;
-    score.textContent="Score "+(Math.round((got+mGot)*10)/10)+" / "+total+" 分（"+(mk?"選擇 "+mDone+"/"+mn+"，手寫已批改 ":"已批改 ")+graded+"/"+qs.length+"）";
+    score.textContent="Score "+(Math.round((got+mGot)*10)/10)+" / "+total+" 分（"+(mk?"Choice "+mDone+"/"+mn+", written graded ":"graded ")+graded+"/"+qs.length+"）";
     EX[id]=Object.assign(EX[id]||{},{total,got:got+mGot,graded,n:qs.length,touched:graded+mDone});
     refreshPCB();renderTabs(S.last);
   }
@@ -294,7 +294,7 @@ setGradingMode();
 (async()=>{try{SAMPLE=window.claude&&await window.claude.use("sample");}catch(e){SAMPLE=null;}if(!SAMPLE&&window.EZAI)SAMPLE=EZAI.sampler();setGradingMode();})();
 
 /* ---------- home ---------- */
-function chRow(c,n){const s=chScore(c);return '<tr><td class="l"><button class="btn" data-go="'+c+'" data-goend="'+c+'">'+n+'</button></td><td  class="l">'+((s.k||s.g)?('<b class="pscore">得分 '+s.got+' / '+s.tot+' 分</b><span class="psub"><span>選擇 '+(s.k?s.r+'/'+s.k:'還沒寫')+'（共 '+s.n+' 題）</span>'+(s.m?'<span>手寫 '+(s.g?s.wr+'/'+s.g:'還沒寫')+'（共 '+s.m+' 題）</span>':'')+(s.done?'<span class="pok">✓ 完成</span>':'<span class="ptodo">未完成</span>')+'</span>'):"還沒寫")+'</td></tr>';}
+function chRow(c,n){const s=chScore(c);return '<tr><td class="l"><button class="btn" data-go="'+c+'" data-goend="'+c+'">'+n+'</button></td><td  class="l">'+((s.k||s.g)?('<b class="pscore">Score '+s.got+' / '+s.tot+' 分</b><span class="psub"><span>選擇 '+(s.k?s.r+'/'+s.k:'Not started')+'(total '+s.n+' 題）</span>'+(s.m?'<span>Written '+(s.g?s.wr+'/'+s.g:'Not started')+'(total '+s.m+' 題）</span>':'')+(s.done?'<span class="pok">✓ Done</span>':'<span class="ptodo">Not done</span>')+'</span>'):"Not started")+'</td></tr>';}
 /* chapter exercises in the progress table: jump straight to the chapter's exercises (multiple choice, or the written part once the MC is done) */
 document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-goend]");if(!b)return;const c=b.dataset.goend;
   setTimeout(()=>{const todo=window.EZtodo&&EZtodo(c);if(todo){EZglow(todo);return;}const s=chScore(c),w=document.querySelector("#"+c+" .chw"),t=(s.k>=s.n&&w)?w:document.querySelector("#"+c+" .quiz");if(t){t.scrollIntoView({block:"start"});scrollBy(0,-76);}},80);});
@@ -318,7 +318,7 @@ function renderHome(){
   t.innerHTML=html;
   const ns=document.getElementById("nextStep");
   ns.innerHTML="";const p=document.createElement("b");
-  if(next){p.textContent="Next: "+(next[0].startsWith("ch")?"讀 "+next[1]+" 再做chapter exercises":"write "+next[1]+" (110 min)");ns.appendChild(p);const b=document.createElement("button");b.className="btn primary";b.textContent="Start";b.dataset.go=next[0];ns.appendChild(b);}
+  if(next){p.textContent="Next: "+(next[0].startsWith("ch")?"Read "+next[1]+", then do the chapter exercises":"Write "+next[1]+" (110 min)");ns.appendChild(p);const b=document.createElement("button");b.className="btn primary";b.textContent="Start";b.dataset.go=next[0];ns.appendChild(b);}
   else{p.textContent="All done. The day before the exam, read Review, then get some sleep.";ns.appendChild(p);const b=document.createElement("button");b.className="btn primary";b.textContent="Review";b.dataset.go="review";ns.appendChild(b);}
 }
 
@@ -358,7 +358,7 @@ function bsearch(el){
   const DEF=[4,7,8,10,14,21,22,36,62,77,81,91];let A=DEF.slice();
   const ctl=$("div","labrow");
   const inp=$("input");inp.type="number";inp.value="22";inp.id="bs-target";inp.className="labin";inp.setAttribute("aria-label","target");
-  const bN=$("button","btn primary","下一步"),bR=$("button","btn","重來"),bD=$("button","btn","預設");bN.type=bR.type=bD.type="button";
+  const bN=$("button","btn primary","Next"),bR=$("button","btn","Reset"),bD=$("button","btn","Default");bN.type=bR.type=bD.type="button";
   ctl.append($("label","small","target"),inp,bN,bR,bD);const lst=txt(DEF.join(" "),"100%");const lw=$("label","small","list（空白分隔；會自動排序）");lw.style.display="block";lw.appendChild(lst);el.appendChild(lw);el.appendChild(ctl);
   const arr=$("div","cells");el.appendChild(arr);
   const log=$("div","lablog");el.appendChild(log);
@@ -372,7 +372,7 @@ function bsearch(el){
   function step(){
     if(done)return;const t=+inp.value;
     if(first>last){done=true;log.innerHTML+="<br><b>first "+first+" &gt; last "+last+"，找不到</b>，共 "+steps+" 次迴圈。";draw();return;}
-    steps++;mid=Math.floor((first+last)/2);let msg="第 "+steps+" 次：mid = ("+first+" + "+last+") / 2 = "+mid+"，list[mid] = "+A[mid]+"。";
+    steps++;mid=Math.floor((first+last)/2);let msg="Q "+steps+" 次：mid = ("+first+" + "+last+") / 2 = "+mid+"，list[mid] = "+A[mid]+"。";
     if(t>A[mid]){msg+=" "+t+" &gt; "+A[mid]+" → first = "+(mid+1);first=mid+1;}
     else if(t<A[mid]){msg+=" "+t+" &lt; "+A[mid]+" → last = "+(mid-1);last=mid-1;}
     else{msg+=" <b>找到了</b>，共 "+steps+" 次迴圈。";done=true;}
@@ -388,7 +388,7 @@ function llist(el){
   frame(el,"Linked list 實驗室：searchList、insertNode、deleteNode、destroyList","輸入一個數字，選操作，然後按「下一步」一行一行執行 pseudocode。打開「錯誤順序」看看先改 pPre->link 會發生什麼事。");
   const ctl=$("div","labrow");
   const inp=$("input");inp.type="number";inp.value="25";inp.className="labin";inp.id="ll-val";inp.setAttribute("aria-label","value");
-  const bS=$("button","btn","searchList"),bI=$("button","btn","insert"),bD=$("button","btn","delete"),bX=$("button","btn","destroyList"),bN=$("button","btn primary","下一步"),bR=$("button","btn","重設串列");
+  const bS=$("button","btn","searchList"),bI=$("button","btn","insert"),bD=$("button","btn","delete"),bX=$("button","btn","destroyList"),bN=$("button","btn primary","Next"),bR=$("button","btn","Reset list");
   [bS,bI,bD,bX,bN,bR].forEach(b=>b.type="button");
   const wrong=$("label","small chk");const wc=$("input");wc.type="checkbox";wc.id="ll-wrong";wrong.append(wc,document.createTextNode(" 錯誤順序（insert）"));
   ctl.append($("label","small","值"),inp,bS,bI,bD,bX,bN,bR,wrong);el.appendChild(ctl);
@@ -400,7 +400,7 @@ function llist(el){
   const SEARCH=["pPre = null","pLoc = list.head","loop (pLoc not null AND target > pLoc->data.key)","   pPre = pLoc","   pLoc = pLoc->link","end loop","found = (pLoc not null AND target equal pLoc->data.key)"];
   function searchSteps(s,t,acc){
     s.pPre=null;acc.push([clone(s),0,"pPre = null"]);
-    s.pLoc=s.head;acc.push([clone(s),1,"pLoc 指向第一個節點"+(s.head?"（"+s.nodes[s.head].v+"）":"（串列是空的）")]);
+    s.pLoc=s.head;acc.push([clone(s),1,"pLoc 指向第一個節點"+(s.head?"（"+s.nodes[s.head].v+"）":"(list is empty)")]);
     while(s.pLoc!==null&&t>s.nodes[s.pLoc].v){
       acc.push([clone(s),2,t+" > "+s.nodes[s.pLoc].v+"，繼續往後"]);
       s.pPre=s.pLoc;acc.push([clone(s),3,"pPre 移到 "+s.nodes[s.pPre].v]);
@@ -418,7 +418,7 @@ function llist(el){
     return "　→ 六種結果表的「"+c+"」";
   }
   function plan(kind){
-    const t=parseInt(inp.value);if(isNaN(t)){log.textContent="請先輸入數字。";return;}
+    const t=parseInt(inp.value);if(isNaN(t)){log.textContent="Please enter a number first.";return;}
     const s=clone(st);s.pNew=null;const acc=[];
     if(kind==="destroy"){
       const DES=["loop (list.count not zero)","   dltPtr     = list.head","   list.head  = dltPtr->link","   list.count = list.count - 1","   recycle (dltPtr)","end loop","list.pos = null"];
@@ -485,7 +485,7 @@ function llist(el){
   }
   function lineIndex(i){const lines=code.textContent.split("\n");let k=-1;for(let j=0;j<=i;j++){const l=lines[j];if(!l||/^Algorithm /.test(l))continue;k++;}const l=lines[i];return (!l||/^Algorithm /.test(l))?-2:k;}
   bN.addEventListener("click",()=>{if(si>=steps.length){log.textContent=steps.length?"執行完畢。可以換一個數字或操作。":"先選 searchList、insert 或 delete。";return;}
-    const [s,line,msg]=steps[si++];render(s,line);log.textContent="步驟 "+si+" / "+steps.length+"："+msg;if(si===steps.length){st=clone(s);st.pPre=st.pLoc=st.pNew=st.dlt=null;}});
+    const [s,line,msg]=steps[si++];render(s,line);log.textContent="Step "+si+" / "+steps.length+"："+msg;if(si===steps.length){st=clone(s);st.pPre=st.pLoc=st.pNew=st.dlt=null;}});
   bS.addEventListener("click",()=>plan("search"));bX.addEventListener("click",()=>plan("destroy"));bI.addEventListener("click",()=>plan("insert"));bD.addEventListener("click",()=>plan("delete"));
   bR.addEventListener("click",init);
   init();
@@ -517,7 +517,7 @@ function loops(el){
     dep:{n:"Dependent quadratic（巢狀，j <= i）",code:["1 i = 1","2 loop (i <= n)","  1 j = 1","  2 loop (j <= i)","    1 application code","    2 j = j + 1","  3 end loop","  4 i = i + 1","3 end loop"],f:"f(n) = n(n + 1) / 2",o:"O(n²)"},
     quad:{n:"Quadratic（巢狀，j <= n）",code:["1 i = 1","2 loop (i <= n)","  1 j = 1","  2 loop (j <= n)","    1 application code","    2 j = j + 1","  3 end loop","  4 i = i + 1","3 end loop"],f:"f(n) = n²",o:"O(n²)"}};
   const s=sel(Object.keys(T).map(k=>[k,T[k].n]),"mul");const n=num(1000,"110px");n.min=1;n.max=100000;
-  const r=$("div","labrow");r.append($("label","small","迴圈"),s,$("label","small","n ="),n);el.appendChild(r);
+  const r=$("div","labrow");r.append($("label","small","Loop"),s,$("label","small","n ="),n);el.appendChild(r);
   const wrap=$("div","llwrap tblcode");const left=$("div","llview");const right=$("div");wrap.append(left,right);el.appendChild(wrap);
   const log=$("div","lablog");el.appendChild(log);
   function draw(){
@@ -574,7 +574,7 @@ function seqvar(el){
     ord:{n:"Algorithm 2-4 Ordered list",code:["1 if (target < list[last])","  1 looker = 0","  2 loop (target > list[looker])","    1 looker = looker + 1","  3 end loop","2 else looker = last","4 if (target equal list[looker]) found = true","5 else found = false","7 locn = looker"]}};
   const s=sel(Object.keys(ALG).map(k=>[k,ALG[k].n]),"seq");const lst=txt("4 21 36 14 62 91 8 22 7 81 77 10","100%");const tg=num(14,"80px");
   const g=$("div","labgrid");const l1=$("label",null,"List（空白分隔；ordered list 會自動排序）");l1.appendChild(lst);const l2=$("label",null,"演算法");l2.style.gridColumn="span 2";l2.appendChild(s);const l3=$("label",null,"target");l3.appendChild(tg);g.append(l1,l2,l3);el.appendChild(g);
-  const r=$("div","labrow");const bP=btn("上一步"),bN=btn("下一步",true),bA=btn("跑完"),bR=btn("重來");r.append(bP,bN,bA,bR);el.appendChild(r);
+  const r=$("div","labrow");const bP=btn("上一步"),bN=btn("Next",true),bA=btn("Run to end"),bR=btn("Reset");r.append(bP,bN,bA,bR);el.appendChild(r);
   const wrap=$("div","llwrap");const view=$("div","llview");const code=$("div");wrap.append(view,code);el.appendChild(wrap);const log=$("div","lablog");el.appendChild(log);
   let arr=[],steps=[],si=0,base="";
   function parse(){let a=lst.value.split(/[^0-9-]+/).filter(Boolean).map(Number).slice(0,20);if(!a.length)a=[4];if(s.value==="ord")a=a.slice().sort((x,y)=>x-y);return a;}
@@ -610,9 +610,9 @@ function seqvar(el){
   function reset(keep){if(!keep)arr=parse();plan();render(null);log.innerHTML="按「下一步」開始。last = "+(arr.length-1)+"。";}
   function show(i){ // i = number of steps executed so far (1-based step shown)
     const st=steps[i-1];render(st);
-    log.innerHTML="步驟 "+i+" / "+steps.length+"："+st.msg+"<br>比較 target 的次數 <b>"+st.cmp+"</b>　迴圈條件測試 <b>"+st.tests+"</b> 次";
+    log.innerHTML="Step "+i+" / "+steps.length+"："+st.msg+"<br>比較 target 的次數 <b>"+st.cmp+"</b>　迴圈條件測試 <b>"+st.tests+"</b> 次";
     if(st.done&&st.swap){log.innerHTML+="<br>交換已經存回 list，再按一次「重來」或「跑完」找同一個值，會看到它繼續往前。";}}
-  function step(){if(si>=steps.length){if(!log.innerHTML.includes("已經跑完"))log.innerHTML+="<br>已經跑完。";return;}const st=steps[si];st._pre=arr.slice();si++;if(st.done&&st.swap){arr=st.a.slice();}show(si);}
+  function step(){if(si>=steps.length){if(!log.innerHTML.includes("Finished"))log.innerHTML+="<br>已經跑完。";return;}const st=steps[si];st._pre=arr.slice();si++;if(st.done&&st.swap){arr=st.a.slice();}show(si);}
   function prev(){
     if(si===0){log.innerHTML="已經在開頭。";return;}
     const st=steps[--si];
@@ -644,7 +644,7 @@ function hashm(el){
       case"direct":return["Direct","key 就是地址",K<N?String(K):"✗ key ≥ list size，direct 只能用在每個 key 都有一格的情況"];
       case"sub":return["Subtraction","key − "+SB+" = "+(K-SB),(K-SB>=0n&&K-SB<N)?String(K-SB):"✗ 超出範圍（key 要連續且密集）"];
       case"mod":return["Modulo division",K+" / "+N+" = "+(K/N)+" 餘 "+mod(K),String(mod(K))];
-      case"dig":return ks.length>=4?["Digit extraction","取第 1、3、4 位："+ks[0]+" "+ks[2]+" "+ks[3],ks[0]+ks[2]+ks[3]]:["Digit extraction","key 至少要 4 位數",""];
+      case"dig":return ks.length>=4?["Digit extraction","取第 1、3、4 位："+ks[0]+" "+ks[2]+" "+ks[3],ks[0]+ks[2]+ks[3]]:["Digit extraction","key must be at least 4 digits",""];
       case"mid":{
         if(ks.length<=4){const s2=String(K*K).padStart(ks.length*2,"0");const st=Math.floor((ks.length*2-ks.length)/2);return["Midsquare",K+"² = "+s2+"，取中間 "+ks.length+" 位",s2.substr(st,ks.length)];}
         const part=BigInt(ks.slice(0,3));const s2=String(part*part).padStart(6,"0");return["Midsquare（變形）","取前 3 位 "+ks.slice(0,3)+"，平方 = "+s2+"，取第 3～5 位",s2.slice(2,5)];}
@@ -702,7 +702,7 @@ function quad(el){
 /* 11. getNext / printList (Ch3 Algorithm 3-9, 3-15) */
 function getnext(el){
   frame(el,"getNext 和 printList：pos 怎麼走","第一次呼叫 fromWhere 要是 0，之後都是 1。按「getNext(list, 1)」一直走到串列尾巴，或直接按「printList」看整段輸出。");
-  const lst=txt("5 10 15 20 95 100","220px");const r=$("div","labrow");const b0=btn("getNext(list, 0)",true),b1=btn("getNext(list, 1)"),bp=btn("printList"),be=btn("清空串列");r.append($("label","small","串列"),lst,b0,b1,bp,be);el.appendChild(r);
+  const lst=txt("5 10 15 20 95 100","220px");const r=$("div","labrow");const b0=btn("getNext(list, 0)",true),b1=btn("getNext(list, 1)"),bp=btn("printList"),be=btn("Clear list");r.append($("label","small","List"),lst,b0,b1,bp,be);el.appendChild(r);
   const wrap=$("div","llwrap");const view=$("div","llview");const code=$("div");wrap.append(view,code);el.appendChild(wrap);const log=$("div","lablog");el.appendChild(log);
   const CODE=["1 if (fromWhere is 0)","  1 if (list.count is zero)","    1 success = false","  2 else","    1 list.pos = list.head","    2 dataOut  = list.pos->data","    3 success  = true","2 else","  1 if (list.pos->link null)","    1 success = false","  2 else","    1 list.pos = list.pos->link","    2 dataOut  = list.pos->data","    3 success  = true","4 return success"];
   let vals=[],pos=null;
@@ -723,7 +723,7 @@ function getnext(el){
 /* 12. Append lists (Algorithm 3-18) */
 function append(el){
   frame(el,"append：把 list2 接到 list1 後面","按「下一步」看 pLoc 怎麼走到 list1 最後一個節點，再把它的 link 改指 list2。把 list1 清空可以看第 1 行的特殊情況。");
-  const a=txt("5 10 15 20 25","180px"),b=txt("7 12 17 22 27","180px");const r=$("div","labrow");const bN=btn("下一步",true),bR=btn("重來");r.append($("label","small","list1"),a,$("label","small","list2"),b,bN,bR);el.appendChild(r);
+  const a=txt("5 10 15 20 25","180px"),b=txt("7 12 17 22 27","180px");const r=$("div","labrow");const bN=btn("Next",true),bR=btn("Reset");r.append($("label","small","list1"),a,$("label","small","list2"),b,bN,bR);el.appendChild(r);
   const wrap=$("div","llwrap");const view=$("div","llview");const code=$("div");wrap.append(view,code);el.appendChild(wrap);const log=$("div","lablog");el.appendChild(log);
   const CODE=["1 if (list1.count zero)","  1 list1.head = list2.head","2 else","  1 pLoc = list1.head","  2 loop (pLoc->link not null)","    1 pLoc = pLoc->link","  3 end loop","  4 pLoc->link = list2.head","3 end if","4 list1.count = list1.count + list2.count"];
   let L1,L2,steps,si;
@@ -737,7 +737,7 @@ function append(el){
     h+=st&&st.j?rowHTML("list1.head",L1.concat(L2),m):rowHTML("list1.head",L1,m);
     h+='<div class="small">list2.count = '+L2.length+"</div>"+rowHTML("list2.head",L2,{});view.innerHTML=h;code.innerHTML=codeBox(CODE,st?st.line:-1);}
   function reset(){plan();render(null);log.textContent="按「下一步」開始。";}
-  bN.addEventListener("click",()=>{if(si>=steps.length){log.textContent="完成。list1 走到最後會接上 list2 的節點，list2 自己的 head 不變。";return;}const st=steps[si++];render(st);log.textContent="步驟 "+si+" / "+steps.length+"："+st.msg;});
+  bN.addEventListener("click",()=>{if(si>=steps.length){log.textContent="完成。list1 走到最後會接上 list2 的節點，list2 自己的 head 不變。";return;}const st=steps[si++];render(st);log.textContent="Step "+si+" / "+steps.length+"："+st.msg;});
   bR.addEventListener("click",reset);[a,b].forEach(i=>i.addEventListener("change",reset));reset();
 }
 
@@ -745,14 +745,14 @@ function append(el){
 function circ(el){
   frame(el,"環狀串列：從中間開始找","選起點（startAddress）和 target。target 在起點前面會自動繞回開頭；target 不存在時，繞一圈回到起點前就停。");
   const vals=[5,10,15,20,25,30,95];const st=sel(vals.map((v,i)=>[i,"從 "+v+" 開始"]),"3");const tg=num(10,"80px");
-  const r=$("div","labrow");const bN=btn("下一步",true),bR=btn("重來");r.append(st,$("label","small","target"),tg,bN,bR);el.appendChild(r);
+  const r=$("div","labrow");const bN=btn("Next",true),bR=btn("Reset");r.append(st,$("label","small","target"),tg,bN,bR);el.appendChild(r);
   const wrap=$("div","llwrap");const view=$("div","llview");const code=$("div");wrap.append(view,code);el.appendChild(wrap);const log=$("div","lablog");el.appendChild(log);
   const CODE=["startAddress = pLoc","loop (target not equal to pLoc->data.key","  AND pLoc->link not equal to startAddress)","   pLoc = pLoc->link","end loop","found = (target equal pLoc->data.key)"];
   let p,s0,done,n;
   function render(line,hit){const m={};m[s0]="start";m[p]=(m[p]?m[p]+" ":"")+"pLoc";view.innerHTML=rowHTML("rear->link",vals,m,{tail:"↺ 指回 5",hit:hit?p:undefined});code.innerHTML=codeBox(CODE,line);}
   function reset(){s0=+st.value;p=s0;done=false;n=0;render(0);log.textContent="pLoc = startAddress = "+vals[s0]+"。";}
   bN.addEventListener("click",()=>{if(done)return;const t=+tg.value;const nx=(p+1)%vals.length;
-    if(t!==vals[p]&&nx!==s0){p=nx;n++;render(3);log.textContent="第 "+n+" 步：還沒找到，下一個也不是起點 → pLoc 移到 "+vals[p]+(p===0?"（從尾巴 95 繞回開頭了）":"");}
+    if(t!==vals[p]&&nx!==s0){p=nx;n++;render(3);log.textContent="Q "+n+" 步：還沒找到，下一個也不是起點 → pLoc 移到 "+vals[p]+(p===0?"（從尾巴 95 繞回開頭了）":"");}
     else{done=true;const f=t===vals[p];render(5,f);log.innerHTML=(f?"pLoc = "+vals[p]+" 就是 target，停。<b>found</b>":"pLoc->link 是 startAddress（"+vals[s0]+"），已經繞一圈了 → 停，<b>not found</b>")+"。一共移動 "+n+" 步。";}});
   bR.addEventListener("click",reset);st.addEventListener("change",reset);tg.addEventListener("change",reset);reset();
 }
@@ -760,7 +760,7 @@ function circ(el){
 /* 14. Doubly linked list insert / delete (Algorithms 3-22 corrected, 3-23) */
 function dbl(el){
   frame(el,"雙向串列：insertDbl（修正版）和 deleteDbl","輸入一個數字，按 insert 或 delete，再按「下一步」一行一行看 back（B）、fore（F）、head、rear 怎麼改。");
-  const v=num(30,"80px");const r=$("div","labrow");const bI=btn("insertDbl"),bD=btn("deleteDbl"),bN=btn("下一步",true),bR=btn("重設");r.append($("label","small","值"),v,bI,bD,bN,bR);el.appendChild(r);
+  const v=num(30,"80px");const r=$("div","labrow");const bI=btn("insertDbl"),bD=btn("deleteDbl"),bN=btn("Next",true),bR=btn("Reset");r.append($("label","small","值"),v,bI,bD,bN,bR);el.appendChild(r);
   const wrap=$("div","llwrap wide");const view=$("div","llview");const code=$("div");wrap.append(view,code);el.appendChild(wrap);const log=$("div","lablog");el.appendChild(log);
   const INS=["1 if (full list) return 0","3 found = searchList (list, pPre, pSucc, dataIn.key)","4 if (not found)","  1 allocate (pNew); 2 pNew->data = dataIn","  3 if (pPre is null)","    1 pNew->back = null","    2 pNew->fore = list.head","    3 list.head  = pNew","  4 else","    1 pNew->fore = pPre->fore","    2 pNew->back = pPre","    3 pPre->fore = pNew","  6 if (pSucc null)","    1 list.rear = pNew","  7 else","    1 pSucc->back = pNew","  9 list.count = list.count + 1; return (1)","6 return (2)    duplicate"];
   const DEL=["1 if (pDlt null) abort","3 list.count = list.count - 1","4 if (pDlt->back not null)","  1 pPred = pDlt->back","  2 pPred->fore = pDlt->fore","5 else","  1 list.head = pDlt->fore","7 if (pDlt->fore not null)","  1 pSucc = pDlt->fore","  2 pSucc->back = pDlt->back","8 else","  1 list.rear = pDlt->back","10 recycle (pDlt)"];
@@ -775,7 +775,7 @@ function dbl(el){
     let h='<div class="small">count = '+s.count+'　head → '+name(s,s.head)+'　rear → '+name(s,s.rear)+'</div><div class="llrow"><span class="llhead">head</span><span class="arr">→</span>'+(o.length?o.map(box).join('<span class="arr">⇄</span>'):'<span class="nul">null</span>')+"</div>";
     if(loose.length)h+='<div class="llrow side"><span class="small">還沒接上／已刪除：</span>'+loose.map(box).join("")+"</div>";
     view.innerHTML=h;code.innerHTML=codeBox(cur||INS,line);}
-  function plan(kind){const t=parseInt(v.value);if(isNaN(t)){log.textContent="請先輸入數字。";return;}const s=clone(S);s.ptr={};const A=[];const P=(l,m)=>A.push([clone(s),l,m]);
+  function plan(kind){const t=parseInt(v.value);if(isNaN(t)){log.textContent="Please enter a number first.";return;}const s=clone(S);s.ptr={};const A=[];const P=(l,m)=>A.push([clone(s),l,m]);
     if(kind==="ins"){cur=INS;P(0,"記憶體沒滿");const o=order(s);let pre=null,suc=null;for(const id of o){if(s.n[id].v<t)pre=id;else{suc=id;break;}}
       s.ptr={pPre:pre,pSucc:suc};P(1,"searchList：pPre = "+name(s,pre)+"，pSucc = "+name(s,suc));
       if(suc!=null&&s.n[suc].v===t){P(17,t+" 已經存在 → return 2（duplicate）");}
@@ -793,7 +793,7 @@ function dbl(el){
       else{P(10,"pDlt 是最後一個節點");s.rear=b;P(11,"list.rear = pDlt->back（"+name(s,b)+"）");}
       delete s.n[d];delete s.ptr.pDlt;P(12,"recycle (pDlt)");}
     steps=A;si=0;render(S,-1);log.textContent="按「下一步」開始。";}
-  bN.addEventListener("click",()=>{if(si>=steps.length){log.textContent=steps.length?"執行完畢。":"先選 insertDbl 或 deleteDbl。";return;}const [s,l,m]=steps[si++];render(s,l);log.textContent="步驟 "+si+" / "+steps.length+"："+m;if(si===steps.length){S=clone(s);S.ptr={};}});
+  bN.addEventListener("click",()=>{if(si>=steps.length){log.textContent=steps.length?"執行完畢。":"先選 insertDbl 或 deleteDbl。";return;}const [s,l,m]=steps[si++];render(s,l);log.textContent="Step "+si+" / "+steps.length+"："+m;if(si===steps.length){S=clone(s);S.ptr={};}});
   bI.addEventListener("click",()=>plan("ins"));bD.addEventListener("click",()=>plan("del"));bR.addEventListener("click",init);init();
 }
 
@@ -803,7 +803,7 @@ function multi(el){
   const D=[["Washington, George",1789,"Custis, Martha Dandridge"],["Adams, John",1797,"Smith, Abigail"],["Jefferson, Thomas",1801,"Skelton, Martha Wayles"],["Madison, James",1809,"Todd, Dorothy Payne"],["Monroe, James",1817,"Kortright, Elizabeth"],["Adams, John Quincy",1825,"Johnson, Louisa Catherine"],["Jackson, Andrew",1829,"Robards, Rachel Donelson"],["Van Buren, Martin",1837,"Hoes, Hannah"],["Harrison, William H",1841,"Symmes, Anna"],["Tyler, John",1841,"Christian, Letitia"]];
   const pres=D.map((_,i)=>i);const sp=D.map((_,i)=>i).sort((a,b)=>D[a][2].localeCompare(D[b][2]));
   const nx=(ord,i)=>{const k=ord.indexOf(i);return k<ord.length-1?D[ord[k+1]][0]:"null";};
-  const r=$("div","labrow");const bP=btn("走 president links",true),bS=btn("走 spouse links"),bN=btn("下一步");r.append(bP,bS,bN);el.appendChild(r);
+  const r=$("div","labrow");const bP=btn("走 president links",true),bS=btn("走 spouse links"),bN=btn("Next");r.append(bP,bS,bN);el.appendChild(r);
   const out=$("div","labtbl");el.appendChild(out);const log=$("div","lablog");el.appendChild(log);let mode="p",k=-1;
   function draw(){const ord=mode==="p"?pres:sp;const cur=k>=0?ord[k]:-1;
     out.innerHTML="<table><tr><th>President</th><th>Year</th><th>First Wife</th><th>president link →</th><th>spouse link →</th></tr>"+D.map((d,i)=>'<tr class="'+(i===cur?"rowhit":ord.slice(0,k).includes(i)?"rowdone":"")+'"><td>'+d[0]+"</td><td>"+d[1]+"</td><td>"+d[2]+"</td><td>"+nx(pres,i)+"</td><td>"+nx(sp,i)+"</td></tr>").join("")+"</table>";
@@ -821,7 +821,7 @@ function hash(el){
    '<label>Hashing<select id="hs-fold" class="labin"><option value="direct">Direct（key 就是地址）</option><option value="sub">Subtraction（key − 1000）</option><option value="mod">Modulo division 直接取餘</option><option value="dig">Digit extraction（取第 1、3、4 位）</option><option value="mid">Midsquare（平方取中間）</option><option value="fs">Fold shift（每 2 位）＋ MOD</option><option value="fb" selected>Fold boundary（每 2 位）＋ MOD</option><option value="rot">Rotation（末位移到最前）＋ fold shift</option><option value="pr">Pseudorandom（y = 17k + 7，再 MOD N）</option></select></label>'+
    '<label>Collision<select id="hs-col" class="labin"><option value="lin">Linear probe</option><option value="quad">Quadratic probe</option><option value="pr">Pseudorandom y = 3x + 5</option><option value="ko">Key offset</option><option value="chain">Linked list（LIFO overflow）</option><option value="bucket">Bucket（每格 3 筆）＋ linear probe</option></select></label>';
   el.appendChild(g);
-  const ctl=$("div","labrow");const bP=$("button","btn","上一步"),bS=$("button","btn primary","下一步"),bA=$("button","btn","全部插入"),bR=$("button","btn","重來");[bP,bS,bA,bR].forEach(b=>b.type="button");ctl.append(bP,bS,bA,bR);el.appendChild(ctl);
+  const ctl=$("div","labrow");const bP=$("button","btn","上一步"),bS=$("button","btn primary","Next"),bA=$("button","btn","Insert all"),bR=$("button","btn","Reset");[bP,bS,bA,bR].forEach(b=>b.type="button");ctl.append(bP,bS,bA,bR);el.appendChild(ctl);
   const msgEl=$("div","lablog");el.appendChild(msgEl);
   const slots=$("div","slots");el.appendChild(slots);const sum=$("div","lablog");el.appendChild(sum);const tw=$("div","labtbl");el.appendChild(tw);
   const q=id=>el.querySelector("#"+id);
@@ -830,7 +830,7 @@ function hash(el){
     if(fold==="direct")return {v:k,expr:s+" 就是地址"};
     if(fold==="mod")return {v:k,expr:s+" 直接 MOD "+N};
     if(fold==="sub")return {v:k-1000,expr:s+" − 1000 = "+(k-1000)};
-    if(fold==="dig"){if(s.length<4)return {v:0,expr:"key 至少要 4 位數"};return {v:Number(s[0]+s[2]+s[3]),expr:"取第 1、3、4 位："+s[0]+" "+s[2]+" "+s[3]};}
+    if(fold==="dig"){if(s.length<4)return {v:0,expr:"key must be at least 4 digits"};return {v:Number(s[0]+s[2]+s[3]),expr:"取第 1、3、4 位："+s[0]+" "+s[2]+" "+s[3]};}
     if(fold==="mid"){const sq=String(BigInt(k)*BigInt(k));const L=s.length;const st=Math.floor((sq.length-L)/2);return {v:Number(sq.substr(st,L)),expr:s+"² = "+sq+"，取中間 "+L+" 位"};}
     if(fold==="pr"){const y=Number(17n*BigInt(k)+7n);return {v:y,expr:"y = 17 × "+s+" + 7 = "+y};}
     if(fold==="rot"){const rot=s.slice(-1)+s.slice(0,-1);const ps=[];for(let i=0;i<rot.length;i+=2)ps.push(rot.slice(i,i+2));const v=ps.reduce((a,b)=>a+Number(b),0);return {v,expr:"旋轉成 "+rot+"，兩位一組相加："+ps.join(" + ")+" = "+v};}
@@ -853,11 +853,11 @@ function hash(el){
       const k=keys[idx++];const f=folded(k);const h=((f.v%N)+N)%N;
       r={k,expr:f.expr,v:f.v,h,a:h,i:0,path:[h],c:0,ok:true,done:false};rows.push(r);
       if(mode==="chain"){
-        if(T[h].length){r.c=1;col++;T[h].splice(1,0,k);lastAt=h;msg="插入 "+k+"：Sum "+f.v+"，home = ["+h+"]。[ "+h+" ] 已有資料 → 碰撞，放進 overflow area，接在 ["+h+"] 後面第一個（LIFO）。";}
-        else{T[h].push(k);lastAt=h;msg="插入 "+k+"：Sum "+f.v+"，home = ["+h+"]。[ "+h+" ] 是空的，直接放入。";}
+        if(T[h].length){r.c=1;col++;T[h].splice(1,0,k);lastAt=h;msg="Insert "+k+"：Sum "+f.v+"，home = ["+h+"]。[ "+h+" ] 已有資料 → 碰撞，放進 overflow area，接在 ["+h+"] 後面第一個（LIFO）。";}
+        else{T[h].push(k);lastAt=h;msg="Insert "+k+"：Sum "+f.v+"，home = ["+h+"]。[ "+h+" ] 是空的，直接放入。";}
         r.done=true;return true;
       }
-      msg="插入 "+k+"："+f.expr+"，home address = ["+h+"]。下一步檢查 ["+h+"]。";
+      msg="Insert "+k+"："+f.expr+"，home address = ["+h+"]。下一步檢查 ["+h+"]。";
       return true;
     }
     const full=T[r.a].length>=CAP();
@@ -900,7 +900,7 @@ function bsfig(el){
   frame(el,"Binary search 逐步走（可換 target）","每按一次「下一步」就是一次迴圈：先標出 first、mid、last，再比較 target 和 mid。灰色是已經排除的範圍。");
   const ctl=$("div","labrow");
   const inp=$("input");inp.type="number";inp.value="22";inp.className="labin";inp.setAttribute("aria-label","target");
-  const bP=btn("上一步"),bN=btn("下一步",true),bR=btn("重來");
+  const bP=btn("上一步"),bN=btn("Next",true),bR=btn("Reset");
   ctl.append($("label","small","target"),inp,bP,bN,bR);el.appendChild(ctl);
   const board=$("div","bsboard");el.appendChild(board);
   const log=$("div","lablog");el.appendChild(log);
@@ -910,7 +910,7 @@ function bsfig(el){
     S.push({f,l,m:null,ban:null,log:"first = 0、last = "+l+"，還沒開始比。"});
     while(f<=l){
       m=Math.floor((f+l)/2);n++;const v=A[m];
-      const pre="第 "+n+" 次：mid = ("+f+" + "+l+") / 2 = "+m+"，a["+m+"] = "+v+"，";
+      const pre="Q "+n+" 次：mid = ("+f+" + "+l+") / 2 = "+m+"，a["+m+"] = "+v+"，";
       if(t===v){S.push({f,l,m,ban:t+" = "+v,hit:true,log:pre+"相等 → found = true，first = last + 1 強制離開迴圈"});found=true;f=l+1;break;}
       if(t>v){S.push({f,l,m,ban:t+" > "+v,log:pre+t+" > "+v+" → 在後半，first = mid + 1 = "+(m+1)});f=m+1;}
       else{S.push({f,l,m,ban:t+" < "+v,log:pre+t+" < "+v+" → 在前半，last = mid − 1 = "+(m-1)});l=m-1;}
@@ -945,7 +945,7 @@ function bsfig(el){
   if("IntersectionObserver" in window){const io=new IntersectionObserver(es=>{if(es[0].isIntersecting)render(true);},{threshold:.5});io.observe(board);}
 }
 const LABS={bigo,bsearch,bsfig,hash,llist,loops,matmul,seqvar,hashm,hash26,quad,getnext,append,circ,dbl,multi};
-document.querySelectorAll("[data-lab]").forEach(el=>{try{LABS[el.dataset.lab](el);}catch(e){el.textContent="互動圖載入失敗："+e.message;}});
+document.querySelectorAll("[data-lab]").forEach(el=>{try{LABS[el.dataset.lab](el);}catch(e){el.textContent="Interactive figure failed to load: "+e.message;}});
 })();
 
 const start=(location.hash||"").slice(1)||S.last||"home";
@@ -998,7 +998,7 @@ if(!(S.migr&&S.migr["ch2w-slots0-5-v1"])){
 if(window.EZgenw){
   const T=k=>((VIEWS.find(v=>v[0]===k)||[])[1])||k;
   const blk=(key,view,views,box,batch)=>({key,exam:key,view,views,title:T(view||key)+(batch?"（混合章節）":""),box,batch});
-  EZgenw.attach({course:"資料與檔案結構 Data and File Structures",subject:"data-structures",s:"ds",pct:true,get:()=>S,save:()=>save(),blocks:[
+  EZgenw.attach({course:"Data and File Structures",subject:"data-structures",s:"ds",pct:true,get:()=>S,save:()=>save(),blocks:[
     blk("ch1w","ch1",["ch1"],document.querySelector('[data-exam="ch1w"]'),false),
     blk("ch2w","ch2",["ch2"],document.querySelector('[data-exam="ch2w"]'),false),
     blk("ch3w","ch3",["ch3"],document.querySelector('[data-exam="ch3w"]'),false),

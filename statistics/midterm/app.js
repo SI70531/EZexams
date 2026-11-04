@@ -29,7 +29,7 @@ function refreshPCB(){
       '<div class="pr"><span>state</span><b class="st '+p.state+'">'+p.state+'</b></div>'+
       '<div class="pr"><span>'+lab+'</span><b>'+(p.n?p.done+" / "+p.n:"—")+'</b></div>'+
       '<div class="bar"><i style="width:'+pct+'%"></i></div>';
-    el.setAttribute("aria-label","進度："+p.state+(p.n?"，"+p.done+"/"+p.n:""));
+    el.setAttribute("aria-label","Progress: "+p.state+(p.n?"，"+p.done+"/"+p.n:""));
   });
 }
 document.addEventListener("click",e=>{if(e.target.closest(".opt"))setTimeout(()=>{refreshPCB();renderTabs(S.last);},0);});
@@ -37,7 +37,7 @@ document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b
 window.addEventListener("hashchange",()=>{const h=location.hash.slice(1);if(h&&h!==S.last)show(h);});
 
 /* AI practice, one question at a time (assets/ezgen.js); chapter exercises are made on demand, answers stay on the Worker */
-if(window.EZGEN)EZGEN.attach({course:"統計學",s:"stats",ai:["ch1","ch2","ch3","ch4"],fixed:[],scope:{},get:()=>S,quiz:()=>QUIZ,save:()=>save(),render:c=>{renderQuiz(c);renderTabs(c)},renderAll:()=>{Object.keys(QUIZ).forEach(renderQuiz);renderTabs(S.last)}});
+if(window.EZGEN)EZGEN.attach({course:"Statistics",s:"stats",ai:["ch1","ch2","ch3","ch4"],fixed:[],scope:{},get:()=>S,quiz:()=>QUIZ,save:()=>save(),render:c=>{renderQuiz(c);renderTabs(c)},renderAll:()=>{Object.keys(QUIZ).forEach(renderQuiz);renderTabs(S.last)}});
 
 /* ---------- quizzes ---------- */
 function renderQuiz(ch){
@@ -67,7 +67,7 @@ function renderQuiz(ch){
       if(it.a==null){btns.forEach(b=>b.disabled=true);return;}
       btns.forEach(b=>{b.disabled=true;const oi=+b.dataset.oi;if(oi===it.a)b.classList.add("right");else if(oi===pick)b.classList.add("wrong");});
       const ok=pick===it.a;
-      ex.innerHTML='<span class="tag '+(ok?"ok":"no")+'">'+(ok?"答對":"答錯，正確答案是 "+"ABCD"[ord.indexOf(it.a)])+'</span>';
+      ex.innerHTML='<span class="tag '+(ok?"ok":"no")+'">'+(ok?"Correct":"Wrong, correct answer is "+"ABCD"[ord.indexOf(it.a)])+'</span>';
       ex.appendChild(document.createTextNode(it.e));ex.hidden=false;
     }
     mark();box.appendChild(d);
@@ -78,10 +78,10 @@ function renderQuiz(ch){
     const a=S.quiz[ch]||{};const n=Object.keys(a).length;const r=Object.keys(a).filter(k=>a[k]===qs[k].a).length;
     sc.innerHTML="";
     const t=document.createElement("span");t.textContent=n<qs.length?("Answered "+n+" / "+qs.length+", "+r+" correct so far"):("Done! "+r+" / "+qs.length+" correct"+(r>=qs.length*0.8?". Solid understanding.":". Reread the sections for the ones you missed."));sc.appendChild(t);
-    const rb=document.createElement("button");rb.className="btn";rb.type="button";rb.textContent="重做這章";rb.addEventListener("click",()=>{(window.EZundo||((w,f)=>f()))("This chapter's answers",()=>{delete S.quiz[ch];if(window.EZGEN)EZGEN.reset(ch);S.quizReset=S.quizReset||{};S.quizReset[ch]=Date.now();save();renderQuiz(ch);renderTabs(ch);},null,rb);});sc.appendChild(rb);
+    const rb=document.createElement("button");rb.className="btn";rb.type="button";rb.textContent="Redo chapter";rb.addEventListener("click",()=>{(window.EZundo||((w,f)=>f()))("This chapter's answers",()=>{delete S.quiz[ch];if(window.EZGEN)EZGEN.reset(ch);S.quizReset=S.quizReset||{};S.quizReset[ch]=Date.now();save();renderQuiz(ch);renderTabs(ch);},null,rb);});sc.appendChild(rb);
     const idx=VIEWS.findIndex(v=>v[0]===ch);const nx=VIEWS[idx+1];
-    if(n>=qs.length&&nx&&nx[0]!=="|"){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";nb.textContent="下一章："+nx[1];nb.dataset.go=nx[0];sc.appendChild(nb);}
-    else if(n>=qs.length&&ch==="ch4"){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";nb.textContent="開始期中作業";nb.dataset.go="hw";sc.appendChild(nb);}
+    if(n>=qs.length&&nx&&nx[0]!=="|"){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";nb.textContent="Next chapter: "+nx[1];nb.dataset.go=nx[0];sc.appendChild(nb);}
+    else if(n>=qs.length&&ch==="ch4"){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";nb.textContent="Start midterm assignment";nb.dataset.go="hw";sc.appendChild(nb);}
   }
   renderScore();
 }
@@ -126,8 +126,8 @@ function keywordGrade(qid,pts,ans){
   groups.forEach(g=>{let ok=false;try{ok=new RegExp(g.re,"i").test(a);}catch(e){}if(ok){got+=g.w;hit.push(g.k);}else miss.push(g.k);});
   let score=Math.round(Math.min(pts,got)*2)/2;
   const verdict=score>=pts?"correct":score>0?"partial":"wrong";
-  const feedback=verdict==="correct"?"必要的關鍵字和數字都有寫到。":verdict==="partial"?"有寫到一部分，下面是缺少的重點，對照參考答案補上。":"沒有比對到必要的關鍵字或數字，展開參考答案看看。";
-  return {score,verdict,feedback:feedback+"（關鍵字比對，僅供參考）",missing:miss};
+  const feedback=verdict==="correct"?"All required keywords and numbers are present.":verdict==="partial"?"Part of it is covered. The missing points are listed below; compare with the reference answer.":"The required keywords or numbers were not matched. Open the reference answer to see them.";
+  return {score,verdict,feedback:feedback+"(keyword matching, for reference only)",missing:miss};
 }
 
 /* ---------- exams ---------- */
@@ -189,7 +189,7 @@ document.querySelectorAll(".exam").forEach(ex=>{
   function upd(){
     let got=0,graded=0;
     qs.forEach(q=>{const g=st.grade[q.id];if(g){got+=+g.score||0;graded++;}});
-    score.textContent="得分 "+(Math.round(got*10)/10)+" / "+total+" 分"+(graded?"（已批改 "+graded+"/"+qs.length+" 題）":"");
+    score.textContent="Score "+(Math.round(got*10)/10)+" / "+total+" 分"+(graded?" (graded "+graded+"/"+qs.length+" questions)":"");
     EX[id]=Object.assign(EX[id]||{},{total,got,graded,n:qs.length});
     if(typeof refreshPCB==="function"){refreshPCB();renderTabs(S.last);}
   }
@@ -273,19 +273,19 @@ setGradingMode();
 (async()=>{try{SAMPLE=window.claude&&await window.claude.use("sample");}catch(e){SAMPLE=null;}if(!SAMPLE&&window.EZAI)SAMPLE=EZAI.sampler();setGradingMode();})();
 
 /* ---------- home ---------- */
-function chRow(c,n){const s=chScore(c);return '<tr><td class="l"><button class="btn" data-go="'+c+'" data-goend="'+c+'">'+n+'</button></td><td >'+((s.k||s.g)?('<b class="pscore">得分 '+s.got+' / '+s.tot+' 分</b><span class="psub"><span>選擇 '+(s.k?s.r+'/'+s.k:'還沒寫')+'（共 '+s.n+' 題）</span>'+(s.m?'<span>手寫 '+(s.g?s.wr+'/'+s.g:'還沒寫')+'（共 '+s.m+' 題）</span>':'')+(s.done?'<span class="pok">✓ 完成</span>':'<span class="ptodo">未完成</span>')+'</span>'):"還沒寫")+'</td></tr>';}
+function chRow(c,n){const s=chScore(c);return '<tr><td class="l"><button class="btn" data-go="'+c+'" data-goend="'+c+'">'+n+'</button></td><td >'+((s.k||s.g)?('<b class="pscore">Score '+s.got+' / '+s.tot+' 分</b><span class="psub"><span>選擇 '+(s.k?s.r+'/'+s.k:'Not started')+'(total '+s.n+' 題）</span>'+(s.m?'<span>Written '+(s.g?s.wr+'/'+s.g:'Not started')+'(total '+s.m+' 題）</span>':'')+(s.done?'<span class="pok">✓ Done</span>':'<span class="ptodo">Not done</span>')+'</span>'):"Not started")+'</td></tr>';}
 /* chapter exercises in the progress table: jump straight to the chapter's exercises (multiple choice, or the written part once the MC is done) */
 document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-goend]");if(!b)return;const c=b.dataset.goend;
   setTimeout(()=>{const todo=window.EZtodo&&EZtodo(c);if(todo){EZglow(todo);return;}const s=chScore(c),w=document.querySelector("#"+c+" .chw"),t=(s.k>=s.n&&w)?w:document.querySelector("#"+c+" .quiz");if(t){t.scrollIntoView({block:"start"});scrollBy(0,-76);}},80);});
 function renderHome(){
   const t=document.getElementById("progTable");
-  let html='<tr><th class="l">項目</th><th>狀態</th></tr>';
+  let html='<tr><th class="l">Item</th><th>Status</th></tr>';
   let next=null;
   [["ch1","Ch1 chapter exercises"],["ch2","Ch2 chapter exercises"],["ch3","Ch3 chapter exercises"],["ch4","Ch4 chapter exercises"]].forEach(([c,n])=>{
     html+=chRow(c,n);
     if(!next&&!chScore(c).done)next=[c,n.replace(" chapter exercises","")];
   });
-  [["hw","期中作業"]].forEach(([id,n])=>{
+  [["hw","Midterm assignment"]].forEach(([id,n])=>{
     const e=EX[id]||{graded:0,total:100,got:0};
     html+='<tr><td class="l"><button class="btn" data-go="'+id+'">'+n+'</button></td><td>'+(e.graded?("Score "+(Math.round(e.got*10)/10)+" / "+e.total):"Not started")+'</td></tr>';
     if(!next&&!e.graded)next=[id,n];
@@ -293,8 +293,8 @@ function renderHome(){
   t.innerHTML=html;
   const ns=document.getElementById("nextStep");
   ns.innerHTML="";const p=document.createElement("b");
-  if(next){p.textContent="Next: "+(next[0].startsWith("ch")?"讀 "+next[1]+" 再做章末的選擇題和 Problems":"寫"+next[1]+"（限時 60 分鐘，寫完按「批改全部」）");ns.appendChild(p);const b=document.createElement("button");b.className="btn primary";b.style.marginLeft="10px";b.textContent="Start";b.dataset.go=next[0];ns.appendChild(b);}
-  else{p.textContent="全部完成了。考前再看一次「易混淆」的 32 組觀念，然後早點睡。";ns.appendChild(p);}
+  if(next){p.textContent="Next: "+(next[0].startsWith("ch")?"Read "+next[1]+", then do the chapter quiz and Problems":"Write "+next[1]+" (60 min; press “Grade all” when done)");ns.appendChild(p);const b=document.createElement("button");b.className="btn primary";b.style.marginLeft="10px";b.textContent="Start";b.dataset.go=next[0];ns.appendChild(b);}
+  else{p.textContent="All done. Review the 32 confusable-concept groups once more before the exam, then get some sleep.";ns.appendChild(p);}
 }
 
 /* chapter-end written questions: the questions and reference answers are moved into the account's question store
@@ -304,7 +304,7 @@ function renderHome(){
 if(window.EZgenw){
   const T=k=>((VIEWS.find(v=>v[0]===k)||[])[1])||k;
   const blk=(key,view,views,box)=>({key,exam:key,view,views,title:T(view||key),box,static:true});
-  EZgenw.attach({course:"統計學 Statistics",subject:"statistics",s:"stats",get:()=>S,save:()=>save(),blocks:[
+  EZgenw.attach({course:"Statistics",subject:"statistics",s:"stats",get:()=>S,save:()=>save(),blocks:[
     blk("ch1w","ch1",["ch1"],document.querySelector('[data-exam="ch1w"]')),
     blk("ch2w","ch2",["ch2"],document.querySelector('[data-exam="ch2w"]')),
     blk("ch3w","ch3",["ch3"],document.querySelector('[data-exam="ch3w"]')),
@@ -335,11 +335,11 @@ const svg=(w,h,inner)=>'<svg viewBox="0 0 '+w+' '+h+'" role="img">'+inner+'</svg
 
 /* scale classifier */
 (function(){const el=document.getElementById("w-scale");if(!el)return;
- const ITEMS=[["攝氏溫度","區間","0°C 不代表沒有溫度，沒有真正的 0。"],["商品價格（元）","比率","0 元＝完全沒有，200 元是 100 元的兩倍。"],["滿意度（差／普通／好）","順序","有順序，但間距不一定相等。"],["作業系統（Windows／iOS／Android）","名目","只是名稱，沒有順序。"],["西元出生年份","區間","0 年不代表沒有時間，年份不能說兩倍。"],["電池續航（小時）","比率","時間有真正的 0。"],["郵遞區號","名目","雖然是數字，但只是代碼，加減沒有意義。"],["班上名次（第 1、2、3 名）","順序","有先後，但第 1 名和第 2 名的差距不固定。"],["每週讀書時數","比率","0 小時＝完全沒讀。"],["SAT 分數","區間","課本把 SAT 分數當區間尺度，沒有真正的 0。"]];
- const list=$(el,".sc-list");const OPTS=["名目","順序","區間","比率"];
+ const ITEMS=[["攝氏溫度","Interval","0°C 不代表沒有溫度，沒有真正的 0。"],["商品價格（元）","Ratio","0 元＝完全沒有，200 元是 100 元的兩倍。"],["滿意度（差／普通／好）","Order","有順序，但間距不一定相等。"],["作業系統（Windows／iOS／Android）","Nominal","只是名稱，沒有順序。"],["西元出生年份","Interval","0 年不代表沒有時間，年份不能說兩倍。"],["電池續航（小時）","Ratio","時間有真正的 0。"],["郵遞區號","Nominal","雖然是數字，但只是代碼，加減沒有意義。"],["班上名次（第 1、2、3 名）","Order","有先後，但第 1 名和第 2 名的差距不固定。"],["每週讀書時數","Ratio","0 小時＝完全沒讀。"],["SAT 分數","Interval","課本把 SAT 分數當區間尺度，沒有真正的 0。"]];
+ const list=$(el,".sc-list");const OPTS=["Nominal","Order","Interval","Ratio"];
  function build(){list.innerHTML="";ITEMS.forEach((it,i)=>{const d=document.createElement("div");d.className="sc-item";d.innerHTML='<span class="nm"></span><select><option value="">選尺度…</option>'+OPTS.map(o=>'<option>'+o+'</option>').join("")+'</select><span class="why" hidden></span>';$(d,".nm").textContent=it[0];list.appendChild(d);});$(el,".sc-score").textContent="";}
  build();
- $(el,".sc-check").addEventListener("click",()=>{let ok=0;$$(list,".sc-item").forEach((d,i)=>{const v=$(d,"select").value,it=ITEMS[i],w=$(d,".why");d.classList.toggle("ok",v===it[1]);d.classList.toggle("no",v!==it[1]);if(v===it[1])ok++;w.hidden=false;w.textContent=(v===it[1]?"答對。":"正確答案："+it[1]+"。")+it[2];});$(el,".sc-score").textContent="答對 "+ok+" / "+ITEMS.length;});
+ $(el,".sc-check").addEventListener("click",()=>{let ok=0;$$(list,".sc-item").forEach((d,i)=>{const v=$(d,"select").value,it=ITEMS[i],w=$(d,".why");d.classList.toggle("ok",v===it[1]);d.classList.toggle("no",v!==it[1]);if(v===it[1])ok++;w.hidden=false;w.textContent=(v===it[1]?"Correct.":"Correct answer: "+it[1]+"。")+it[2];});$(el,".sc-score").textContent="Correct "+ok+" / "+ITEMS.length;});
  $(el,".sc-reset").addEventListener("click",build);
 })();
 
@@ -360,7 +360,7 @@ const svg=(w,h,inner)=>'<svg viewBox="0 0 '+w+' '+h+'" role="img">'+inner+'</svg
   let t='<table><tr><th>組別</th>'+cls.map(c=>'<td>'+(W===1?c[0]:c[0]+"–"+c[1])+'</td>').join("")+'</tr><tr><th>次數</th>'+cls.map(c=>'<td>'+c[2]+'</td>').join("")+'</tr><tr><th>百分比</th>'+cls.map(c=>'<td>'+f(c[2]/n*100,1)+'%</td>').join("")+'</tr></table>';
   $(el,".h-table").innerHTML=t;
   const m=mean(a),md=median(a);
-  $(el,".h-note").textContent="共 "+cls.length+" 組。平均數 "+f(m)+"、中位數 "+f(md)+(Math.abs(m-md)<0.05*(a[a.length-1]-a[0])?"，兩者接近，大致對稱。":m<md?"，平均數 < 中位數，偏向左偏。":"，平均數 > 中位數，偏向右偏。")+(cls.length<4?" 組數太少，形狀被壓扁了。":cls.length>15?" 組數太多，每組只有零星幾筆，形狀很破碎。":"");}
+  $(el,".h-note").textContent="Total "+cls.length+" 組。平均數 "+f(m)+"、中位數 "+f(md)+(Math.abs(m-md)<0.05*(a[a.length-1]-a[0])?"，兩者接近，大致對稱。":m<md?"，平均數 < 中位數，偏向左偏。":"，平均數 > 中位數，偏向右偏。")+(cls.length<4?" 組數太少，形狀被壓扁了。":cls.length>15?" 組數太多，每組只有零星幾筆，形狀很破碎。":"");}
  ds.addEventListener("change",setData);w.addEventListener("input",()=>{const mn=Math.min(...DATA[ds.value]);s.min=mn-(+w.value)+1;if(+s.value<+s.min)s.value=s.min;draw();});s.addEventListener("input",draw);setData();
 })();
 
@@ -368,10 +368,10 @@ const svg=(w,h,inner)=>'<svg viewBox="0 0 '+w+' '+h+'" role="img">'+inner+'</svg
 (function(){const el=document.getElementById("w-pct");if(!el)return;
  const ta=$(el,".p-data"),pp=$(el,".p-p");ta.value=DATA.pharma.join(" ");
  function draw(){const a=(ta.value.match(/-?\d+(\.\d+)?/g)||[]).map(Number).sort((x,y)=>x-y);const p=+pp.value;$(el,".p-pv").textContent=p;
-  if(a.length<3){$(el,".p-steps").textContent="至少要 3 個數字。";return;}
+  if(a.length<3){$(el,".p-steps").textContent="Need at least 3 numbers.";return;}
   const n=a.length,r=pctl(a,p);
   $(el,".p-sorted").innerHTML=a.map((x,i)=>'<span class="'+(i+1===r.i?"lo":i+1===r.i+1&&r.fr>0?"hi":"")+'"><i>'+(i+1)+'</i>'+x+'</span>').join("");
-  $(el,".p-steps").textContent="n = "+n+"\nL"+p+" = ("+p+"/100)("+n+" + 1) = "+f(r.L,2)+"\n"+(r.i<1?"L < 1 → 取最小值 "+a[0]:r.i>=n?"L ≥ n → 取最大值 "+a[n-1]:r.fr===0?"L 是整數 → 第 "+r.i+" 個值 = "+a[r.i-1]:"第 "+r.i+" 個值 + "+f(r.fr,2)+" × (第 "+(r.i+1)+" 個 − 第 "+r.i+" 個)\n= "+a[r.i-1]+" + "+f(r.fr,2)+" × ("+a[r.i]+" − "+a[r.i-1]+") = "+f(r.v,2))+"\n→ 至少 "+p+"% 的資料 ≤ "+f(r.v,2)+"，至少 "+(100-p)+"% 的資料 ≥ "+f(r.v,2);
+  $(el,".p-steps").textContent="n = "+n+"\nL"+p+" = ("+p+"/100)("+n+" + 1) = "+f(r.L,2)+"\n"+(r.i<1?"L < 1 → 取最小值 "+a[0]:r.i>=n?"L ≥ n → 取最大值 "+a[n-1]:r.fr===0?"L 是整數 → 第 "+r.i+" 個值 = "+a[r.i-1]:"Q "+r.i+" 個值 + "+f(r.fr,2)+" × (第 "+(r.i+1)+" 個 − 第 "+r.i+" 個)\n= "+a[r.i-1]+" + "+f(r.fr,2)+" × ("+a[r.i]+" − "+a[r.i-1]+") = "+f(r.v,2))+"\n→ 至少 "+p+"% 的資料 ≤ "+f(r.v,2)+"，至少 "+(100-p)+"% 的資料 ≥ "+f(r.v,2);
   const q1=pctl(a,25).v,md=pctl(a,50).v,q3=pctl(a,75).v,iqr=q3-q1,lo=q1-1.5*iqr,hi=q3+1.5*iqr;
   const ins=a.filter(x=>x>=lo&&x<=hi),outs=a.filter(x=>x<lo||x>hi);const wl=Math.min(...ins),wh=Math.max(...ins);
   const vmin=Math.min(a[0],lo),vmax=Math.max(a[n-1],hi),PW=600,X=v=>20+(v-vmin)/(vmax-vmin)*(PW-40),Y=50;
@@ -381,7 +381,7 @@ const svg=(w,h,inner)=>'<svg viewBox="0 0 '+w+' '+h+'" role="img">'+inner+'</svg
   g+='<line class="line" x1="'+X(wl)+'" y1="'+(Y-10)+'" x2="'+X(wl)+'" y2="'+(Y+10)+'"/><line class="line" x1="'+X(wh)+'" y1="'+(Y-10)+'" x2="'+X(wh)+'" y2="'+(Y+10)+'"/>';
   g+='<rect class="soft" x="'+X(q1)+'" y="'+(Y-18)+'" width="'+Math.max(1,X(q3)-X(q1))+'" height="36" stroke="var(--ink)" stroke-width="1.5"/><line class="mk-mean" x1="'+X(md)+'" y1="'+(Y-18)+'" x2="'+X(md)+'" y2="'+(Y+18)+'"/>';
   outs.forEach(v=>{g+='<text class="t-seal" x="'+X(v)+'" y="'+(Y+5)+'" text-anchor="middle" style="font-size:16px">*</text>';});
-  [[q1,"Q1"],[md,"中位數"],[q3,"Q3"]].forEach(([v,t])=>{g+='<text x="'+X(v)+'" y="'+(Y+34)+'" text-anchor="middle">'+t+'</text>';});
+  [[q1,"Q1"],[md,"Median"],[q3,"Q3"]].forEach(([v,t])=>{g+='<text x="'+X(v)+'" y="'+(Y+34)+'" text-anchor="middle">'+t+'</text>';});
   $(el,".p-box").innerHTML=svg(PW,100,g);
   $(el,".p-five").textContent="五數摘要：最小 "+a[0]+"、Q1 "+f(q1,2)+"、中位數 "+f(md,2)+"、Q3 "+f(q3,2)+"、最大 "+a[n-1]+"\nIQR = "+f(q3,2)+" − "+f(q1,2)+" = "+f(iqr,2)+"\n下限 = Q1 − 1.5·IQR = "+f(lo,2)+"；上限 = Q3 + 1.5·IQR = "+f(hi,2)+"\n"+(outs.length?"離群值（* 標示）："+outs.join(", ")+"。鬚線只畫到限內最遠的資料點 "+wl+" 和 "+wh+"。":"沒有離群值，鬚線畫到最小值和最大值。");}
  ta.addEventListener("input",draw);pp.addEventListener("input",draw);

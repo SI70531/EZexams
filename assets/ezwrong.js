@@ -12,7 +12,7 @@
      3. Keyword similarity between the question and every section's text (BM25: words in the section heading count
         extra, and a long section does not win just because it has more words).
    When the chapter is known (chapter quiz, or a mock item with ch), only sections of that chapter are considered.
-   A weak keyword match is not forced onto a section: it goes to "ChN（未對到特定段落）" or "其他".
+   A weak keyword match is not forced onto a section: it goes to "ChN（未對到特定段落）" or "Other".
 
    Sections: if the page marks its section headings with <h3 data-sec="...">, only those count (other h3 are
    sub-headings inside a section); otherwise every h3 in a chapter view is a section. */
@@ -125,7 +125,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
     CH.forEach(ch=>{
       const a=S.quiz&&S.quiz[ch]||{};
       QUIZ[ch].forEach((it,i)=>{const pk=a[i];if(pk===undefined||pk===it.a||it.a==null||typeof it.q!=="string")return;
-        mc(out,it,i,pk,ch,(NAME[ch]||ch)+" 章末選擇第 "+(i+1)+" 題",ch,ch);});
+        mc(out,it,i,pk,ch,(NAME[ch]||ch)+" 章末選擇第 "+(i+1)+" questions",ch,ch);});
     });
     /* MC parts embedded in other views (e.g. past/mock exams): answers live in S.quiz[key] like chapter quizzes */
     Object.keys(QUIZ).forEach(key=>{
@@ -133,7 +133,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
       const box=document.querySelector('[data-quiz="'+key+'"]');const view=box&&box.closest(".view");if(!view)return;
       const a=S.quiz&&S.quiz[key]||{};
       QUIZ[key].forEach((it,i)=>{const pk=a[i];if(pk===undefined||pk===it.a||it.a==null||typeof it.q!=="string")return;
-        mc(out,it,i,pk,chOf(it),(NAME[view.id]||view.id)+" 選擇第 "+(i+1)+" 題",view.id,key);});
+        mc(out,it,i,pk,chOf(it),(NAME[view.id]||view.id)+" 選擇第 "+(i+1)+" questions",view.id,key);});
     });
     if(typeof MOCK!=="undefined"){
       Object.keys(MOCK).forEach(id=>{
@@ -141,7 +141,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
         const box=document.querySelector("#"+id+" .quiz[data-quiz]"),key=box&&box.dataset.quiz;
         const st=S.exam&&S.exam[id];const a=key?(S.quiz&&S.quiz[key]||{}):(st&&st.done&&st.ans||{});
         MOCK[id].forEach((it,i)=>{const pk=a[i];if(pk===undefined||pk===it.a||it.a==null||typeof it.q!=="string")return;
-          mc(out,it,i,pk,chOf(it),(NAME[id]||id)+" 第 "+(i+1)+" 題",id,key||null);});
+          mc(out,it,i,pk,chOf(it),(NAME[id]||id)+" 第 "+(i+1)+" questions",id,key||null);});
       });
     }
     document.querySelectorAll(".exam .exq").forEach(q=>{
@@ -151,9 +151,9 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
       const pts=q.querySelector(".pts");
       /* written questions can also sit inside a chapter tab (a chapter's 問答／填充 block) */
       const vw=q.closest(".view"),vid=vw?vw.id:id,ch=CH.includes(vid)?vid:null;
-      const bh=q.closest(".exam").querySelector("h2"),part=bh?bh.textContent.replace(/[（(].*$/,"").trim():"問答"; /* e.g. Problems, Fill-in ＆ Quiz */
+      const bh=q.closest(".exam").querySelector("h2"),part=bh?bh.textContent.replace(/[（(].*$/,"").trim():"Q&A"; /* e.g. Problems, Fill-in ＆ Quiz */
       const where=NAME[id]||(ch?(NAME[ch]||ch)+" "+part:id);
-      out.push({m:match({q:qt,e:ref?ref.textContent:"",sec:q.dataset.sec},ch),ch,src:where+" "+(pts?pts.textContent:q.id),go:vid,qid:q.id,q:qt.slice(0,700),yours:"得 "+g.score+" / "+q.dataset.pts+" 分",right:"看原題的參考答案",e:g.feedback||""});
+      out.push({m:match({q:qt,e:ref?ref.textContent:"",sec:q.dataset.sec},ch),ch,src:where+" "+(pts?pts.textContent:q.id),go:vid,qid:q.id,q:qt.slice(0,700),yours:"得 "+g.score+" / "+q.dataset.pts+" 分",right:"See the reference answer",e:g.feedback||""});
     });
     return out;
   }

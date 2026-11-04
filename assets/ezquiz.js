@@ -159,7 +159,7 @@
       if(Date.now()-w.at>180000){WAIT.delete(q);return;}
       const g=q.querySelector(".gres"),d=q.querySelector("details.qa");if(!g||!d)return;
       const st=(w.btn.classList.contains("gradeall")?(w.btn.closest(".examtools")||document).querySelector(".gmsg"):q.querySelector(".gstat"));
-      const finished=!w.btn.disabled&&st&&/完成|Done/.test(st.textContent);
+      const finished=!w.btn.disabled&&st&&/完成|Done|complete|Graded/i.test(st.textContent);
       if(!g.hidden&&!g.classList.contains("stale")&&(g.innerHTML!==w.snap||finished)){d.open=true;WAIT.delete(q);}
       else if(finished&&g.hidden)WAIT.delete(q);
     });

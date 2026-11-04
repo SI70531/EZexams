@@ -388,6 +388,17 @@
         });
       });
     }
+    /* a pick belongs to the question in its slot. When the two devices put different AI questions into the same slot,
+       a local pick was made on the other device's question, so it is dropped (the remote pick, if any, matches the remote question) */
+    if(local.gen){
+      Object.keys(local.quiz||{}).forEach(ch=>{
+        Object.keys((local.quiz||{})[ch]||{}).forEach(i=>{
+          const lgq=((local.gen||{})[ch]||{})[i],rgq=((out.gen||{})[ch]||{})[i];
+          const rPick=(((remote&&remote.quiz)||{})[ch]||{})[i];
+          if(lgq&&rgq&&lgq.id!==rgq.id&&rPick===undefined&&out.quiz[ch]) delete out.quiz[ch][i];
+        });
+      });
+    }
     /* per-question 清除作答 (ezquiz.js): answers and clears carry times; the later one wins, so a cleared answer
        does not come back from another device, and an answer given after a clear is kept */
     const mx=(a,b)=>{const o=JSON.parse(JSON.stringify(a||{}));Object.keys(b||{}).forEach(k=>{o[k]=o[k]||{};Object.keys(b[k]).forEach(i=>{o[k][i]=Math.max(o[k][i]||0,b[k][i]||0);});});return o;};

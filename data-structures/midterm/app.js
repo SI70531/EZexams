@@ -1000,7 +1000,7 @@ if(!(S.migr&&S.migr["ch2w-slots0-5-v1"])){
 if(window.EZgenw){
   const T=k=>((VIEWS.find(v=>v[0]===k)||[])[1])||k;
   const blk=(key,view,views,box,batch)=>({key,exam:key,view,views,title:T(view||key)+(batch?"（混合章節）":""),box,batch});
-  EZgenw.attach({course:"資料與檔案結構 Data and File Structures",subject:"data-structures",s:"ds",get:()=>S,save:()=>save(),blocks:[
+  EZgenw.attach({course:"資料與檔案結構 Data and File Structures",subject:"data-structures",s:"ds",pct:true,get:()=>S,save:()=>save(),blocks:[
     blk("ch1w","ch1",["ch1"],document.querySelector('[data-exam="ch1w"]'),false),
     blk("ch2w","ch2",["ch2"],document.querySelector('[data-exam="ch2w"]'),false),
     blk("ch3w","ch3",["ch3"],document.querySelector('[data-exam="ch3w"]'),false),

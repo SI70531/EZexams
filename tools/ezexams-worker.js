@@ -466,7 +466,7 @@ async function genAdopt(env, acct, who, bodyText, json, fail) {
     if (!Number.isInteger(i) || !it) continue;
     const id = await adoptId(acct.id, s, setKey, i);
     if (kind === "w") {
-      put.push({ id, rec: { kind: "w", q: it.q, ref: it.r, p: Number(it.p) || 2, l: it.l, sec: "", at, from: "bank" } });
+      put.push({ id, rec: { kind: "w", q: it.q, c: it.c || "", ref: it.r, p: Number(it.p) || 2, l: it.l, sec: "", at, from: "bank" } });
       items[i] = { id, q: it.q, l: it.l, p: Number(it.p) || 2 };
     } else {
       if (!Array.isArray(it.o) || typeof it.q !== "string") continue;
@@ -581,12 +581,12 @@ async function wgrade(env, acct, who, bodyText, json, fail) {
   if (/^[0-9a-f]{32}$/.test(String(r.id || ""))) {
     const { rec } = await genStore(env, acct.id, "get", { id: String(r.id) });
     if (!rec || rec.kind !== "w") return fail(404, "GONE", "This question is no longer kept on the server");
-    item = { q: rec.q, ref: rec.ref, p: rec.p };
+    item = { q: (rec.c ? rec.c + "\n" : "") + rec.q, ref: rec.ref, p: rec.p };   /* c: the shared data / heading the sub-question builds on */
   } else {
     const set = BANK[String(r.s || "")] && BANK[String(r.s)]["w:" + String(r.key || "")];
     const it = set && set[Number(r.slot)];
     if (!it) return fail(404, "NOT_FOUND", "Unknown question");
-    item = { q: it.q, ref: it.r, p: it.p };
+    item = { q: (it.c ? it.c + "\n" : "") + it.q, ref: it.r, p: it.p };
   }
   const q = await guard(env, "pin:" + who, "ai");
   if (q.blocked) return fail(429, "RESOURCE_EXHAUSTED", "AI limit reached for this sign-in; try again later", { "Retry-After": String(q.aiWait || 60) });

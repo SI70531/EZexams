@@ -190,7 +190,7 @@ document.querySelectorAll(".exam").forEach(ex=>{
   const score=tools.querySelector(".score");
   const gAll=tools.querySelector(".gradeall");
   const gMsg=tools.querySelector(".gmsg");
-  function txt(el){const c=el.cloneNode(true);c.querySelectorAll("svg").forEach(x=>x.remove());c.querySelectorAll("br,p,div,li,tr,h4").forEach(x=>x.append("\n"));return c.textContent.replace(/[ \t]+/g," ").replace(/\n\s*\n+/g,"\n").trim();}
+  function txt(el){if(!el)return "";const c=el.cloneNode(true);c.querySelectorAll("svg").forEach(x=>x.remove());c.querySelectorAll("br,p,div,li,tr,h4").forEach(x=>x.append("\n"));return c.textContent.replace(/[ \t]+/g," ").replace(/\n\s*\n+/g,"\n").trim();}
   function qInfo(q){
     const ta=q.querySelector("textarea");
     return {id:q.id,pts:+q.dataset.pts,q:q.querySelector(".qtext").innerText.trim().slice(0,3000),ref:txt(q.querySelector(".qa .inner")).slice(0,4000),ans:ta.value.trim().slice(0,4000)};
@@ -508,6 +508,22 @@ function renderHome(){
   ns.innerHTML="";const p=document.createElement("b");
   if(next){p.textContent="下一步："+(next[0].startsWith("ch")?"讀 "+next[1]+" 再做章末的選擇題和問答":"寫"+next[1]+"（限時 60 分鐘，寫完按「批改全部」）");ns.appendChild(p);const b=document.createElement("button");b.className="btn primary";b.style.marginLeft="10px";b.textContent="開始";b.dataset.go=next[0];ns.appendChild(b);}
   else{p.textContent="全部完成了。考前一天看「總複習」的速記和必畫圖，然後早點睡。";ns.appendChild(p);}
+}
+
+/* chapter-end written questions: the questions and reference answers are moved into the account's question store
+   (Worker, /gen/adopt), so they behave like every other question: the same on every device, the reference stays on the
+   Worker, and grading gets the notes section the question belongs to. 'static': until a question has moved, the
+   page-written one stays as it is. */
+if(window.EZgenw){
+  const T=k=>((VIEWS.find(v=>v[0]===k)||[])[1])||k;
+  const blk=(key,view,views,box)=>({key,exam:key,view,views,title:T(view||key),box,static:true});
+  EZgenw.attach({course:"作業系統 Operating Systems",subject:"operating-systems",s:"os",get:()=>S,save:()=>save(),blocks:[
+    blk("ch1w","ch1",["ch1"],document.querySelector('[data-exam="ch1w"]')),
+    blk("ch2w","ch2",["ch2"],document.querySelector('[data-exam="ch2w"]')),
+    blk("ch3w","ch3",["ch3"],document.querySelector('[data-exam="ch3w"]')),
+    blk("ch4w","ch4",["ch4"],document.querySelector('[data-exam="ch4w"]')),
+    blk("ch5w","ch5",["ch5"],document.querySelector('[data-exam="ch5w"]'))
+  ].filter(b=>b.box)});
 }
 
 const start=(location.hash||"").slice(1)||S.last||"home";

@@ -16,7 +16,7 @@
   let C=null;const BLOCKS={};const BUSY={},ERR={};
   const now=()=>Date.now();
   const st=()=>C.get();
-  const slotsOf=B=>[...B.box.querySelectorAll(".exq[data-w='"+B.key+"']")].sort((a,b)=>+a.dataset.slot-+b.dataset.slot);
+  const slotsOf=B=>[...B.box.querySelectorAll(B.static?".exq":".exq[data-w='"+B.key+"']")].sort((a,b)=>+a.dataset.slot-+b.dataset.slot);
   const exId=B=>B.exam;   /* the exam's id in S.ex2 (e.g. ch1w) */
   const rec=(B,i)=>{const g=st().gen&&st().gen[B.key];return g&&g[i]||null;};
   const answeredQ=(B,q)=>{const x=st().ex2&&st().ex2[exId(B)];return !!(x&&((x.ans&&x.ans[q.id])||(x.grade&&x.grade[q.id])));};
@@ -50,7 +50,7 @@
     return secs.map(s=>s._t).join("\n").slice(0,9000);
   }
   /* a label like "F1 · 2" is worth 2%: show it as "F1 · 2%" (labels that already carry the % stay) */
-  const lab=l=>String(l==null?"":l).replace(/^(\S+ · \d+)$/,"$1%");
+  const lab=l=>{l=String(l==null?"":l);return C&&C.pct?l.replace(/^(\S+ · \d+)$/,"$1%"):l;};
   /* the notes section a question's text is about ("" when none matches) */
   function secOfText(B,text){
     try{const W=window.EZWrong,views=B.views||[B.view];
@@ -64,6 +64,8 @@
     const slots=slotsOf(B);
     slots.forEach((q,i)=>{
       const r=rec(B,i),ce=q.querySelector(".qtext");
+      if(!r&&B.static)return;   /* a page-written question that has not been moved yet stays exactly as written */
+      if(r&&B.static){q.dataset.w=B.key;q.querySelectorAll(":scope > .qa, :scope > .gradebar .aibtn").forEach(x=>x.remove());}   /* the reference now stays on the Worker */
       if(r){
         if(q.dataset.gid!==r.id){
           q.dataset.gid=r.id;
@@ -92,7 +94,7 @@
   let NOADOPT=false;const TRIED=new Set();
   async function adoptLegacy(B){
     if(NOADOPT)return;
-    const need=[];slotsOf(B).forEach((q,i)=>{if(!rec(B,i)&&answeredQ(B,q)&&!TRIED.has(B.key+":"+i))need.push(i);});
+    const need=[];slotsOf(B).forEach((q,i)=>{if(!rec(B,i)&&(B.static||answeredQ(B,q))&&!TRIED.has(B.key+":"+i))need.push(i);});
     if(!need.length)return;
     try{
       const r=await post("/gen/adopt",{s:C.s,key:B.key,kind:"w",slots:need});
@@ -107,6 +109,7 @@
   /* the bank's text for legacy slots that were answered: fetched once, kept in this browser */
   async function fetchLegacy(B){
     await adoptLegacy(B);
+    if(B.static)return;
     const slots=slotsOf(B);
     const need=[];slots.forEach((q,i)=>{if(!rec(B,i)&&answeredQ(B,q)&&!(CACHE[B.key]&&CACHE[B.key][i]))need.push(i);});
     if(!need.length)return;
@@ -197,6 +200,7 @@
   /* the bars: one per part, placed under the part's last question */
   function drawBar(B){
     B.box.querySelectorAll(":scope .ezgenw-bar").forEach(x=>x.remove());
+    if(B.static)return;
     partsOf(B).forEach((part,pi)=>{
       const list=part.slots,N=list.length;
       const made=madeIn(B,list);
@@ -260,7 +264,8 @@
   window.EZgenw={
     attach(cfg){
       C=cfg;const S=C.get();S.gen=S.gen||{};
-      C.blocks.forEach(B=>{BLOCKS[B.key]=B;B.box.dataset.gen="1";B.box.dataset.w=B.key;});
+      C.blocks.forEach(B=>{BLOCKS[B.key]=B;B.box.dataset.gen="1";B.box.dataset.w=B.key;
+        if(B.static)[...B.box.querySelectorAll(".exq")].forEach((q,i)=>{if(q.dataset.slot===undefined)q.dataset.slot=i;});});
       C.blocks.forEach(B=>{paint(B);fetchLegacy(B).catch(()=>{});});
     },
     owns,grade,paint,notesFor:q=>notesFor(BLOCKS[q.dataset.w],q),

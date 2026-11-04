@@ -126,14 +126,14 @@ x.q.e?"TEACHER'S SHORT NOTE (use it as the ground truth): "+x.q.e:"",
     if(c){
       const os=[...it.querySelectorAll(".opt[data-oi]")];
       sig="r2:"+x.id+":"+os.map(o=>o.dataset.oi+o.querySelector(".ab").textContent).join("");
-      html='<div class="aih">解析</div>'+(c.mistake?'<p class="aimis"><b>Your choice ('+letterOf(it,x.pick)+') is wrong:</b>'+tx(c.mistake)+'</p>':'')+
+      html='<div class="aih">Explanation</div>'+(c.mistake?'<p class="aimis"><b>Your choice ('+letterOf(it,x.pick)+') is wrong:</b>'+tx(c.mistake)+'</p>':'')+
         /* right or wrong comes from the answer key, not from the AI's own "correct" flag (it sometimes gets it wrong) */
         '<ul>'+os.map(o=>{const a=c.opts[o.dataset.oi];if(!a)return "";const L=o.querySelector(".ab").textContent.trim(),ok=o.dataset.oi===String(x.q.a);
           return '<li class="'+(ok?"ok":"no")+(o.dataset.oi===String(x.pick)?" mine":"")+'"><span class="ab">'+L+'</span><span>'+(ok?"<b>Correct.</b>":"")+tx(a.why)+'</span></li>';}).join("")+'</ul>'+
         (c.point?'<p class="aipt">Key point: '+tx(c.point)+'</p>':'');
-    }else if(PEND[x.id]){sig="p:"+x.id;html='<div class="aih">解析</div><span class="aimsg">Analyzing…</span>';}
-    else if(QD.has(x.id)){const m=WAITMSG&&Q[0]&&Q[0].x.id===x.id?WAITMSG:"Queued. This question is next after the ones ahead.";sig="q:"+x.id+m;html='<div class="aih">解析</div><span class="aimsg">'+m+'</span>';}
-    else if(ERR[x.id]){sig="e:"+x.id+ERR[x.id];html='<div class="aih">解析</div><span class="aimsg">'+esc(ERR[x.id])+'</span> <button class="btn aigo" type="button">再試一次</button>';}
+    }else if(PEND[x.id]){sig="p:"+x.id;html='<div class="aih">Explanation</div><span class="aimsg">Analyzing…</span>';}
+    else if(QD.has(x.id)){const m=WAITMSG&&Q[0]&&Q[0].x.id===x.id?WAITMSG:"Queued. This question is next after the ones ahead.";sig="q:"+x.id+m;html='<div class="aih">Explanation</div><span class="aimsg">'+m+'</span>';}
+    else if(ERR[x.id]){sig="e:"+x.id+ERR[x.id];html='<div class="aih">Explanation</div><span class="aimsg">'+esc(ERR[x.id])+'</span> <button class="btn aigo" type="button">Try again</button>';}
     else if(!x.ok){sig="h:"+x.id;html='<span class="aimsg">Set up a free Gemini key on the <a href="../../#ai">home page</a>, and this area will explain why you were wrong and why each of the four options is right or wrong.</span>';}
     else{const old=ex.querySelector(":scope > .aiexp");if(old)old.remove();ex.classList.remove("hasai");return;}
     let box=ex.querySelector(":scope > .aiexp");

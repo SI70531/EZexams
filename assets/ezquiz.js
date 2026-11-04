@@ -18,13 +18,13 @@
   document.head.appendChild(st);
 
   const now=()=>Date.now();
-  /* EZundo(what, doIt, el, btn): the clear happens after 3 s unless 取消 is pressed, so nothing is lost by a slip.
-     With btn, the button itself is replaced in place by "將清除…（3）[取消]" and counts down; without it a toast is used. */
+  /* EZundo(what, doIt, el, btn): the clear happens after 3 s unless Cancel is pressed, or at once with Clear now, so nothing is lost by a slip.
+     With btn, the button itself is replaced in place by "Clearing … in 3 s [Clear now] [Cancel]" and counts down; without it a toast is used. */
   const UNDO_S=3;
   window.EZundo=function(what,doIt,el,btn){
     const old=document.getElementById("ezundo");if(old&&old._fin)old._fin();
     const t=document.createElement("div");t.id="ezundo";t.setAttribute("role","status");
-    const cancel="<button type='button' class='btn' style='margin-left:10px;padding:2px 12px;font:inherit;color:var(--seal,#c0392b)'>取消</button>";
+    const cancel="<button type='button' class='btn undo-now' style='margin-left:10px;padding:2px 12px;font:inherit;background:var(--seal,#c0392b);border-color:var(--seal,#c0392b);color:#fff'>Clear now</button><button type='button' class='btn undo-cancel' style='margin-left:6px;padding:2px 12px;font:inherit;color:var(--seal,#c0392b)'>Cancel</button>";
     if(btn&&btn.parentNode){
       t.className=btn.className;t.style.cssText="cursor:default;";   /* same look as the button it replaces: font, size, colour, border */
       btn.style.display="none";btn.after(t);
@@ -34,12 +34,13 @@
     }
     t.innerHTML="<span></span>"+cancel;
     const msg=t.firstChild,end=now()+UNDO_S*1000;
-    const draw=()=>{msg.textContent="Clearing"+what+"（"+Math.max(1,Math.ceil((end-now())/1000))+" 秒）";};draw();
+    const draw=()=>{msg.textContent="Clearing "+what.charAt(0).toLowerCase()+what.slice(1)+" in "+Math.max(1,Math.ceil((end-now())/1000))+" s";};draw();
     let done=false;
     const stop=()=>{done=true;clearTimeout(tm);clearInterval(iv);t.remove();if(btn)btn.style.display="";};
     const fin=()=>{if(done)return;stop();doIt();};
     const tm=setTimeout(fin,UNDO_S*1000),iv=setInterval(draw,250);t._fin=fin;
-    t.querySelector("button").onclick=()=>{if(!done)stop();};
+    t.querySelector(".undo-now").onclick=()=>fin();
+    t.querySelector(".undo-cancel").onclick=()=>{if(!done)stop();};
     addEventListener("pagehide",()=>{if(!done)stop();},{once:true});   /* leaving the page cancels, nothing is lost */
   };
 
@@ -126,7 +127,7 @@
     else if(!first&&!bar.parentNode)box.insertBefore(bar,box.querySelector(":scope > .ezgen-bar"));
     if(window.EZGEN&&EZGEN.isAi(key)&&!bar.querySelector(".mcredo")){
       const rb=document.createElement("button");rb.type="button";rb.className="btn mcredo";rb.textContent="Redo chapter";rb.style.marginLeft="12px";
-      rb.onclick=()=>{window.EZundo("這章的作答（含題目）",()=>{
+      rb.onclick=()=>{window.EZundo("this chapter's answers and questions",()=>{
         delete S.quiz[key];EZGEN.reset(key);S.quizReset=S.quizReset||{};S.quizReset[key]=now();save();
         try{renderQuiz(key);}catch(e){}afterChange(key);},null,rb);};
       bar.appendChild(rb);}
@@ -140,8 +141,8 @@
   function ensureClear(el,on,fn){
     const r=el.querySelector(":scope > .qbtns");let b=r&&r.querySelector(".qclear");
     if(on){if(!b){b=document.createElement("button");b.type="button";b.className="btn qclear";b.textContent="Clear answer";row(el).appendChild(b);}
-      /* one click starts the 3 s countdown in place of the button (取消 undoes it), no separate confirm step */
-      b.onclick=()=>{window.EZundo("這題的作答",fn,el,b);};}
+      /* one click starts the 3 s countdown in place of the button (Cancel undoes it, Clear now does it at once), no separate confirm step */
+      b.onclick=()=>{window.EZundo("this answer",fn,el,b);};}
     else if(b){b.remove();if(r&&!r.children.length)r.remove();}
   }
   /* after grading (one question or 批改全部), open that question's reference answer by itself */

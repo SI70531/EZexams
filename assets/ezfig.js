@@ -36,13 +36,13 @@
   function stepIn(svg){
     const els=[...svg.querySelectorAll("[data-step]")];
     if(!els.length)return false;
-    const STEP=330;
+    const STEP=380;
     flowMs=Math.max(flowMs,Math.max(...els.map(e=>+e.dataset.step||0))*STEP+900);
     els.forEach(e=>{
       const d=(+e.dataset.step)*STEP,tag=e.tagName.toLowerCase();
       try{
         if(tag==="line"){
-          drawLine(e,e.getTotalLength(),d,420,"cubic-bezier(.4,0,.2,1)",!!e.getAttribute("marker-end"));
+          drawLine(e,e.getTotalLength(),d,340,"cubic-bezier(.4,0,.2,1)",!!e.getAttribute("marker-end"));
           return;
         }
         if(tag==="text"){e.animate([{opacity:0,transform:"translateY(5px)"},{opacity:1,transform:"none"}],{duration:420,delay:d+150,easing:"ease-out",fill:"backwards"});return;}
@@ -61,7 +61,7 @@
     const all=[...svg.querySelectorAll("path,line,polyline,polygon,rect,circle,ellipse,text")].filter(e=>!e.closest("defs,marker,clipPath,mask,symbol,pattern"));
     const tag=e=>e.tagName.toLowerCase();
     /* boxes */
-    let nodes=all.filter(e=>/^(rect|ellipse)$/.test(tag(e))).map(e=>({e,r:R(e),txt:[],t:null})).filter(n=>n.r.width>=28&&n.r.height>=14&&n.r.width*n.r.height<sR.width*sR.height*.5);
+    let nodes=all.filter(e=>/^(rect|ellipse|circle)$/.test(tag(e))).map(e=>({e,r:R(e),txt:[],t:null})).filter(n=>n.r.width>=28&&n.r.height>=14&&n.r.width*n.r.height<sR.width*sR.height*.5);
     nodes=nodes.filter(n=>nodes.filter(m=>m!==n&&m.r.left>=n.r.left-1&&m.r.right<=n.r.right+1&&m.r.top>=n.r.top-1&&m.r.bottom<=n.r.bottom+1).length<2);   /* not a group frame */
     const dist=(p,r)=>Math.hypot(Math.max(r.left-p.x,0,p.x-r.right),Math.max(r.top-p.y,0,p.y-r.bottom));
     const pt=(e,at)=>{const q=e.getPointAtLength(at),m=e.getScreenCTM();return m?new DOMPoint(q.x,q.y).matrixTransform(m):q;};
@@ -88,11 +88,11 @@
       &&(n.e.compareDocumentPosition(m.e)&Node.DOCUMENT_POSITION_FOLLOWING)&&!shadows.includes(m));
       if(m){shadows.push(n);m.shadow=(m.shadow||[]).concat(n.e);m.small=m.small||n.small;}});
     nodes=nodes.filter(n=>!shadows.includes(n));
-    if(nodes.length<3)return false;
+    if(nodes.length<2)return false;
     const near=(p,not)=>{let b=null,d=1e9;nodes.forEach(n=>{if(n===not)return;const k=dist(p,n.r);if(k<d){d=k;b=n;}});return[b,d];};
-    arrows.forEach(ar=>{const [tn,td]=near(ar.b);ar.tn=tn;ar.td=td;});
-    if(arrows.filter(a=>a.td<22).length<2)return false;                      /* axes of a graph etc. are not flow */
-    arrows.forEach(a=>{const [sn]=near(a.a,a.tn);a.sn=sn;});
+    arrows.forEach(ar=>{const [tn,td]=near(ar.b);ar.tn=td<28?tn:null;ar.td=td;});     /* an arrow that points at nothing is not joined to a box */
+    arrows.forEach(a=>{const [sn,sd]=near(a.a,a.tn);a.sn=sd<28?sn:null;a.sd=sd;});                /* nor one that starts from nothing */
+    if(!arrows.some(a=>a.sn&&a.tn&&a.sn!==a.tn))return false;   /* axes of a graph etc. are not flow: an arrow must join two boxes */
     const isNode=e=>nodes.some(n=>n.e===e);
     /* text that belongs to a box */
     const texts=all.filter(e=>tag(e)==="text");
@@ -104,23 +104,29 @@
     let roots=nodes.filter(n=>!inc.has(n)).sort((a,b)=>a.r.left-b.r.left||a.r.top-b.r.top);
     if(!roots.length)roots=[nodes.slice().sort((a,b)=>a.r.left-b.r.left||a.r.top-b.r.top)[0]];
     const POP=380,SPEED=.24;                                                  /* px per ms of arrow drawing */
-    /* order of play: the start box -> the box it points to -> the arrow between them (drawn only when BOTH boxes exist) -> the next box ... */
-    roots.forEach(n=>{n.t=0;n.rd=POP*.55;});
+    /* order of play: box A -> the arrow leaves A -> box B shows up only when the arrow has arrived at it -> the next arrow ... */
+    roots.forEach(n=>{n.t=0;});
     const q=roots.slice();
     const sched=[];let qi=0;
-    while(qi<q.length){
-      const n=q[qi++];
-      arrows.filter(a=>a.sn===n&&!a.done).sort((a,b)=>a.b.y-b.b.y).forEach((a,k)=>{
-        a.done=1;const c=a.tn;
-        if(c&&c.t===null){c.t=n.rd+k*140;q.push(c);}
-        a.t=Math.max(n.rd,c?c.t+POP*.7:n.rd)+k*60;a.d=Math.max(520,Math.min(1200,a.L/SPEED));sched.push(a);
-        if(c&&c.rd===undefined)c.rd=a.t+a.d*.9;
-      });
+    let comp=0;
+    for(;;){
+      while(qi<q.length){
+        const n=q[qi++];
+        arrows.filter(a=>a.sn===n&&!a.done).sort((a,b)=>a.b.y-b.b.y).forEach((a,k)=>{
+          a.done=1;const c=a.tn;
+          a.t=n.t+POP*.75+k*140;a.d=Math.max(520,Math.min(1200,a.L/SPEED));sched.push(a);
+          if(c&&c.t===null){c.t=a.t+a.d*.92;q.push(c);}
+        });
+      }
+      /* a chain that no arrow leads into (a row of a ring or a two-way list): it starts from its own first box, top-left first */
+      const left=nodes.filter(n=>n.t===null&&arrows.some(a=>!a.done&&(a.sn===n||a.tn===n))).sort((a,b)=>a.r.top-b.r.top||a.r.left-b.r.left)[0];
+      if(!left)break;
+      left.t=(++comp)*250;q.push(left);
     }
     let end=0;sched.forEach(a=>{end=Math.max(end,a.t+a.d);});
     arrows.filter(a=>!a.done).forEach(a=>{a.done=1;
-      [a.sn,a.tn].forEach(n=>{if(n&&n.t===null){n.t=end*.4;}});
-      a.t=Math.max(end*.5,...[a.sn,a.tn].filter(Boolean).map(n=>n.t+POP*.7));a.d=700;sched.push(a);});
+      a.t=(a.sn&&a.sn.t!==null)?a.sn.t+POP*.75:end*.5;a.d=700;sched.push(a);
+      if(a.tn&&a.tn.t===null)a.tn.t=a.t+a.d*.92;});
     nodes.forEach(n=>{if(n.t===null)n.t=end*.6;});
     end=Math.max(end,...sched.map(a=>a.t+a.d),...nodes.map(n=>n.t+POP));
     const f=Math.min(1,10000/end);                                          /* whole figure never takes longer than ~10 s */

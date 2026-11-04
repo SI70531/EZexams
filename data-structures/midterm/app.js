@@ -1019,19 +1019,21 @@ if(window.EZgenw){
 });
 }
 
-/* Ch3 3-3: the ten algorithms as a menu. Click one card to show only that algorithm; the button at its bottom returns to the menu. */
+/* Menus (Ch2 2-1 / 2-2 / 2-3, Ch3 3-3): click a card to show only that topic; the button at its bottom returns to the menu. */
 ;(function(){
-  const menu=document.querySelector(".algmenu");if(!menu)return;
-  const head=document.getElementById("s3-3"),groups=[...document.querySelectorAll(".algp")];
-  function open(k,noScroll){
-    groups.forEach(g=>{g.hidden=g.dataset.alg!==k;});
-    menu.hidden=!!k;
-    if(!noScroll&&head)head.scrollIntoView({behavior:"smooth",block:"start"});
+  const menus=[...document.querySelectorAll(".algmenu")];if(!menus.length)return;
+  const headOf=m=>{let e=m.previousElementSibling;while(e&&e.tagName!=="H3")e=e.previousElementSibling;return e;};
+  function open(m,k,noScroll){
+    const id=m.dataset.menu;
+    document.querySelectorAll('.algp[data-menu="'+id+'"]').forEach(g=>{g.hidden=g.dataset.alg!==k;});
+    m.hidden=!!k;
+    const h=headOf(m);if(!noScroll&&h)h.scrollIntoView({behavior:"smooth",block:"start"});
   }
+  const menuOf=g=>document.querySelector('.algmenu[data-menu="'+g.dataset.menu+'"]');
   document.addEventListener("click",e=>{
-    const o=e.target.closest("[data-alg-open]");if(o){open(o.dataset.algOpen);return;}
-    if(e.target.closest("[data-alg-back]"))open(null);
+    const o=e.target.closest("[data-alg-open]");if(o){open(o.closest(".algmenu"),o.dataset.algOpen);return;}
+    const b=e.target.closest("[data-alg-back]");if(b){const g=b.closest(".algp");open(menuOf(g),null);}
   });
-  function reveal(){const h=decodeURIComponent(location.hash.slice(1));if(!h)return;const t=document.getElementById(h);const g=t&&t.closest(".algp");if(g&&g.hidden){open(g.dataset.alg,true);t.scrollIntoView();}}
+  function reveal(){const h=decodeURIComponent(location.hash.slice(1));if(!h)return;const t=document.getElementById(h);const g=t&&t.closest(".algp");if(g&&g.hidden){open(menuOf(g),g.dataset.alg,true);t.scrollIntoView();}}
   window.addEventListener("hashchange",reveal);reveal();
 })();

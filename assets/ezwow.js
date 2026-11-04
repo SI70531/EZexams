@@ -10,7 +10,7 @@
 (function(){
   if(window.__ezwow)return;window.__ezwow=1;
   const root=document.documentElement,body=document.body;
-  const calm=()=>root.classList.contains("ezcalm")||matchMedia("(prefers-reduced-motion:reduce)").matches;
+  const calm=()=>false;
   const robot=()=>navigator.webdriver&&!window.EZWOW_FORCE&&!/[?&]wow=1/.test(location.search);
   const tok=n=>getComputedStyle(root).getPropertyValue(n).trim()||"#888";
   const cols=()=>[tok("--ok"),tok("--brass"),tok("--indigo"),tok("--seal"),tok("--warn")];

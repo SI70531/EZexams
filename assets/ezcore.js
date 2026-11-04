@@ -41,28 +41,11 @@
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",wire);else wire();
 
-  /* 動畫: full (default) or 減少動畫, chosen in the same menu; saved per browser. The system "reduce motion" setting
-     is not followed on purpose (Windows turns it on by default), so this switch is the way to calm things down. */
-  const MK="ezexams-motion";
-  let calm=false;try{calm=localStorage.getItem(MK)==="calm";}catch(e){}
-  root.classList.toggle("ezcalm",calm);
-  const cst=document.createElement("style");
-  cst.textContent="html.ezcalm *,html.ezcalm *::before,html.ezcalm *::after{animation-duration:.001ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.001ms!important;transition-delay:0s!important;scroll-behavior:auto!important}"+
-    "html.ezcalm .fx-rv{opacity:1!important;transform:none!important}"+
-    ".thmenu .thsep{height:1px;background:var(--line);margin:5px 4px}.thmenu .thhead{font-family:var(--f-mono);font-size:11px;color:var(--muted);padding:2px 10px 0}";
-  document.head.appendChild(cst);
-  function wireMotion(){
-    const menu=document.getElementById("themeMenu");if(!menu||menu.querySelector("[data-m]"))return;
-    const sep=document.createElement("div");sep.className="thsep";sep.setAttribute("role","separator");
-    const head=document.createElement("div");head.className="thhead";head.textContent="Motion";
-    menu.append(sep,head);
-    [["full","Full motion"],["calm","Reduced motion"]].forEach(([k,t])=>{const b=document.createElement("button");b.type="button";b.setAttribute("role","menuitemradio");b.dataset.m=k;b.textContent=t;menu.appendChild(b);});
-    const mark=()=>menu.querySelectorAll("[data-m]").forEach(b=>b.setAttribute("aria-checked",String((b.dataset.m==="calm")===calm)));mark();
-    menu.addEventListener("click",e=>{const b=e.target.closest("[data-m]");if(!b)return;e.stopPropagation();calm=b.dataset.m==="calm";root.classList.toggle("ezcalm",calm);
-      try{calm?localStorage.setItem(MK,"calm"):localStorage.removeItem(MK);}catch(err){}mark();});
-  }
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",wireMotion);else wireMotion();
-  window.EZcalm=()=>root.classList.contains("ezcalm");
+  /* Motion: always full. There is no motion setting any more; a saved "reduced motion" choice from earlier is cleared,
+     and the system "reduce motion" setting is not followed on purpose. */
+  try{localStorage.removeItem("ezexams-motion");}catch(e){}
+  root.classList.remove("ezcalm");
+  window.EZcalm=()=>false;
 
   /* EZwhenMarked(q, cb): run cb(item) once the right/wrong marking of the question q's item has appeared.
      A first answer is revealed by the Worker (up to a second or two later) and the item may be replaced by a new node,

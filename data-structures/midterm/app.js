@@ -957,7 +957,6 @@ show(start);
    Plays on scroll-in and again whenever the figure becomes visible (e.g. after a tab switch). */
 function animFig(svg){
   if(svg.dataset.faInit)return;svg.dataset.faInit="1";
-  if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
   const els=[...svg.querySelectorAll("rect,text,line")];
   const bd=[],pt=[],ar=[];let pend=0;
   for(const e of els){

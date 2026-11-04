@@ -46,7 +46,7 @@ html::before{
   animation:glassdrift 28s ease-in-out infinite alternate;
 }
 @keyframes glassdrift{to{transform:translate3d(2.5%,-2%,0) scale(1.06)}}
-@media (prefers-reduced-motion: reduce){html::before{animation:none}}
+
 
 /* ============ 2. Glass cards ============ */
 /* `:root` in front lifts specificity above the page's own inline rules (.box.en, .qitem …) without !important. */

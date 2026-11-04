@@ -529,14 +529,20 @@ end deviation
 <p><b>Compare</b>: the <code>List</code> in Program 1-1 is a template with two blanks, <code>TYPE</code> and <code>KTYPE</code>. Line 11 of Program 1-2 fills them in as <code>&lt;PICTURE, short&gt;</code>: the data stored is a PICTURE structure, and the key is the <code>short key</code> on line 3 of PICTURE (the award year). The same List template can store other data just by changing the types.<span class="zhn"><b>對照看</b>：Program 1-1 的 <code>List</code> 是模板，留了兩個空位 <code>TYPE</code>、<code>KTYPE</code>。Program 1-2 第 11 行把空位填成 <code>&lt;PICTURE, short&gt;</code>：存的資料是 PICTURE 結構，key 是 PICTURE 裡第 3 行的 <code>short key</code>（得獎年份）。同一個 List 模板換個型態就能存別的資料。</span></p>
 
 <h3 id="s1-4" data-sec="1-4">1-4 Algorithm Efficiency（演算法效率） <span class="star">★★★</span></h3>
-<h4>Algorithmics <span class="sl">Slide 33</span><span class="zhn">演算法學</span></h4>
+<div class="algmenu" role="list" data-menu="m14"><button type="button" class="algcard" role="listitem" data-alg-open="m14-1"><span class="an">Concept</span><b>Algorithmics</b><span class="zhn2">演算法學</span><span class="sl">Slide 33</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m14-2"><span class="an">Loop</span><b>Linear loops</b><span class="zhn2">線性迴圈</span><span class="sl">Slide 34</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m14-3"><span class="an">Loop</span><b>Logarithmic loops</b><span class="zhn2">對數迴圈</span><span class="sl">Slide 35–36</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m14-4"><span class="an">Loop</span><b>Nested loops</b><span class="zhn2">巢狀迴圈</span><span class="sl">Slide 37–39</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m14-5"><span class="an">Big-O</span><b>Big-O notation <span class="star">★★★</span></b><span class="zhn2">Big-O 表示法</span><span class="sl">Slide 40–42</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m14-6"><span class="an">Big-O</span><b>Standard measures of efficiency</b><span class="zhn2">效率的標準衡量</span><span class="sl">Slide 43–44</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m14-7"><span class="an">Example</span><b>Add matrices</b><span class="zhn2">Big-O 分析範例：矩陣相加</span><span class="sl">Slide 45–46</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m14-8"><span class="an">Example</span><b>Multiply matrices</b><span class="zhn2">矩陣相乘</span><span class="sl">Slide 47–50</span></button></div>
+
+<div class="algp" data-alg="m14-1" data-menu="m14" hidden>
+<h4 class="alg"><span class="an">Concept</span>Algorithmics<span class="sl">Slide 33</span><span class="zhn">演算法學</span></h4>
 <ul>
 <li><b>Algorithmics</b>:<i>“systematic study of fundamental techniques used to design and analyze efficient algorithms”</i>.<span class="zhn">演算法學（Algorithmics）：有系統地研究設計與分析高效率演算法的基本技術。</span></li>
 <li><i>The study of algorithm efficiency focuses on <mark>loops</mark>.</i> (Efficiency analysis focuses on loops.)<span class="zhn">效率分析的重點在迴圈。</span></li>
 <li><i>We generally discuss the algorithm’s efficiency as a function of the number of elements to be processed</i>: <b>f(n) = efficiency</b>, n = number of elements to process.<span class="zhn">通常把演算法效率寫成要處理元素數量 n 的函式：f(n) = 效率，n = 要處理的元素數。</span></li>
 </ul>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ 回到目錄 Back to the menu</button></div>
+</div>
 
-<h4>Linear loops <span class="sl">Slide 34</span><span class="zhn">線性迴圈</span></h4>
+<div class="algp" data-alg="m14-2" data-menu="m14" hidden>
+<h4 class="alg"><span class="an">Loop</span>Linear loops<span class="sl">Slide 34</span><span class="zhn">線性迴圈</span></h4>
 <div class="two">
 <pre>1 i = 1
 2 loop (i &lt;= 1000)
@@ -550,8 +556,11 @@ end deviation
 3 end loop              <span class="c">f(n) = n / 2</span></pre>
 </div>
 <p>With +1 each time it runs 1000 times; with +2 each time it runs only half, 500 times. Both are <b>linear</b>: doubling n doubles the count, so the Big-O is O(n) for both.<span class="zhn">每次 +1 跑 1000 次；每次 +2 只跑一半，500 次。兩個都是<b>線性</b>：n 變兩倍，次數也變兩倍，所以 Big-O 都是 O(n)。</span></p>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ 回到目錄 Back to the menu</button></div>
+</div>
 
-<h4>Logarithmic loops <span class="sl">Slide 35–36</span><span class="zhn">對數迴圈</span></h4>
+<div class="algp" data-alg="m14-3" data-menu="m14" hidden>
+<h4 class="alg"><span class="an">Loop</span>Logarithmic loops<span class="sl">Slide 35–36</span><span class="zhn">對數迴圈</span></h4>
 <p><i>The controlling variable is <mark>multiplied or divided</mark> in each loop.</i><span class="zhn">控制變數在每次迴圈中被乘或除。</span></p>
 <div class="two">
 <pre><span class="c">Multiply Loops</span>
@@ -592,7 +601,11 @@ divide     1000 / 2<sup>Iterations</sup> &gt;= 1          <span class="c">f(n) =
 右邊 i 從 1000 開始每次除 2（整數除法，捨去小數）：1000, 500, 250, 125, 62, 31, 15, 7, 3, 1，也是 <b>10</b> 次；再除一次變 0，不再 ≥ 1，離開。<br>
 兩邊都是「最多能乘（或除）幾次 2」→ log₂1000 ≈ 9.97，取上限 = <b>10</b>，所以 f(n) = ⌈log₂n⌉。</div>
 </div></div>
-<h4>Nested loops <span class="sl">Slide 37–39</span><span class="zhn">巢狀迴圈</span></h4>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ 回到目錄 Back to the menu</button></div>
+</div>
+
+<div class="algp" data-alg="m14-4" data-menu="m14" hidden>
+<h4 class="alg"><span class="an">Loop</span>Nested loops<span class="sl">Slide 37–39</span><span class="zhn">巢狀迴圈</span></h4>
 <p><b>Iterations = outer loop iterations × inner loop iterations</b> (total = outer count × inner count).<span class="zhn">總次數 = 外層迴圈次數 × 內層迴圈次數。</span></p>
 <div class="tbl"><table>
 <tr><th>類型</th><th>The slide's program<span class="zhn">投影片的程式</span></th><th>算法</th><th>f(n)</th></tr>
@@ -631,8 +644,11 @@ i = 1 時內層跑 1 次、i = 2 跑 2 次、…、i = 10 跑 10 次，加起來
 <div class="box en"><span class="lbl">ANSWER TEMPLATE</span>The outer loop is a <i>linear</i> loop and runs <b>n</b> times. The inner loop is a <i>logarithmic</i> loop and runs <b>log₂n</b> times. The total is f(n) = n log₂n, so the efficiency is <b>O(n log n)</b>.<div class="zhtr"><span>中文</span>外層是線性迴圈，跑 n 次；內層是對數迴圈，跑 log₂n 次。總次數 f(n) = n log₂n，所以效率是 O(n log n)。數字換成題目的就能直接用。</div></div>
 
 <div class="lab" data-lab="loops"></div>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ 回到目錄 Back to the menu</button></div>
+</div>
 
-<h4>Big-O notation <span class="sl">Slide 40–42</span> <span class="star">★★★</span><span class="zhn">Big-O 表示法</span></h4>
+<div class="algp" data-alg="m14-5" data-menu="m14" hidden>
+<h4 class="alg"><span class="an">Big-O</span>Big-O notation<span class="sl">Slide 40–42</span><span class="star">★★★</span><span class="zhn">Big-O 表示法</span></h4>
 <ul>
 <li><b>O(n)</b> <i>on the order of n</i>.<i>If an algorithm is quadratic, we would say its efficiency is <b>O(n²)</b>.</i><span class="zhn">O(n) 唸作「on the order of n」。如果一個演算法是二次的（quadratic），我們就說它的效率是 O(n²)。</span></li>
 <li>Two steps from f(n) to Big-O: <b>1. In each term, set the coefficient of the term to 1.</b> (set every coefficient to 1) <b>2. Keep the largest term and discard the others.</b> (keep only the largest term)<span class="zhn">從 f(n) 推出 Big-O 的兩個步驟：1. 每一項的係數設成 1；2. 只留最大項，其餘丟掉。</span></li>
@@ -652,8 +668,11 @@ f(n) = aⱼnᵏ + aⱼ₋₁nᵏ⁻¹ + … + a₂n² + a₁n + a₀
 f(n) = nᵏ + nᵏ⁻¹ + … + n² + n + 1
           ↓
 O(f(n)) = O(nᵏ)</pre>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ 回到目錄 Back to the menu</button></div>
+</div>
 
-<h4>Standard measures of efficiency <span class="sl">Slide 43–44</span><span class="zhn">效率的標準衡量</span></h4>
+<div class="algp" data-alg="m14-6" data-menu="m14" hidden>
+<h4 class="alg"><span class="an">Big-O</span>Standard measures of efficiency<span class="sl">Slide 43–44</span><span class="zhn">效率的標準衡量</span></h4>
 <div class="tbl"><table>
 <tr><th>Efficiency<span class="zhn">效率</span></th><th>Big-O<span class="zhn">大 O</span></th><th>Iterations (n = 10,000)<span class="zhn">迭代次數（n = 10,000）</span></th><th>Estimated time<span class="zhn">估計時間</span></th></tr>
 <tr><td>Logarithmic<span class="zhn">對數</span></td><td>O(log₂n)</td><td>14</td><td>Microseconds<span class="zhn">微秒</span></td></tr>
@@ -671,8 +690,12 @@ O(f(n)) = O(nᵏ)</pre>
 橫軸是 n，縱軸是要跑幾次。<b>log n</b> 幾乎平躺，n 再大也只多一點點；<b>n</b> 是一條斜直線；<b>n log n</b> 一開始比 n 低（n 很小時 log n &lt; 1），之後慢慢翹上去超過 n；<b>n²、n³</b> 幾乎是直直往上衝。曲線越陡，n 一變大就越慢。<br>
 由快到慢：<b>O(1) &lt; O(log n) &lt; O(n) &lt; O(n log n) &lt; O(n²) &lt; O(n³) &lt; … &lt; O(2ⁿ) &lt; O(n!)</b>。</div>
 <div class="lab" data-lab="bigo"></div>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ 回到目錄 Back to the menu</button></div>
+</div>
 
-<h4>Big-O analysis example: Add matrices <span class="sl">Slide 45–46</span><span class="zhn">Big-O 分析範例：矩陣相加</span></h4>
+<div class="algp" data-alg="m14-7" data-menu="m14" hidden>
+<h4 class="alg"><span class="an">Example</span>Add matrices<span class="sl">Slide 45–46</span><span class="zhn">Big-O 分析範例：矩陣相加</span></h4>
+<h5>Big-O analysis example: Add matrices <span class="sl">Slide 45–46</span><span class="zhn">Big-O 分析範例：矩陣相加</span></h5>
 <figure class="fig"><svg viewBox="0 0 560 110" width="500" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="13" role="img"><defs><marker id="f15a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#1d2433"/></marker><marker id="f15r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#d64933"/></marker></defs><rect x="20" y="10" width="40" height="30" rx="0" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text x="40.0" y="29.9" text-anchor="middle" font-size="14" fill="#1d2433">4</text><rect x="60" y="10" width="40" height="30" rx="0" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text x="80.0" y="29.9" text-anchor="middle" font-size="14" fill="#1d2433">2</text><rect x="100" y="10" width="40" height="30" rx="0" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text x="120.0" y="29.9" text-anchor="middle" font-size="14" fill="#1d2433">1</text><rect x="20" y="40" width="40" height="30" rx="0" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text x="40.0" y="59.9" text-anchor="middle" font-size="14" fill="#1d2433">0</text><rect x="60" y="40" width="40" height="30" rx="0" fill="#cde8f2" stroke="#1d2433" stroke-width="1.4"/><text x="80.0" y="59.9" text-anchor="middle" font-size="14" fill="#1d2433">−3</text><rect x="100" y="40" width="40" height="30" rx="0" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text x="120.0" y="59.9" text-anchor="middle" font-size="14" fill="#1d2433">4</text><rect x="20" y="70" width="40" height="30" rx="0" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text x="40.0" y="89.9" text-anchor="middle" font-size="14" fill="#1d2433">5</text><rect x="60" y="70" width="40" height="30" rx="0" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text x="80.0" y="89.9" text-anchor="middle" font-size="14" fill="#1d2433">6</text><rect x="100" y="70" width="40" height="30" rx="0" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text x="120.0" y="89.9" text-anchor="middle" font-size="14" fill="#1d2433">2</text><text x="180" y="60" text-anchor="middle" font-size="22" fill="#1d2433">+</text><rect x="200" y="10" width="40" height="30" rx="0" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text x="220.0" y="29.9" text-anchor="middle" font-size="14" fill="#1d2433">6</text><rect x="240" y="10" width="40" height="30" rx="0" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text x="260.0" y="29.9" text-anchor="middle" font-size="14" fill="#1d2433">1</text><rect x="280" y="10" width="40" height="30" rx="0" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text x="300.0" y="29.9" text-anchor="middle" font-size="14" fill="#1d2433">7</text><rect x="200" y="40" width="40" height="30" rx="0" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text x="220.0" y="59.9" text-anchor="middle" font-size="14" fill="#1d2433">3</text><rect x="240" y="40" width="40" height="30" rx="0" fill="#cde8f2" stroke="#1d2433" stroke-width="1.4"/><text x="260.0" y="59.9" text-anchor="middle" font-size="14" fill="#1d2433">2</text><rect x="280" y="40" width="40" height="30" rx="0" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text x="300.0" y="59.9" text-anchor="middle" font-size="14" fill="#1d2433">−1</text><rect x="200" y="70" width="40" height="30" rx="0" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text x="220.0" y="89.9" text-anchor="middle" font-size="14" fill="#1d2433">4</text><rect x="240" y="70" width="40" height="30" rx="0" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text x="260.0" y="89.9" text-anchor="middle" font-size="14" fill="#1d2433">6</text><rect x="280" y="70" width="40" height="30" rx="0" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text x="300.0" y="89.9" text-anchor="middle" font-size="14" fill="#1d2433">2</text><text x="360" y="60" text-anchor="middle" font-size="22" fill="#1d2433">=</text><rect x="380" y="10" width="40" height="30" rx="0" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text x="400.0" y="29.9" text-anchor="middle" font-size="14" fill="#1d2433">10</text><rect x="420" y="10" width="40" height="30" rx="0" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text x="440.0" y="29.9" text-anchor="middle" font-size="14" fill="#1d2433">3</text><rect x="460" y="10" width="40" height="30" rx="0" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text x="480.0" y="29.9" text-anchor="middle" font-size="14" fill="#1d2433">8</text><rect x="380" y="40" width="40" height="30" rx="0" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text x="400.0" y="59.9" text-anchor="middle" font-size="14" fill="#1d2433">3</text><rect x="420" y="40" width="40" height="30" rx="0" fill="#cde8f2" stroke="#1d2433" stroke-width="1.4"/><text x="440.0" y="59.9" text-anchor="middle" font-size="14" fill="#1d2433">−1</text><rect x="460" y="40" width="40" height="30" rx="0" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text x="480.0" y="59.9" text-anchor="middle" font-size="14" fill="#1d2433">3</text><rect x="380" y="70" width="40" height="30" rx="0" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text x="400.0" y="89.9" text-anchor="middle" font-size="14" fill="#1d2433">9</text><rect x="420" y="70" width="40" height="30" rx="0" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text x="440.0" y="89.9" text-anchor="middle" font-size="14" fill="#1d2433">12</text><rect x="460" y="70" width="40" height="30" rx="0" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text x="480.0" y="89.9" text-anchor="middle" font-size="14" fill="#1d2433">4</text></svg><figcaption class="cap">Figure 1-5Add matrices matrix3[1,1] = matrix1[1,1] + matrix2[1,1] = −3 + 2 = −1)<span class="zhn">圖 1-5 矩陣相加（藍色格子：matrix3[1,1] = matrix1[1,1] + matrix2[1,1] = −3 + 2 = −1）</span></figcaption></figure>
 <pre><b>algorithm</b> addMatrix (val matrix1 &lt;matrix&gt;,
                      val matrix2 &lt;matrix&gt;,
@@ -695,8 +718,11 @@ Add matrix1 to matrix2 and place results in matrix3
 end addMatrix
 <span class="c">Algorithm 1-3　Add two matrices</span></pre>
 <p><b>Why O(size²)</b>: two nested loops, r runs size times and for each r, c also runs size times; the innermost does a single addition, so size × size in total → <b>O(size²) or O(n²)</b>.<span class="zhn"><b>為什麼是 O(size²)</b>：兩層迴圈，r 跑 size 次、每個 r 裡 c 也跑 size 次，最裡面只做一次加法，總共 size × size 次 → <b>O(size²) 或 O(n²)</b>。</span></p>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ 回到目錄 Back to the menu</button></div>
+</div>
 
-<h4>Multiply matrices <span class="sl">Slide 47–50</span><span class="zhn">矩陣相乘</span></h4>
+<div class="algp" data-alg="m14-8" data-menu="m14" hidden>
+<h4 class="alg"><span class="an">Example</span>Multiply matrices<span class="sl">Slide 47–50</span><span class="zhn">矩陣相乘</span></h4>
 <p><i>When two matrices are multiplied, we must <mark>multiply</mark> each element in a <mark>row</mark> of the first matrix by its corresponding element in a <mark>column</mark> of the second matrix.</i><span class="zhn">兩個矩陣相乘時，要把第一個矩陣某一列的每個元素，乘上第二個矩陣對應行的元素，再全部加總。</span></p>
 <pre>matrix3 [r, c] =
           matrix1[r, 0]   × matrix2[0, c]
@@ -740,6 +766,8 @@ end addMatrix
 <div class="two">
 <div class="box plain"><b>Add matrices</b>：每格只做 1 次加法 → 兩層 → <b>O(n²)</b></div>
 <div class="box plain"><b>Multiply matrices</b>：每格要做 n 次乘加 → 三層 → <b>O(n³)</b></div>
+</div>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ 回到目錄 Back to the menu</button></div>
 </div>
 
 <div class="quiz" data-quiz="ch1"></div>

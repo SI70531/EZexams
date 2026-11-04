@@ -147,8 +147,8 @@
         else if(e.key==="ArrowLeft"&&i>0)c[i-1].focus();else if(e.key==="ArrowRight"&&i<3)c[i+1].focus();});
       x.addEventListener("paste",e=>{const d=(e.clipboardData||window.clipboardData).getData("text").replace(/\D/g,"");if(d){e.preventDefault();fill(g,i,d,gi);}});
     }));
-    $("#egEye").addEventListener("click",e=>{const b=e.currentTarget,on=b.getAttribute("aria-pressed")!=="true";b.setAttribute("aria-pressed",on);b.querySelector("span").textContent=on?"隱藏":"顯示";root.querySelectorAll(".eg-cell input").forEach(x=>{if(MASK)x.classList.toggle("mask",!on);else x.type=on?"text":"password";});});
-    $("#egEyeP").addEventListener("click",e=>{const b=e.currentTarget,on=b.getAttribute("aria-pressed")!=="true";b.setAttribute("aria-pressed",on);b.querySelector("span").textContent=on?"隱藏":"顯示";["#egPass","#egPass2"].forEach(i=>{$(i).type=on?"text":"password";});});
+    $("#egEye").addEventListener("click",e=>{const b=e.currentTarget,on=b.getAttribute("aria-pressed")!=="true";b.setAttribute("aria-pressed",on);b.querySelector("span").textContent=on?"Hide":"Show";root.querySelectorAll(".eg-cell input").forEach(x=>{if(MASK)x.classList.toggle("mask",!on);else x.type=on?"text":"password";});});
+    $("#egEyeP").addEventListener("click",e=>{const b=e.currentTarget,on=b.getAttribute("aria-pressed")!=="true";b.setAttribute("aria-pressed",on);b.querySelector("span").textContent=on?"Hide":"Show";["#egPass","#egPass2"].forEach(i=>{$(i).type=on?"text":"password";});});
     $("#egSw").addEventListener("click",()=>{const m=ticket.dataset.mode;setMode(m==="login"?"register":"login",true);});
     $("#egAlt").addEventListener("click",()=>{
       const m=ticket.dataset.mode;

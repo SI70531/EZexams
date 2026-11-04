@@ -28,14 +28,14 @@
   const st=document.createElement("style");st.textContent=css;document.head.appendChild(st);
 
   /* button, placed before the sync chip / theme button */
-  const btn=document.createElement("button");btn.type="button";btn.className="ezs-btn";btn.title="Search this subject (/ or Ctrl+K)";btn.setAttribute("aria-label","搜尋");
+  const btn=document.createElement("button");btn.type="button";btn.className="ezs-btn";btn.title="Search this subject (/ or Ctrl+K)";btn.setAttribute("aria-label","Search");
   btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>';
   const anchor=bar.querySelector(".syncchip")||bar.querySelector(".theme");
   if(anchor)bar.insertBefore(btn,anchor);else bar.appendChild(btn);
   /* the sync chip is added after page load, in front of the theme button: keep search before it */
   new MutationObserver(()=>{const c=bar.querySelector(".syncchip");if(c&&c.parentNode===btn.parentNode&&c.nextElementSibling!==btn&&btn.nextElementSibling!==c)c.parentNode.insertBefore(btn,c);}).observe(bar,{childList:true});
 
-  const panel=document.createElement("div");panel.className="ezs-panel";panel.hidden=true;panel.setAttribute("role","dialog");panel.setAttribute("aria-label","搜尋");
+  const panel=document.createElement("div");panel.className="ezs-panel";panel.hidden=true;panel.setAttribute("role","dialog");panel.setAttribute("aria-label","Search");
   panel.innerHTML='<div class="ezs-top"><svg class="ezs-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg><input type="search" placeholder="Search notes and questions" aria-label="Search terms" autocomplete="off" spellcheck="false"></div><div class="ezs-info"></div><div class="ezs-list" role="listbox"></div>';
   document.body.appendChild(panel);
   const input=panel.querySelector("input"),info=panel.querySelector(".ezs-info"),list=panel.querySelector(".ezs-list");

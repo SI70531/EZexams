@@ -34,7 +34,7 @@
     }
     t.innerHTML="<span></span>"+cancel;
     const msg=t.firstChild,end=now()+UNDO_S*1000;
-    const draw=()=>{msg.textContent="將清除"+what+"（"+Math.max(1,Math.ceil((end-now())/1000))+" 秒）";};draw();
+    const draw=()=>{msg.textContent="Clearing"+what+"（"+Math.max(1,Math.ceil((end-now())/1000))+" 秒）";};draw();
     let done=false;
     const stop=()=>{done=true;clearTimeout(tm);clearInterval(iv);t.remove();if(btn)btn.style.display="";};
     const fin=()=>{if(done)return;stop();doIt();};

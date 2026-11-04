@@ -32,7 +32,7 @@ function refreshPCB(){
       '<div class="pr"><span>state</span><b class="st '+p.state+'">'+p.state+'</b></div>'+
       '<div class="pr"><span>'+lab+'</span><b>'+(p.n?p.done+" / "+p.n:"—")+'</b></div>'+
       '<div class="bar"><i style="width:'+pct+'%"></i></div>';
-    el.setAttribute("aria-label","進度："+p.state+(p.n?"，"+p.done+"/"+p.n:""));
+    el.setAttribute("aria-label","Progress: "+p.state+(p.n?"，"+p.done+"/"+p.n:""));
   });
 }
 document.addEventListener("click",e=>{if(e.target.closest(".opt"))setTimeout(()=>{refreshPCB();renderTabs(S.last);},0);});
@@ -40,7 +40,7 @@ document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b
 window.addEventListener("hashchange",()=>{const h=location.hash.slice(1);if(h&&h!==S.last)show(h);});
 
 /* AI practice, one question at a time (assets/ezgen.js); chapter exercises are made on demand, answers stay on the Worker */
-if(window.EZGEN)EZGEN.attach({course:"作業系統",s:"os",ai:["ch1","ch2","ch3","ch4","ch5"],fixed:[],scope:{},get:()=>S,quiz:()=>QUIZ,save:()=>save(),render:c=>{renderQuiz(c);renderTabs(c)},renderAll:()=>{Object.keys(QUIZ).forEach(renderQuiz);renderTabs(S.last)}});
+if(window.EZGEN)EZGEN.attach({course:"Operating Systems",s:"os",ai:["ch1","ch2","ch3","ch4","ch5"],fixed:[],scope:{},get:()=>S,quiz:()=>QUIZ,save:()=>save(),render:c=>{renderQuiz(c);renderTabs(c)},renderAll:()=>{Object.keys(QUIZ).forEach(renderQuiz);renderTabs(S.last)}});
 
 /* ---------- quizzes ---------- */
 function renderQuiz(ch){
@@ -70,7 +70,7 @@ function renderQuiz(ch){
       if(it.a==null){btns.forEach(b=>b.disabled=true);return;}
       btns.forEach(b=>{b.disabled=true;const oi=+b.dataset.oi;if(oi===it.a)b.classList.add("right");else if(oi===pick)b.classList.add("wrong");});
       const ok=pick===it.a;
-      ex.innerHTML='<span class="tag '+(ok?"ok":"no")+'">'+(ok?"答對":"答錯，正確答案是 "+"ABCD"[ord.indexOf(it.a)])+'</span>';
+      ex.innerHTML='<span class="tag '+(ok?"ok":"no")+'">'+(ok?"Correct":"Wrong, correct answer is "+"ABCD"[ord.indexOf(it.a)])+'</span>';
       ex.appendChild(document.createTextNode(it.e));ex.hidden=false;
     }
     mark();box.appendChild(d);
@@ -81,10 +81,10 @@ function renderQuiz(ch){
     const a=S.quiz[ch]||{};const n=Object.keys(a).length;const r=Object.keys(a).filter(k=>a[k]===qs[k].a).length;
     sc.innerHTML="";
     const t=document.createElement("span");t.textContent=n<qs.length?("Answered "+n+" / "+qs.length+", "+r+" correct so far"):("Done! "+r+" / "+qs.length+" correct"+(r>=qs.length*0.8?". Solid understanding.":". Reread the sections for the ones you missed."));sc.appendChild(t);
-    const rb=document.createElement("button");rb.className="btn";rb.type="button";rb.textContent="重做這章";rb.addEventListener("click",()=>{(window.EZundo||((w,f)=>f()))("This chapter's answers",()=>{delete S.quiz[ch];if(window.EZGEN)EZGEN.reset(ch);S.quizReset=S.quizReset||{};S.quizReset[ch]=Date.now();save();renderQuiz(ch);renderTabs(ch);},null,rb);});sc.appendChild(rb);
+    const rb=document.createElement("button");rb.className="btn";rb.type="button";rb.textContent="Redo chapter";rb.addEventListener("click",()=>{(window.EZundo||((w,f)=>f()))("This chapter's answers",()=>{delete S.quiz[ch];if(window.EZGEN)EZGEN.reset(ch);S.quizReset=S.quizReset||{};S.quizReset[ch]=Date.now();save();renderQuiz(ch);renderTabs(ch);},null,rb);});sc.appendChild(rb);
     const idx=VIEWS.findIndex(v=>v[0]===ch);const nx=VIEWS[idx+1];
-    if(n>=qs.length&&nx&&nx[0]!=="|"){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";nb.textContent="下一章："+nx[1];nb.dataset.go=nx[0];sc.appendChild(nb);}
-    else if(n>=qs.length&&ch==="ch5"){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";nb.textContent="開始考古題";nb.dataset.go="past";sc.appendChild(nb);}
+    if(n>=qs.length&&nx&&nx[0]!=="|"){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";nb.textContent="Next chapter: "+nx[1];nb.dataset.go=nx[0];sc.appendChild(nb);}
+    else if(n>=qs.length&&ch==="ch5"){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";nb.textContent="Start past exam";nb.dataset.go="past";sc.appendChild(nb);}
   }
   renderScore();
 }
@@ -148,8 +148,8 @@ function keywordGrade(qid,pts,ans){
   groups.forEach(g=>{let ok=false;try{ok=new RegExp(g.re,"i").test(a);}catch(e){}if(ok){got+=g.w;hit.push(g.k);}else miss.push(g.k);});
   let score=Math.round(Math.min(pts,got)*2)/2;
   const verdict=score>=pts?"correct":score>0?"partial":"wrong";
-  const feedback=verdict==="correct"?"必要的關鍵字和數字都有寫到。":verdict==="partial"?"有寫到一部分，下面是缺少的重點，對照參考答案補上。":"沒有比對到必要的關鍵字或數字，展開參考答案看看。";
-  return {score,verdict,feedback:feedback+"（關鍵字比對，僅供參考）",missing:miss};
+  const feedback=verdict==="correct"?"All required keywords and numbers are present.":verdict==="partial"?"Part of it is covered. The missing points are listed below; compare with the reference answer.":"The required keywords or numbers were not matched. Open the reference answer to see them.";
+  return {score,verdict,feedback:feedback+"(keyword matching, for reference only)",missing:miss};
 }
 
 /* ---------- exams ---------- */
@@ -211,7 +211,7 @@ document.querySelectorAll(".exam").forEach(ex=>{
   function upd(){
     let got=0,graded=0;
     qs.forEach(q=>{const g=st.grade[q.id];if(g){got+=+g.score||0;graded++;}});
-    score.textContent="得分 "+(Math.round(got*10)/10)+" / "+total+" 分"+(graded?"（已批改 "+graded+"/"+qs.length+" 題）":"");
+    score.textContent="Score "+(Math.round(got*10)/10)+" / "+total+" 分"+(graded?" (graded "+graded+"/"+qs.length+" questions)":"");
     EX[id]=Object.assign(EX[id]||{},{total,got,graded,n:qs.length});
     if(typeof refreshPCB==="function"){refreshPCB();renderTabs(S.last);}
   }
@@ -302,7 +302,7 @@ function fmtN(x){return Math.round(x*100)/100;}
 /* 1. process state machine */
 W.states=function(box){
   const S={new:[90,60],ready:[200,170],running:[500,170],waiting:[350,280],terminated:[620,60]};const LP=[[118,128,"end"],[350,206,"middle"],[350,142,"middle"],[468,258,"start"],[232,258,"end"],[590,128,"start"]];
-  const T=[["new","ready","admitted","被系統接受，放進 ready queue"],["ready","running","scheduler dispatch","short-term scheduler 選中它，dispatcher 把 CPU 交給它"],["running","ready","interrupt","時間配額用完（timer interrupt）或被更高優先權搶走"],["running","waiting","I/O or event wait","要等 I/O 或某個事件，自己讓出 CPU"],["waiting","ready","I/O or event completion","等的東西好了，回 ready queue 重新排隊（不能直接回 running！）"],["running","terminated","exit","執行完畢"]];
+  const T=[["new","ready","admitted","被系統接受，放進 ready queue"],["ready","running","scheduler dispatch","short-term scheduler 選中它，dispatcher 把 CPU 交給它"],["running","ready","interrupt","時間配額用完（timer interrupt）或被更高優先權搶走"],["running","waiting","I/O or event wait","要等 I/O 或某個事件，自己讓出 CPU"],["waiting","ready","I/O or event completion","等的東西好了，回 ready queue 重新排隊（不能直接回 running！）"],["running","terminated","exit","Done"]];
   let cur="new",log=[];
   box.innerHTML='<div class="wtitle">試試看：按下事件，看 process 怎麼移動</div><svg viewBox="0 0 700 330" class="wsvg"></svg><div class="wbtns"></div><div class="wnote"></div>';
   const svg=box.querySelector("svg"),btns=box.querySelector(".wbtns"),note=box.querySelector(".wnote");
@@ -321,7 +321,7 @@ W.states=function(box){
     svg.innerHTML=h;
     btns.innerHTML="";
     T.filter(t=>t[0]===cur).forEach(t=>{const b=el("button",{cls:"btn",type:"button"},t[2]);b.onclick=()=>{cur=t[1];log.push(t);note.innerHTML='<b>'+t[0]+' → '+t[1]+'</b>：'+t[3];draw();};btns.appendChild(b);});
-    const r=el("button",{cls:"btn",type:"button"},"重來");r.onclick=()=>{cur="new";log=[];note.textContent="";draw();};btns.appendChild(r);
+    const r=el("button",{cls:"btn",type:"button"},"Reset");r.onclick=()=>{cur="new";log=[];note.textContent="";draw();};btns.appendChild(r);
     if(cur==="terminated")note.innerHTML+='<br>結束。注意 waiting 只能回 ready，不能直接到 running。';
   }
   draw();
@@ -477,7 +477,7 @@ W.expavg=function(box){
   A.oninput=run;T0.oninput=run;TS.oninput=run;run();
 };
 
-document.querySelectorAll(".widget[data-w]").forEach(b=>{try{W[b.dataset.w](b);}catch(e){b.textContent="互動圖載入失敗";}});
+document.querySelectorAll(".widget[data-w]").forEach(b=>{try{W[b.dataset.w](b);}catch(e){b.textContent="Interactive figure failed to load";}});
 
 
 
@@ -485,19 +485,19 @@ document.querySelectorAll(".widget[data-w]").forEach(b=>{try{W[b.dataset.w](b);}
 
 
 /* ---------- home ---------- */
-function chRow(c,n){const s=chScore(c);return '<tr><td class="l"><button class="btn" data-go="'+c+'" data-goend="'+c+'">'+n+'</button></td><td >'+((s.k||s.g)?('<b class="pscore">得分 '+s.got+' / '+s.tot+' 分</b><span class="psub"><span>選擇 '+(s.k?s.r+'/'+s.k:'還沒寫')+'（共 '+s.n+' 題）</span>'+(s.m?'<span>手寫 '+(s.g?s.wr+'/'+s.g:'還沒寫')+'（共 '+s.m+' 題）</span>':'')+(s.done?'<span class="pok">✓ 完成</span>':'<span class="ptodo">未完成</span>')+'</span>'):"還沒寫")+'</td></tr>';}
+function chRow(c,n){const s=chScore(c);return '<tr><td class="l"><button class="btn" data-go="'+c+'" data-goend="'+c+'">'+n+'</button></td><td >'+((s.k||s.g)?('<b class="pscore">Score '+s.got+' / '+s.tot+' 分</b><span class="psub"><span>選擇 '+(s.k?s.r+'/'+s.k:'Not started')+'(total '+s.n+' 題）</span>'+(s.m?'<span>Written '+(s.g?s.wr+'/'+s.g:'Not started')+'(total '+s.m+' 題）</span>':'')+(s.done?'<span class="pok">✓ Done</span>':'<span class="ptodo">Not done</span>')+'</span>'):"Not started")+'</td></tr>';}
 /* chapter exercises in the progress table: jump straight to the chapter's exercises (multiple choice, or the written part once the MC is done) */
 document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-goend]");if(!b)return;const c=b.dataset.goend;
   setTimeout(()=>{const todo=window.EZtodo&&EZtodo(c);if(todo){EZglow(todo);return;}const s=chScore(c),w=document.querySelector("#"+c+" .chw"),t=(s.k>=s.n&&w)?w:document.querySelector("#"+c+" .quiz");if(t){t.scrollIntoView({block:"start"});scrollBy(0,-76);}},80);});
 function renderHome(){
   const t=document.getElementById("progTable");
-  let html='<tr><th class="l">項目</th><th>狀態</th></tr>';
+  let html='<tr><th class="l">Item</th><th>Status</th></tr>';
   let next=null;
   [["ch1","Ch1 chapter exercises"],["ch2","Ch2 chapter exercises"],["ch3","Ch3 chapter exercises"],["ch4","Ch4 chapter exercises"],["ch5","Ch5 chapter exercises"]].forEach(([c,n])=>{
     html+=chRow(c,n);
     if(!next&&!chScore(c).done)next=[c,n.replace(" chapter exercises","")];
   });
-  [["past","去年考古題"],["mock-a","模擬試題 A"],["mock-b","模擬試題 B"]].forEach(([id,n])=>{
+  [["past","Last year's past exam"],["mock-a","Mock exam A"],["mock-b","Mock exam B"]].forEach(([id,n])=>{
     const e=EX[id]||{graded:0,total:100,got:0};
     html+='<tr><td class="l"><button class="btn" data-go="'+id+'">'+n+'</button></td><td>'+(e.graded?("Score "+(Math.round(e.got*10)/10)+" / "+e.total):"Not started")+'</td></tr>';
     if(!next&&!e.graded)next=[id,n];
@@ -505,8 +505,8 @@ function renderHome(){
   t.innerHTML=html;
   const ns=document.getElementById("nextStep");
   ns.innerHTML="";const p=document.createElement("b");
-  if(next){p.textContent="Next: "+(next[0].startsWith("ch")?"讀 "+next[1]+" 再做章末的選擇題和問答":"寫"+next[1]+"（限時 60 分鐘，寫完按「批改全部」）");ns.appendChild(p);const b=document.createElement("button");b.className="btn primary";b.style.marginLeft="10px";b.textContent="Start";b.dataset.go=next[0];ns.appendChild(b);}
-  else{p.textContent="全部完成了。考前一天看「總複習」的速記和必畫圖，然後早點睡。";ns.appendChild(p);}
+  if(next){p.textContent="Next: "+(next[0].startsWith("ch")?"Read "+next[1]+", then do the chapter quiz and Q&A":"Write "+next[1]+" (60 min; press “Grade all” when done)");ns.appendChild(p);const b=document.createElement("button");b.className="btn primary";b.style.marginLeft="10px";b.textContent="Start";b.dataset.go=next[0];ns.appendChild(b);}
+  else{p.textContent="All done. The day before the exam, read the Review cheat notes and must-draw diagrams, then get some sleep.";ns.appendChild(p);}
 }
 
 /* chapter-end written questions: the questions and reference answers are moved into the account's question store
@@ -516,7 +516,7 @@ function renderHome(){
 if(window.EZgenw){
   const T=k=>((VIEWS.find(v=>v[0]===k)||[])[1])||k;
   const blk=(key,view,views,box)=>({key,exam:key,view,views,title:T(view||key),box,static:true});
-  EZgenw.attach({course:"作業系統 Operating Systems",subject:"operating-systems",s:"os",get:()=>S,save:()=>save(),blocks:[
+  EZgenw.attach({course:"Operating Systems",subject:"operating-systems",s:"os",get:()=>S,save:()=>save(),blocks:[
     blk("ch1w","ch1",["ch1"],document.querySelector('[data-exam="ch1w"]')),
     blk("ch2w","ch2",["ch2"],document.querySelector('[data-exam="ch2w"]')),
     blk("ch3w","ch3",["ch3"],document.querySelector('[data-exam="ch3w"]')),

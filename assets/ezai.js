@@ -42,7 +42,7 @@
   /* the proxy needs this tab's sign-in token (signing in to an account), so the Worker URL alone cannot use the quota */
   async function proxyToken(force){
     const S=window.EZSync;const t=S&&S.session?await S.session(force):null;
-    if(!t)throw fail("login","先登入才能使用 AI 批改");
+    if(!t)throw fail("login","先登入才能使用批改");
     return t;
   }
   /* grading (stable) asks for the most deterministic answer Google offers: temperature 0, the single most likely
@@ -97,7 +97,7 @@
     if(typeof document==="undefined"||!document.body||document.getElementById("ezlimit"))return;
     const el=document.createElement("div");el.id="ezlimit";el.setAttribute("role","alert");
     el.style.cssText="position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:1200;max-width:min(92vw,460px);background:var(--paper,#fff);color:var(--ink,#111);border:1.5px solid var(--seal,#c4472a);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.25);padding:12px 16px;font-size:14px;line-height:1.6";
-    let n=60;const render=()=>{el.innerHTML="<b>AI 免費額度暫時用完</b><br>約 "+n+" 秒後可以再試。你的作答都有保存，倒數結束後再按一次批改即可。 <button type='button' style='margin-left:6px;font:inherit;border:1px solid currentColor;border-radius:6px;background:none;color:inherit;padding:1px 10px;cursor:pointer'>知道了</button>";el.querySelector("button").onclick=close;};
+    let n=60;const render=()=>{el.innerHTML="<b>免費額度暫時用完</b><br>約 "+n+" 秒後可以再試。你的作答都有保存，倒數結束後再按一次批改即可。 <button type='button' style='margin-left:6px;font:inherit;border:1px solid currentColor;border-radius:6px;background:none;color:inherit;padding:1px 10px;cursor:pointer'>知道了</button>";el.querySelector("button").onclick=close;};
     const close=()=>{clearInterval(LT);el.remove();};
     render();document.body.appendChild(el);
     LT=setInterval(()=>{n--;if(n<=0){close();return;}render();},1000);
@@ -116,7 +116,7 @@
     throw fail("invalid_json");
   }
   /* a reply that cannot be read is asked for again (up to 3 times, the later tries on another model with another
-     seed), so 「AI 回覆的格式讀不懂」 practically never reaches the page */
+     seed), so 「回覆的格式讀不懂」 practically never reaches the page */
   async function runJson(key,p,stable){
     let last;
     for(let at=0;at<3;at++){
@@ -163,15 +163,15 @@
     errText(e){
       const c=e&&e.code,why=e&&e.message&&e.message!==c?"（"+e.message.slice(0,160)+"）":"";
       if(c==="bad_key")return "Google 拒絕了這把金鑰"+why+"。請到首頁重新設定。";
-      if(c==="region")return "Google 的 AI 服務不開放這個地區使用。";
-      if(c==="busy")return "AI 的免費服務現在都太忙（Google 端暫時滿載），過幾分鐘再按一次。";
+      if(c==="region")return "Google 的服務不開放這個地區使用。";
+      if(c==="busy")return "免費服務現在都太忙（Google 端暫時滿載），過幾分鐘再按一次。";
       if(c==="rate_limited")return "免費額度暫時用完（每分鐘約 10 次），過一兩分鐘再按。";
-      if(c==="invalid_json"||c==="empty_completion")return "AI 連續三次都沒有給出完整的結果。";
+      if(c==="invalid_json"||c==="empty_completion")return "連續三次都沒有給出完整的結果。";
       if(c==="empty")return "請先貼上金鑰。";
-      if(c==="login")return (e.message&&e.message!==c?e.message:"先登入才能使用 AI 批改")+"（右上角「登入」）。";
+      if(c==="login")return (e.message&&e.message!==c?e.message:"先登入才能使用批改")+"（右上角「登入」）。";
       if(c==="timeout")return "連線逾時，Google 一直沒有回應。可能是網路不穩、VPN，或學校／公司網路、擋廣告外掛擋掉了 Google API。換個網路（例如手機熱點）再試一次。";
       if(c==="blocked")return "瀏覽器沒有收到 Google 的回應，請求被擋下了"+why+"。如果有裝擋廣告／隱私外掛，先對這個網站關掉；也可以換一個瀏覽器試試。";
-      return "AI 服務回報錯誤"+why+"。";
+      return "服務回報錯誤"+why+"。";
     }
   };
 
@@ -181,7 +181,7 @@
     document.querySelectorAll(".nogradenote").forEach(n=>{
       if(n.querySelector(".ezai-hint"))return;
       const p=document.createElement("span");p.className="ezai-hint";p.style.cssText="display:block;margin-top:6px";
-      p.innerHTML='想要 AI 給分數和評語？到<a href="../../#ai">首頁設定免費的 AI 金鑰</a>（約 2 分鐘）。';
+      p.innerHTML='想要給分數和評語？到<a href="../../#ai">首頁設定免費的金鑰</a>（約 2 分鐘）。';
       n.appendChild(p);
     });
   }

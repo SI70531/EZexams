@@ -18,10 +18,10 @@
 <link rel="apple-touch-icon" href="assets/icon-180.png">
 <link rel="manifest" href="manifest.webmanifest">
 <script src="assets/ezcore.js?v=d160d4f0"></script>
-<script src="assets/ezfx.js?v=16e62239" defer></script>
+<script src="assets/ezfx.js?v=a96fbf04" defer></script>
 <script src="assets/ezmotion.js?v=34c55ba0" defer></script>
-<script src="assets/ezwow.js?v=2bcc916e" defer></script>
-<script src="assets/ezai.js?v=470f21a1"></script>
+<script src="assets/ezwow.js?v=8ac1ea8e" defer></script>
+<script src="assets/ezai.js?v=636bb6ed"></script>
 <link rel="stylesheet" href="assets/fonts/fonts.css?v=8277b7f0">
 <link rel="stylesheet" href="assets/ezhome.css?v=ee2b4edd">
 <link rel="stylesheet" href="assets/ui/ui.css?v=d865cf47">
@@ -114,18 +114,18 @@
   </section>
   </div>
   <section class="sync" id="ai">
-    <div class="subj"><h2>AI Correcting</h2><span class="en">grading/</span></div>
+    <div class="subj"><h2>Grading</h2><span class="en">grading/</span></div>
     <div class="syncbox">
       <div class="syncstate"><span class="led" id="aiLed"></span><b id="aiTitle">用關鍵字比對批改</b><span class="small" id="aiSub"></span></div>
       <div id="aiOff">
-        <p>手寫題現在是用關鍵字比對給分，只能抓有沒有寫到術語。設定一把免費的 Google AI 金鑰後，統計、作業系統、資料結構的手寫題會改成 AI 批改，有分數也有中文評語。不用綁信用卡。</p>
+        <p>手寫題現在是用關鍵字比對給分，只能抓有沒有寫到術語。設定一把免費的 Google 金鑰後，統計、作業系統、資料結構的手寫題會改成批改，有分數也有中文評語。不用綁信用卡。</p>
         <ol class="steps">
           <li>用 Google 帳號打開 <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google 的免費金鑰頁面（AI Studio）</a>。</li>
           <li>按 <b>Create API key</b>（第一次會請你同意條款、選一個專案，選預設的就好）。</li>
           <li>按 <b>Copy key</b> 複製金鑰，整串貼到下面按「啟用」。每台裝置要各貼一次。</li>
         </ol>
         <form class="tokrow" id="aiForm" autocomplete="off">
-          <label for="aiInput" class="sr">AI 金鑰</label>
+          <label for="aiInput" class="sr">金鑰</label>
           <input id="aiInput" type="password" placeholder="貼上金鑰" spellcheck="false">
           <button class="btn primary" type="submit" id="aiBtn">啟用</button>
         </form>
@@ -168,13 +168,13 @@
     const on=EZAI.connected();
     /* once enabled the panel is not needed; it comes back if Google rejects the key or a page links to #ai */
     $("ai").hidden=on&&!keepAi&&!EZAI.rejected()&&location.hash!=="#ai";$("aiLed").className="led "+(on&&!EZAI.rejected()?"ok":on?"err":"");
-    $("aiTitle").textContent=on?(EZAI.rejected()?"Google 不接受目前的金鑰，請貼一把新的":"已啟用 AI 批改"):"用關鍵字比對批改";
+    $("aiTitle").textContent=on?(EZAI.rejected()?"Google 不接受目前的金鑰，請貼一把新的":"已啟用批改"):"用關鍵字比對批改";
     $("aiSub").textContent=on?EZAI.model():"";
   }
   $("aiForm").addEventListener("submit",async e=>{
     e.preventDefault();const b=$("aiBtn"),m=$("aiMsg");
     b.disabled=true;m.className="msg";m.textContent="測試金鑰中…";
-    try{await EZAI.connect($("aiInput").value);$("aiInput").value="";keepAi=true;m.className="msg ok";m.textContent="啟用成功。打開任何一科的考古題或模擬試題，批改就會用 AI。下次打開首頁這一區會自動收起。";render();}
+    try{await EZAI.connect($("aiInput").value);$("aiInput").value="";keepAi=true;m.className="msg ok";m.textContent="啟用成功。打開任何一科的考古題或模擬試題，批改就會啟用。下次打開首頁這一區會自動收起。";render();}
     catch(err){m.className="msg err";m.textContent=EZAI.errText(err);}
     finally{b.disabled=false;}
   });

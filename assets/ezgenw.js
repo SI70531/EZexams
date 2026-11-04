@@ -1,6 +1,6 @@
 /* EZGENW: AI written questions, one at a time (chapter-end written parts) or the whole paper at once (mock exams).
    Same rules as ezgen.js for multiple choice:
-   - 「AI 開始出題」 / 「出下一題」 make the next question from the chapter notes (each section is asked about once first).
+   - 「開始出題」 / 「出下一題」 make the next question from the chapter notes (each section is asked about once first).
      The question keeps the slot's label and points (F1 · 2, 21 · 2% …), so the paper keeps its shape.
    - The reference answer stays on the Worker (record kind "w"); grading (/gen/wgrade) uses it and returns a model answer.
    - Questions that were answered before the move come from the bank (/bank/wopen), only for slots that have an answer.
@@ -121,7 +121,7 @@
   async function token(force){const S=window.EZSync;if(!S||!S.session)return null;try{return await S.session(!!force);}catch(e){return null;}}
   const fail=(code,msg,extra)=>Object.assign(new Error(msg||code),{code},extra||{});
   async function post(path,body,retry){
-    const t=await token(retry);if(!t)throw fail("login","先登入帳號才能使用 AI 出題");
+    const t=await token(retry);if(!t)throw fail("login","先登入帳號才能出題");
     const ac=new AbortController(),to=setTimeout(()=>ac.abort(),70000);let res;
     try{res=await fetch(WORKER+path,{method:"POST",headers:{"Content-Type":"text/plain;charset=UTF-8"},body:JSON.stringify(Object.assign({t},body)),signal:ac.signal});}
     catch(e){throw fail(e&&e.name==="AbortError"?"timeout":"network","連不上伺服器");}
@@ -136,11 +136,11 @@
     throw fail("http",msg);
   }
   const errText=e=>{const c=e&&e.code;
-    if(c==="login")return "先登入帳號才能使用 AI 出題（右上角「同步」→ 登入）。";
-    if(c==="rate")return "AI 額度暫時用完，約 "+(e.wait||60)+" 秒後再按一次。你的作答都有保存。";
-    if(c==="timeout")return "等太久了，AI 沒有回應。請再按一次。";
+    if(c==="login")return "先登入帳號才能出題（右上角「同步」→ 登入）。";
+    if(c==="rate")return "額度暫時用完，約 "+(e.wait||60)+" 秒後再按一次。你的作答都有保存。";
+    if(c==="timeout")return "等太久了，沒有回應。請再按一次。";
     if(c==="network")return "連不上伺服器，請檢查網路後再試一次。";
-    return "AI 這次沒有出好題目（"+String(e&&e.message||"").slice(0,80)+"），請再按一次。";};
+    return "這次沒有出好題目（"+String(e&&e.message||"").slice(0,80)+"），請再按一次。";};
 
   /* a slot is made when it has a question, or it was answered before the move (its question is the bank's); only the others are made */
   const madeSlot=(B,q,i)=>!!rec(B,i)||answeredQ(B,q)||!!(CACHE[B.key]&&CACHE[B.key][i]);
@@ -211,24 +211,24 @@
       const t=document.createElement("div");t.className="gtxt";bar.appendChild(t);
       const addBtn=(label,fn)=>{const b=document.createElement("button");b.type="button";b.className="btn primary";b.textContent=label;b.addEventListener("click",fn);bar.appendChild(b);return b;};
       if(B.batch){
-        t.innerHTML=made>0?"還差 <b>"+(N-made)+" 題</b>沒出完。":"AI 會依講義一次出完整份，共 <b>"+N+" 題</b>。作答後才顯示解析與參考答案。";
-        const b=addBtn(made>0?"繼續出完剩下的題目":"AI 出整份題目",async()=>{
+        t.innerHTML=made>0?"還差 <b>"+(N-made)+" 題</b>沒出完。":"會依講義一次出完整份，共 <b>"+N+" 題</b>。作答後才顯示解析與參考答案。";
+        const b=addBtn(made>0?"繼續出完剩下的題目":"出整份題目",async()=>{
           if(BUSY[key])return;BUSY[key]=true;ERR[key]="";b.disabled=true;
-          const tick=()=>{b.textContent="AI 出題中… "+madeIn(B,list)+" / "+N;};tick();
+          const tick=()=>{b.textContent="出題中… "+madeIn(B,list)+" / "+N;};tick();
           try{for(;;){const k=nextIn(B,list);if(k<0)break;await makeOne(B,k);tick();}}
           catch(e){ERR[key]=errText(e);}
           BUSY[key]=false;paint(B);
         });
-        if(BUSY[key]){b.disabled=true;b.textContent="AI 出題中…";}
+        if(BUSY[key]){b.disabled=true;b.textContent="出題中…";}
       }else{
-        t.innerHTML=made===0?"每一題由 AI 依講義即時出題，涵蓋這章的每個小節，作答後才顯示答案與解析。共 <b>"+N+" 題</b>。":"下一題是第 <b>"+(made+1)+" / "+N+"</b> 題。";
-        const b=addBtn(made===0?"AI 開始出題":"出下一題",async()=>{
-          if(BUSY[key])return;BUSY[key]=true;ERR[key]="";b.disabled=true;b.textContent="AI 出題中…";
+        t.innerHTML=made===0?"每一題依講義即時出題，涵蓋這章的每個小節，作答後才顯示答案與解析。共 <b>"+N+" 題</b>。":"下一題是第 <b>"+(made+1)+" / "+N+"</b> 題。";
+        const b=addBtn(made===0?"開始出題":"出下一題",async()=>{
+          if(BUSY[key])return;BUSY[key]=true;ERR[key]="";b.disabled=true;b.textContent="出題中…";
           try{const k=nextIn(B,list);await makeOne(B,k);}
           catch(e){ERR[key]=errText(e);}
           BUSY[key]=false;paint(B);
         });
-        if(BUSY[key]){b.disabled=true;b.textContent="AI 出題中…";}
+        if(BUSY[key]){b.disabled=true;b.textContent="出題中…";}
       }
       if(ERR[key]){const er=document.createElement("div");er.className="gtxt gerr";er.textContent=ERR[key];bar.appendChild(er);}
     });
@@ -239,13 +239,13 @@
     const {render,upd,save,btns,stat}=ctx;
     const list=qsEls.filter(q=>q.querySelector("textarea")&&q.querySelector("textarea").value.trim());
     if(!list.length){stat.textContent="還沒有作答。";return;}
-    btns.forEach(b=>b.disabled=true);stat.textContent="AI 批改中…";
+    btns.forEach(b=>b.disabled=true);stat.textContent="批改中…";
     let done=0;
     try{
       for(const q of list){
         const B=BLOCKS[q.dataset.w],i=+q.dataset.slot,ta=q.querySelector("textarea"),ans=ta.value.trim();
         const body=q.dataset.gid?{id:q.dataset.gid,ans,notes:notesFor(B,q)}:{s:C.s,key:B.key,slot:i,ans,notes:notesFor(B,q)};
-        stat.textContent="AI 批改中… "+(done+1)+" / "+list.length;
+        stat.textContent="批改中… "+(done+1)+" / "+list.length;
         const r=await post("/gen/wgrade",body);
         const sc=Math.max(0,Math.min(+r.p||+q.dataset.pts,+r.score||0));
         ctx.st.grade[q.id]={score:sc,verdict:r.verdict||(sc>=(+q.dataset.pts)?"correct":sc>0?"partial":"wrong"),feedback:String(r.feedback||""),missing:Array.isArray(r.missing)?r.missing.map(String):[],ans,ai:true};

@@ -153,7 +153,7 @@ export default {
       if (!env.GEMINI_KEY) return fail(500, "INTERNAL", "The Worker has no GEMINI_KEY secret yet");
       if (!MODELS.includes(m[1])) return fail(404, "NOT_FOUND", "Model not available here: " + m[1]);   /* 404 makes the site move on to the next model */
       const q = await guard(env, "pin:" + who, "ai");
-      if (q.blocked) return fail(429, "RESOURCE_EXHAUSTED", "AI limit reached for this sign-in; try again later", { "Retry-After": String(q.aiWait || 60) });
+      if (q.blocked) return fail(429, "RESOURCE_EXHAUSTED", "Limit reached for this sign-in; try again later", { "Retry-After": String(q.aiWait || 60) });
       const body = await req.text();
       if (body.length > 200000) return fail(413, "INVALID_ARGUMENT", "Request too large");
       const target = "https://generativelanguage.googleapis.com/v1beta/models/" + m[1] + ":generateContent";
@@ -351,7 +351,7 @@ async function geminiJson(env, prompt, temperature, attempt) {
       r = env.RELAY ? await env.RELAY.get(env.RELAY.idFromName("gemini-relay-us"), { locationHint: "enam" }).fetch("https://relay/" + encodeURIComponent(target), { method: "POST", body })
                     : await callGemini(env, target, body);
     } catch (e) { last = { status: 502 }; continue; }
-    if (!r.ok) { last = { status: r.status }; if ([404, 429, 500, 502, 503, 504].includes(r.status)) continue; return { error: last }; }
+    if (!r.ok) { if (r.status !== 404 || last.status === 502) last = { status: r.status }; if ([404, 429, 500, 502, 503, 504].includes(r.status)) continue; return { error: last }; }   /* a retired model (404) must not hide the 429 / 503 the others gave */
     const j = await r.json().catch(() => null), c = j && j.candidates && j.candidates[0];
     const text = c && c.content && Array.isArray(c.content.parts) ? c.content.parts.filter(p => !p.thought).map(p => p.text || "").join("") : "";
     if (text.trim()) return { text };
@@ -412,7 +412,7 @@ async function genNext(env, acct, who, bodyText, json, fail) {
   };
   if (!b.subject || !b.sec.text) return fail(400, "BAD_CODE", "Missing subject or notes");
   const q = await guard(env, "pin:" + who, "ai");
-  if (q.blocked) return fail(429, "RESOURCE_EXHAUSTED", "AI limit reached for this sign-in; try again later", { "Retry-After": String(q.aiWait || 60) });
+  if (q.blocked) return fail(429, "RESOURCE_EXHAUSTED", "Limit reached for this sign-in; try again later", { "Retry-After": String(q.aiWait || 60) });
   let made = null, err = null;
   for (let attempt = 0; attempt < 4 && !made; attempt++) {
     const g = await geminiJson(env, mcPrompt(b), attempt ? 0.5 : 0.8, attempt);
@@ -422,7 +422,7 @@ async function genNext(env, acct, who, bodyText, json, fail) {
   }
   if (!made) {
     if (err && err.status === 429) return fail(429, "RESOURCE_EXHAUSTED", "Gemini's free quota is used up for the moment", { "Retry-After": "60" });
-    return fail(502, "GEN_FAILED", "The AI did not produce a usable question (" + (err && err.status || "?") + "); try again");
+    return fail(502, "GEN_FAILED", "No usable question was produced (" + (err && err.status || "?") + "); try again");
   }
   /* shuffle the options here, so the page never sees the order the AI wrote them in */
   const p = permutation(4), o = p.map(i => made.o[i]), a = p.indexOf(made.a);
@@ -534,7 +534,7 @@ async function wgenNext(env, acct, who, bodyText, json, fail) {
   };
   if (!b.subject || !b.sec.text) return fail(400, "BAD_CODE", "Missing subject or notes");
   const q = await guard(env, "pin:" + who, "ai");
-  if (q.blocked) return fail(429, "RESOURCE_EXHAUSTED", "AI limit reached for this sign-in; try again later", { "Retry-After": String(q.aiWait || 60) });
+  if (q.blocked) return fail(429, "RESOURCE_EXHAUSTED", "Limit reached for this sign-in; try again later", { "Retry-After": String(q.aiWait || 60) });
   let made = null, err = null;
   for (let attempt = 0; attempt < 4 && !made; attempt++) {
     const g = await geminiJson(env, wPrompt(b), attempt ? 0.5 : 0.8, attempt);
@@ -546,7 +546,7 @@ async function wgenNext(env, acct, who, bodyText, json, fail) {
   }
   if (!made) {
     if (err && err.status === 429) return fail(429, "RESOURCE_EXHAUSTED", "Gemini's free quota is used up for the moment", { "Retry-After": "60" });
-    return fail(502, "GEN_FAILED", "The AI did not produce a usable question (" + (err && err.status || "?") + "); try again");
+    return fail(502, "GEN_FAILED", "No usable question was produced (" + (err && err.status || "?") + "); try again");
   }
   const id = [...crypto.getRandomValues(new Uint8Array(16))].map(x => x.toString(16).padStart(2, "0")).join("");
   const rec = { kind: "w", q: made.q, ref: made.ref, p: b.pts, l: b.label, sec: b.sec.k, at: Date.now() };
@@ -589,7 +589,7 @@ async function wgrade(env, acct, who, bodyText, json, fail) {
     item = { q: (it.c ? it.c + "\n" : "") + it.q, ref: it.r, p: it.p };
   }
   const q = await guard(env, "pin:" + who, "ai");
-  if (q.blocked) return fail(429, "RESOURCE_EXHAUSTED", "AI limit reached for this sign-in; try again later", { "Retry-After": String(q.aiWait || 60) });
+  if (q.blocked) return fail(429, "RESOURCE_EXHAUSTED", "Limit reached for this sign-in; try again later", { "Retry-After": String(q.aiWait || 60) });
   let o = null, err = null;
   for (let attempt = 0; attempt < 3 && !o; attempt++) {
     const g = await geminiJson(env, wGradePrompt(item, notes, ans), 0.2, attempt);
@@ -597,7 +597,8 @@ async function wgrade(env, acct, who, bodyText, json, fail) {
     const x = parseJson(g.text);
     if (x && (typeof x.score === "number" || /\d/.test(String(x.score)))) o = x; else err = { status: 502, bad: true };
   }
-  if (!o) return fail(502, "GEN_FAILED", "The AI did not grade this answer (" + (err && err.status || "?") + "); try again");
+  if (!o && err && err.status === 429) return fail(429, "RESOURCE_EXHAUSTED", "Gemini's free quota is used up for the moment", { "Retry-After": "60" });
+  if (!o) return fail(502, "GEN_FAILED", "This answer was not graded (" + (err && err.status || "?") + "); try again");
   let sc = Math.max(0, Math.min(item.p, Number(o.score) || 0));
   sc = Math.floor(sc * 2 + 1e-9) / 2;
   const verdict = sc >= item.p ? "correct" : sc > 0 ? "partial" : "wrong";

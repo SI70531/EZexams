@@ -221,7 +221,7 @@ document.querySelectorAll(".exam").forEach(ex=>{
         render(document.getElementById(it.id));
       });
       save();upd();
-      stat.textContent=miss.length?(n?"批改完成（"+miss.length+" 題 AI 沒有回覆，改用關鍵字批改）。":"AI 沒有回覆結果，這次先用關鍵字批改。"):"批改完成。";
+      stat.textContent=miss.length?(n?"批改完成（"+miss.length+" 題沒有回覆，改用關鍵字批改）。":"沒有回覆結果，這次先用關鍵字批改。"):"批改完成。";
     }catch(e){if(window.EZAI&&EZAI.isOwn(SAMPLE)){/* keep grades Gemini already gave for unchanged answers */kwGrade(list.filter(it=>!(st.grade[it.id]&&st.grade[it.id].ai&&st.grade[it.id].ans===it.ans)));stat.textContent=EZAI.errText(e)+"這次先用關鍵字比對。";return;}const c=e&&e.code;if(["not_granted","sampling_disabled","not_declared","capability_disabled","capability_removed"].includes(c)){SAMPLE=null;setGradingMode();kwGrade(list);stat.textContent="批改完成（關鍵字比對）。";}else stat.textContent=errCopy(e);}
     finally{btns.forEach(b=>b.disabled=false);}
   }

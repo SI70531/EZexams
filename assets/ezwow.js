@@ -215,7 +215,7 @@ html.ezcalm .wow-bg,html.ezcalm #wowp,html.ezcalm #wowt,html.ezcalm .wow-intro,h
     },40);
   },true);
 
-  /* ---------- answer text types itself out: the page's own explanation, AI 解析, AI 解答 and the AI grading notes ---------- */
+  /* ---------- answer text types itself out: the page's own explanation,解析,解答 and the AI grading notes ---------- */
   (function(){
     if(robot())return;
     const T=".expl,.aiexp,.aians,.gres";

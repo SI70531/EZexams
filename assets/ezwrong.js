@@ -431,7 +431,7 @@ h3.allseen .missbadge{background:#5b6cd6}
   /* a "✗ 錯 N 題 → 錯題區" badge jumps straight to that section's mistakes, not the top of the list */
   let pendingSec=null,pendingCard=null;
   function jumpTo(box,sec){if(!sec)return;const g=host.querySelector('.rvwrong[data-wsec="'+CSS.escape(sec)+'"]');if(!g)return;
-    setTimeout(()=>{const c=g.previousElementSibling;(c&&c.classList.contains("rvsec")?c:g.querySelector(".wgh")||g).scrollIntoView({block:"start"});g.querySelectorAll(".wcard").forEach(c=>{c.classList.remove("wflash");void c.offsetWidth;c.classList.add("wflash");});},30);}
+    setTimeout(()=>{const get=()=>{const c=g.previousElementSibling;return c&&c.classList.contains("rvsec")?c:g.querySelector(".wgh")||g;};pin(get);g.querySelectorAll(".wcard").forEach(c=>{c.classList.remove("wflash");void c.offsetWidth;c.classList.add("wflash");});},30);}
   document.addEventListener("click",e=>{const b=e.target.closest(".missbadge");if(b)pendingSec=b.dataset.wsec||null;},true);
   let tm=null;const later=()=>{clearTimeout(tm);tm=setTimeout(render,120);};
   document.addEventListener("click",later);document.addEventListener("change",later);

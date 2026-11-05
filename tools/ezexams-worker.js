@@ -383,6 +383,8 @@ b.sec.text,
   ].filter(x => x !== "").join("\n");
 }
 /* is this a usable question? returns the cleaned object or null */
+/* an English exam question never contains Chinese characters (the Chinese copy of a question is the separate qz / oz) */
+const CJK = /[\u3400-\u9fff\uf900-\ufaff]/;
 const LETTER_REF = /\b(?:option|choice|answer)\s*\(?[A-D]\)?(?![A-Za-z])|\([A-D]\)|選項\s*\(?[A-D]\)?(?![A-Za-z])|第[一二三四]個選項/i;
 function cleanMc(o, zh) {
   if (!o || typeof o !== "object") return null;
@@ -390,6 +392,7 @@ function cleanMc(o, zh) {
   if (q.length < 20 || e.length < 12 || !Array.isArray(o.o) || o.o.length !== 4 || !Number.isInteger(a) || a < 0 || a > 3) return null;
   const opts = o.o.map(x => clip(x, 400).trim());
   if (opts.some(x => !x) || new Set(opts.map(x => x.toLowerCase())).size !== 4) return null;
+  if (CJK.test(q) || opts.some(x => CJK.test(x))) return null;
   if (opts.some(x => /^(all|none) of the above|^both .* and /i.test(x))) return null;
   if (/according to the (course )?(notes|slides|lecture)|\bthe (notes|slides)\b/i.test(q)) return null;
   if (LETTER_REF.test(e)) return null;
@@ -513,6 +516,7 @@ function wPrompt(b) {
 (DS(b.subject) ? "Difficulty: exactly like the Part II and Part III fill-ins of the 2024 and 2025 past exams of this course. These take 5 to 10 minutes: they give concrete data (a key list with a table size, a list of linked nodes, a sorted list, or a code skeleton) and ask the student to complete a full table by applying the procedure step by step, or to fill in several code blanks. Every blank needs a real calculation or a correct code statement from the notes, not a single term or a one-line recall. Do not make it an open essay, and do not combine several chapters. " : "Difficulty: like the past exam of this course. It is a calculation, a table or a trace that takes a few minutes, never a one-line recall and never an open 'explain why' essay.") + " The question is worth " + b.pts + " points: scale the number of blanks or parts to that.",
 "If the question has several parts or blanks, label them (a), (b), (c) ... and keep their order.",
 "Write it in English, exam style, plain and precise. Never write 'the notes', 'the slides' or 'the lecture' inside the question.",
+"The notes also contain Traditional Chinese translations next to the English text. q must be English ONLY: never copy a Chinese character into it, and in a table use the English column name only. Keep the cells of a table apart (commas or spaces), never run words together.",
 "Plain text only: no Markdown. Do not use backticks and do not use pipe tables (|). For a table, write each row on its own line as 'Step: value' pairs, and use plain words for code (for example: target less than list[last]).",
 "Do not give the answer away in the question. For a fill-in style use one or two blanks written as ______.",
 "ref must give the answer to EVERY blank or part, in the same order (for example \"(a) 4 (b) 11\"), short, based only on the notes. It is kept secret and used for grading.",
@@ -544,7 +548,7 @@ async function wgenNext(env, acct, who, bodyText, json, fail) {
     const g = await geminiJson(env, wPrompt(b), attempt ? 0.5 : 0.8, attempt);
     if (g.error) { err = g.error; if (![404, 429, 500, 502, 503, 504].includes(g.error.status)) break; continue; }
     const o = parseJson(g.text);
-    if (o && typeof o.q === "string" && o.q.trim().length > 12 && typeof o.ref === "string" && o.ref.trim().length > 2) {
+    if (o && typeof o.q === "string" && o.q.trim().length > 12 && !CJK.test(o.q) && typeof o.ref === "string" && o.ref.trim().length > 2) {
       made = { q: clip(o.q.trim(), 1600), ref: clip(o.ref.trim(), 1500) };
     } else err = { status: 502, bad: true };
   }

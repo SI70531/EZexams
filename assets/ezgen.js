@@ -102,7 +102,8 @@
 
   /* ---------- sections and what to ask next ---------- */
   const txt=el=>{if(!el)return "";const c=el.cloneNode(true);c.querySelectorAll("svg,script,style,button,canvas,input,select,.lab").forEach(x=>x.remove());
-    c.querySelectorAll("br,p,div,li,tr,h3,h4").forEach(x=>x.append("\n"));return c.textContent.replace(/[ \t]+/g," ").replace(/\n\s*\n+/g,"\n").trim();};
+    c.querySelectorAll("td,th").forEach(x=>x.append(" | "));   /* table cells stay apart instead of running together */
+    c.querySelectorAll("br,p,div,li,tr,h3,h4").forEach(x=>x.append("\n"));return c.textContent.replace(/[ \t]+/g," ").replace(/ ?\| ?\n/g,"\n").replace(/\n\s*\n+/g,"\n").trim();};
   function scopeOf(k){return (C.scope&&C.scope[k])||[k];}
   function viewTitle(v){const h=document.querySelector("#"+CSS.escape(v)+" .vhead h1");return h&&h.firstChild?h.firstChild.textContent.trim():v;}
   function chapterTitle(k){const sc=scopeOf(k);return sc.length===1?viewTitle(sc[0]):(C.titles&&C.titles[k])||sc.map(viewTitle).join(" + ");}

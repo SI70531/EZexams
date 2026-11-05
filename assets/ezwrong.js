@@ -356,7 +356,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
       const g=document.createElement("div");g.className="wgroup rvwrong";g.dataset.wsec=k;
       const t=document.createElement("div");t.className="wgh";
       const inCard=s&&host.querySelector('.rvsec[data-rsec="'+CSS.escape(k)+'"]');
-      t.textContent="✗ "+(inCard?"Wrong in this section ":s?(NAME[s.ch]||s.ch)+" | "+s.title+"  Wrong ":k==="_"?"Other mistakes (no matching key-point section; see the explanation)":(NAME[k.slice(1)]||k.slice(1))+" | Other mistakes in this chapter (no matching section; reread the chapter)  ")+arr.length;
+      t.textContent="✗ "+(inCard?"Wrong in this section: ":s?(NAME[s.ch]||s.ch)+" | "+s.title+"  Wrong: ":k==="_"?"Other mistakes (no matching key-point section; see the explanation): ":(NAME[k.slice(1)]||k.slice(1))+" | Other mistakes in this chapter (no matching section; reread the chapter): ")+arr.length;
       g.appendChild(t);
       arr.forEach(w=>{
         const c=document.createElement("div");c.className="wcard";c.dataset.wid=wid(w);

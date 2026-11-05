@@ -103,7 +103,7 @@ function renderQuiz(key){
     const hint=document.createElement("span");hint.style.marginLeft="10px";hint.style.color="var(--muted)";
     rd.appendChild(rb2);rd.appendChild(hint);
     box.insertBefore(rd,box.firstChild);
-    const upd=()=>{const n=quizCount(key);rb2.disabled=n>0;hint.textContent=n>0?"Answered questions can't be redone. Clear your answers first.":"";};
+    const upd=()=>{const n=quizCount(key);rb2.disabled=n>0;hint.textContent=n>0?"Answered questions can't be redone.":"";};
     upd();
     rb2.addEventListener("click",()=>{
       if(quizCount(key)>0)return;
@@ -1065,7 +1065,7 @@ if(window.EZgenw){
       const b=document.createElement("button");b.type="button";b.className="btn";b.textContent=label;
       const hint=document.createElement("span");hint.style.marginLeft="10px";hint.style.color="var(--muted)";
       wrap.appendChild(b);wrap.appendChild(hint);h.insertAdjacentElement("afterend",wrap);
-      const upd=()=>{const n=EZgenw.sectionAnswered(key,from,to);b.disabled=n;hint.textContent=n?"Answered questions can't be redone. Clear your answers first.":"";};
+      const upd=()=>{const n=EZgenw.sectionAnswered(key,from,to);b.disabled=n;hint.textContent=n?"Answered questions can't be redone.":"";};
       b.addEventListener("click",()=>{
         if(EZgenw.sectionAnswered(key,from,to))return;
         (window.EZundo||((w,f)=>f()))(label,()=>{EZgenw.redoSection(key,from,to);upd();},null,b);

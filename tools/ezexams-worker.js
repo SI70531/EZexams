@@ -359,12 +359,15 @@ async function geminiJson(env, prompt, temperature, attempt) {
   }
   return { error: last };
 }
+function DS(subject) { return /Data (and File )?Structures/i.test(String(subject || "")); }
 function mcPrompt(b) {
   return [
 "You are writing ONE multiple-choice question for a university exam. Course: " + b.subject + ". Chapter: " + b.chapter + ".",
 "Base the question ONLY on the COURSE NOTES at the end (the section the student is studying). Use nothing the notes do not support.",
-"Make it a good exam question with some depth:",
-"- Prefer application and reasoning (a short scenario, a small calculation, a comparison, 'which statement is correct') over repeating a definition word for word; it may combine two ideas of the section.",
+(DS(b.subject)
+  ? "Difficulty: exactly like the 2024 and 2025 past exams of this course. A direct question that tests ONE idea from the notes, with at most one step (a trace, a field value, a single calculation, or 'which statement is correct'). Do not combine two ideas and do not write multi-step scenarios. It must be answerable in under a minute."
+  : "Make it a good exam question with some depth:"),
+(DS(b.subject) ? "" : "- Prefer application and reasoning (a short scenario, a small calculation, a comparison, 'which statement is correct') over repeating a definition word for word; it may combine two ideas of the section."),
 "- Exactly four options and exactly one correct option. The wrong options must be tempting: each one should match a real misconception or a near-miss. No 'all of the above', 'none of the above' or 'both A and B'.",
 "- Do not give the answer away: the options are similar in length and style, and the question itself does not contain the answer.",
 "- The question and the options are in English (exam style, plain and precise). Never write 'the notes', 'the slides' or 'the lecture' inside the question.",
@@ -507,7 +510,7 @@ function wPrompt(b) {
 "You are writing ONE written exam question for a university exam. Course: " + b.subject + ". Chapter: " + b.chapter + ".",
 "Base the question ONLY on the COURSE NOTES at the end (the section the student is studying). Use nothing the notes do not support.",
 "Question type (copy the form of the past exam, do not invent a different kind of question): " + b.style + ".",
-"Difficulty: like the past exam of this course. It is a calculation, a table or a trace that takes a few minutes, never a one-line recall and never an open 'explain why' essay. The question is worth " + b.pts + " points: scale the number of blanks or parts to that.",
+(DS(b.subject) ? "Difficulty: exactly like the 2024 and 2025 past exams of this course. A short table or trace with a single correct procedure (one step per blank), about 2 minutes per blank at most. No multi-step scenarios and no combining of several chapters." : "Difficulty: like the past exam of this course. It is a calculation, a table or a trace that takes a few minutes, never a one-line recall and never an open 'explain why' essay.") + " The question is worth " + b.pts + " points: scale the number of blanks or parts to that.",
 "If the question has several parts or blanks, label them (a), (b), (c) ... and keep their order.",
 "Write it in English, exam style, plain and precise. Never write 'the notes', 'the slides' or 'the lecture' inside the question.",
 "Do not give the answer away in the question. For a fill-in style use one or two blanks written as ______.",

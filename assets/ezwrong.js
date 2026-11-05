@@ -38,9 +38,9 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
 .ezback:hover{background:var(--bad,#c62828);color:var(--paper,#fff)}
 .wback{display:block;margin-top:12px;border-color:var(--bad,#c62828)!important;color:var(--bad,#c62828)!important;font-weight:700}
 @keyframes wflash{0%,60%{box-shadow:0 0 0 4px var(--bad,#c62828)}100%{box-shadow:0 0 0 0 transparent}}
-.wflash{animation:wflash 2.2s ease-out;border-radius:10px}
+.wflash{animation:wflash 2.2s ease-out!important;animation-timeline:auto!important;border-radius:10px}
 @keyframes wflashok{0%,60%{box-shadow:0 0 0 4px var(--ok,#2d7a3e)}100%{box-shadow:0 0 0 0 transparent}}
-.wflash.ok{animation-name:wflashok}`;
+.wflash.ok{animation-name:wflashok!important}`;
   const stl=document.createElement("style");stl.textContent=css;document.head.appendChild(stl);
 
   const CH=Object.keys(QUIZ).filter(k=>{const v=document.getElementById(k);return v&&v.classList.contains("view");});

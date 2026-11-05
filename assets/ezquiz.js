@@ -220,7 +220,7 @@
     })(t0);
   };
   window.EZglow=function(el){el.scrollIntoView({block:"center"});document.querySelectorAll(".ezhere").forEach(x=>x.classList.remove("ezhere"));void el.offsetWidth;el.classList.add("ezhere");};
-  document.addEventListener("animationend",e=>{const n=e.animationName,t=e.target;if(n==="ezhere")t.classList.remove("ezhere");else if(n==="wflash")t.classList.remove("wflash");else if(n==="ezsflash")t.classList.remove("ezs-flash");},true);
+  document.addEventListener("animationend",e=>{const n=e.animationName,t=e.target;if(n==="ezhere")t.classList.remove("ezhere");else if(n==="wflash"||n==="wflashok")t.classList.remove("wflash","ok");else if(n==="ezsflash")t.classList.remove("ezs-flash");},true);
   let t=null;const later=()=>{clearTimeout(t);t=setTimeout(update,40);};
   ["click","input","change"].forEach(ev=>document.addEventListener(ev,later));
   new MutationObserver(ms=>{if(window.EZnoise&&EZnoise(ms))return;later();}).observe(document.body,{childList:true,subtree:true});

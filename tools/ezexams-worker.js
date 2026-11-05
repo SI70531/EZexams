@@ -35,7 +35,7 @@ const GEN_MAX = 60000;          /* /gen/next carries the notes of one section */
 const BANK_HOUR = 1500;         /* /gen/answer + /bank/open calls per account and hour */
 /* only these Gemini models may be called through the Worker (the site's own list in assets/ezai.js, plus the
    model-list lookup), so a signed-in visitor cannot spend the key on a more expensive model */
-const MODELS = ["gemini-flash-latest", "gemini-2.5-flash", "gemini-flash-lite-latest", "gemini-2.5-flash-lite", "gemini-2.0-flash"];
+const MODELS = ["gemini-flash-latest", "gemini-2.5-flash", "gemini-flash-lite-latest", "gemini-2.5-flash-lite", "gemini-3.8-flash"];
 /* AI calls per account: generous enough for heavy grading sessions, but one account cannot drain the key */
 const AI_HOUR = 600, AI_DAY = 3000;
 /* wrong PINs from everywhere together: changing IP does not give a fresh 10,000-PIN search */

@@ -14,7 +14,7 @@
   const myKey=()=>get(LS_KEY)||"";
   const viaProxy=key=>!key;
   /* best first; when one is overloaded or its free quota is used up, the next one is tried */
-  const MODELS=["gemini-flash-latest","gemini-2.5-flash","gemini-flash-lite-latest","gemini-2.5-flash-lite","gemini-2.0-flash"];
+  const MODELS=["gemini-flash-latest","gemini-2.5-flash","gemini-flash-lite-latest","gemini-2.5-flash-lite","gemini-3.8-flash"];
   const API="https://generativelanguage.googleapis.com/v1beta/models/";
   const get=k=>{try{return localStorage.getItem(k);}catch(e){return null;}};
   const set=(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v);}catch(e){}};

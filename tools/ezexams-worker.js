@@ -35,7 +35,7 @@ const GEN_MAX = 60000;          /* /gen/next carries the notes of one section */
 const BANK_HOUR = 1500;         /* /gen/answer + /bank/open calls per account and hour */
 /* only these Gemini models may be called through the Worker (the site's own list in assets/ezai.js, plus the
    model-list lookup), so a signed-in visitor cannot spend the key on a more expensive model */
-const MODELS = ["gemini-flash-latest", "gemini-2.5-flash", "gemini-flash-lite-latest", "gemini-2.5-flash-lite", "gemini-3.8-flash"];
+const MODELS = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-3-flash-preview", "gemini-flash-latest", "gemini-flash-lite-latest"];
 /* AI calls per account: generous enough for heavy grading sessions, but one account cannot drain the key */
 const AI_HOUR = 600, AI_DAY = 3000;
 /* wrong PINs from everywhere together: changing IP does not give a fresh 10,000-PIN search */
@@ -420,9 +420,9 @@ async function genNext(env, acct, who, bodyText, json, fail) {
   const q = await guard(env, "pin:" + who, "ai");
   if (q.blocked) return fail(429, "RESOURCE_EXHAUSTED", "Limit reached for this sign-in; try again later", { "Retry-After": String(q.aiWait || 60) });
   let made = null, err = null;
-  for (let attempt = 0; attempt < 4 && !made; attempt++) {
+  for (let attempt = 0; attempt < 2 && !made; attempt++) {
     const g = await geminiJson(env, mcPrompt(b), attempt ? 0.5 : 0.8, attempt);
-    if (g.error) { err = g.error; if (![404, 429, 500, 502, 503, 504].includes(g.error.status)) break; continue; }
+    if (g.error) { err = g.error; if (g.error.status === 429 || ![404, 500, 502, 503, 504].includes(g.error.status)) break; continue; }   /* 429: every model was already tried */
     made = cleanMc(parseJson(g.text), b.zh);
     if (!made) err = { status: 502, bad: true };
   }
@@ -544,9 +544,9 @@ async function wgenNext(env, acct, who, bodyText, json, fail) {
   const q = await guard(env, "pin:" + who, "ai");
   if (q.blocked) return fail(429, "RESOURCE_EXHAUSTED", "Limit reached for this sign-in; try again later", { "Retry-After": String(q.aiWait || 60) });
   let made = null, err = null;
-  for (let attempt = 0; attempt < 4 && !made; attempt++) {
+  for (let attempt = 0; attempt < 2 && !made; attempt++) {
     const g = await geminiJson(env, wPrompt(b), attempt ? 0.5 : 0.8, attempt);
-    if (g.error) { err = g.error; if (![404, 429, 500, 502, 503, 504].includes(g.error.status)) break; continue; }
+    if (g.error) { err = g.error; if (g.error.status === 429 || ![404, 500, 502, 503, 504].includes(g.error.status)) break; continue; }   /* 429: every model was already tried */
     const o = parseJson(g.text);
     if (o && typeof o.q === "string" && o.q.trim().length > 12 && !CJK.test(o.q) && typeof o.ref === "string" && o.ref.trim().length > 2) {
       made = { q: clip(o.q.trim(), 1600), ref: clip(o.ref.trim(), 1500) };
@@ -602,7 +602,7 @@ async function wgrade(env, acct, who, bodyText, json, fail) {
   let o = null, err = null;
   for (let attempt = 0; attempt < 3 && !o; attempt++) {
     const g = await geminiJson(env, wGradePrompt(item, notes, ans), 0.2, attempt);
-    if (g.error) { err = g.error; if (![404, 429, 500, 502, 503, 504].includes(g.error.status)) break; continue; }
+    if (g.error) { err = g.error; if (g.error.status === 429 || ![404, 500, 502, 503, 504].includes(g.error.status)) break; continue; }   /* 429: every model was already tried */
     const x = parseJson(g.text);
     if (x && (typeof x.score === "number" || /\d/.test(String(x.score)))) o = x; else err = { status: 502, bad: true };
   }

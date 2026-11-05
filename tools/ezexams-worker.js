@@ -371,6 +371,7 @@ function mcPrompt(b) {
 "- Exactly four options and exactly one correct option. The wrong options must be tempting: each one should match a real misconception or a near-miss. No 'all of the above', 'none of the above' or 'both A and B'.",
 "- Do not give the answer away: the options are similar in length and style, and the question itself does not contain the answer.",
 "- The question and the options are in English (exam style, plain and precise). Never write 'the notes', 'the slides' or 'the lecture' inside the question.",
+"- The question must stand on its own: the student never sees the notes. Never point to anything in them ('Algorithm 1-2', 'Figure 3', 'Table 2-1', 'line 4'). If it needs code, a table or data, write it out inside the question; otherwise ask a plain concept question.",
 "- e = the explanation, in Traditional Chinese (Taiwan) with technical terms kept in English: why the correct option is right and why each wrong option is wrong, 3-6 sentences. NEVER refer to an option by its letter or position (no 'option A', '(B)', '第二個'): name it by its content.",
 b.zh ? "- Also give qz (the question in Traditional Chinese) and oz (the four options in Traditional Chinese, in the same order as o)." : "",
 "This is question " + b.n + " of " + b.total + " in this set.",
@@ -385,6 +386,8 @@ b.sec.text,
 /* is this a usable question? returns the cleaned object or null */
 /* an English exam question never contains Chinese characters (the Chinese copy of a question is the separate qz / oz) */
 const CJK = /[\u3400-\u9fff\uf900-\ufaff]/;
+/* a question that points to a numbered item of the notes (Algorithm 1-2, Figure 3, Table 2-1 ...) cannot be answered by itself */
+const NOTE_REF = /\b(?:Algorithm|Figure|Fig\.|Table|Listing|Slide|Page|Section)\s*\d/i;
 const LETTER_REF = /\b(?:option|choice|answer)\s*\(?[A-D]\)?(?![A-Za-z])|\([A-D]\)|選項\s*\(?[A-D]\)?(?![A-Za-z])|第[一二三四]個選項/i;
 function cleanMc(o, zh) {
   if (!o || typeof o !== "object") return null;
@@ -393,6 +396,7 @@ function cleanMc(o, zh) {
   const opts = o.o.map(x => clip(x, 400).trim());
   if (opts.some(x => !x) || new Set(opts.map(x => x.toLowerCase())).size !== 4) return null;
   if (CJK.test(q) || opts.some(x => CJK.test(x))) return null;
+  if (NOTE_REF.test(q)) return null;
   if (opts.some(x => /^(all|none) of the above|^both .* and /i.test(x))) return null;
   if (/according to the (course )?(notes|slides|lecture)|\bthe (notes|slides)\b/i.test(q)) return null;
   if (LETTER_REF.test(e)) return null;
@@ -517,6 +521,7 @@ function wPrompt(b) {
 "If the question has several parts or blanks, label them (a), (b), (c) ... and keep their order.",
 "Write it in English, exam style, plain and precise. Never write 'the notes', 'the slides' or 'the lecture' inside the question.",
 "The notes also contain Traditional Chinese translations next to the English text. q must be English ONLY: never copy a Chinese character into it, and in a table use the English column name only. Keep the cells of a table apart (commas or spaces), never run words together.",
+"The question must stand on its own: the student sees ONLY the question, never the notes. Never point to anything in the notes ('Algorithm 1-2', 'Figure 3', 'Table 2-1', 'line 4', 'the example above'). If the question needs an algorithm, code, a table or data, write it out in full inside the question. If you cannot give that context, write a plain fill-in question that needs none (a definition, a rule, or a small calculation with the numbers given in the question).",
 "Plain text only: no Markdown. Do not use backticks and do not use pipe tables (|). For a table, write each row on its own line as 'Step: value' pairs, and use plain words for code (for example: target less than list[last]).",
 "Do not give the answer away in the question. For a fill-in style use one or two blanks written as ______.",
 "ref must give the answer to EVERY blank or part, in the same order (for example \"(a) 4 (b) 11\"), short, based only on the notes. It is kept secret and used for grading.",
@@ -548,7 +553,7 @@ async function wgenNext(env, acct, who, bodyText, json, fail) {
     const g = await geminiJson(env, wPrompt(b), attempt ? 0.5 : 0.8, attempt);
     if (g.error) { err = g.error; if (g.error.status === 429 || ![404, 500, 502, 503, 504].includes(g.error.status)) break; continue; }   /* 429: every model was already tried */
     const o = parseJson(g.text);
-    if (o && typeof o.q === "string" && o.q.trim().length > 12 && !CJK.test(o.q) && typeof o.ref === "string" && o.ref.trim().length > 2) {
+    if (o && typeof o.q === "string" && o.q.trim().length > 12 && !CJK.test(o.q) && !NOTE_REF.test(o.q) && typeof o.ref === "string" && o.ref.trim().length > 2) {
       made = { q: clip(o.q.trim(), 1600), ref: clip(o.ref.trim(), 1500) };
     } else err = { status: 502, bad: true };
   }

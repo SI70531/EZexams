@@ -32,8 +32,13 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
 .wcard pre{white-space:pre-wrap}
 .wcard.seen{border-left-color:#5b6cd6;background:linear-gradient(0deg,rgba(91,108,214,.07),rgba(91,108,214,.07)),var(--paper)}
 .wcard.seen .src{color:#5b6cd6}.wcard.seen .yours{opacity:.75}
-.wcard .wseen{margin-left:auto}
-.wcard .wseen.on{border-color:#5b6cd6;color:#5b6cd6;font-weight:700}
+.wseen{margin-left:auto}.qbtns .wseen{margin-top:0}
+.seenq{outline:2px solid #5b6cd6;outline-offset:3px;border-radius:10px}
+h3.missed.allseen{color:#5b6cd6!important;border-left-color:#5b6cd6}
+h3.allseen .missbadge{background:#5b6cd6}
+.rvsec.missed.allseen{border-color:#5b6cd6;border-left-color:#5b6cd6}.rvsec.missed.allseen .rvk{background:#5b6cd6}
+.rvwrong.allseen .wgh{color:#5b6cd6}
+.wseen.on{border-color:#5b6cd6;color:#5b6cd6;font-weight:700}
 .wcard .wbar{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
 .wgroup h3{margin-top:28px;scroll-margin-top:80px}
 .wnotes{display:block;margin-top:10px}
@@ -282,6 +287,38 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
     const n=numOf(getTarget());
     offerBack("↩ Back to the previous question"+(n?" (question "+n+")":""),()=>{show(w.go);flash(getTarget,"center",w.ok);});
   }
+  /* "Mark as reviewed": one shared record (localStorage), so the card in Review and the question itself stay in sync */
+  const SEEN="ezw-seen";
+  const seenMap=()=>{try{return JSON.parse(localStorage.getItem(SEEN)||"{}");}catch(e){return {};}};
+  let lastBy=new Map();
+  function toggleSeen(w){const m=seenMap(),id=wid(w);if(m[id])delete m[id];else m[id]=1;try{localStorage.setItem(SEEN,JSON.stringify(m));}catch(e){}paintSeen();}
+  function paintSeen(){
+    const m=seenMap();
+    document.querySelectorAll(".wseen").forEach(b=>{
+      const on=!!m[b.dataset.wid];b.classList.toggle("on",on);
+      b.textContent=on?"✓ Reviewed (tap to undo)":"Mark as reviewed";
+      const c=b.closest(".wcard");if(c)c.classList.toggle("seen",on);
+      const q=b.closest(".qitem,.exq");if(q)q.classList.toggle("seenq",on);
+    });
+    SECS.forEach(s=>{
+      const arr=lastBy.get(s.key)||[],n=arr.length,d=arr.filter(w=>m[wid(w)]).length,all=n>0&&d===n;
+      s.h.classList.toggle("allseen",all);
+      const b=s.h.querySelector(".missbadge");
+      if(b)b.textContent=all?"✓ Reviewed "+n+" → Review":"✗ Wrong "+n+(d?" · "+d+" reviewed":"")+" → Review";
+      const rc=host.querySelector('.rvsec[data-rsec="'+CSS.escape(s.key)+'"]');if(rc)rc.classList.toggle("allseen",all);
+      const g=host.querySelector('.rvwrong[data-wsec="'+CSS.escape(s.key)+'"]');if(g)g.classList.toggle("allseen",all);
+    });
+  }
+  function seenButtons(list){
+    const keep=new Set();
+    list.forEach(w=>{
+      const el=locate(w);if(!el)return;keep.add(el);
+      let b=el.querySelector(".wseen");
+      if(!b){b=document.createElement("button");b.type="button";b.className="btn wseen";(window.EZrow?EZrow(el):el).appendChild(b);}
+      b.dataset.wid=wid(w);b._w=w;b.onclick=()=>toggleSeen(b._w);
+    });
+    document.querySelectorAll(".qitem .wseen,.exq .wseen").forEach(b=>{const el=b.closest(".qitem,.exq");if(!keep.has(el)){const r=b.parentElement;b.remove();el.classList.remove("seenq");if(r.classList.contains("qbtns")&&!r.children.length)r.remove();}});
+  }
   function notesButtons(list){
     const keep=new Set();
     list.forEach(w=>{
@@ -321,7 +358,9 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
   function render(){
     let list;try{list=collect();}catch(e){return;}
     try{notesButtons(list.concat(answeredRight(),answeredRightWritten()));}catch(e){}
+    try{seenButtons(list);}catch(e){}
     const by=new Map();list.forEach(w=>{const k=gkey(w);if(!by.has(k))by.set(k,[]);by.get(k).push(w);});
+    lastBy=by;
     SECS.forEach(s=>{
       const n=(by.get(s.key)||[]).length;s.h.classList.toggle("missed",n>0);
       let b=s.h.querySelector(".missbadge");
@@ -364,11 +403,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
         add("src",w.src);add("wq2",w.q);add("yours","Your answer: "+w.yours);add("right","Correct answer: "+w.right);if(w.e)add("",w.e);
         const bar=document.createElement("div");bar.className="wbar";
         bar.appendChild(btn("Back to question",()=>goto(w)));
-        const sk="ezw-seen",sget=()=>{try{return JSON.parse(localStorage.getItem(sk)||"{}");}catch(e){return {};}};
-        const sb=btn("",()=>{const m=sget(),id=wid(w);if(m[id])delete m[id];else m[id]=1;try{localStorage.setItem(sk,JSON.stringify(m));}catch(e){}paint();});
-        sb.classList.add("wseen");
-        const paint=()=>{const on=!!sget()[wid(w)];c.classList.toggle("seen",on);sb.classList.toggle("on",on);sb.textContent=on?"✓ Reviewed (tap to undo)":"Mark as reviewed";};
-        paint();
+        const sb=btn("",()=>toggleSeen(w));sb.classList.add("wseen");sb.dataset.wid=wid(w);
         if(s)bar.appendChild(btn("Notes for this section",()=>{show(s.ch);revealNotes(s.h);offerBack("↩ Back to Review (to this card)",()=>{pendingCard=wid(w);showWrong();later();});}));
         else if(w.ch)bar.appendChild(btn("Notes: "+(NAME[w.ch]||w.ch),()=>show(w.ch)));
         bar.appendChild(sb);
@@ -384,6 +419,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
       });
       place(k,g);
     });
+    paintSeen();
     const card=pendingCard,sec=pendingSec;pendingCard=pendingSec=null;
     const hit=card&&[...host.querySelectorAll(".wcard")].find(c=>c.dataset.wid===card);
     if(hit)flash(hit,"center");else jumpTo(box,sec); /* answered right since? fall back to its section */

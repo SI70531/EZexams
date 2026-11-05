@@ -243,14 +243,15 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
     const bar=document.querySelector("header.top");const off=(bar?bar.offsetHeight:0)+16;
     setTimeout(()=>{window.scrollTo({top:top.getBoundingClientRect().top+window.scrollY-off,behavior:"auto"});},30);
   }
-  function toNotes(w){
+  function toNotes(w,card){
     const s=w.m.s;
     document.querySelectorAll(".wback").forEach(b=>b.remove());
     if(s){show(s.ch);}else if(w.ch){show(w.ch);}else return;
     const anchor=s?s.h:document.getElementById(w.ch).querySelector("h1,h2,h3");
     if(anchor)revealNotes(anchor);
-    const n=numOf(locate(w));
-    offerBack("↩ Back to the previous question"+(n?" (question "+n+")":""),()=>{show(w.go);const el=locate(w);if(el)flash(el,"center",w.ok);});
+    const target=card||locate(w);
+    const n=numOf(target);
+    offerBack("↩ Back to the previous question"+(n?" (question "+n+")":""),()=>{show(w.go);if(target)flash(target,"center",w.ok);});
   }
   function notesButtons(list){
     const keep=new Set();
@@ -260,7 +261,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
       let b=el.querySelector(".wnotes");
       if(!b){b=document.createElement("button");b.type="button";b.className="btn wnotes";(window.EZrow?EZrow(el):el).prepend(b);}
       b.textContent=w.m.s?"Notes: "+w.m.s.title:"Notes: "+(NAME[w.ch]||w.ch);
-      b.onclick=()=>toNotes(w);
+      b.onclick=()=>toNotes(w,el); /* remember the card this button belongs to, so the way back is to that card */
     });
     document.querySelectorAll(".wnotes").forEach(b=>{const el=b.closest(".qitem,.exq");if(!keep.has(el)){const r=b.parentElement;b.remove();if(r.classList.contains("qbtns")&&!r.children.length)r.remove();}});
   }

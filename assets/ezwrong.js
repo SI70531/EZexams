@@ -200,21 +200,46 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
     return root.querySelector('.qitem[data-i="'+w.i+'"]')||root.querySelectorAll(".qitem")[w.i]||null; /* data-i: original position */
   }
   const wid=w=>w.go+"|"+(w.quiz||"")+"|"+(w.qid||w.i);
-  /* bottom edge of the sticky bars (site header, score bar) that cover the top of the screen */
+  /* a block's top in page coordinates, from layout (offsetTop). Unlike getBoundingClientRect it is not changed by the
+     page-turn / rise-in animations that run on a tab's blocks while it opens, so it is the same at every moment. */
+  function pageTop(el){let y=0;for(let n=el;n;n=n.offsetParent)y+=n.offsetTop;return y;}
+  /* bottom edge of the sticky bars (site header, score bar) once they are stuck at the top of the screen */
   function stickyBottom(){
     let b=0;
     document.querySelectorAll(".top,.examtools").forEach(x=>{
-      const cs=getComputedStyle(x),r=x.getBoundingClientRect();
-      if(cs.position==="sticky"&&r.height&&r.top<=parseFloat(cs.top||0)+2)b=Math.max(b,r.bottom);
+      const cs=getComputedStyle(x);
+      if(cs.position==="sticky"&&x.getClientRects().length)b=Math.max(b,(parseFloat(cs.top)||0)+x.offsetHeight);
     });
     return b;
   }
-  /* the question's top sits just below the sticky bars; green for a right answer, red for a wrong one */
-  function flash(el,block,ok){setTimeout(()=>{
-    const y=el.getBoundingClientRect().top+scrollY-(stickyBottom()+12);
-    window.scrollTo({top:Math.max(0,y),behavior:"auto"});
-    el.classList.remove("wflash","ok");void el.offsetWidth;el.classList.add("wflash");if(ok)el.classList.add("ok");
-  },30);}
+  /* put a question just below the sticky bars and keep it there while the page settles (the tab animation, text that
+     loads above it): re-aligned every frame for 2.5 s, and it stops the moment the reader scrolls, presses a key or clicks */
+  let pinStop=null;
+  function pin(get){
+    if(pinStop)pinStop();
+    let done=false;const t0=performance.now(),evs=["wheel","touchstart","keydown","mousedown"];
+    const stop=()=>{if(done)return;done=true;evs.forEach(t=>removeEventListener(t,stop,true));if(pinStop===stop)pinStop=null;};
+    pinStop=stop;evs.forEach(t=>addEventListener(t,stop,{capture:true,passive:true}));
+    (function step(){
+      if(done)return;
+      if(performance.now()-t0>2500){stop();return;}
+      const el=get();
+      if(el&&el.isConnected&&el.getClientRects().length){
+        const want=Math.max(0,pageTop(el)-(stickyBottom()+12));
+        if(Math.abs(scrollY-want)>1)window.scrollTo({top:want,behavior:"instant"});
+      }
+      requestAnimationFrame(step);
+    })();
+  }
+  /* the question (or a function that finds it again if the page redrew it) goes to the top and flashes: green for a right answer, red for a wrong one */
+  function flash(x,block,ok){
+    const get=typeof x==="function"?x:()=>x;
+    setTimeout(()=>{
+      const el=get();if(!el)return;
+      pin(get);
+      el.classList.remove("wflash","ok");void el.offsetWidth;el.classList.add("wflash");if(ok)el.classList.add("ok");
+    },30);
+  }
   /* 回原題: open the question, and put a 「← 回錯題區」 button under it that comes back to this same card */
   function goto(w){
     show(w.go);
@@ -223,7 +248,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
     const b=document.createElement("button");b.type="button";b.className="btn wback";b.textContent="← Back to Review (to this question)";
     b.addEventListener("click",()=>{b.remove();pendingCard=wid(w);pendingSec=w.m.s?w.m.s.key:null;showWrong();});
     el.appendChild(b);
-    flash(el,"center",w.ok);
+    flash(()=>el.isConnected?el:locate(w),"center",w.ok);
   }
   function btn(txt,fn){const b=document.createElement("button");b.className="btn";b.type="button";b.textContent=txt;b.addEventListener("click",fn);return b;}
   /* under every wrong answer (chapter quiz, past exam, mock exam): a 「回講義這一段」 button.
@@ -249,9 +274,9 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
     if(s){show(s.ch);}else if(w.ch){show(w.ch);}else return;
     const anchor=s?s.h:document.getElementById(w.ch).querySelector("h1,h2,h3");
     if(anchor)revealNotes(anchor);
-    const target=card||locate(w);
-    const n=numOf(target);
-    offerBack("↩ Back to the previous question"+(n?" (question "+n+")":""),()=>{show(w.go);if(target)flash(target,"center",w.ok);});
+    const getTarget=()=>card&&card.isConnected?card:locate(w);   /* the card whose Notes button was clicked; found again if the quiz was redrawn */
+    const n=numOf(getTarget());
+    offerBack("↩ Back to the previous question"+(n?" (question "+n+")":""),()=>{show(w.go);flash(getTarget,"center",w.ok);});
   }
   function notesButtons(list){
     const keep=new Set();

@@ -25,8 +25,8 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
 .wcard .src{font-size:calc(12px*var(--ts,1));color:var(--bad,#c62828);font-weight:700;letter-spacing:.08em}
 .wcard .wq2{font-weight:600;margin:6px 0;white-space:pre-wrap}
 .wcard .yours{color:var(--bad,#c62828)}.wcard .right{color:var(--ok,#2e7d32)}
-.wcard details.concept{margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
-.wcard details.concept summary{cursor:pointer;font-weight:700;color:var(--brass)}
+.wcard .concept{margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
+.wcard .concept{font-weight:700;color:var(--brass)}
 .wcard .cbody{font-size:calc(14px*var(--ts,1));overflow-x:auto}
 .wcard .cbody .lab,.wcard .cbody button,.wcard .cbody canvas,.wcard .cbody input,.wcard .cbody select{display:none}
 .wcard pre{white-space:pre-wrap}
@@ -416,10 +416,8 @@ h3.allseen .missbadge{background:#5b6cd6}
         bar.appendChild(sb);
         c.appendChild(bar);
         if(s){
-          const d=document.createElement("details");d.className="concept";
-          const sm=document.createElement("summary");sm.textContent="Related idea: "+s.title;d.appendChild(sm);
-          const body=document.createElement("div");body.className="cbody";d.appendChild(body);
-          d.addEventListener("toggle",()=>{if(!d.open||body.childElementCount)return;s.parts.forEach(n=>{const cl=n.cloneNode(true);cl.removeAttribute("id");cl.querySelectorAll("[id]").forEach(x=>x.removeAttribute("id"));body.appendChild(cl);});});
+          const d=document.createElement("div");d.className="concept";
+          d.textContent="Related idea: "+s.title;
           c.appendChild(d);
         }
         g.appendChild(c);

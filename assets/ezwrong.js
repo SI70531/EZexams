@@ -434,7 +434,10 @@ h3.allseen .missbadge{background:#5b6cd6}
   function jumpTo(box,sec){if(!sec)return;const g=host.querySelector('.rvwrong[data-wsec="'+CSS.escape(sec)+'"]');if(!g)return;
     setTimeout(()=>{const get=()=>{const c=g.previousElementSibling;return c&&c.classList.contains("rvsec")?c:g.querySelector(".wgh")||g;};pin(get);g.querySelectorAll(".wcard").forEach(c=>{c.classList.remove("wflash");void c.offsetWidth;c.classList.add("wflash");});},30);}
   document.addEventListener("click",e=>{const b=e.target.closest(".missbadge");if(b)pendingSec=b.dataset.wsec||null;},true);
-  let tm=null;const later=()=>{clearTimeout(tm);tm=setTimeout(render,120);};
+  let tm=null;
+  /* the mistake cards are rebuilt on every click; do not do that while the reader has text selected in them (it would wipe the selection) */
+  const selecting=()=>{const sel=window.getSelection&&getSelection();return !!(sel&&!sel.isCollapsed&&String(sel).trim()&&sel.anchorNode&&host.contains(sel.anchorNode));};
+  const later=()=>{clearTimeout(tm);tm=setTimeout(()=>{if(selecting())return;render();},120);};
   document.addEventListener("click",later);document.addEventListener("change",later);
   window.addEventListener("storage",later);
   /* a grade can arrive later (Gemini answers after a few seconds): refresh as soon as a grade box changes,

@@ -30,6 +30,9 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
 .wcard .cbody{font-size:calc(14px*var(--ts,1));overflow-x:auto}
 .wcard .cbody .lab,.wcard .cbody button,.wcard .cbody canvas,.wcard .cbody input,.wcard .cbody select{display:none}
 .wcard pre{white-space:pre-wrap}
+.wcard.seen{border-left-color:#5b6cd6;background:linear-gradient(0deg,rgba(91,108,214,.07),rgba(91,108,214,.07)),var(--paper)}
+.wcard.seen .src{color:#5b6cd6}.wcard.seen .yours{opacity:.75}
+.wcard .wseen.on{border-color:#5b6cd6;color:#5b6cd6;font-weight:700}
 .wcard .wbar{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
 .wgroup h3{margin-top:28px;scroll-margin-top:80px}
 .wnotes{display:block;margin-top:10px}
@@ -360,6 +363,11 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
         add("src",w.src);add("wq2",w.q);add("yours","Your answer: "+w.yours);add("right","Correct answer: "+w.right);if(w.e)add("",w.e);
         const bar=document.createElement("div");bar.className="wbar";
         bar.appendChild(btn("Back to question",()=>goto(w)));
+        const sk="ezw-seen",sget=()=>{try{return JSON.parse(localStorage.getItem(sk)||"{}");}catch(e){return {};}};
+        const sb=btn("",()=>{const m=sget(),id=wid(w);if(m[id])delete m[id];else m[id]=1;try{localStorage.setItem(sk,JSON.stringify(m));}catch(e){}paint();});
+        sb.classList.add("wseen");
+        const paint=()=>{const on=!!sget()[wid(w)];c.classList.toggle("seen",on);sb.classList.toggle("on",on);sb.textContent=on?"✓ Reviewed (tap to undo)":"Mark as reviewed";};
+        paint();bar.appendChild(sb);
         if(s)bar.appendChild(btn("Notes for this section",()=>{show(s.ch);revealNotes(s.h);offerBack("↩ Back to Review (to this card)",()=>{pendingCard=wid(w);showWrong();later();});}));
         else if(w.ch)bar.appendChild(btn("Notes: "+(NAME[w.ch]||w.ch),()=>show(w.ch)));
         c.appendChild(bar);

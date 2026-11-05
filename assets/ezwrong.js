@@ -368,9 +368,10 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
         const sb=btn("",()=>{const m=sget(),id=wid(w);if(m[id])delete m[id];else m[id]=1;try{localStorage.setItem(sk,JSON.stringify(m));}catch(e){}paint();});
         sb.classList.add("wseen");
         const paint=()=>{const on=!!sget()[wid(w)];c.classList.toggle("seen",on);sb.classList.toggle("on",on);sb.textContent=on?"✓ Reviewed (tap to undo)":"Mark as reviewed";};
-        paint();bar.appendChild(sb);
+        paint();
         if(s)bar.appendChild(btn("Notes for this section",()=>{show(s.ch);revealNotes(s.h);offerBack("↩ Back to Review (to this card)",()=>{pendingCard=wid(w);showWrong();later();});}));
         else if(w.ch)bar.appendChild(btn("Notes: "+(NAME[w.ch]||w.ch),()=>show(w.ch)));
+        bar.appendChild(sb);
         c.appendChild(bar);
         if(s){
           const d=document.createElement("details");d.className="concept";

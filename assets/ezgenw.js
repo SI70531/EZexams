@@ -121,6 +121,13 @@
   async function token(force){const S=window.EZSync;if(!S||!S.session)return null;try{return await S.session(!!force);}catch(e){return null;}}
   const fail=(code,msg,extra)=>Object.assign(new Error(msg||code),{code},extra||{});
   async function post(path,body,retry){
+    /* a rate-limited call waits for the server's time and tries again by itself (up to 8 times) */
+    for(let i=0;;i++){
+      try{return await postOnce(path,body,retry);}
+      catch(e){if(e&&e.code==="rate"&&i<8){await new Promise(r=>setTimeout(r,(e.wait||60)*1000));continue;}throw e;}
+    }
+  }
+  async function postOnce(path,body,retry){
     const t=await token(retry);if(!t)throw fail("login","Sign in to generate questions");
     const ac=new AbortController(),to=setTimeout(()=>ac.abort(),70000);let res;
     try{res=await fetch(WORKER+path,{method:"POST",headers:{"Content-Type":"text/plain;charset=UTF-8"},body:JSON.stringify(Object.assign({t},body)),signal:ac.signal});}
@@ -137,7 +144,7 @@
   }
   const errText=e=>{const c=e&&e.code;
     if(c==="login")return "Sign in first to generate questions (top right: Sync → Sign in).";
-    if(c==="rate")return "Can't be used right now. Try again in about "+(e.wait||60)+" seconds. Your answers are saved.";
+    if(c==="rate")return "Can't be used right now. Trying again automatically in about "+(e.wait||60)+" seconds. Your answers are saved.";
     if(c==="timeout")return "Timed out. Please try again.";
     if(c==="network")return "Can't reach the server. Check your connection and try again.";
     return "No question was generated this time ("+String(e&&e.message||"").slice(0,80)+"). Please try again.";};

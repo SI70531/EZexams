@@ -98,7 +98,7 @@ function renderQuiz(key){
   renderScore();
   if(isExam&&window.EZGEN&&EZGEN.isAi(key)){
     /* mock exam MC: Redo multiple choice only while nothing is answered (clearing an answer counts as unanswered) */
-    const rd=document.createElement("div");rd.className="examtools";
+    const rd=document.createElement("div");rd.className="examtools";rd.style.position="static";rd.style.margin="6px 0 10px";   /* scrolls away with the page: only the score bar stays on top */
     const rb2=document.createElement("button");rb2.type="button";rb2.className="btn";rb2.textContent="Redo multiple choice";
     const hint=document.createElement("span");hint.style.marginLeft="10px";hint.style.color="var(--muted)";
     rd.appendChild(rb2);rd.appendChild(hint);

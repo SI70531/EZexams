@@ -290,7 +290,8 @@ h3.allseen .missbadge{background:#5b6cd6}
   /* "Mark as reviewed": one shared record (localStorage), so the card in Review and the question itself stay in sync */
   const SEEN="ezw-seen";
   const seenMap=()=>{try{return JSON.parse(localStorage.getItem(SEEN)||"{}");}catch(e){return {};}};
-  let lastBy=new Map();
+  let lastBy=new Map(),lastList=[],firstBtn=null;
+  const FIRST="Jump to first unreviewed mistake ↓",ALLDONE="All reviewed ✓";
   function toggleSeen(w){const m=seenMap(),id=wid(w);if(m[id])delete m[id];else m[id]=1;try{localStorage.setItem(SEEN,JSON.stringify(m));}catch(e){}paintSeen();}
   function paintSeen(){
     const m=seenMap();
@@ -300,6 +301,9 @@ h3.allseen .missbadge{background:#5b6cd6}
       const c=b.closest(".wcard");if(c)c.classList.toggle("seen",on);
       const q=b.closest(".qitem,.exq");if(q)q.classList.toggle("seenq",on);
     });
+    const allDone=lastList.length>0&&lastList.every(w=>m[wid(w)]);
+    if(firstBtn&&firstBtn.isConnected)firstBtn.textContent=allDone?ALLDONE:FIRST;
+    document.querySelectorAll('.day .t button[data-go="review"]').forEach(b=>b.classList.toggle("rvdone",allDone));
     SECS.forEach(s=>{
       const arr=lastBy.get(s.key)||[],n=arr.length,d=arr.filter(w=>m[wid(w)]).length,all=n>0&&d===n;
       s.h.classList.toggle("allseen",all);
@@ -360,7 +364,7 @@ h3.allseen .missbadge{background:#5b6cd6}
     try{notesButtons(list.concat(answeredRight(),answeredRightWritten()));}catch(e){}
     try{seenButtons(list);}catch(e){}
     const by=new Map();list.forEach(w=>{const k=gkey(w);if(!by.has(k))by.set(k,[]);by.get(k).push(w);});
-    lastBy=by;
+    lastBy=by;lastList=list;
     SECS.forEach(s=>{
       const n=(by.get(s.key)||[]).length;s.h.classList.toggle("missed",n>0);
       let b=s.h.querySelector(".missbadge");
@@ -373,11 +377,10 @@ h3.allseen .missbadge{background:#5b6cd6}
     if(!list.length){box.innerHTML='<p class="box tip"><span class="lbl">No mistakes right now</span>Questions you get wrong in chapter quizzes, past exams, and mock exams (written questions that lose points count too) appear after their key-point card below. Answering them correctly again removes them.</p>';return;}
     const p=document.createElement("p");p.className="box warn";
     p.innerHTML='<span class="lbl">'+list.length+' mistakes</span> are already placed after their key-point cards (red frames). Red cards mark the sections to review; the matching headings in the notes turn red too. Mark a mistake as reviewed and it turns blue. ';
-    const first=document.createElement("button");first.type="button";first.className="btn";first.textContent="Jump to first unreviewed mistake ↓";
+    const first=document.createElement("button");first.type="button";first.className="btn";first.textContent=FIRST;firstBtn=first;
     first.addEventListener("click",()=>{
       const f=host.querySelector(".wcard:not(.seen)");
-      if(f){f.scrollIntoView({block:"center"});f.classList.remove("wflash");void f.offsetWidth;f.classList.add("wflash");}
-      else{first.textContent="All reviewed ✓";setTimeout(()=>{first.textContent="Jump to first unreviewed mistake ↓";},1800);}
+      if(f){pin(()=>f);f.classList.remove("wflash");void f.offsetWidth;f.classList.add("wflash");}
     });
     p.appendChild(first);box.appendChild(p);
     /* where a group goes: after its section's card; a chapter's unmatched at the end of that chapter; the rest after

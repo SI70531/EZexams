@@ -195,6 +195,7 @@ body.nograde .nogradenote{display:block}
 .day .d{font-family:var(--f-mono);font-weight:600;font-size:calc(13px*var(--ts,1));color:var(--indigo);padding-top:2px}
 .day .t{min-width:0;color:var(--ink70)}
 .day .t button{margin:6px 6px 0 0;font-size:calc(12.5px*var(--ts,1));padding:2px 12px;border-radius:99px;background:var(--indigo-soft);border-color:transparent}
+.day .t button.rvdone{background:var(--ok-soft);color:var(--ok);border-color:var(--ok-line);font-weight:700}
 .prog{width:100%;display:table}
 .prog td.l{width:55%}
 .next{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--paper);border:1.5px solid var(--ink);box-shadow:4px 4px 0 var(--hard);border-radius:8px;padding:14px 18px;margin:0 0 6px}

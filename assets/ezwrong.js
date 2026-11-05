@@ -200,8 +200,21 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
     return root.querySelector('.qitem[data-i="'+w.i+'"]')||root.querySelectorAll(".qitem")[w.i]||null; /* data-i: original position */
   }
   const wid=w=>w.go+"|"+(w.quiz||"")+"|"+(w.qid||w.i);
-  /* the question's top goes to the top of the screen (its scroll-margin clears the sticky bar); green for a right answer, red for a wrong one */
-  function flash(el,block,ok){setTimeout(()=>{el.scrollIntoView({block:"start"});el.classList.remove("wflash","ok");void el.offsetWidth;el.classList.add("wflash");if(ok)el.classList.add("ok");},30);}
+  /* bottom edge of the sticky bars (site header, score bar) that cover the top of the screen */
+  function stickyBottom(){
+    let b=0;
+    document.querySelectorAll(".top,.examtools").forEach(x=>{
+      const cs=getComputedStyle(x),r=x.getBoundingClientRect();
+      if(cs.position==="sticky"&&r.height&&r.top<=parseFloat(cs.top||0)+2)b=Math.max(b,r.bottom);
+    });
+    return b;
+  }
+  /* the question's top sits just below the sticky bars; green for a right answer, red for a wrong one */
+  function flash(el,block,ok){setTimeout(()=>{
+    const y=el.getBoundingClientRect().top+scrollY-(stickyBottom()+12);
+    window.scrollTo({top:Math.max(0,y),behavior:"auto"});
+    el.classList.remove("wflash","ok");void el.offsetWidth;el.classList.add("wflash");if(ok)el.classList.add("ok");
+  },30);}
   /* 回原題: open the question, and put a 「← 回錯題區」 button under it that comes back to this same card */
   function goto(w){
     show(w.go);

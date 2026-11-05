@@ -32,6 +32,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
 .wcard pre{white-space:pre-wrap}
 .wcard.seen{border-left-color:#5b6cd6;background:linear-gradient(0deg,rgba(91,108,214,.07),rgba(91,108,214,.07)),var(--paper)}
 .wcard.seen .src{color:#5b6cd6}.wcard.seen .yours{opacity:.75}
+.wcard .wseen{margin-left:auto}
 .wcard .wseen.on{border-color:#5b6cd6;color:#5b6cd6;font-weight:700}
 .wcard .wbar{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
 .wgroup h3{margin-top:28px;scroll-margin-top:80px}

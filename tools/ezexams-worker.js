@@ -387,6 +387,7 @@ b.sec.text,
 /* an English exam question never contains Chinese characters (the Chinese copy of a question is the separate qz / oz) */
 const CJK = /[\u3400-\u9fff\uf900-\ufaff]/;
 /* a question that points to a numbered item of the notes (Algorithm 1-2, Figure 3, Table 2-1 ...) cannot be answered by itself */
+const NOTES_WORDS = /\b(?:the|these) (?:course )?(?:notes|slides|lecture)\b/i;   /* the student never sees the notes */
 const NOTE_REF = /\b(?:Algorithm|Figure|Fig\.|Table|Listing|Slide|Page|Section)\s*\d/i;
 const LETTER_REF = /\b(?:option|choice|answer)\s*\(?[A-D]\)?(?![A-Za-z])|\([A-D]\)|選項\s*\(?[A-D]\)?(?![A-Za-z])|第[一二三四]個選項/i;
 function cleanMc(o, zh) {
@@ -525,6 +526,7 @@ function wPrompt(b) {
 "Plain text only: no Markdown. Do not use backticks and do not use pipe tables (|). For a table, write each row on its own line as 'Step: value' pairs, and use plain words for code (for example: target less than list[last]).",
 "Do not give the answer away in the question. For a fill-in style use one or two blanks written as ______.",
 "ref must give the answer to EVERY blank or part, in the same order (for example \"(a) 4 (b) 11\"), short, based only on the notes. It is kept secret and used for grading.",
+"ref lists ONLY the words that go INTO the blanks. Never repeat words that are already printed in the question around a blank: if the sentence reads 'identified by the ______ condition', ref is 'return', not 'return condition'. Each blank has exactly one correct answer, and the words around it must make that answer unambiguous.",
 "Reply with ONLY a JSON object: {\"q\":\"...\",\"ref\":\"...\"}",
 b.asked.length ? "Already asked in this set (do NOT repeat these ideas): \n- " + b.asked.join("\n- ") : "",
 "This is question " + b.n + " of " + b.total + " in this set.",
@@ -553,7 +555,7 @@ async function wgenNext(env, acct, who, bodyText, json, fail) {
     const g = await geminiJson(env, wPrompt(b), attempt ? 0.5 : 0.8, attempt);
     if (g.error) { err = g.error; if (g.error.status === 429 || ![404, 500, 502, 503, 504].includes(g.error.status)) break; continue; }   /* 429: every model was already tried */
     const o = parseJson(g.text);
-    if (o && typeof o.q === "string" && o.q.trim().length > 12 && !CJK.test(o.q) && !NOTE_REF.test(o.q) && typeof o.ref === "string" && o.ref.trim().length > 2) {
+    if (o && typeof o.q === "string" && o.q.trim().length > 12 && !CJK.test(o.q) && !NOTE_REF.test(o.q) && !NOTES_WORDS.test(o.q) && typeof o.ref === "string" && o.ref.trim().length > 2) {
       made = { q: clip(o.q.trim(), 1600), ref: clip(o.ref.trim(), 1500) };
     } else err = { status: 502, bad: true };
   }
@@ -573,6 +575,7 @@ function wGradePrompt(item, notes, ans) {
 "QUESTION: " + item.q,
 "REFERENCE answer (for reference only; the student does not have to match its wording or order):",
 item.ref,
+"For a fill-in question the student writes only what goes into each blank. The REFERENCE may repeat words that the QUESTION already prints next to a blank (for example the question says 'identified by the ______ condition' and the reference says 'return condition'): then the student answer 'return' is fully correct. Grade what belongs in the blank, never the words the question already prints.",
 "Judge against the COURSE NOTES below. Do not require, and do not reward, ideas that are not in the notes.",
 "Scoring (strict): decide the key points a full answer needs; give each an equal share. A key point earns its full share ONLY if the student states it precisely and correctly, using the same concept the reference uses. Give half a share ONLY when the point is clearly and correctly identified but incompletely explained. Vague, hedged, or merely related statements earn 0. Any point that names a different concept, operand, condition, or direction than the reference is WRONG and earns 0, even if it could be made to match under another reading (e.g. the reference says 'first node > target' and the student writes 'lowest node > target': these name different nodes in the search procedure, so 0). Do not give credit for an answer that is right only by coincidence or by an interpretation the notes do not state. If the question has several parts, each part is scored separately. Add the shares and round DOWN to the nearest 0.5. An empty or irrelevant answer scores 0.",
 "Verdict rules: 'correct' only if the score equals the full points; 'partial' if some but not all points are earned; 'wrong' if nothing is earned.",

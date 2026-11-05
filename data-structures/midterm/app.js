@@ -1061,7 +1061,7 @@ if(window.EZgenw){
     const sec=document.getElementById(key);if(!sec)return;
     [["Part II.",0,3,"Redo fill-in questions"],["Part III.",4,7,"Redo quiz questions"]].forEach(([tag,from,to,label])=>{
       const h=[...sec.querySelectorAll("h3")].find(x=>x.textContent.trim().startsWith(tag));if(!h)return;
-      const wrap=document.createElement("div");wrap.style.margin="6px 0 10px";
+      const wrap=document.createElement("div");wrap.className="examtools";wrap.style.position="static";wrap.style.margin="6px 0 10px";
       const b=document.createElement("button");b.type="button";b.className="btn";b.textContent=label;
       const hint=document.createElement("span");hint.style.marginLeft="10px";hint.style.color="var(--muted)";
       wrap.appendChild(b);wrap.appendChild(hint);h.insertAdjacentElement("afterend",wrap);

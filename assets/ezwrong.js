@@ -30,10 +30,10 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
 .wcard .cbody{font-size:calc(14px*var(--ts,1));overflow-x:auto}
 .wcard .cbody .lab,.wcard .cbody button,.wcard .cbody canvas,.wcard .cbody input,.wcard .cbody select{display:none}
 .wcard pre{white-space:pre-wrap}
-.wcard.seen{border-left-color:#5b6cd6;background:linear-gradient(0deg,rgba(91,108,214,.07),rgba(91,108,214,.07)),var(--paper)}
+.wcard.seen{border:3px solid #5b6cd6;padding:12px 16px;background:linear-gradient(0deg,rgba(91,108,214,.07),rgba(91,108,214,.07)),var(--paper)}
 .wcard.seen .src{color:#5b6cd6}.wcard.seen .yours{opacity:.75}
 .wseen{margin-left:auto}.qbtns .wseen{margin-top:0}
-.seenq{border-radius:10px;background-image:linear-gradient(rgba(91,108,214,.16),rgba(91,108,214,.16))!important;box-shadow:inset 0 0 0 2px #5b6cd6,inset 7px 0 0 #5b6cd6!important}
+.seenq{border-radius:10px;background-image:linear-gradient(rgba(91,108,214,.16),rgba(91,108,214,.16))!important;box-shadow:inset 0 0 0 3px #5b6cd6!important}
 h3.missed.allseen{color:#5b6cd6!important;border-left-color:#5b6cd6}
 h3.allseen .missbadge{background:#5b6cd6}
 .rvsec.missed.allseen{border-color:#5b6cd6;border-left-color:#5b6cd6}.rvsec.missed.allseen .rvk{background:#5b6cd6}

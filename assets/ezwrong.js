@@ -38,7 +38,9 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
 .ezback:hover{background:var(--bad,#c62828);color:var(--paper,#fff)}
 .wback{display:block;margin-top:12px;border-color:var(--bad,#c62828)!important;color:var(--bad,#c62828)!important;font-weight:700}
 @keyframes wflash{0%,60%{box-shadow:0 0 0 4px var(--bad,#c62828)}100%{box-shadow:0 0 0 0 transparent}}
-.wflash{animation:wflash 2.2s ease-out;border-radius:10px}`;
+.wflash{animation:wflash 2.2s ease-out;border-radius:10px}
+@keyframes wflashok{0%,60%{box-shadow:0 0 0 4px var(--ok,#2d7a3e)}100%{box-shadow:0 0 0 0 transparent}}
+.wflash.ok{animation-name:wflashok}`;
   const stl=document.createElement("style");stl.textContent=css;document.head.appendChild(stl);
 
   const CH=Object.keys(QUIZ).filter(k=>{const v=document.getElementById(k);return v&&v.classList.contains("view");});
@@ -198,7 +200,8 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
     return root.querySelector('.qitem[data-i="'+w.i+'"]')||root.querySelectorAll(".qitem")[w.i]||null; /* data-i: original position */
   }
   const wid=w=>w.go+"|"+(w.quiz||"")+"|"+(w.qid||w.i);
-  function flash(el,block){setTimeout(()=>{el.scrollIntoView({block});el.classList.remove("wflash");void el.offsetWidth;el.classList.add("wflash");},30);}
+  /* the question's top goes to the top of the screen (its scroll-margin clears the sticky bar); green for a right answer, red for a wrong one */
+  function flash(el,block,ok){setTimeout(()=>{el.scrollIntoView({block:"start"});el.classList.remove("wflash","ok");void el.offsetWidth;el.classList.add("wflash");if(ok)el.classList.add("ok");},30);}
   /* 回原題: open the question, and put a 「← 回錯題區」 button under it that comes back to this same card */
   function goto(w){
     show(w.go);
@@ -207,7 +210,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
     const b=document.createElement("button");b.type="button";b.className="btn wback";b.textContent="← Back to Review (to this question)";
     b.addEventListener("click",()=>{b.remove();pendingCard=wid(w);pendingSec=w.m.s?w.m.s.key:null;showWrong();});
     el.appendChild(b);
-    flash(el,"center");
+    flash(el,"center",w.ok);
   }
   function btn(txt,fn){const b=document.createElement("button");b.className="btn";b.type="button";b.textContent=txt;b.addEventListener("click",fn);return b;}
   /* under every wrong answer (chapter quiz, past exam, mock exam): a 「回講義這一段」 button.
@@ -234,7 +237,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
     const anchor=s?s.h:document.getElementById(w.ch).querySelector("h1,h2,h3");
     if(anchor)revealNotes(anchor);
     const n=numOf(locate(w));
-    offerBack("↩ Back to the previous question"+(n?" (question "+n+")":""),()=>{show(w.go);const el=locate(w);if(el)flash(el,"center");});
+    offerBack("↩ Back to the previous question"+(n?" (question "+n+")":""),()=>{show(w.go);const el=locate(w);if(el)flash(el,"center",w.ok);});
   }
   function notesButtons(list){
     const keep=new Set();
@@ -256,7 +259,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
       const box=q.parentElement,key=box.dataset.quiz,i=+q.dataset.i;
       const it=QUIZ[key]&&QUIZ[key][i];if(!it||typeof it.q!=="string")return;
       const view=box.closest(".view"),ch=CH.includes(key)?key:chOf(it);
-      out.push({m:match(it,ch),ch,go:CH.includes(key)?key:(view?view.id:key),quiz:key,i,q:it.q,e:it.e||""});
+      out.push({m:match(it,ch),ch,go:CH.includes(key)?key:(view?view.id:key),quiz:key,i,q:it.q,e:it.e||"",ok:true});
     });
     return out;
   }
@@ -268,7 +271,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
       if(!g||+g.score<+q.dataset.pts)return;
       const qt=(q.querySelector(".qtext")||q).innerText.trim();const ref=q.querySelector(".qa");
       const vw=q.closest(".view"),vid=vw?vw.id:id,ch=CH.includes(vid)?vid:null;
-      out.push({m:match({q:qt,e:ref?ref.textContent:"",sec:q.dataset.sec},ch),ch,go:vid,qid:q.id,q:qt.slice(0,700),yours:"",right:"",e:""});
+      out.push({m:match({q:qt,e:ref?ref.textContent:"",sec:q.dataset.sec},ch),ch,go:vid,qid:q.id,q:qt.slice(0,700),yours:"",right:"",e:"",ok:true});
     });
     return out;
   }

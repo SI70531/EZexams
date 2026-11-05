@@ -1054,3 +1054,25 @@ if(window.EZgenw){
   function reveal(){const h=decodeURIComponent(location.hash.slice(1));if(!h)return;const t=document.getElementById(h);const g=t&&t.closest(".algp");if(g&&g.hidden){open(menuOf(g),g.dataset.alg,true);t.scrollIntoView();}}
   window.addEventListener("hashchange",reveal);reveal();
 })();
+
+/* mock exams: 重做 Part II (fill-in) and Part III (quiz); enabled only while nothing in that part is answered */
+if(window.EZgenw){
+  ["mock-a","mock-b"].forEach(key=>{
+    const sec=document.getElementById(key);if(!sec)return;
+    [["Part II.",0,3,"Redo fill-in questions"],["Part III.",4,7,"Redo quiz questions"]].forEach(([tag,from,to,label])=>{
+      const h=[...sec.querySelectorAll("h3")].find(x=>x.textContent.trim().startsWith(tag));if(!h)return;
+      const wrap=document.createElement("div");wrap.style.margin="6px 0 10px";
+      const b=document.createElement("button");b.type="button";b.className="btn";b.textContent=label;
+      const hint=document.createElement("span");hint.style.marginLeft="10px";hint.style.color="var(--muted)";
+      wrap.appendChild(b);wrap.appendChild(hint);h.insertAdjacentElement("afterend",wrap);
+      const upd=()=>{const n=EZgenw.sectionAnswered(key,from,to);b.disabled=n;hint.textContent=n?"Answered questions can't be redone. Clear your answers first.":"";};
+      b.addEventListener("click",()=>{
+        if(EZgenw.sectionAnswered(key,from,to))return;
+        (window.EZundo||((w,f)=>f()))(label,()=>{EZgenw.redoSection(key,from,to);upd();},null,b);
+      });
+      upd();
+      document.addEventListener("click",()=>setTimeout(upd,0),true);
+      document.addEventListener("input",()=>setTimeout(upd,0),true);
+    });
+  });
+}

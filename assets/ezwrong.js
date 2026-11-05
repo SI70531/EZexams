@@ -33,7 +33,7 @@ h3 .missbadge{display:inline-block;white-space:nowrap;max-width:100%;margin-left
 .wcard.seen{border-left-color:#5b6cd6;background:linear-gradient(0deg,rgba(91,108,214,.07),rgba(91,108,214,.07)),var(--paper)}
 .wcard.seen .src{color:#5b6cd6}.wcard.seen .yours{opacity:.75}
 .wseen{margin-left:auto}.qbtns .wseen{margin-top:0}
-.seenq{outline:2px solid #5b6cd6;outline-offset:3px;border-radius:10px}
+.seenq{border-radius:10px;background-image:linear-gradient(rgba(91,108,214,.16),rgba(91,108,214,.16))!important;box-shadow:inset 0 0 0 2px #5b6cd6,inset 7px 0 0 #5b6cd6!important}
 h3.missed.allseen{color:#5b6cd6!important;border-left-color:#5b6cd6}
 h3.allseen .missbadge{background:#5b6cd6}
 .rvsec.missed.allseen{border-color:#5b6cd6;border-left-color:#5b6cd6}.rvsec.missed.allseen .rvk{background:#5b6cd6}

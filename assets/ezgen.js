@@ -86,7 +86,7 @@
   const errText=e=>{
     const c=e&&e.code;
     if(c==="login")return (e.message&&e.message!==c?e.message:"Sign in to generate questions")+" (top right: Sync → Sign in).";
-    if(c==="rate")return "Quota used up for now. Try again in about "+(e.wait||60)+" seconds. Your answers are saved.";
+    if(c==="rate")return "Can't be used right now. Try again in about "+(e.wait||60)+" seconds. Your answers are saved.";
     if(c==="timeout")return "Timed out. Please try again.";
     if(c==="network")return "Can't reach the server. Check your connection and try again.";
     if(c==="gone")return "This question has expired. Generate a new one.";

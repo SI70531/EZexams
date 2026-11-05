@@ -59,7 +59,15 @@
   }
   function labelOf(B,i){return (rec(B,i)||{}).l||"";}
   /* a slot's question text: the made one, or the bank's (legacy) one */
-  const nl=s=>esc(s).replace(/\n/g,"<br>");
+  /* question text: `code` shows as code, a Markdown table shows as plain rows (no pipes, no separator line) */
+  const nl=s=>{
+    const lines=String(s==null?"":s).split("\n").filter(l=>!/^\s*\|?\s*:?-{3,}[\s|:-]*$/.test(l));
+    return lines.map(l=>{
+      let t=l.trim();
+      if(/^\|.*\|$/.test(t)) t=t.slice(1,-1).split("|").map(c=>c.trim()).filter(Boolean).join(" : ");
+      return esc(t).replace(/`([^`]+)`/g,"<code>$1</code>");
+    }).join("<br>");
+  };
   function paint(B){
     const slots=slotsOf(B);
     slots.forEach((q,i)=>{

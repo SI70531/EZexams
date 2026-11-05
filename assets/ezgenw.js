@@ -268,6 +268,16 @@
     }finally{btns.forEach(b=>b.disabled=false);}
   }
   /* blocks: [{key:'ch1w', exam:'ch1w', view:'ch1', views:['ch1'], title, box, batch}] ; attach({course, subject, blocks, get, save, s}) */
+  /* a part of a mock exam (slots from..to): it can be made again only while nothing in it is answered */
+  const secQs=(key,from,to)=>{const B=BLOCKS[key];return B?slotsOf(B).filter(q=>+q.dataset.slot>=from&&+q.dataset.slot<=to):[];};
+  const sectionAnswered=(key,from,to)=>{const B=BLOCKS[key];return !!B&&secQs(key,from,to).some(q=>answeredQ(B,q));};
+  const redoSection=(key,from,to)=>{
+    const B=BLOCKS[key];if(!B||sectionAnswered(key,from,to))return false;
+    const S=st();S.gen=S.gen||{};S.gen[key]=S.gen[key]||{};S.qclr=S.qclr||{};S.qclr[key]=S.qclr[key]||{};
+    secQs(key,from,to).forEach(q=>{const i=+q.dataset.slot;delete S.gen[key][i];if(CACHE[key])delete CACHE[key][i];S.qclr[key][i]=Date.now();
+      if(S.ex2&&S.ex2[key]){if(S.ex2[key].ans)delete S.ex2[key].ans[q.id];if(S.ex2[key].grade)delete S.ex2[key].grade[q.id];}});
+    saveCache();C.save();paint(B);return true;
+  };
   window.EZgenw={
     attach(cfg){
       C=cfg;const S=C.get();S.gen=S.gen||{};
@@ -276,6 +286,7 @@
       C.blocks.forEach(B=>{paint(B);fetchLegacy(B).catch(()=>{});});
     },
     owns,grade,paint,notesFor:q=>notesFor(BLOCKS[q.dataset.w],q),
+    sectionAnswered,redoSection,
     reset(key){const S=st();if(S.gen)delete S.gen[key];if(CACHE[key]){delete CACHE[key];saveCache();}if(S.ex2&&S.ex2[key]){S.ex2[key]={ans:{},grade:{}};}if(BLOCKS[key])paint(BLOCKS[key]);},
   };
 })();

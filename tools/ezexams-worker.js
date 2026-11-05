@@ -365,7 +365,7 @@ function mcPrompt(b) {
 "You are writing ONE multiple-choice question for a university exam. Course: " + b.subject + ". Chapter: " + b.chapter + ".",
 "Base the question ONLY on the COURSE NOTES at the end (the section the student is studying). Use nothing the notes do not support.",
 (DS(b.subject)
-  ? "Difficulty: exactly like the 2024 and 2025 past exams of this course. A direct question that tests ONE idea from the notes, with at most one step (a trace, a field value, a single calculation, or 'which statement is correct'). Do not combine two ideas and do not write multi-step scenarios. It must be answerable in under a minute."
+  ? "Difficulty: exactly like the 2024 and 2025 past-exam multiple-choice questions of this course. Each question tests ONE fact or simple rule from the notes and can be answered in under a minute. Short, plain questions and short options, for example 'What is a precondition for using a binary search?' or 'Which statement is NOT correct?'. Do not combine two ideas and do not write multi-step scenarios or long traces."
   : "Make it a good exam question with some depth:"),
 (DS(b.subject) ? "" : "- Prefer application and reasoning (a short scenario, a small calculation, a comparison, 'which statement is correct') over repeating a definition word for word; it may combine two ideas of the section."),
 "- Exactly four options and exactly one correct option. The wrong options must be tempting: each one should match a real misconception or a near-miss. No 'all of the above', 'none of the above' or 'both A and B'.",

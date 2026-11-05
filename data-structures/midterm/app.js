@@ -97,13 +97,13 @@ function renderQuiz(key){
   }
   renderScore();
   if(isExam&&window.EZGEN&&EZGEN.isAi(key)){
-    /* mock exam MC: 重新出選擇題 only while nothing is answered (clearing an answer counts as unanswered) */
+    /* mock exam MC: Redo multiple choice only while nothing is answered (clearing an answer counts as unanswered) */
     const rd=document.createElement("div");rd.className="examtools";
-    const rb2=document.createElement("button");rb2.type="button";rb2.className="btn";rb2.textContent="重新出選擇題";
+    const rb2=document.createElement("button");rb2.type="button";rb2.className="btn";rb2.textContent="Redo multiple choice";
     const hint=document.createElement("span");hint.style.marginLeft="10px";hint.style.color="var(--muted)";
     rd.appendChild(rb2);rd.appendChild(hint);
     box.insertBefore(rd,box.firstChild);
-    const upd=()=>{const n=quizCount(key);rb2.disabled=n>0;hint.textContent=n>0?"已有作答，不能重出；清除作答後才能重出":"";};
+    const upd=()=>{const n=quizCount(key);rb2.disabled=n>0;hint.textContent=n>0?"Answered questions can't be redone. Clear your answers first.":"";};
     upd();
     rb2.addEventListener("click",()=>{
       if(quizCount(key)>0)return;

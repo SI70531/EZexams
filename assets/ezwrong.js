@@ -372,9 +372,13 @@ h3.allseen .missbadge{background:#5b6cd6}
     host.querySelectorAll(".rvsec.missed").forEach(c=>c.classList.remove("missed"));
     if(!list.length){box.innerHTML='<p class="box tip"><span class="lbl">No mistakes right now</span>Questions you get wrong in chapter quizzes, past exams, and mock exams (written questions that lose points count too) appear after their key-point card below. Answering them correctly again removes them.</p>';return;}
     const p=document.createElement("p");p.className="box warn";
-    p.innerHTML='<span class="lbl">'+list.length+' mistakes</span> are already placed after their key-point cards (red frames). Red cards mark the sections to review; the matching headings in the notes turn red too. ';
-    const first=document.createElement("button");first.type="button";first.className="btn";first.textContent="Jump to first mistake ↓";
-    first.addEventListener("click",()=>{const f=host.querySelector(".rvwrong");if(f)f.scrollIntoView({block:"start"});});
+    p.innerHTML='<span class="lbl">'+list.length+' mistakes</span> are already placed after their key-point cards (red frames). Red cards mark the sections to review; the matching headings in the notes turn red too. Mark a mistake as reviewed and it turns blue. ';
+    const first=document.createElement("button");first.type="button";first.className="btn";first.textContent="Jump to first unreviewed mistake ↓";
+    first.addEventListener("click",()=>{
+      const f=host.querySelector(".wcard:not(.seen)");
+      if(f){f.scrollIntoView({block:"center"});f.classList.remove("wflash");void f.offsetWidth;f.classList.add("wflash");}
+      else{first.textContent="All reviewed ✓";setTimeout(()=>{first.textContent="Jump to first unreviewed mistake ↓";},1800);}
+    });
     p.appendChild(first);box.appendChild(p);
     /* where a group goes: after its section's card; a chapter's unmatched at the end of that chapter; the rest after
        the last chapter. A page without cards gets everything right under the summary, in notes order. */

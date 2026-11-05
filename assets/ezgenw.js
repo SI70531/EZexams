@@ -24,7 +24,10 @@
     const W=window.EZWrong;if(!W||!W.sections)return [];
     const views=B.views||[B.view];
     let list=W.sections.filter(s=>views.includes(s.ch));
-    list.forEach(s=>{if(s._t==null){s._t=s.parts.map(p=>{const c=p.cloneNode(true);c.querySelectorAll("svg,script,style,button,canvas,input,select").forEach(x=>x.remove());return c.textContent.replace(/\s+/g," ").trim();}).join("\n");}});
+    list.forEach(s=>{if(s._t==null){s._t=s.parts.map(p=>{const c=p.cloneNode(true);c.querySelectorAll("svg,script,style,button,canvas,input,select").forEach(x=>x.remove());
+      c.querySelectorAll("td,th").forEach(x=>x.append(" | "));   /* table cells stay apart ("Key | Home Address | ...") instead of running together */
+      c.querySelectorAll("br,p,div,li,tr,h1,h2,h3,h4").forEach(x=>x.append("\n"));
+      return c.textContent.replace(/[ \t]+/g," ").replace(/ ?\| ?\n/g,"\n").replace(/\n\s*\n+/g,"\n").trim();}).join("\n");}});
     return list.filter(s=>s._t&&s._t.length>=150);
   }
   /* text of the notes a question was made from (or of the whole chapter, for legacy questions) */

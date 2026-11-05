@@ -19,6 +19,7 @@
   };
   const shown=el=>el.getClientRects().length>0;
   const unanswered=it=>{
+    if(it.matches(".ezgen-bar"))return true;   /* a part whose questions are not all generated yet still has questions to answer */
     if(it.matches(".qitem"))return !it.querySelector(".opt.right,.opt.wrong,.opt.pick");
     const ta=it.querySelector("textarea");const g=it.querySelector(".gres");
     return !!ta&&!ta.value.trim()&&!(g&&!g.hidden);
@@ -26,7 +27,7 @@
   let last=null,lastAt=0;
   function go(){
     const v=view();if(!v)return;
-    const list=[...v.querySelectorAll(".qitem,.exq")].filter(it=>shown(it)&&unanswered(it));
+    const list=[...v.querySelectorAll(".qitem,.exq,.ezgen-bar")].filter(it=>shown(it)&&unanswered(it));
     if(!list.length){btn.textContent="All answered ✓";clearTimeout(flashT);flashT=setTimeout(()=>{btn.textContent=LABEL;},1800);return;}
     const mid=innerHeight*0.45;
     let next;

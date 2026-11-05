@@ -97,7 +97,7 @@
     if(typeof document==="undefined"||!document.body||document.getElementById("ezlimit"))return;
     const el=document.createElement("div");el.id="ezlimit";el.setAttribute("role","alert");
     el.style.cssText="position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:1200;max-width:min(92vw,460px);background:var(--paper,#fff);color:var(--ink,#111);border:1.5px solid var(--seal,#c4472a);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.25);padding:12px 16px;font-size:calc(14px*var(--ts,1));line-height:1.6";
-    let n=60;const render=()=>{el.innerHTML="<b>Free quota used up for now</b><br>Try again in "+n+" seconds. Your answers are saved; press Grade again when the countdown ends. <button type='button' style='margin-left:6px;font:inherit;border:1px solid currentColor;border-radius:6px;background:none;color:inherit;padding:1px 10px;cursor:pointer'>知道了</button>";el.querySelector("button").onclick=close;};
+    let n=60;const render=()=>{el.innerHTML="<b>Can't be used right now</b><br>Try again in "+n+" seconds. Your answers are saved; press Grade again when the countdown ends. <button type='button' style='margin-left:6px;font:inherit;border:1px solid currentColor;border-radius:6px;background:none;color:inherit;padding:1px 10px;cursor:pointer'>知道了</button>";el.querySelector("button").onclick=close;};
     const close=()=>{clearInterval(LT);el.remove();};
     render();document.body.appendChild(el);
     LT=setInterval(()=>{n--;if(n<=0){close();return;}render();},1000);
@@ -165,7 +165,7 @@
       if(c==="bad_key")return "Google rejected this key"+why+". Set it up again on the home page.";
       if(c==="region")return "Google's service is not available in this region.";
       if(c==="busy")return "The free service is busy right now. Try again in a few minutes.";
-      if(c==="rate_limited")return "Free quota used up for now (about 10 requests per minute). Try again in a minute or two.";
+      if(c==="rate_limited")return "Can't be used right now. Try again in a minute or two.";
       if(c==="invalid_json"||c==="empty_completion")return "Three tries in a row returned no complete result.";
       if(c==="empty")return "Paste your key first.";
       if(c==="login")return (e.message&&e.message!==c?e.message:"Sign in first to use grading")+" (top right: Sign in).";

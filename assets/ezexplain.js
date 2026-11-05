@@ -105,7 +105,7 @@ x.q.e?"TEACHER'S SHORT NOTE (use it as the ground truth): "+x.q.e:"",
           const c=e&&e.code;
           /* quota or overload: wait a minute and carry on by itself */
           if((c==="rate_limited"||c==="busy"||c==="invalid_json"||c==="empty_completion")&&job.tries<3){
-            job.tries++;Q.unshift(job);QD.add(x.id);WAITMSG=c==="rate_limited"?"Free quota used up for now. Continuing automatically in a minute…":"Busy for now. Continuing automatically shortly…";redraw(x.id);
+            job.tries++;Q.unshift(job);QD.add(x.id);WAITMSG=c==="rate_limited"?"Can't be used right now. Trying again in a minute…":"Busy for now. Continuing automatically shortly…";redraw(x.id);
             await sleep(c==="invalid_json"||c==="empty_completion"?3000:60000);WAITMSG="";continue;
           }
           ERR[x.id]=window.EZAI?EZAI.errText(e):"Analysis failed.";redraw(x.id);

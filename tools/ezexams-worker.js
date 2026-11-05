@@ -424,7 +424,7 @@ async function genNext(env, acct, who, bodyText, json, fail) {
     if (!made) err = { status: 502, bad: true };
   }
   if (!made) {
-    if (err && err.status === 429) return fail(429, "RESOURCE_EXHAUSTED", "Gemini's free quota is used up for the moment", { "Retry-After": "60" });
+    if (err && err.status === 429) return fail(429, "RESOURCE_EXHAUSTED", "Can't be used right now", { "Retry-After": "60" });
     return fail(502, "GEN_FAILED", "No usable question was produced (" + (err && err.status || "?") + "); try again");
   }
   /* shuffle the options here, so the page never sees the order the AI wrote them in */
@@ -548,7 +548,7 @@ async function wgenNext(env, acct, who, bodyText, json, fail) {
     } else err = { status: 502, bad: true };
   }
   if (!made) {
-    if (err && err.status === 429) return fail(429, "RESOURCE_EXHAUSTED", "Gemini's free quota is used up for the moment", { "Retry-After": "60" });
+    if (err && err.status === 429) return fail(429, "RESOURCE_EXHAUSTED", "Can't be used right now", { "Retry-After": "60" });
     return fail(502, "GEN_FAILED", "No usable question was produced (" + (err && err.status || "?") + "); try again");
   }
   const id = [...crypto.getRandomValues(new Uint8Array(16))].map(x => x.toString(16).padStart(2, "0")).join("");
@@ -601,7 +601,7 @@ async function wgrade(env, acct, who, bodyText, json, fail) {
     const x = parseJson(g.text);
     if (x && (typeof x.score === "number" || /\d/.test(String(x.score)))) o = x; else err = { status: 502, bad: true };
   }
-  if (!o && err && err.status === 429) return fail(429, "RESOURCE_EXHAUSTED", "Gemini's free quota is used up for the moment", { "Retry-After": "60" });
+  if (!o && err && err.status === 429) return fail(429, "RESOURCE_EXHAUSTED", "Can't be used right now", { "Retry-After": "60" });
   if (!o) return fail(502, "GEN_FAILED", "This answer was not graded (" + (err && err.status || "?") + "); try again");
   let sc = Math.max(0, Math.min(item.p, Number(o.score) || 0));
   sc = Math.floor(sc * 2 + 1e-9) / 2;

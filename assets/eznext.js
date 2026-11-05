@@ -5,11 +5,18 @@
   "use strict";
   const css=".ez-next{position:fixed;right:calc(20px + env(safe-area-inset-right,0px));bottom:calc(22px + 38px + 12px + env(safe-area-inset-bottom,0px));z-index:7;height:38px;padding:0 14px;border-radius:8px;border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);box-shadow:3px 3px 0 var(--hard);cursor:pointer;font-family:var(--f-mono);font-size:12.5px;display:none;align-items:center;gap:6px}.ez-next.show{display:inline-flex}.ez-next:hover{transform:translate(1px,1px);box-shadow:2px 2px 0 var(--hard)}.ez-next:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--hard)}";
   const st=document.createElement("style");st.textContent=css;document.head.appendChild(st);
-  const btn=document.createElement("button");btn.type="button";btn.className="ez-next";btn.textContent="Next unanswered ↓";
+  const LABEL="Next unanswered ↓";
+  const btn=document.createElement("button");btn.type="button";btn.className="ez-next";btn.textContent=LABEL;
   document.body.appendChild(btn);
 
   const view=()=>document.querySelector("section.view.exam:not([hidden])");
-  const sync=()=>btn.classList.toggle("show",!!view());
+  /* the "All answered" flash always returns to LABEL (never to whatever text was showing), and switching exams clears it */
+  let flashT=null,curView=null;
+  const sync=()=>{
+    const v=view();
+    if(v!==curView){curView=v;clearTimeout(flashT);btn.textContent=LABEL;}
+    btn.classList.toggle("show",!!v);
+  };
   const shown=el=>el.getClientRects().length>0;
   const unanswered=it=>{
     if(it.matches(".qitem"))return !it.querySelector(".opt.right,.opt.wrong,.opt.pick");
@@ -20,7 +27,7 @@
   function go(){
     const v=view();if(!v)return;
     const list=[...v.querySelectorAll(".qitem,.exq")].filter(it=>shown(it)&&unanswered(it));
-    if(!list.length){const t=btn.textContent;btn.textContent="All answered ✓";setTimeout(()=>{btn.textContent=t;},1800);return;}
+    if(!list.length){btn.textContent="All answered ✓";clearTimeout(flashT);flashT=setTimeout(()=>{btn.textContent=LABEL;},1800);return;}
     const mid=innerHeight*0.45;
     let next;
     /* pressed again within 3 s (the smooth scroll may still be moving): go on from the last target.

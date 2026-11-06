@@ -23,7 +23,7 @@ function applyZh(){document.body.classList.toggle("nozh",!!S.hideZh);document.qu
 document.addEventListener("click",e=>{if(e.target.closest(".zhbtn")){S.hideZh=!S.hideZh;save();applyZh();}});
 
 /* ---------- progress ---------- */
-function quizStat(ch){const a=S.quiz[ch]||{},qs=QUIZ[ch];const k=Object.keys(a).filter(i=>qs[i]).length;const r=Object.keys(a).filter(i=>a[i]===qs[i].a).length;return {k,r,n:qs.length};}
+function quizStat(ch){const a=S.quiz[ch]||{},qs=QUIZ[ch];const k=Object.keys(a).filter(i=>qs[i]).length;const r=Object.keys(a).filter(i=>qs[i]&&a[i]===qs[i].a).length;return {k,r,n:qs.length};}
 /* mock exams work like the other subjects' exams: click an option and it is checked right away.
    Answers live in S.quiz["mock1mc"] (like a chapter quiz), so 清除作答, the wrong-answer area and sync treat them the same way. */
 const MKEY=id=>id.replace("-","")+"mc";
@@ -105,7 +105,7 @@ function renderQuiz(ch){
     const t=document.createElement("span");t.textContent=s.k<s.n?("answered "+s.k+" / "+s.n+", correct so far "+s.r+" questions"):("Done! Correct "+s.r+" / "+s.n+(s.r>=s.n*0.8?"，這章很穩。":"，錯的題目回上面找對應段落再讀一次。"));sc.appendChild(t);
     const rb=document.createElement("button");rb.className="btn";rb.type="button";rb.textContent="Redo chapter";rb.addEventListener("click",()=>{(window.EZundo||((w,f)=>f()))("This chapter's answers",()=>{delete S.quiz[ch];if(window.EZGEN)EZGEN.reset(ch);S.quizReset=S.quizReset||{};S.quizReset[ch]=Date.now();save();renderQuiz(ch);renderTabs(ch);refreshPCB();applyZh();},null,rb);});sc.appendChild(rb);
     const idx=VIEWS.findIndex(v=>v[0]===ch);const nx=VIEWS[idx+1];
-    if(isHw&&s.k>=s.n){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";nb.textContent="Next: Part 2, 25 questions";nb.addEventListener("click",()=>{const t=document.getElementById("ch"+ch.slice(2)+"-mc");if(t){t.scrollIntoView({block:"start"});scrollBy(0,-76);}});sc.appendChild(nb);}
+    if(isHw&&s.k>=s.n){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";nb.textContent="Next: Part 2, 10 questions";nb.addEventListener("click",()=>{const t=document.getElementById("ch"+ch.slice(2)+"-mc");if(t){t.scrollIntoView({block:"start"});scrollBy(0,-76);}});sc.appendChild(nb);}
     else if(s.k>=s.n){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";if(nx&&nx[0]!=="|"){nb.textContent="Next chapter: "+CHN[nx[0]];nb.dataset.go=nx[0];}else{nb.textContent="Start mock exam 1";nb.dataset.go="mock-1";}sc.appendChild(nb);}
   }
   renderScore();
@@ -185,8 +185,8 @@ function renderHome(){
   const t=document.getElementById("progTable");
   let html='<tr><th class="l">Item</th><th>Status</th></tr>';let next=null;
   CHS.forEach(c=>{const s=quizStat(c);const hk="hw"+c.slice(2),h=QUIZ[hk]?quizStat(hk):null;
-    const sc=Math.round(s.r*100/s.n*10)/10; /* a chapter is 25 multiple-choice questions, 100 分 */
-    html+='<tr><td class="l"><button class="btn" data-go="'+c+'" data-goend="'+c+'">'+c.replace("ch","Ch")+' chapter exercises</button></td><td>'+(s.k?('<b class="pscore">Score '+sc+' / 100 pts</b><span class="psub"><span>MC '+(s.k?s.r+'/'+s.k:'Not started')+'(total '+s.n+' questions)</span>'+(h?'<span>Assignment '+(h.k?h.r+'/'+h.k:'Not started')+'(total '+h.n+' 題）</span>':'')+(s.k>=s.n?'<span class="pok">✓ Done</span>':'<span class="ptodo">Not done</span>')+'</span>'):(h&&h.k?'Assignment '+h.r+'/'+h.k+'，25 題還沒寫':"Not started"))+'</td></tr>';
+    const sc=Math.round(s.r*100/s.n*10)/10; /* a chapter is 10 multiple-choice questions, 100 分 */
+    html+='<tr><td class="l"><button class="btn" data-go="'+c+'" data-goend="'+c+'">'+c.replace("ch","Ch")+' chapter exercises</button></td><td>'+(s.k?('<b class="pscore">Score '+sc+' / 100 pts</b><span class="psub"><span>MC '+(s.k?s.r+'/'+s.k:'Not started')+'(total '+s.n+' questions)</span>'+(h?'<span>Assignment '+(h.k?h.r+'/'+h.k:'Not started')+'(total '+h.n+' 題）</span>':'')+(s.k>=s.n?'<span class="pok">✓ Done</span>':'<span class="ptodo">Not done</span>')+'</span>'):(h&&h.k?'Assignment '+h.r+'/'+h.k+'，10 題還沒寫':"Not started"))+'</td></tr>';
     if(!next&&s.k<s.n)next=[c,"Read "+CHN[c]+", then do the chapter exercises"];});
   EXORD.forEach(id=>{const nm=EXNAME[id];const e=examStat(id);
     html+='<tr><td class="l"><button class="btn" data-go="'+id+'">'+nm+'</button></td><td>'+(e.k?('<b class="pscore">Score '+Math.round(e.r/e.n*1000)/10+' / 100 pts</b><span class="psub"><span>MC '+(e.k?e.r+'/'+e.k:'Not started')+'(total '+e.n+' 題）</span>'+(e.done?'<span class="pok">✓ Done</span>':'<span class="ptodo">Not done</span>')+'</span>'):"Not started")+'</td></tr>';

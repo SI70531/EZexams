@@ -15,7 +15,10 @@ try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(S,JSON.parse(raw)
 S.quiz=S.quiz||{};S.exam=S.exam||{};
 const tabs=document.getElementById("tabs");
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const ABCD="ABCD";
+const ABCD="ABCDEFGH";
+/* multiple-answer questions keep "a" as a list of option indexes and the pick as a list; this compares a pick with the answer for both kinds */
+window.EZsame=(p,a)=>Array.isArray(a)?(Array.isArray(p)&&p.length===a.length&&a.every(x=>p.includes(x))):p===a;
+const letters=a=>(Array.isArray(a)?a:[a]).map(x=>ABCD[x]).join(", ");
 const CHS=Object.keys(QUIZ).filter(k=>/^ch\d+$/.test(k));
 
 /* ---------- Chinese toggle ---------- */
@@ -23,11 +26,11 @@ function applyZh(){document.body.classList.toggle("nozh",!!S.hideZh);document.qu
 document.addEventListener("click",e=>{if(e.target.closest(".zhbtn")){S.hideZh=!S.hideZh;save();applyZh();}});
 
 /* ---------- progress ---------- */
-function quizStat(ch){const a=S.quiz[ch]||{},qs=QUIZ[ch];const k=Object.keys(a).filter(i=>qs[i]).length;const r=Object.keys(a).filter(i=>qs[i]&&a[i]===qs[i].a).length;return {k,r,n:qs.length};}
+function quizStat(ch){const a=S.quiz[ch]||{},qs=QUIZ[ch];const k=Object.keys(a).filter(i=>qs[i]).length;const r=Object.keys(a).filter(i=>qs[i]&&EZsame(a[i],qs[i].a)).length;return {k,r,n:qs.length};}
 /* mock exams work like the other subjects' exams: click an option and it is checked right away.
    Answers live in S.quiz["mock1mc"] (like a chapter quiz), so 清除作答, the wrong-answer area and sync treat them the same way. */
 const MKEY=id=>id.replace("-","")+"mc";
-function examStat(id){const a=S.quiz[MKEY(id)]||{},qs=MOCK[id];const k=Object.keys(a).filter(i=>qs[i]).length;const r=qs.filter((q,i)=>a[i]===q.a).length;return {k,r,n:qs.length,done:k>=qs.length};}
+function examStat(id){const a=S.quiz[MKEY(id)]||{},qs=MOCK[id];const k=Object.keys(a).filter(i=>qs[i]).length;const r=qs.filter((q,i)=>EZsame(a[i],q.a)).length;return {k,r,n:qs.length,done:k>=qs.length};}
 (function(){let ch=false;Object.keys(MOCK).forEach(id=>{const e=S.exam[id];if(e&&e.ans&&Object.keys(e.ans).length&&!S.quiz[MKEY(id)]){S.quiz[MKEY(id)]=Object.assign({},e.ans);ch=true;}});if(ch)save();})(); /* answers from the old 交卷 version */
 function procState(id){
   if(QUIZ[id]){const s=quizStat(id),h=QUIZ["hw"+id.slice(2)]?quizStat("hw"+id.slice(2)):{k:0,n:0};const k=s.k+h.k,n=s.n+h.n;return {state:k===0?"new":k<n?"running":"terminated",done:k,n};}
@@ -60,6 +63,7 @@ function optHTML(it,oi,k){
 }
 function answerLine(it){
   const k=it.a,z=null;
+  if(Array.isArray(k))return '<div class="ansline"><b>Answer: '+k.map(x=>'('+ABCD[x].toLowerCase()+') '+esc(it.o[x])).join('；')+'</b></div>';
   return '<div class="ansline"><b>Answer: ('+ABCD[k].toLowerCase()+') '+esc(it.o[k])+'</b>'+(z?'<span class="zho">Answer: '+esc(z)+'</span>':'')+'</div>';
 }
 
@@ -124,15 +128,27 @@ function renderExam(id){
     const it=qs[i];
     const d=document.createElement("div");d.className="qitem";d.dataset.i=i;d.id=id+"-q"+(pos+1);d.innerHTML=stemHTML(it,pos);if(it.gid&&window.EZGEN)EZGEN.tag(d);
     const os=document.createElement("div");os.className="opts";const btns=[];
+    const MULTI=Array.isArray(it.a);let sub=null;const chosen=new Set();
+    if(MULTI){
+      it.o.forEach((_,oi)=>{const b=EZopt();b.className="opt";b.type="button";b.innerHTML=optHTML(it,oi,oi);b.dataset.oi=oi;btns.push(b);
+        b.addEventListener("click",()=>{if(S.quiz[key]&&S.quiz[key][i]!==undefined)return;if(chosen.has(oi))chosen.delete(oi);else chosen.add(oi);b.classList.toggle("sel",chosen.has(oi));b.setAttribute("aria-pressed",String(chosen.has(oi)));if(sub)sub.disabled=!chosen.size;});os.appendChild(b);});
+      const hint=document.createElement("p");hint.className="small multihint";hint.textContent="Select all that apply, then press Submit answer.";
+      sub=document.createElement("button");sub.type="button";sub.className="btn primary msub";sub.textContent="Submit answer";sub.disabled=true;
+      sub.addEventListener("click",()=>{if(!chosen.size||(S.quiz[key]&&S.quiz[key][i]!==undefined))return;S.quiz[key]=S.quiz[key]||{};S.quiz[key][i]=[...chosen].sort((x,y)=>x-y);save();mark();upd();});
+      d.appendChild(hint);
+    }else{
     it.o.forEach((_,oi)=>{const b=EZopt();b.className="opt";b.type="button";b.innerHTML=optHTML(it,oi,oi);b.dataset.oi=oi;btns.push(b);
       b.addEventListener("click",()=>{if(S.quiz[key]&&S.quiz[key][i]!==undefined)return;S.quiz[key]=S.quiz[key]||{};S.quiz[key][i]=oi;if(window.EZGEN&&EZGEN.isAi(key))EZGEN.stamp(key,i);save();if(it.a==null&&window.EZGEN){btns.forEach(x=>x.disabled=true);EZGEN.reveal(key,i,oi).then(ok=>{if(!ok){delete S.quiz[key][i];save();}renderExam(id);applyZh();});return;}mark();upd();});os.appendChild(b);});
-    d.appendChild(os);const ex=document.createElement("div");ex.className="expl";ex.hidden=true;d.appendChild(ex);box.appendChild(d);
+    }
+    d.appendChild(os);if(sub)d.appendChild(sub);const ex=document.createElement("div");ex.className="expl";ex.hidden=true;d.appendChild(ex);box.appendChild(d);
     function mark(){
       const pick=(S.quiz[key]||{})[i];if(pick===undefined)return;
       if(it.a==null){btns.forEach(b=>b.disabled=true);return;}
-      btns.forEach(b=>{b.disabled=true;const oi=+b.dataset.oi;if(oi===it.a)b.classList.add("right");else if(oi===pick)b.classList.add("wrong");});
-      const ok=pick===it.a;
-      ex.innerHTML='<span class="tag '+(ok?"ok":"no")+'">'+(ok?"Correct":"Wrong, correct answer is "+ABCD[it.a])+'</span><span class="small">（'+(CHN["ch"+it.ch]||"")+'）</span>'+answerLine(it)+'<div>'+esc(it.e)+'</div>';ex.hidden=false;
+      const PA=Array.isArray(pick)?pick:[pick],AA=Array.isArray(it.a)?it.a:[it.a];
+      btns.forEach(b=>{b.disabled=true;const oi=+b.dataset.oi;b.classList.toggle("sel",PA.includes(oi));if(AA.includes(oi))b.classList.add("right");else if(PA.includes(oi))b.classList.add("wrong");});
+      if(sub)sub.hidden=true;
+      const ok=EZsame(pick,it.a);
+      ex.innerHTML='<span class="tag '+(ok?"ok":"no")+'">'+(ok?"Correct":"Wrong, correct answer is "+letters(it.a))+'</span><span class="small">（'+(CHN["ch"+it.ch]||"")+'）</span>'+answerLine(it)+'<div>'+esc(it.e)+'</div>';ex.hidden=false;
     }
     mark();
   });
@@ -142,7 +158,7 @@ function renderExam(id){
     tools.querySelector(".score").textContent="Score "+Math.round(e.r/e.n*1000)/10+" / 100 pts (answered "+e.k+" / "+e.n+" questions)";
     const rep=sec.querySelector(".report");
     if(e.done){
-      const by={};qs.forEach((q,i)=>{const c="ch"+q.ch;by[c]=by[c]||[0,0];by[c][1]++;if(a[i]===q.a)by[c][0]++;});
+      const by={};qs.forEach((q,i)=>{const c="ch"+q.ch;by[c]=by[c]||[0,0];by[c][1]++;if(EZsame(a[i],q.a))by[c][0]++;});
       let h='<h3>各章答對率</h3><table class="prog"><tr><th class="l">章節</th><th>答對</th><th></th></tr>';
       Object.keys(by).forEach(c=>{const[r,n]=by[c];h+='<tr><td class="l"><button class="btn" data-go="'+c+'">'+CHN[c]+'</button></td><td>'+r+' / '+n+'</td><td>'+(r<n?"回去複習":"OK")+'</td></tr>';});
       rep.innerHTML=h+'</table>';rep.hidden=false;

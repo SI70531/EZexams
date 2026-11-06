@@ -123,19 +123,21 @@ h3.allseen .missbadge{background:#5b6cd6}
 
   /* ---------- collect ---------- */
   const L="ABCDEFGH";
+  const same=(p,a)=>window.EZsame?EZsame(p,a):p===a;
   function mc(out,it,i,pk,ch,src,go,quiz){
     const m=match(it,ch),w={m,ch,src,go,quiz,i,q:it.q,e:it.e||""};
     /* use the letter printed next to that option on the page */
     const el=locate(w);
     const opt=k=>{const ab=el&&el.querySelector('.opt[data-oi="'+k+'"] .ab');return "("+(ab?ab.textContent.trim():L[k])+") "+(it.o?it.o[k]:"");};
-    w.yours=opt(pk);w.right=opt(it.a);
+    const optS=k=>Array.isArray(k)?k.map(opt).join("; "):opt(k);
+    w.yours=optS(pk);w.right=optS(it.a);
     out.push(w);
   }
   function collect(){
     const out=[];
     CH.forEach(ch=>{
       const a=S.quiz&&S.quiz[ch]||{};
-      QUIZ[ch].forEach((it,i)=>{const pk=a[i];if(pk===undefined||pk===it.a||it.a==null||typeof it.q!=="string")return;
+      QUIZ[ch].forEach((it,i)=>{const pk=a[i];if(pk===undefined||same(pk,it.a)||it.a==null||typeof it.q!=="string")return;
         mc(out,it,i,pk,ch,(NAME[ch]||ch)+" chapter MC, Q"+(i+1),ch,ch);});
     });
     /* MC parts embedded in other views (e.g. past/mock exams): answers live in S.quiz[key] like chapter quizzes */
@@ -143,7 +145,7 @@ h3.allseen .missbadge{background:#5b6cd6}
       if(CH.includes(key))return;
       const box=document.querySelector('[data-quiz="'+key+'"]');const view=box&&box.closest(".view");if(!view)return;
       const a=S.quiz&&S.quiz[key]||{};
-      QUIZ[key].forEach((it,i)=>{const pk=a[i];if(pk===undefined||pk===it.a||it.a==null||typeof it.q!=="string")return;
+      QUIZ[key].forEach((it,i)=>{const pk=a[i];if(pk===undefined||same(pk,it.a)||it.a==null||typeof it.q!=="string")return;
         mc(out,it,i,pk,chOf(it),(NAME[view.id]||view.id)+" MC, Q"+(i+1),view.id,key);});
     });
     if(typeof MOCK!=="undefined"){
@@ -151,7 +153,7 @@ h3.allseen .missbadge{background:#5b6cd6}
         /* economics mocks keep their answers in S.quiz[<box key>] and are checked as you go */
         const box=document.querySelector("#"+id+" .quiz[data-quiz]"),key=box&&box.dataset.quiz;
         const st=S.exam&&S.exam[id];const a=key?(S.quiz&&S.quiz[key]||{}):(st&&st.done&&st.ans||{});
-        MOCK[id].forEach((it,i)=>{const pk=a[i];if(pk===undefined||pk===it.a||it.a==null||typeof it.q!=="string")return;
+        MOCK[id].forEach((it,i)=>{const pk=a[i];if(pk===undefined||same(pk,it.a)||it.a==null||typeof it.q!=="string")return;
           mc(out,it,i,pk,chOf(it),(NAME[id]||id)+" 第 "+(i+1)+" questions",id,key||null);});
       });
     }

@@ -134,7 +134,7 @@
         try{renderQuiz(key);}catch(e){}afterChange(key);},null,rb);};
       bar.appendChild(rb);}
     const qs=QUIZ[key],a=S.quiz&&S.quiz[key]||{};
-    let n=0,r=0;Object.keys(a).forEach(k=>{if(qs[k]){n++;if(a[k]===qs[k].a)r++;}});
+    let n=0,r=0;Object.keys(a).forEach(k=>{if(qs[k]){n++;if(window.EZsame?EZsame(a[k],qs[k].a):a[k]===qs[k].a)r++;}});
     const P=window.EZ_MC_PTS||50; /* a page can set its own total (data structures: 40, like Part I of its exam) */
     const sc=Math.round(r*P/qs.length*10)/10;
     const t="Score "+sc+" / "+P+" ("+n+" / "+qs.length+" answered)";

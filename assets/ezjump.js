@@ -35,7 +35,8 @@ html.ezcalm #jump .jp-list,html.ezcalm #jump button.jp-pill{transition:none}`;
   const visible=el=>el.offsetParent!==null||el.getClientRects().length>0;
   const heads=()=>[...document.querySelectorAll(".view h2,.view h3,main h2,main h3,article h2,article h3")]
     .filter((h,i,a)=>a.indexOf(h)===i&&visible(h)&&h.textContent.trim());
-  const label=h=>h.textContent.replace(/\s+/g," ").trim();
+  const label=h=>{const c=h.cloneNode(true);c.querySelectorAll(".zhn").forEach(z=>z.remove());return c.textContent.replace(/\s+/g," ").trim();};
+  const zhOf=h=>{const z=h.querySelector(".zhn");return z?z.textContent.replace(/\s+/g," ").trim():"";};
 
   let lastKey="";
   function refresh(){
@@ -51,7 +52,7 @@ html.ezcalm #jump .jp-list,html.ezcalm #jump button.jp-pill{transition:none}`;
     list.innerHTML="";
     hs.forEach(h=>{
       const li=document.createElement("li");const b=document.createElement("button");b.type="button";
-      b.textContent=label(h);if(h.tagName==="H3")b.className="lv3";
+      b.textContent=label(h);{const zt=zhOf(h);if(zt){const zs=document.createElement("small");zs.className="zhn";zs.textContent=zt;b.appendChild(zs);}}if(h.tagName==="H3")b.className="lv3";
       b.setAttribute("aria-current",String(h===cur));
       b.addEventListener("click",()=>{
         const bar=document.querySelector("header.top");const off=(bar?bar.getBoundingClientRect().bottom:0)+24;

@@ -86,7 +86,7 @@ html.ezcalm .joy-bit,html.ezcalm .joy-shot{display:none}
     if(all.length&&all.every(isDone)&&!finished.has(key)){
       finished.add(key);const ok=all.filter(it=>it.querySelector(".opt.right")&&!it.querySelector(".opt.wrong")).length;
       const pct=Math.round(ok/all.length*100),sec=document.getElementById(key)||box.closest("section.view"),h=sec&&sec.querySelector(".vhead h1");
-      toast("CHAPTER CLEAR",(h?h.textContent.replace(/\s*[（(].*$/,"").trim().slice(0,32):key)+"　"+pct+"%","First try correct: "+ok+" / "+all.length+(pct===100?". All correct!":". Review the ones you missed in Review."));
+      toast("CHAPTER CLEAR",(h?((c)=>{c.querySelectorAll(".zhn").forEach(z=>z.remove());return c.textContent})(h.cloneNode(true)).replace(/\s*[（(].*$/,"").trim().slice(0,32):key)+"　"+pct+"%","First try correct: "+ok+" / "+all.length+(pct===100?". All correct!":". Review the ones you missed in Review."));
     }
   }
   /* saved answers are restored shortly after load (and again when the cloud copy arrives): those chapters must not celebrate */

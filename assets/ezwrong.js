@@ -54,6 +54,8 @@ h3.allseen .missbadge{background:#5b6cd6}
 
   const CH=Object.keys(QUIZ).filter(k=>{const v=document.getElementById(k);return v&&v.classList.contains("view");});
   const NAME={};VIEWS.forEach(v=>{if(v[1])NAME[v[0]]=v[1];});
+  /* a heading's English title only: the Chinese translation (.zhn) is left out */
+  const enOnly=h=>{const c=h.cloneNode(true);c.querySelectorAll(".zhn").forEach(z=>z.remove());return c.textContent.replace(/\s+/g," ");};
   const clean=t=>t.replace(/✗ (?:Wrong|錯).*$/,"").trim();
 
   /* ---------- sections ---------- */
@@ -67,7 +69,7 @@ h3.allseen .missbadge{background:#5b6cd6}
       const parts=[];let n=h.nextElementSibling;
       while(n&&!isSec(n)&&n.tagName!=="H2"&&!n.matches(".quiz,.wq")){parts.push(n);n=n.nextElementSibling;}
       if(!h.id)h.id="ws-"+ch+"-"+i;
-      const s={key:h.dataset.sec||h.id,ch,h,parts,title:clean(h.textContent),tok:null};
+      const s={key:h.dataset.sec||h.id,ch,h,parts,title:clean(enOnly(h)),tok:null};
       SECS.push(s);BYKEY[s.key]=s;if(h.id!==s.key)BYKEY[h.id]=s;
     });
   });

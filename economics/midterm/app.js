@@ -6,7 +6,7 @@
   tt.addEventListener("click",()=>scrollTo({top:0,behavior:"smooth"}));
 })();
 const CHN={ch1:"Ch1 Ten principles",ch2:"Ch2 Economic thinking",ch3:"Ch3 Interdependence and trade",ch4:"Ch4 Supply and demand",ch5:"Ch5 Elasticity",ch6:"Ch6 Government policy",ch7:"Ch7 Consumer and producer surplus",ch8:"Ch8 The costs of taxation",ch9:"Ch9 International trade"};
-const VIEWS=[["home","Home"],["ch1","Ch1 Ten principles"],["ch2","Ch2 Economic thinking"],["ch3","Ch3 Trade"],["ch4","Ch4 Supply & demand"],["ch5","Ch5 Elasticity"],["ch6","Ch6 Government policy"],["ch7","Ch7 Surplus"],["ch8","Ch8 Taxes"],["ch9","Ch9 International trade"],["|"],["sheet","Review"],["mock-1","Mock exam 1"],["mock-2","Mock exam 2"],["mock-3","Mock exam 3"]];
+const VIEWS=[["home","Home"],["ch1","Ch1 Ten principles"],["ch2","Ch2 Economic thinking"],["ch3","Ch3 Trade"],["ch4","Ch4 Supply & demand"],["ch5","Ch5 Elasticity"],["ch6","Ch6 Government policy"],["ch7","Ch7 Surplus"],["ch8","Ch8 Taxes"],["ch9","Ch9 International trade"],["|"],["y110","110 Past"],["y112","112 Past"],["y113","113 Past"],["mock-1","Mock exam"],["sheet","Review"]];
 const KEY="econ-midterm-v2"; /* v2 (2026-10-29): notes rewritten; each chapter = 第一大題 作業 (QUIZ.hwN) + 第二大題 25 題 (QUIZ.chN) */
 let S={quiz:{},exam:{}};
 try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(S,JSON.parse(raw));
@@ -64,9 +64,9 @@ function answerLine(it){
 }
 
 /* AI practice, one question at a time (assets/ezgen.js); chapter exercises are made on demand, answers stay on the Worker */
-const EQ=Object.assign({},QUIZ,{mock1mc:MOCK["mock-1"],mock2mc:MOCK["mock-2"],mock3mc:MOCK["mock-3"]});
-const MOCKSET={mock1mc:"mock-1",mock2mc:"mock-2",mock3mc:"mock-3"};
-if(window.EZGEN)EZGEN.attach({course:"Economics",s:"econ",ai:["ch1","ch2","ch3","ch4","ch5","ch6","ch7","ch8","ch9","mock1mc","mock2mc","mock3mc"],batch:["mock1mc","mock2mc","mock3mc"],mock:["mock1mc","mock2mc","mock3mc"],fixed:[],scope:{mock1mc:CHS,mock2mc:CHS,mock3mc:CHS},titles:{mock1mc:"Economics (mixed chapters)",mock2mc:"Economics (mixed chapters)",mock3mc:"Economics (mixed chapters)"},get:()=>S,quiz:()=>EQ,save:()=>save(),render:c=>{if(MOCKSET[c])renderExam(MOCKSET[c]);else renderQuiz(c);renderTabs(c);refreshPCB()},renderAll:()=>{Object.keys(QUIZ).forEach(renderQuiz);Object.keys(MOCK).forEach(renderExam);renderTabs(S.last)}});
+const EQ=Object.assign({},QUIZ,{mock1mc:MOCK["mock-1"],y110mc:MOCK.y110,y112mc:MOCK.y112,y113mc:MOCK.y113});
+const MOCKSET={mock1mc:"mock-1"};
+if(window.EZGEN)EZGEN.attach({course:"Economics",s:"econ",ai:["ch1","ch2","ch3","ch4","ch5","ch6","ch7","ch8","ch9","mock1mc"],batch:["mock1mc"],mock:["mock1mc"],fixed:[],scope:{mock1mc:CHS},titles:{mock1mc:"Economics (mixed chapters)"},get:()=>S,quiz:()=>EQ,save:()=>save(),render:c=>{if(MOCKSET[c])renderExam(MOCKSET[c]);else renderQuiz(c);renderTabs(c);refreshPCB()},renderAll:()=>{Object.keys(QUIZ).forEach(renderQuiz);Object.keys(MOCK).forEach(renderExam);renderTabs(S.last)}});
 
 /* ---------- chapter quizzes ---------- */
 function renderQuiz(ch){
@@ -180,6 +180,7 @@ Object.keys(MOCK).forEach(renderExam);
 /* chapter exercises in the progress table: jump straight to the chapter's multiple choice */
 document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-goend]");if(!b)return;const c=b.dataset.goend;
   setTimeout(()=>{const todo=window.EZtodo&&EZtodo(c);if(todo){EZglow(todo);return;}const t=document.querySelector("#"+c+" .quiz");if(t){t.scrollIntoView({block:"start"});scrollBy(0,-76);}},80);});
+const EXORD=["y110","y112","y113","mock-1"],EXNAME={y110:"110 past exam",y112:"112 past exam",y113:"113 past exam","mock-1":"Mock exam"};
 function renderHome(){
   const t=document.getElementById("progTable");
   let html='<tr><th class="l">Item</th><th>Status</th></tr>';let next=null;
@@ -187,9 +188,9 @@ function renderHome(){
     const sc=Math.round(s.r*100/s.n*10)/10; /* a chapter is 25 multiple-choice questions, 100 分 */
     html+='<tr><td class="l"><button class="btn" data-go="'+c+'" data-goend="'+c+'">'+c.replace("ch","Ch")+' chapter exercises</button></td><td>'+(s.k?('<b class="pscore">Score '+sc+' / 100 pts</b><span class="psub"><span>MC '+(s.k?s.r+'/'+s.k:'Not started')+'(total '+s.n+' questions)</span>'+(h?'<span>Assignment '+(h.k?h.r+'/'+h.k:'Not started')+'(total '+h.n+' 題）</span>':'')+(s.k>=s.n?'<span class="pok">✓ Done</span>':'<span class="ptodo">Not done</span>')+'</span>'):(h&&h.k?'Assignment '+h.r+'/'+h.k+'，25 題還沒寫':"Not started"))+'</td></tr>';
     if(!next&&s.k<s.n)next=[c,"Read "+CHN[c]+", then do the chapter exercises"];});
-  Object.keys(MOCK).forEach((id,j)=>{const e=examStat(id);
-    html+='<tr><td class="l"><button class="btn" data-go="'+id+'">Mock exam '+(j+1)+'</button></td><td>'+(e.k?('<b class="pscore">Score '+Math.round(e.r/e.n*1000)/10+' / 100 pts</b><span class="psub"><span>MC '+(e.k?e.r+'/'+e.k:'Not started')+'(total '+e.n+' 題）</span>'+(e.done?'<span class="pok">✓ Done</span>':'<span class="ptodo">Not done</span>')+'</span>'):"Not started")+'</td></tr>';
-    if(!next&&!e.done)next=[id,"Take mock exam "+(j+1)+" (60 min)"];});
+  EXORD.forEach(id=>{const nm=EXNAME[id];const e=examStat(id);
+    html+='<tr><td class="l"><button class="btn" data-go="'+id+'">'+nm+'</button></td><td>'+(e.k?('<b class="pscore">Score '+Math.round(e.r/e.n*1000)/10+' / 100 pts</b><span class="psub"><span>MC '+(e.k?e.r+'/'+e.k:'Not started')+'(total '+e.n+' 題）</span>'+(e.done?'<span class="pok">✓ Done</span>':'<span class="ptodo">Not done</span>')+'</span>'):"Not started")+'</td></tr>';
+    if(!next&&!e.done)next=[id,"Take the "+nm+" ("+(id==="mock-1"?60:110)+" min)"];});
   t.innerHTML=html;
   const ns=document.getElementById("nextStep");ns.innerHTML="";const p=document.createElement("b");
   if(next){p.textContent="Next: "+next[1];ns.appendChild(p);const b=document.createElement("button");b.className="btn primary";b.style.marginLeft="10px";b.textContent="Start";b.dataset.go=next[0];ns.appendChild(b);}

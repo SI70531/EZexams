@@ -51,7 +51,7 @@
       if(view.id==="home"||view.id==="wrong"||!NAME[view.id])return;
       let sec="";
       view.querySelectorAll(SEL).forEach(el=>{
-        if(/^H[23]$/.test(el.tagName))sec=el.textContent.replace(/✗ (?:Wrong|錯).*$/,"").trim();
+        if(/^H[23]$/.test(el.tagName))sec=((c)=>{c.querySelectorAll(".zhn").forEach(z=>z.remove());return c.textContent})(el.cloneNode(true)).replace(/✗ (?:Wrong|錯).*$/,"").trim();
         if(el.querySelector(SEL))return;                 /* keep only the innermost blocks */
         if(el.closest(".ezs-panel,.wback,.missbadge,.pcb,.rvwrong,.wrongsum,.aiw details.qa")||hiddenInside(el,view))return;
         const text=el.textContent.replace(/\s+/g," ").trim();if(text.length<2)return;

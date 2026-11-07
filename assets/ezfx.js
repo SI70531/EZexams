@@ -78,6 +78,11 @@ html.ezcalm .fx-sv{animation:none}
   const onScroll=raf(()=>{const h=document.documentElement,qs=notesEnd(),max=(qs<Infinity&&qs>innerHeight?qs-innerHeight*0.6:h.scrollHeight-innerHeight),p=max>0?Math.min(1,scrollY/max):0;
     bar.style.transform="scaleX("+p+")";ring(p);});
   addEventListener("scroll",onScroll,{passive:true});addEventListener("resize",onScroll);
+  /* safety net: anything armed for reveal that is on screen (or already scrolled past) but was never revealed by the
+     observer (tab switches, layout shifts, iOS pausing observers) is shown, so notes never stay blank */
+  const sweep=()=>{const vh=innerHeight;document.querySelectorAll(".fx-rv:not(.fx-in)").forEach(el=>{const r=el.getBoundingClientRect();if(!r.height&&!r.width)return;if(r.top<vh*0.98){el.classList.add("fx-in");try{io&&io.unobserve(el);}catch(e){}}});};
+  addEventListener("scroll",raf(sweep),{passive:true});addEventListener("pageshow",sweep);document.addEventListener("visibilitychange",()=>{if(!document.hidden)sweep();});
+  setInterval(sweep,1500);
 
   /* back-to-top ring */
   let ringC=null;

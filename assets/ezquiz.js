@@ -133,11 +133,11 @@
         delete S.quiz[key];EZGEN.reset(key);S.quizReset=S.quizReset||{};S.quizReset[key]=now();save();
         try{renderQuiz(key);}catch(e){}afterChange(key);},null,rb);};
       bar.appendChild(rb);}
-    const qs=QUIZ[key],a=S.quiz&&S.quiz[key]||{};
-    let n=0,r=0;Object.keys(a).forEach(k=>{if(qs[k]){n++;if(window.EZsame?EZsame(a[k],qs[k].a):a[k]===qs[k].a)r++;}});
-    const P=window.EZ_MC_PTS||50; /* a page can set its own total (data structures: 40, like Part I of its exam) */
-    const sc=Math.round(r*P/qs.length*10)/10;
-    const t="Score "+sc+" / "+P+" ("+n+" / "+qs.length+" answered)";
+    /* the chapter's homework set (hwN) counts together with its exercises; only the number of right answers is shown, no points */
+    let n=0,r=0,tot=0;
+    [key,"hw"+key.replace(/^\D+/,"")].forEach((k,j)=>{const qs=QUIZ[k];if(!qs||(j&&k===key))return;const a=S.quiz&&S.quiz[k]||{};tot+=qs.length;
+      Object.keys(a).forEach(i=>{if(qs[i]){n++;if(window.EZsame?EZsame(a[i],qs[i].a):a[i]===qs[i].a)r++;}});});
+    const t="Correct "+r+" / "+tot+" ("+n+" / "+tot+" answered)";
     const s=bar.querySelector(".score");if(s.textContent!==t)s.textContent=t;
   }
   function ensureClear(el,on,fn){

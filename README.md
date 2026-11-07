@@ -33,7 +33,6 @@ assets/             Shared code and styles used by every page
   ezpage.js         Shared page features (saving, tabs, chapter scores)
   ezcore.js         Theme switching and offline support
   ezfx.js           Animations and answer feedback
-  ezjoy.js          Combo chip and chapter-clear card
   ezmotion.js       Tab glide, theme reveal, review motion
   ezfig.js          Diagrams and interactive figures draw themselves on tab switch / scroll
   ezfit.js          Layout fit: narrow tables get their explanation beside them, or stretch to full width

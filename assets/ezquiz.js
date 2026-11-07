@@ -122,10 +122,14 @@
   /* ---------- draw ---------- */
   function scoreBar(box){
     const key=box.dataset.quiz;if(!isChapter(key)||!QUIZ[key])return;
-    let bar=box.querySelector(":scope > .mcscore");
+    /* a chapter that has a homework part: the bar sits above Part 1 (counting both parts); otherwise above the first question */
+    const top=document.getElementById(key+"-hw");
+    let bar=(top?top.parentNode:box).querySelector(':scope > .mcscore[data-for="'+key+'"]')||box.querySelector(":scope > .mcscore");
     const first=box.querySelector(":scope > .qitem");
     if(!bar){bar=document.createElement("div");bar.className="examtools mcscore";bar.innerHTML='<span class="score"></span>';}
-    if(first&&bar.nextElementSibling!==first&&!bar.contains(first))box.insertBefore(bar,first);
+    bar.dataset.for=key;
+    if(top){if(bar.nextElementSibling!==top)top.parentNode.insertBefore(bar,top);}
+    else if(first&&bar.nextElementSibling!==first&&!bar.contains(first))box.insertBefore(bar,first);
     else if(!first&&!bar.parentNode)box.insertBefore(bar,box.querySelector(":scope > .ezgen-bar"));
     if(window.EZGEN&&EZGEN.isAi(key)&&!bar.querySelector(".mcredo")){
       const rb=document.createElement("button");rb.type="button";rb.className="btn mcredo";rb.textContent="Redo chapter";rb.style.marginLeft="12px";

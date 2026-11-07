@@ -120,6 +120,17 @@
   },true);
 
   /* ---------- draw ---------- */
+  function syncRedo(){
+    const hb=document.querySelector("header.top");const off=(hb?hb.getBoundingClientRect().bottom:0)+8;
+    document.querySelectorAll(".mcscore[data-for]").forEach(bar=>{
+      const r1=bar.querySelector(".redo1"),r2=bar.querySelector(".redo2");if(!r1||!r2)return;
+      bar.style.top=off+"px";
+      const p2=document.getElementById(bar.dataset.for+"-mc");
+      const in2=!!p2&&p2.getBoundingClientRect().top<window.innerHeight*0.45;
+      r1.hidden=in2;r2.hidden=!in2;
+    });
+  }
+  addEventListener("scroll",syncRedo,{passive:true});addEventListener("resize",syncRedo);
   function scoreBar(box){
     const key=box.dataset.quiz;if(!isChapter(key)||!QUIZ[key])return;
     /* a chapter that has a homework part: the bar sits above Part 1 (counting both parts); otherwise above the first question */
@@ -132,17 +143,17 @@
     else if(first&&bar.nextElementSibling!==first&&!bar.contains(first))box.insertBefore(bar,first);
     else if(!first&&!bar.parentNode)box.insertBefore(bar,box.querySelector(":scope > .ezgen-bar"));
     const hk="hw"+key.replace(/^\D+/,""),hasHw=!!QUIZ[hk]&&!!top,ai=!!(window.EZGEN&&EZGEN.isAi(key));
-    /* with a homework part, each part's own heading carries its Redo button (so the button is the one for the part you are scrolled to) */
-    const addRedo=(host,cls,label,what,k,isAi)=>{
-      if(!host||host.querySelector("."+cls))return;
-      host.style.display="flex";host.style.alignItems="center";
-      const rb=document.createElement("button");rb.type="button";rb.className="btn mcredo "+cls;rb.textContent=label;rb.style.marginLeft="auto";rb.style.fontSize="14px";
+    /* with a homework part the bar stays on screen and shows the Redo button of the part you are scrolled to */
+    const addRedo=(cls,label,what,k,isAi)=>{
+      if(bar.querySelector("."+cls))return;
+      const rb=document.createElement("button");rb.type="button";rb.className="btn mcredo "+cls;rb.textContent=label;rb.style.marginLeft="12px";
       rb.onclick=()=>{window.EZundo(what,()=>{
         delete S.quiz[k];if(isAi)EZGEN.reset(k);S.quizReset=S.quizReset||{};S.quizReset[k]=now();save();
         try{renderQuiz(k);}catch(e){}afterChange(k);},null,rb);};
-      host.appendChild(rb);};
-    if(hasHw){addRedo(top,"redo1","Redo Part 1","the answers of Part 1 (homework)",hk,false);addRedo(document.getElementById(key+"-mc"),"redo2","Redo Part 2","the answers and questions of Part 2",key,ai);}
-    else if(ai)addRedo(bar,"redo2","Redo chapter","this chapter's answers and questions",key,true);
+      bar.appendChild(rb);};
+    if(hasHw){addRedo("redo1","Redo Part 1","the answers of Part 1 (homework)",hk,false);addRedo("redo2","Redo Part 2","the answers and questions of Part 2",key,ai);
+      bar.style.position="sticky";bar.style.zIndex="30";syncRedo();}
+    else if(ai)addRedo("redo2","Redo chapter","this chapter's answers and questions",key,true);
     /* the chapter's homework set (hwN) counts together with its exercises; only the number of right answers is shown, no points */
     let n=0,r=0,tot=0;
     [key,"hw"+key.replace(/^\D+/,"")].forEach((k,j)=>{const qs=QUIZ[k];if(!qs||(j&&k===key))return;const a=S.quiz&&S.quiz[k]||{};tot+=qs.length;

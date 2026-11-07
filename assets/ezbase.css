@@ -260,3 +260,6 @@ body.nozh .zhn{display:none}
 @media (max-width:760px){.tside{grid-template-columns:1fr}}
 table.ezfull{display:table;width:100%}
 @media (max-width:760px){table.ezfull{display:block;width:auto}}
+
+/* a figure next to its explanation stays on screen while the explanation scrolls (tablet landscape and wider) */
+@media (min-width:760px){.note .two>figure:first-child,.note .two>.fig:first-child{position:sticky;top:calc(env(safe-area-inset-top,0px) + 80px);align-self:start;max-height:calc(100vh - 96px);overflow:auto}}

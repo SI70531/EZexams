@@ -220,13 +220,13 @@ show(start);
 (function(){
 const $=(r,s)=>r.querySelector(s),$$=(r,s)=>[...r.querySelectorAll(s)];
 const f=(x,d=1)=>{const v=Math.round(x*Math.pow(10,d))/Math.pow(10,d);return v.toLocaleString("en-US");};
-const W=380,H=280,L=46,B=240,R=360,T=18;
+const W=380,H=292,L=46,B=240,R=360,T=18;
 const X=q=>L+(R-L)*q/100,Y=p=>B-(B-T)*p/100;
 const pt=(q,p)=>X(q).toFixed(1)+","+Y(p).toFixed(1);
 const poly=(cls,pts)=>'<polygon class="'+cls+'" points="'+pts.map(a=>pt(a[0],a[1])).join(" ")+'"/>';
 const line=(cls,q1,p1,q2,p2)=>'<line class="'+cls+'" x1="'+X(q1).toFixed(1)+'" y1="'+Y(p1).toFixed(1)+'" x2="'+X(q2).toFixed(1)+'" y2="'+Y(p2).toFixed(1)+'"/>';
 const txt=(cls,q,p,s,anchor)=>'<text class="'+cls+'" x="'+X(q).toFixed(1)+'" y="'+Y(p).toFixed(1)+'"'+(anchor?' text-anchor="'+anchor+'"':'')+'>'+s+'</text>';
-const axes=(xl,yl)=>'<line class="ax" x1="'+L+'" y1="'+B+'" x2="'+R+'" y2="'+B+'"/><line class="ax" x1="'+L+'" y1="'+B+'" x2="'+L+'" y2="'+T+'"/><text x="'+R+'" y="'+(B+18)+'" text-anchor="end">'+xl+'</text><text x="'+(L+6)+'" y="'+(T+4)+'">'+yl+'</text>';
+const axes=(xl,yl)=>'<line class="ax" x1="'+L+'" y1="'+B+'" x2="'+R+'" y2="'+B+'"/><line class="ax" x1="'+L+'" y1="'+B+'" x2="'+L+'" y2="'+T+'"/><text x="'+R+'" y="'+(B+38)+'" text-anchor="end">'+xl+'</text><text x="'+(L+6)+'" y="'+(T+4)+'">'+yl+'</text>';
 const svg=inner=>'<svg viewBox="0 0 '+W+' '+(H)+'" role="img">'+inner+'</svg>';
 const clip=(q1,p1,q2,p2)=>{ // clip a line segment to the 0..100 box
   const ts=[0,1];const dq=q2-q1,dp=p2-p1;

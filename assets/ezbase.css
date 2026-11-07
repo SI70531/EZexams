@@ -263,4 +263,4 @@ table.ezfull{display:table;width:100%}
 
 /* a figure next to its explanation stays on screen while the explanation scrolls (tablet landscape and wider) */
 @media (min-width:760px){.note .two>figure:first-child,.note .two>.fig:first-child{position:sticky;top:calc(env(safe-area-inset-top,0px) + 80px);align-self:start;max-height:calc(100vh - 96px);overflow:auto}}
-.two>div>.tbl{width:100%}:root .two>div>.tbl>table{display:table;width:100%;max-width:none}
+.two>div>.tbl{width:100%}:root .two>.tbl>table,:root .two>div>.tbl>table{display:table;width:100%;max-width:none}

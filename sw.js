@@ -7,7 +7,7 @@
    (plus the scripts those pages load), so a subject works offline even before you open it. */
 /* v2: each file is now kept once, without its ?v= version stamp, so the cache no longer grows with every
    release; installing v2 deletes the old v1 cache. Progress lives in localStorage and is not touched. */
-const CACHE="ezexams-v4";
+const CACHE="ezexams-v5";
 const bare=u=>{const x=new URL(u);x.search="";return x.href;};
 const BASE=new URL("./",self.location).href;
 

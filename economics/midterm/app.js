@@ -310,7 +310,7 @@ const range=(el,cls)=>$(el,cls);
   let g=axes("Q quantity","P price");
   g+=poly("rev",[[0,0],[q,0],[q,p],[0,p]]);
   g+=lin("line",100,-1)+'<circle class="dotp" cx="'+X(q)+'" cy="'+Y(p)+'" r="5"/>';
-  g+=txt("t-ink",q/2,p/2,"TR = "+f(tr,0),"middle")+txt("t-brass",52,52,"midpoint elasticity = 1");
+  g+=txt("t-ink",q/2,p/2,"TR = "+f(tr,0),"middle")+txt("t-brass",40,52,"midpoint elasticity = 1");
   g+='<circle class="dot0" cx="'+X(50)+'" cy="'+Y(50)+'" r="3.5"/>';
   $(el,".el-svg").innerHTML=svg(g);
   const kind=Math.abs(e-1)<0.02?"unit elastic (單一彈性, =1)":e>1?"elastic (富有彈性, >1)":"inelastic (缺乏彈性, <1)";

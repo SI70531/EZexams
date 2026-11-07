@@ -131,16 +131,18 @@
     if(top){if(bar.nextElementSibling!==top)top.parentNode.insertBefore(bar,top);}
     else if(first&&bar.nextElementSibling!==first&&!bar.contains(first))box.insertBefore(bar,first);
     else if(!first&&!bar.parentNode)box.insertBefore(bar,box.querySelector(":scope > .ezgen-bar"));
-    const hk="hw"+key.replace(/^\D+/,""),hasHw=!!QUIZ[hk]&&!!top;
-    const addRedo=(cls,label,what,k,ai)=>{
-      if(bar.querySelector("."+cls))return;
-      const rb=document.createElement("button");rb.type="button";rb.className="btn mcredo "+cls;rb.textContent=label;rb.style.marginLeft="12px";
+    const hk="hw"+key.replace(/^\D+/,""),hasHw=!!QUIZ[hk]&&!!top,ai=!!(window.EZGEN&&EZGEN.isAi(key));
+    /* with a homework part, each part's own heading carries its Redo button (so the button is the one for the part you are scrolled to) */
+    const addRedo=(host,cls,label,what,k,isAi)=>{
+      if(!host||host.querySelector("."+cls))return;
+      host.style.display="flex";host.style.alignItems="center";
+      const rb=document.createElement("button");rb.type="button";rb.className="btn mcredo "+cls;rb.textContent=label;rb.style.marginLeft="auto";rb.style.fontSize="14px";
       rb.onclick=()=>{window.EZundo(what,()=>{
-        delete S.quiz[k];if(ai)EZGEN.reset(k);S.quizReset=S.quizReset||{};S.quizReset[k]=now();save();
+        delete S.quiz[k];if(isAi)EZGEN.reset(k);S.quizReset=S.quizReset||{};S.quizReset[k]=now();save();
         try{renderQuiz(k);}catch(e){}afterChange(k);},null,rb);};
-      bar.appendChild(rb);};
-    if(hasHw){addRedo("redo1","Redo Part 1","the answers of Part 1 (homework)",hk,false);addRedo("redo2","Redo Part 2","the answers and questions of Part 2",key,!!(window.EZGEN&&EZGEN.isAi(key)));}
-    else if(window.EZGEN&&EZGEN.isAi(key))addRedo("redo2","Redo chapter","this chapter's answers and questions",key,true);
+      host.appendChild(rb);};
+    if(hasHw){addRedo(top,"redo1","Redo Part 1","the answers of Part 1 (homework)",hk,false);addRedo(document.getElementById(key+"-mc"),"redo2","Redo Part 2","the answers and questions of Part 2",key,ai);}
+    else if(ai)addRedo(bar,"redo2","Redo chapter","this chapter's answers and questions",key,true);
     /* the chapter's homework set (hwN) counts together with its exercises; only the number of right answers is shown, no points */
     let n=0,r=0,tot=0;
     [key,"hw"+key.replace(/^\D+/,"")].forEach((k,j)=>{const qs=QUIZ[k];if(!qs||(j&&k===key))return;const a=S.quiz&&S.quiz[k]||{};tot+=qs.length;

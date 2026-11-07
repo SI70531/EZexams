@@ -201,11 +201,12 @@ function renderHome(){
   const t=document.getElementById("progTable");
   let html='<tr><th class="l">Item</th><th>Status</th></tr>';let next=null;
   CHS.forEach(c=>{const s=quizStat(c);const hk="hw"+c.slice(2),h=QUIZ[hk]?quizStat(hk):null;
-    const sc=Math.round(s.r*100/s.n*10)/10; /* chapter exercises + homework = 15 questions per chapter; the exercise score is out of 100 */
-    html+='<tr><td class="l"><button class="btn" data-go="'+c+'" data-goend="'+c+'">'+c.replace("ch","Ch")+' chapter exercises</button></td><td>'+(s.k?('<b class="pscore">Score '+sc+' / 100 pts</b><span class="psub"><span>MC '+(s.k?s.r+'/'+s.k:'Not started')+'(total '+s.n+' questions)</span>'+(h?'<span>Assignment '+(h.k?h.r+'/'+h.k:'Not started')+'(total '+h.n+' 題）</span>':'')+(s.k>=s.n?'<span class="pok">✓ Done</span>':'<span class="ptodo">Not done</span>')+'</span>'):(h&&h.k?'Assignment '+h.r+'/'+h.k+'，'+(QUIZ[c]||[]).length+' 題還沒寫':"Not started"))+'</td></tr>';
+    /* no score here: just how many of the chapter's multiple-choice and assignment questions are answered and right */
+    const tn=s.n+(h?h.n:0),tk=s.k+(h?h.k:0),done=s.k>=s.n&&(!h||h.k>=h.n);
+    html+='<tr><td class="l"><button class="btn" data-go="'+c+'" data-goend="'+c+'">'+c.replace("ch","Ch")+' chapter exercises</button></td><td>'+(tk?('<b class="pscore">Answered '+tk+' / '+tn+' questions</b><span class="psub"><span>MC '+s.r+'/'+s.k+' correct (total '+s.n+' questions)</span>'+(h?'<span>Assignment '+h.r+'/'+h.k+' correct (total '+h.n+' questions)</span>':'')+(done?'<span class="pok">✓ Done</span>':'<span class="ptodo">Not done</span>')+'</span>'):"Not started")+'</td></tr>';
     if(!next&&s.k<s.n)next=[c,"Read "+CHN[c]+", then do the chapter exercises"];});
   EXORD.forEach(id=>{const nm=EXNAME[id];const e=examStat(id);
-    html+='<tr><td class="l"><button class="btn" data-go="'+id+'">'+nm+'</button></td><td>'+(e.k?('<b class="pscore">Score '+Math.round(e.r/e.n*1000)/10+' / 100 pts</b><span class="psub"><span>MC '+(e.k?e.r+'/'+e.k:'Not started')+'(total '+e.n+' 題）</span>'+(e.done?'<span class="pok">✓ Done</span>':'<span class="ptodo">Not done</span>')+'</span>'):"Not started")+'</td></tr>';
+    html+='<tr><td class="l"><button class="btn" data-go="'+id+'">'+nm+'</button></td><td>'+(e.k?('<b class="pscore">Answered '+e.k+' / '+e.n+' questions</b><span class="psub"><span>MC '+e.r+'/'+e.k+' correct (total '+e.n+' questions)</span>'+(e.done?'<span class="pok">✓ Done</span>':'<span class="ptodo">Not done</span>')+'</span>'):"Not started")+'</td></tr>';
     if(!next&&!e.done)next=[id,"Take the "+nm+" ("+(id==="mock-1"?60:110)+" min)"];});
   t.innerHTML=html;
   const ns=document.getElementById("nextStep");ns.innerHTML="";const p=document.createElement("b");

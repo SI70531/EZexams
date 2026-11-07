@@ -73,7 +73,9 @@ html.ezcalm .fx-sv{animation:none}
 
   /* reading progress */
   const bar=document.createElement("div");bar.id="fxbar";document.body.appendChild(bar);
-  const onScroll=raf(()=>{const h=document.documentElement,max=h.scrollHeight-innerHeight,p=max>0?Math.min(1,scrollY/max):0;
+  /* progress counts the lecture notes only: it runs from the top of the page to where the questions start (score bar, Part 1 or first quiz box) */
+  const notesEnd=()=>{let best=Infinity;document.querySelectorAll(".mcscore,h2.part,[data-quiz]").forEach(e=>{if(!e.offsetParent&&getComputedStyle(e).position!=="fixed")return;const t=e.getBoundingClientRect().top+scrollY;if(t<best)best=t;});return best;};
+  const onScroll=raf(()=>{const h=document.documentElement,qs=notesEnd(),max=(qs<Infinity&&qs>innerHeight?qs-innerHeight*0.6:h.scrollHeight-innerHeight),p=max>0?Math.min(1,scrollY/max):0;
     bar.style.transform="scaleX("+p+")";ring(p);});
   addEventListener("scroll",onScroll,{passive:true});addEventListener("resize",onScroll);
 

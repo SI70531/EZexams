@@ -137,7 +137,7 @@
     let n=0,r=0,tot=0;
     [key,"hw"+key.replace(/^\D+/,"")].forEach((k,j)=>{const qs=QUIZ[k];if(!qs||(j&&k===key))return;const a=S.quiz&&S.quiz[k]||{};tot+=qs.length;
       Object.keys(a).forEach(i=>{if(qs[i]){n++;if(window.EZsame?EZsame(a[i],qs[i].a):a[i]===qs[i].a)r++;}});});
-    const t="Correct "+r+" / "+tot+" ("+n+" / "+tot+" answered)";
+    const t="Correct "+r+" / "+tot+" ("+n+" answered)";
     const s=bar.querySelector(".score");if(s.textContent!==t)s.textContent=t;
   }
   function ensureClear(el,on,fn){

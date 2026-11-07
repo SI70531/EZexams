@@ -8,7 +8,7 @@
 create table if not exists public.progress (
   user_id    uuid        not null default auth.uid() references auth.users (id) on delete cascade,
   key        text        not null check (key ~ '^[a-z0-9-]{1,40}$'),
-  payload    jsonb       not null check (pg_column_size(payload) < 400000),
+  payload    jsonb       not null check (pg_column_size(payload) < 2000000),
   updated_at timestamptz not null default now(),
   primary key (user_id, key)
 );
@@ -39,3 +39,8 @@ end $$;
 
 drop trigger if exists progress_limit on public.progress;
 create trigger progress_limit before insert on public.progress for each row execute function public.progress_limit();
+
+-- Already created the table with the old 400 KB limit? Run this once in the SQL editor to raise it to 2 MB
+-- (AI explanations are synced as one record per subject):
+--   alter table public.progress drop constraint if exists progress_payload_check;
+--   alter table public.progress add constraint progress_payload_check check (pg_column_size(payload) < 2000000);

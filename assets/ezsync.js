@@ -246,6 +246,7 @@
         if(changedFromRemote){set(metaKey(key),String(Date.now()));await push(key);}
         set(LS.last,String(Date.now()));
         emit("ok","Synced");okNow();
+        if(sub.after){try{sub.after();}catch(e){}}
         if(reloadOnChange&&(!localStr||sub.sig(merged)!==sub.sig(JSON.parse(localStr)))){
           const n=+(sessionStorage.getItem("ezsync-reload")||0);
           if(n<2){sessionStorage.setItem("ezsync-reload",String(n+1));location.reload();return;}
@@ -303,13 +304,13 @@
 
   window.EZSync={
     register(key,opts={}){
-      subjects[key]={merge:opts.merge||null,sig:opts.sig||(o=>JSON.stringify(o)),timer:null};
+      subjects[key]={merge:opts.merge||null,sig:opts.sig||(o=>JSON.stringify(o)),timer:null,noReload:!!opts.noReload,after:opts.after||null};
       if(on()){
-        pull(key);
+        pull(key,{reloadOnChange:!opts.noReload});
         /* leaving or hiding the page: send what is waiting right away (keepalive lets it finish after the tab closes) */
         const leave=()=>{const sub=subjects[key];if(!(dirty[key]||sub.timer)||!on())return;clearTimeout(sub.timer);sub.timer=null;pushNow(key,true);};
         let lastPull=Date.now();
-        document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&Date.now()-lastPull>60000){lastPull=Date.now();pull(key);}});
+        document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&Date.now()-lastPull>60000){lastPull=Date.now();pull(key,{reloadOnChange:!opts.noReload});}});
         addEventListener("pagehide",leave);
       }
     },

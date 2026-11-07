@@ -23,9 +23,30 @@
 .expl.hasai .oexp{display:none}`;
   const st=document.createElement("style");st.textContent=css;document.head.appendChild(st);
 
-  const LS="ezexp2:"+location.pathname;
+  /* the explanations are kept in this browser AND synced to the account (own key "exp-<subject>"), so a second device does not ask Gemini again */
+  const OLD="ezexp2:"+location.pathname;
+  const SLUG=((location.pathname.match(/([a-z0-9-]+)\/midterm\/?/)||[])[1]||"page").slice(0,30);
+  const LS="exp-"+SLUG;
   let CACHE={};try{CACHE=JSON.parse(localStorage.getItem(LS)||"{}")||{};}catch(e){}
-  const saveCache=()=>{try{localStorage.setItem(LS,JSON.stringify(CACHE));}catch(e){}};
+  try{const o=JSON.parse(localStorage.getItem(OLD)||"{}")||{};Object.keys(o).forEach(k=>{if(!CACHE[k])CACHE[k]=o[k];});}catch(e){}
+  let synced=false;
+  const saveCache=()=>{
+    try{
+      let str=JSON.stringify(CACHE);
+      if(str.length>240000){const ks=Object.keys(CACHE).sort((a,b)=>(CACHE[b].at||0)-(CACHE[a].at||0));while(str.length>240000&&ks.length>1){delete CACHE[ks.pop()];str=JSON.stringify(CACHE);}}
+      localStorage.setItem(LS,str);
+      if(synced&&window.EZSync)EZSync.changed(LS);
+    }catch(e){}
+  };
+  const mergeExp=(local,remote)=>{const out=Object.assign({},remote||{});Object.keys(local||{}).forEach(k=>{if(!out[k]||((local[k].at||0)>(out[k].at||0)))out[k]=local[k];});return out;};
+  window.addEventListener("load",()=>setTimeout(()=>{
+    if(!window.EZSync||!EZSync.register)return;
+    try{localStorage.setItem(LS,JSON.stringify(CACHE));}catch(e){}
+    EZSync.register(LS,{merge:mergeExp,sig:o=>JSON.stringify(Object.keys(o||{}).sort()),noReload:true,
+      after:()=>{try{CACHE=JSON.parse(localStorage.getItem(LS)||"{}")||{};}catch(e){}
+        document.querySelectorAll(".quiz[data-quiz] > .qitem").forEach(el=>{const y=info(el);if(y&&CACHE[y.id])draw(el,y);});}});
+    synced=true;
+  },400));
   /* an explanation that argues with the answer key is thrown away (and asked again) */
   const BAD=/答案有誤|答案錯誤|答案不正確|答案應為|題目有誤|題目錯誤|題目.{0,6}(有誤|錯誤)|標準答案.{0,8}(有誤|錯誤|不正確)|(題庫|解答|選項)(標示|標記|設定).{0,6}(有誤|錯誤)/;
   const badExp=c=>!!c&&(BAD.test(c.mistake||"")||BAD.test(c.point||"")||Object.values(c.opts||{}).some(o=>BAD.test(o&&o.why||"")));

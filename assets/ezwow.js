@@ -176,7 +176,6 @@ html.ezcalm .wow-bg,html.ezcalm #wowp,html.ezcalm #wowt,html.ezcalm .wow-intro,h
   })();
 
   /* ---------- answers: green flash when right, crack + shatter when wrong ---------- */
-  let streakNow=0;
   function flash(big){
     if(calm())return;busy(900);
     const f=document.createElement("div");f.className="wow-flash";document.body.appendChild(f);
@@ -209,8 +208,8 @@ html.ezcalm .wow-bg,html.ezcalm #wowp,html.ezcalm #wowt,html.ezcalm .wow-intro,h
     const q=o.closest(".qitem");if(!q)return;
     const go=el=>{
       const w=el.querySelector(".opt.wrong");
-      if(w){streakNow=0;shatter(w);}
-      else{streakNow++;flash(streakNow>=5&&streakNow%5===0);}
+      if(w)shatter(w);
+      else flash(false);
     };
     setTimeout(()=>{if(window.EZwhenMarked)EZwhenMarked(q,go);else if(q.querySelector(".opt.right,.opt.wrong"))go(q);},40);
   },true);

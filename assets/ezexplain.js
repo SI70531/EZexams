@@ -33,7 +33,7 @@
   const saveCache=()=>{
     try{
       let str=JSON.stringify(CACHE);
-      if(str.length>240000){const ks=Object.keys(CACHE).sort((a,b)=>(CACHE[b].at||0)-(CACHE[a].at||0));while(str.length>240000&&ks.length>1){delete CACHE[ks.pop()];str=JSON.stringify(CACHE);}}
+      if(str.length>1500000){const ks=Object.keys(CACHE).sort((a,b)=>(CACHE[b].at||0)-(CACHE[a].at||0));while(str.length>1500000&&ks.length>1){delete CACHE[ks.pop()];str=JSON.stringify(CACHE);}}
       localStorage.setItem(LS,str);
       if(synced&&window.EZSync)EZSync.changed(LS);
     }catch(e){}

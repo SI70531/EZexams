@@ -1,9 +1,9 @@
 /* EZexams big effects (UI only: never touches questions, answers or saved progress; the only thing it stores is which
-   headings you have scrolled past and a visit streak, both in this browser).
+   headings you have scrolled past).
    - cursor trail, heading stamp, 重點卡 flip, page-turn between tabs
    - a right answer flashes the screen green, a wrong one cracks and shatters
    - the answer text types itself out
-   - every time the login screen is about to show: a logo intro, the exam cards fly in, a welcome banner with the visit streak
+   - every time the login screen is about to show: a logo intro, the exam cards fly in, 
    - a slowly breathing background (stars in dark mode) and per-subject floating particles
    Everything is skipped with 減少動畫 (the ezcalm switch) or the device's reduced-motion setting. The intro, banner and typewriter
    stay out of automated test browsers unless window.EZWOW_FORCE is set. Colours come from the page's theme tokens. */
@@ -57,7 +57,6 @@ html.ezcalm .wow-bg,html.ezcalm #wowp,html.ezcalm #wowt,html.ezcalm .wow-intro,h
 .wow-intro .sk{position:absolute;right:16px;bottom:14px;font-size:12px;color:#7d9aa3}
 .wow-banner{position:fixed;left:0;right:0;top:max(84px,calc(env(safe-area-inset-top,0px) + 80px));z-index:90;pointer-events:none;padding:14px 20px;text-align:center;color:#fff;
   font:700 clamp(17px,3.4vw,24px)/1.3 var(--f-body);letter-spacing:.04em;background:linear-gradient(90deg,var(--indigo),var(--seal) 55%,var(--brass));box-shadow:0 12px 40px -10px rgba(0,0,0,.5);transform:translateX(-110%) skewX(-12deg)}
-.wow-banner b{font-size:1.35em}
 @media print{.wow-bg,#wowp,#wowt,.wow-intro,.wow-banner,.wow-flash,.wow-fly{display:none}}`;
   const st=document.createElement("style");st.textContent=css;document.head.appendChild(st);
 
@@ -249,12 +248,8 @@ html.ezcalm .wow-bg,html.ezcalm #wowp,html.ezcalm #wowt,html.ezcalm .wow-intro,h
     })).observe(document.body,{attributes:true,attributeFilter:["hidden"],childList:true,subtree:true});
   })();
 
-  /* ---------- opening the site: logo intro, cards fly in, welcome banner with the streak ---------- */
+  /* ---------- opening the site: logo intro, cards fly in ---------- */
   (function(){
-    const day=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
-    let s={last:"",n:0};try{s=JSON.parse(localStorage.getItem("ezstreak")||"")||s;}catch(e){}
-    const today=day(new Date()),y=new Date();y.setDate(y.getDate()-1);
-    if(s.last!==today){s={last:today,n:s.last===day(y)?(s.n||0)+1:1};try{localStorage.setItem("ezstreak",JSON.stringify(s));}catch(e){}}
     if(robot()||calm())return;
     const first=root.classList.contains("ezlock");   /* every time the login screen is about to show (a new tab, a signed-out reload) */   /* every time the login screen is about to show (a new tab, a signed-out reload) */
     const cardsFly=()=>{

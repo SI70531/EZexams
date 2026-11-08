@@ -80,7 +80,7 @@ function renderQuiz(ch){
   const nh=qs.filter(q=>q.h).length;
   const isHw=/^hw/.test(ch);
   box.innerHTML=isHw?'<h2>Homework multiple choice ('+qs.length+' questions)</h2><p><button class="btn zhbtn" type="button"></button></p>':
-    '<h2>Multiple-choice questions ('+qs.length+' questions, 100 pts)</h2><p><button class="btn zhbtn" type="button"></button></p>';
+    '<h2>Multiple-choice questions ('+qs.length+' questions)</h2><p><button class="btn zhbtn" type="button"></button></p>';
   const SHOW=window.EZGEN&&EZGEN.isAi(ch)?EZGEN.order(ch,qs):qs.map((_,k)=>k);
   SHOW.forEach((i,pos)=>{
     const it=qs[i];

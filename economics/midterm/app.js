@@ -155,7 +155,7 @@ function renderExam(id){
   if(window.EZGEN)EZGEN.mount(box,key,()=>{renderExam(id);applyZh();});
   function upd(){
     const e=examStat(id),a=S.quiz[key]||{};
-    tools.querySelector(".score").textContent="Score "+Math.round(e.r/e.n*1000)/10+" / 100 pts (answered "+e.k+" / "+e.n+" questions)";
+    tools.querySelector(".score").textContent="Correct "+e.r+" / "+e.k+" answered ("+e.n+" questions in total)";
     const rep=sec.querySelector(".report");
     if(e.done){
       const by={};qs.forEach((q,i)=>{const c="ch"+q.ch;by[c]=by[c]||[0,0];by[c][1]++;if(EZsame(a[i],q.a))by[c][0]++;});

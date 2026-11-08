@@ -5,8 +5,8 @@
   addEventListener("scroll",()=>tt.classList.toggle("show",scrollY>500),{passive:true});
   tt.addEventListener("click",()=>scrollTo({top:0,behavior:"smooth"}));
 })();
-const CHN={ch1:"Ch1 Ten principles",ch2:"Ch2 Economic thinking",ch3:"Ch3 Interdependence and trade",ch4:"Ch4 Supply and demand",ch5:"Ch5 Elasticity",ch6:"Ch6 Government policy",ch7:"Ch7 Consumer and producer surplus",ch8:"Ch8 The costs of taxation",ch9:"Ch9 International trade"};
-const VIEWS=[["home","Home"],["ch1","Ch1 Ten principles"],["ch2","Ch2 Economic thinking"],["ch3","Ch3 Trade"],["ch4","Ch4 Supply & demand"],["ch5","Ch5 Elasticity"],["ch6","Ch6 Government policy"],["ch7","Ch7 Surplus"],["ch8","Ch8 Taxes"],["ch9","Ch9 International trade"],["|"],["y110","110 Past"],["y112","112 Past"],["y113","113 Past"],["mock-1","Mock exam"],["sheet","Review"]];
+const CHN={traps:"Summary & traps",ch1:"Ch1 Ten principles",ch2:"Ch2 Economic thinking",ch3:"Ch3 Interdependence and trade",ch4:"Ch4 Supply and demand",ch5:"Ch5 Elasticity",ch6:"Ch6 Government policy",ch7:"Ch7 Consumer and producer surplus",ch8:"Ch8 The costs of taxation",ch9:"Ch9 International trade"};
+const VIEWS=[["home","Home"],["ch1","Ch1 Ten principles"],["ch2","Ch2 Economic thinking"],["ch3","Ch3 Trade"],["ch4","Ch4 Supply & demand"],["ch5","Ch5 Elasticity"],["ch6","Ch6 Government policy"],["ch7","Ch7 Surplus"],["ch8","Ch8 Taxes"],["ch9","Ch9 International trade"],["traps","Summary & traps"],["|"],["y110","110 Past"],["y112","112 Past"],["y113","113 Past"],["mock-1","Mock exam"],["sheet","Review"]];
 const KEY="econ-midterm-v2"; /* v2 (2026-10-29): notes rewritten; each chapter = 第一大題 作業 (QUIZ.hwN) + 第二大題 25 題 (QUIZ.chN) */
 let S={quiz:{},exam:{}};
 try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(S,JSON.parse(raw));
@@ -513,3 +513,17 @@ document.querySelectorAll(".w-tax").forEach(taxLab);
 document.querySelectorAll(".ilab input[type=range]").forEach(r=>{const b=r.parentElement.querySelector("b");if(!b)return;const u=()=>{b.textContent=(r.dataset.pre||"")+(r.dataset.div?(r.value/r.dataset.div):r.value)+(r.dataset.suf||"");};r.addEventListener("input",u);u();});
 })();
 
+/* Summary & traps tab: every chapter's "Chapter summary" and "Common trap" blocks copied into one page, chapter by chapter */
+(function(){
+  const box=document.getElementById("trapsBody");if(!box)return;
+  for(let i=1;i<=9;i++){
+    const v=document.getElementById("ch"+i);if(!v)continue;
+    const blocks=[...v.querySelectorAll(".sum,.trap")];if(!blocks.length)continue;
+    const h1=v.querySelector("h1");
+    const sec=document.createElement("section");sec.className="trapchap";
+    const h=document.createElement("h2");h.className="rvchh";h.innerHTML=h1?h1.innerHTML:"Chapter "+i;sec.appendChild(h);
+    blocks.forEach(b=>{const c=b.cloneNode(true);c.removeAttribute("id");c.querySelectorAll("[id]").forEach(x=>x.removeAttribute("id"));sec.appendChild(c);});
+    const go=document.createElement("p");go.className="small";const bt=document.createElement("button");bt.type="button";bt.className="btn";bt.dataset.go="ch"+i;bt.textContent="Back to Ch"+i+" notes";go.appendChild(bt);sec.appendChild(go);
+    box.appendChild(sec);
+  }
+})();

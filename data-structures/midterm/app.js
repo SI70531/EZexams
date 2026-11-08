@@ -6,7 +6,7 @@
   tt.addEventListener("click",()=>scrollTo({top:0,behavior:"smooth"}));
 })();
 
-const VIEWS=[["home","Home"],["ch1","Ch1 Intro"],["ch2","Ch2 Search"],["ch3","Ch3 Linked lists"],["|"],["y24","2024 Past"],["y25","2025 Past"],["mock-a","Mock A"],["mock-b","Mock B"],["review","Review"]];
+const VIEWS=[["home","Home"],["ch1","Ch1 Intro"],["ch2","Ch2 Search"],["ch3","Ch3 Linked lists"],["traps","Summary & traps"],["|"],["y24","2024 Past"],["y25","2025 Past"],["mock-a","Mock A"],["mock-b","Mock B"],["review","Review"]];
 const EXMC={y24:"y24mc",y25:"y25mc","mock-a":"m1","mock-b":"m2"};
 const MCVIEW=Object.fromEntries(Object.entries(EXMC).map(([v,k])=>[k,v]));
 const CHAPTERS=["ch1","ch2","ch3"];
@@ -93,7 +93,7 @@ function renderQuiz(key){
     else t.textContent=n<qs.length?("Answered "+n+" / "+qs.length+", "+r+" correct so far"):("Done! "+r+" / "+qs.length+" correct"+(r>=qs.length*0.8?". Solid understanding.":". Reread the sections for the ones you missed."));
     sc.appendChild(t);
     const rb=document.createElement("button");rb.className="btn";rb.type="button";rb.textContent=isExam?"Redo multiple choice":"Redo chapter";rb.addEventListener("click",()=>{(window.EZundo||((w,f)=>f()))("This chapter's answers",()=>{delete S.quiz[key];if(window.EZGEN)EZGEN.reset(key);if(window.EZgenw){EZgenw.reset(key+"w");if(MCVIEW[key])EZgenw.reset(MCVIEW[key]);}S.quizReset=S.quizReset||{};S.quizReset[key]=Date.now();save();renderQuiz(key);afterAnswer(key);},null,rb);});sc.appendChild(rb);
-    if(!isExam&&n>=qs.length){const nx=nextOf(key);if(nx){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";nb.textContent=key==="ch3"?"Start past exam":"Next chapter";nb.dataset.go=nx;sc.appendChild(nb);}}
+    if(!isExam&&n>=qs.length){const nx=nextOf(key);if(nx){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";nb.textContent=key==="ch3"?"Summary & traps":"Next chapter";nb.dataset.go=nx;sc.appendChild(nb);}}
   }
   renderScore();
   if(isExam&&window.EZGEN&&EZGEN.isAi(key)){

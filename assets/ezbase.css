@@ -265,3 +265,9 @@ table.ezfull{display:table;width:100%}
 
 .two>div>.tbl{width:100%}:root .two>.tbl>table,:root .two>div>.tbl>table{display:table;width:100%;max-width:none}
 .tfa{margin:2px 0 6px}.tfa>summary{cursor:pointer;font-size:.85em;color:var(--muted)}
+
+/* Chapter summary / common-trap blocks (used by every subject and by the Summary & traps tab) */
+.view .sum{border:1px dashed var(--line-strong);border-radius:6px;padding:10px 14px;margin:16px 0}
+.view .sum>b.t{display:block;margin-bottom:4px;color:var(--indigo)}
+.view .trap{border:1px solid var(--seal-line);border-left:4px solid var(--seal);background:var(--seal-soft);border-radius:0 8px 8px 0;padding:12px 16px;margin:16px 0}
+.view .trap b.t{color:var(--seal);font-family:var(--f-display)}

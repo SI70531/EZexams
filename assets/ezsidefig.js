@@ -7,7 +7,7 @@
 .sfig>.sfig-side{min-width:0}.sfig>.sfig-side>:first-child{margin-top:0}.sfig>.sfig-side>:last-child{margin-bottom:0}
 .sfig>figure,.sfig>.fig{margin:0;min-width:0}
 @media (min-width:900px){.sfig{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr)}
-.sfig>figure,.sfig>.fig{position:sticky;top:calc(env(safe-area-inset-top,0px) + 80px);max-height:calc(100vh - 96px);overflow:auto}}`;
+}`;
   const st=document.createElement("style");st.textContent=css;document.head.appendChild(st);
   const SKIP=".two,.three,.four,.sfig,.exq,.qitem,.qfig,.hwp,.ex,details,.lab,.ilab,.rvsec,.examtools,table,.zhn,.cheat,.quiz";
   const FIG=el=>el.matches&&(el.matches("figure")||el.matches("div.fig"))&&el.querySelector(":scope > svg, :scope svg");

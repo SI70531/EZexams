@@ -345,8 +345,10 @@ h3.allseen .missbadge{background:#5b6cd6}
     document.querySelectorAll(".quiz[data-quiz] > .qitem").forEach(q=>{
       if(!q.querySelector(".opt.right")||q.querySelector(".opt.wrong"))return;
       const box=q.parentElement,key=box.dataset.quiz,i=+q.dataset.i;
-      const it=QUIZ[key]&&QUIZ[key][i];if(!it||typeof it.q!=="string")return;
-      const view=box.closest(".view"),ch=CH.includes(key)?key:chOf(it);
+      const view=box.closest(".view");
+      /* past/mock exams keep their questions in MOCK[view id] (the same fallback collect() uses for wrong answers) */
+      const it=(QUIZ[key]&&QUIZ[key][i])||(typeof MOCK!=="undefined"&&view&&MOCK[view.id]&&MOCK[view.id][i]);if(!it||typeof it.q!=="string")return;
+      const ch=CH.includes(key)?key:chOf(it);
       out.push({m:match(it,ch),ch,go:CH.includes(key)?key:(view?view.id:key),quiz:key,i,q:it.q,e:it.e||"",ok:true});
     });
     return out;

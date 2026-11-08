@@ -37,6 +37,7 @@ assets/             Shared code and styles used by every page
   ezfig.js          Diagrams and interactive figures draw themselves on tab switch / scroll
   ezfit.js          Layout fit: narrow tables get their explanation beside them, or stretch to full width
   ezinteract.js     Light interactivity: click a table row to highlight it, hover a term in a diagram (Key, Address, Hash …) to see its note
+  eztraps.js       Builds the "Summary & traps" tab from each chapter's summary and trap blocks
   ezwow.js          Big effects: intro, page turn, shatter, trail, particles, read marks
 subject/exam/       One folder per exam
   index.html        Notes and exam content for that page
@@ -50,6 +51,7 @@ tools/              Helper scripts and the Cloudflare Worker (see below)
 1. Copy an existing subject folder as a template, then create `subject-name/exam-type/` with `index.html`, `app.js`, and `quiz.js`.
 2. In the root `index.html`, add a new `<section class="exam-subj" data-date="YYYY-MM-DD">` inside `#subjects`.
 3. Add a row for it to the table at the top of this README.
+4. **Summary & traps tab:** at the end of each chapter, before `<div class="quiz" data-quiz="chN">`, write a `<div class="sum">` (chapter summary) and a `<div class="trap">` (common traps); copy the markup from `economics/midterm/index.html`. Then add `["traps","Summary & traps"]` to `VIEWS` right after the last chapter, add a `<section role="tabpanel" class="view" id="traps" hidden>` containing `<div id="trapsBody"></div>` (copy it from an existing subject), and load `<script src="../../assets/eztraps.js" defer></script>` after `app.js`. The script collects every chapter's blocks into the tab automatically.
 
 The home page sorts subjects by date automatically. Keep the table sorted by date too.
 

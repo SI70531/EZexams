@@ -6,7 +6,7 @@
   tt.addEventListener("click",()=>scrollTo({top:0,behavior:"smooth"}));
 })();
 
-const VIEWS=[["home","Home"],["ch1","Ch1 Data"],["ch2","Ch2 Graphs"],["ch3","Ch3 Numerical measures"],["ch4","Ch4 Probability"],["|"],["confuse","Confusables"],["hw","Midterm assignment"],["review","Review"]];
+const VIEWS=[["home","Home"],["ch1","Ch1 Data"],["ch2","Ch2 Graphs"],["ch3","Ch3 Numerical measures"],["ch4","Ch4 Probability"],["traps","Summary & traps"],["|"],["confuse","Confusables"],["hw","Midterm assignment"],["review","Review"]];
 const KEY="stats-midterm-v1";
 let S={quiz:{},exam:{}};
 try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(S,JSON.parse(raw));}catch(e){}

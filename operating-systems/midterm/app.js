@@ -5,7 +5,7 @@
   addEventListener("scroll",()=>tt.classList.toggle("show",scrollY>500),{passive:true});
   tt.addEventListener("click",()=>scrollTo({top:0,behavior:"smooth"}));
 })();
-const VIEWS=[["home","Home"],["ch1","Ch1 Intro"],["ch2","Ch2 Process"],["ch3","Ch3 Scheduling"],["ch4","Ch4 Thread"],["ch5","Ch5 Deadlock"],["|"],["past","Past exam"],["mock-a","Mock A"],["mock-b","Mock B"],["review","Review"]];
+const VIEWS=[["home","Home"],["ch1","Ch1 Intro"],["ch2","Ch2 Process"],["ch3","Ch3 Scheduling"],["ch4","Ch4 Thread"],["ch5","Ch5 Deadlock"],["traps","Summary & traps"],["|"],["past","Past exam"],["mock-a","Mock A"],["mock-b","Mock B"],["review","Review"]];
 const KEY="os-midterm-v1";
 let S={quiz:{},exam:{}};
 try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(S,JSON.parse(raw));}catch(e){}

@@ -1,0 +1,430 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-09T12:21:48.462750+00:00",
+  "title": "Design System: EZexams",
+  "extensions": {
+    "colorMeta": {
+      "seal-vermilion": {
+        "role": "primary",
+        "displayName": "Seal Vermilion",
+        "canonical": "#c4472a",
+        "dark": "#ff7d5a",
+        "tonalRamp": [
+          "#351d18",
+          "#5d2e23",
+          "#893c2a",
+          "#b9472d",
+          "#d36d55",
+          "#d89b8d",
+          "#e5c9c3",
+          "#f6f0ee"
+        ]
+      },
+      "slate-ink": {
+        "role": "secondary",
+        "displayName": "Slate Ink",
+        "canonical": "#253745",
+        "dark": "#9ba8ab",
+        "tonalRamp": [
+          "#20272d",
+          "#32414d",
+          "#435c6f",
+          "#527793",
+          "#7798b1",
+          "#a1b5c4",
+          "#ccd5dc",
+          "#f0f2f4"
+        ]
+      },
+      "pewter": {
+        "role": "secondary",
+        "displayName": "Pewter",
+        "canonical": "#4a5c6a",
+        "dark": "#a9bccb",
+        "tonalRamp": [
+          "#22272a",
+          "#384148",
+          "#4c5b66",
+          "#607586",
+          "#8396a5",
+          "#a8b4bd",
+          "#cfd4d8",
+          "#f1f2f3"
+        ]
+      },
+      "pass-green": {
+        "role": "tertiary",
+        "displayName": "Pass Green",
+        "canonical": "#2d7a3e",
+        "dark": "#73d48f",
+        "tonalRamp": [
+          "#1c3021",
+          "#2b5434",
+          "#387b46",
+          "#41a457",
+          "#67c17b",
+          "#98cda4",
+          "#c8e0cd",
+          "#f0f5f1"
+        ]
+      },
+      "amber-caution": {
+        "role": "tertiary",
+        "displayName": "Amber Caution",
+        "canonical": "#a26300",
+        "dark": "#f2bd5a",
+        "tonalRamp": [
+          "#3c2b10",
+          "#6c4a13",
+          "#a26a10",
+          "#df8b07",
+          "#f5a933",
+          "#edbf78",
+          "#eed9b9",
+          "#f8f4ec"
+        ]
+      },
+      "night-ink": {
+        "role": "neutral",
+        "displayName": "Night Ink",
+        "canonical": "#06141b",
+        "dark": "#ccd0cf",
+        "tonalRamp": [
+          "#182b34",
+          "#23495c",
+          "#2b6988",
+          "#2e8ab7",
+          "#56a8d2",
+          "#8ebfd7",
+          "#c3d9e4",
+          "#eff3f6"
+        ]
+      },
+      "fog-board": {
+        "role": "neutral",
+        "displayName": "Fog Board",
+        "canonical": "#dde1e0",
+        "dark": "#11212d",
+        "tonalRamp": [
+          "#252827",
+          "#3d4341",
+          "#555e5c",
+          "#6c7976",
+          "#8e9a97",
+          "#afb6b4",
+          "#d2d5d4",
+          "#f2f3f2"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "#f3f5f5",
+        "dark": "#1c2e3b",
+        "tonalRamp": [
+          "#242828",
+          "#3c4444",
+          "#536060",
+          "#697d7d",
+          "#8b9d9d",
+          "#adb8b8",
+          "#d1d6d6",
+          "#f2f3f3"
+        ]
+      },
+      "paper-shade": {
+        "role": "neutral",
+        "displayName": "Paper Shade",
+        "canonical": "#e8ebeb",
+        "dark": "#172835",
+        "tonalRamp": [
+          "#252828",
+          "#3d4343",
+          "#545e5e",
+          "#6b7a7a",
+          "#8d9b9b",
+          "#aeb7b7",
+          "#d2d5d5",
+          "#f2f3f3"
+        ]
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "#c2c9ca",
+        "dark": "#2f4352",
+        "tonalRamp": [
+          "#252728",
+          "#3d4243",
+          "#545d5e",
+          "#6b787a",
+          "#8d999b",
+          "#aeb6b7",
+          "#d2d5d5",
+          "#f2f3f3"
+        ]
+      },
+      "rule-strong": {
+        "role": "neutral",
+        "displayName": "Rule Strong",
+        "canonical": "#9ba8ab",
+        "dark": "#4a5c6a",
+        "tonalRamp": [
+          "#242728",
+          "#3c4244",
+          "#535d60",
+          "#69797c",
+          "#8b999c",
+          "#adb6b8",
+          "#d1d5d6",
+          "#f2f3f3"
+        ]
+      },
+      "glass-film": {
+        "role": "neutral",
+        "displayName": "Glass Film",
+        "canonical": "rgba(255,255,255,.32)",
+        "dark": "rgba(255,255,255,.07)"
+      },
+      "glass-edge": {
+        "role": "neutral",
+        "displayName": "Glass Edge",
+        "canonical": "rgba(255,255,255,.55)",
+        "dark": "rgba(255,255,255,.16)"
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Home hero heading only."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Page heading in the section header; term headings on home."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Section h3 with trailing dotted rule."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Chinese and mixed reading text; scaled by --ts."
+      },
+      "body-en": {
+        "displayName": "English Body",
+        "purpose": "English textbook passages in English note boxes."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Tabs, eyebrows, box labels, metadata, badges."
+      }
+    },
+    "shadows": [
+      {
+        "name": "glass-ambient",
+        "value": "0 10px 30px rgba(0,0,0,.06)",
+        "dark": "0 10px 30px rgba(0,0,0,.35)",
+        "purpose": "Every glass pane at rest."
+      },
+      {
+        "name": "glass-lift",
+        "value": "0 16px 40px rgba(0,0,0,.10)",
+        "dark": "0 16px 40px rgba(0,0,0,.45)",
+        "purpose": "Ticket hover with translateY(-3px)."
+      },
+      {
+        "name": "menu",
+        "value": "0 6px 18px rgba(6,20,27,.12)",
+        "dark": "0 6px 18px rgba(0,0,0,.4)",
+        "purpose": "Popovers."
+      },
+      {
+        "name": "hard-offset",
+        "value": "5px 5px 0 #06141b",
+        "purpose": "Noticeboard controls (back-to-top 3px, status card 4px)."
+      }
+    ],
+    "glass": {
+      "blur": "16px",
+      "menuBlur": "24px",
+      "nestedFill": "rgba(255,255,255,.20)",
+      "fallbackFill": "rgba(255,255,255,.82)",
+      "blobs": [
+        "rgba(167,139,250,.55) lavender top-left",
+        "rgba(96,165,250,.50) sky right",
+        "rgba(251,146,60,.38) peach bottom"
+      ],
+      "blobDrift": "28s ease-in-out infinite alternate"
+    },
+    "motion": [
+      {
+        "name": "state",
+        "value": ".15s",
+        "purpose": "Hover background/border/transform on controls and tickets."
+      },
+      {
+        "name": "theme",
+        "value": ".25s",
+        "purpose": "Background and colour change when switching theme."
+      },
+      {
+        "name": "blink",
+        "value": "steps(1) 1.1s",
+        "purpose": "Terminal cursor and running/syncing status dots."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "xs",
+        "value": "520px"
+      },
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "760px"
+      },
+      {
+        "name": "lg",
+        "value": "900px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Default Button",
+      "kind": "button",
+      "refersTo": "button",
+      "description": "Secondary actions; ink border, tint on hover.",
+      "html": "<button class=\"ds-btn\">Help</button>",
+      "css": ".ds-btn{font-family:var(--f-body);font-size:14px;font-weight:500;border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:8px;padding:7px 16px;cursor:pointer;transition:background .15s}.ds-btn:hover{background:var(--indigo-soft)}.ds-btn:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}"
+    },
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one main action; slate, turns vermilion on hover.",
+      "html": "<button class=\"ds-btn-primary\">Activate</button>",
+      "css": ".ds-btn-primary{font-family:var(--f-body);font-size:14px;font-weight:600;border:1.5px solid var(--indigo);background:var(--indigo);color:var(--accent-ink);border-radius:8px;padding:7px 16px;cursor:pointer;transition:background .15s,border-color .15s}.ds-btn-primary:hover{background:var(--seal);border-color:var(--seal)}.ds-btn-primary:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}"
+    },
+    {
+      "name": "Key Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Mono text field; slate border and glow ring on focus.",
+      "html": "<input class=\"ds-input\" placeholder=\"Paste key\">",
+      "css": ".ds-input{font-family:var(--f-mono);font-size:14px;padding:8px 12px;border:1.5px solid var(--line-strong);border-radius:8px;background:var(--paper2);color:var(--ink);min-width:220px}.ds-input:focus{outline:none;border-color:var(--indigo);box-shadow:0 0 0 3px var(--indigo-soft)}"
+    },
+    {
+      "name": "Tab Strip",
+      "kind": "nav",
+      "refersTo": "tab-active",
+      "description": "Segmented mono tabs; active is slate, amber/green state bar underneath.",
+      "html": "<nav class=\"ds-tabs\"><button aria-current=\"true\">Ch1</button><button class=\"run\">Ch2</button><button class=\"done\">Ch3</button><button>Mock A</button></nav>",
+      "css": ".ds-tabs{display:flex}.ds-tabs button{position:relative;font-family:var(--f-mono);font-size:12.5px;font-weight:500;border:1.5px solid var(--ink);border-right-width:0;border-radius:0;padding:6px 12px 8px;background:var(--paper);color:var(--ink);cursor:pointer}.ds-tabs button:first-child{border-radius:5px 0 0 5px}.ds-tabs button:last-child{border-right-width:1.5px;border-radius:0 5px 5px 0}.ds-tabs button:hover{background:var(--indigo-soft)}.ds-tabs button[aria-current=true]{background:var(--indigo);color:var(--accent-ink);font-weight:600}.ds-tabs button.run::after,.ds-tabs button.done::after{content:\"\";position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--warn)}.ds-tabs button.done::after{background:var(--ok)}.ds-tabs button:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}"
+    },
+    {
+      "name": "Kind Badge",
+      "kind": "chip",
+      "refersTo": "badge-kind",
+      "description": "Vermilion exam stamp.",
+      "html": "<span class=\"ds-kind\">MIDTERM</span>",
+      "css": ".ds-kind{font-family:var(--f-mono);font-size:11.5px;font-weight:600;color:#fff;background:var(--seal);border-radius:4px;padding:1px 8px}"
+    },
+    {
+      "name": "Admission Ticket",
+      "kind": "card",
+      "refersTo": "ticket",
+      "description": "Signature home card: glass main area plus dated tear-off stub.",
+      "html": "<a class=\"ds-ticket\" href=\"#\"><div class=\"m\"><span class=\"kd\">MIDTERM</span><h3>Economics</h3><p>Mankiw, Ch1–Ch9</p><span class=\"go\">Start →</span></div><div class=\"stub\"><span class=\"k\">EXAM</span><span class=\"v\">11/9</span><span class=\"k\">2026</span></div></a>",
+      "css": ".ds-ticket{display:grid;grid-template-columns:1fr 104px;max-width:440px;text-decoration:none;color:var(--ink);background:var(--glass-bg,rgba(255,255,255,.32));-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid var(--glass-bd,rgba(255,255,255,.55));border-radius:16px;box-shadow:var(--glass-sh,0 10px 30px rgba(0,0,0,.06));transition:transform .15s,box-shadow .15s}.ds-ticket:hover{transform:translateY(-3px);box-shadow:var(--glass-sh-hover,0 16px 40px rgba(0,0,0,.10))}.ds-ticket:focus-visible{outline:2px solid var(--indigo);outline-offset:4px}.ds-ticket .m{padding:18px 20px 16px}.ds-ticket .kd{font-family:var(--f-mono);font-size:11.5px;font-weight:600;color:#fff;background:var(--seal);border-radius:4px;padding:1px 8px}.ds-ticket h3{font-family:var(--f-display);font-weight:700;font-size:26px;margin:10px 0 2px;line-height:1.3}.ds-ticket p{margin:0;color:var(--ink70);font-size:14.5px}.ds-ticket .go{display:inline-block;margin-top:14px;font-family:var(--f-mono);font-size:13px;font-weight:600;color:var(--indigo)}.ds-ticket:hover .go{color:var(--seal)}.ds-ticket .stub{border-left:2px dashed var(--glass-line,rgba(0,0,0,.08));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-family:var(--f-mono);background:var(--glass-th,rgba(255,255,255,.2));border-radius:0 15px 15px 0}.ds-ticket .stub .k{font-size:10.5px;color:var(--muted);letter-spacing:.08em}.ds-ticket .stub .v{font-size:22px;font-weight:600;color:var(--indigo);line-height:1.1}"
+    },
+    {
+      "name": "Note Box (English)",
+      "kind": "card",
+      "refersTo": null,
+      "description": "Slate-tinted glass box with mono folder-tab label; English in Source Serif.",
+      "html": "<div class=\"ds-box\"><span class=\"lbl\">EN</span>Scarcity means society has limited resources.</div>",
+      "css": ".ds-box{max-width:480px;border-radius:16px;overflow:hidden;padding:14px 18px;background:linear-gradient(var(--indigo-soft),var(--indigo-soft)),var(--glass-bg,rgba(255,255,255,.32));border:1px solid var(--glass-bd,rgba(255,255,255,.55));font-family:var(--f-en);font-size:17px;line-height:1.7;color:var(--ink)}.ds-box .lbl{display:table;font-family:var(--f-mono);font-size:11.5px;font-weight:600;margin:-14px 0 8px -18px;padding:3px 10px;border-radius:0 0 6px 0;background:var(--indigo);color:var(--accent-ink)}"
+    },
+    {
+      "name": "Answer Option",
+      "kind": "custom",
+      "refersTo": "option",
+      "description": "MCQ row with circular letter badge; right and wrong states.",
+      "html": "<div class=\"ds-opts\"><button class=\"ds-opt\"><span class=\"ab\">A</span>Opportunity cost</button><button class=\"ds-opt right\"><span class=\"ab\">B</span>Comparative advantage</button><button class=\"ds-opt wrong\"><span class=\"ab\">C</span>Absolute advantage</button></div>",
+      "css": ".ds-opts{display:grid;gap:8px;max-width:420px}.ds-opt{text-align:left;font-family:var(--f-body);font-size:15px;line-height:1.55;border:1px solid var(--glass-bd,var(--line));background:var(--glass-bg-nested,var(--paper2));color:var(--ink);border-radius:8px;padding:9px 12px;cursor:pointer;display:flex;gap:10px;align-items:flex-start;transition:border-color .15s,background .15s}.ds-opt:hover{border-color:var(--brass)}.ds-opt:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}.ds-opt .ab{flex:0 0 auto;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;border:1px solid var(--line-strong);font-family:var(--f-display);font-weight:700;font-size:12px;color:var(--indigo)}.ds-opt.right{background:var(--ok-soft);border-color:var(--ok)}.ds-opt.right .ab{background:var(--ok);border-color:var(--ok);color:var(--paper)}.ds-opt.wrong{background:var(--seal-soft);border-color:var(--seal)}.ds-opt.wrong .ab{background:var(--seal);border-color:var(--seal);color:var(--paper)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Exam-Hall Noticeboard",
+    "overview": "Each exam is pinned up like an admission ticket. The ticket has a tear-off stub with the date, a red seal marking the kind of exam, and a handwritten title. Everything sits on cool, fog-grey paper in dark ink. A frosted-glass layer, loaded last on every page, lays over the board. Cards, tables, and note boxes become translucent panes with a bright one-pixel edge, and three soft, slowly drifting blobs of colour (lavender, sky, peach) glow behind them. The structure and type come from the noticeboard, and the surfaces come from the glass. That combination is the system as shipped. Neither layer should be removed without a decision to do so.\n\nThe mood is calm and precise. These pages are read for hours at a desk and glanced at on a phone in the hallway before an exam, so ornament stays quiet and colour carries meaning: green means right, vermilion means wrong or important, amber means caution or in progress, and slate means English and the primary action. The personality lives in small exam-hall and terminal details: the half-circle notches on the ticket stub, the `$` prompt with a blinking cursor in a section header, mono metadata, and the process-status card (`pcb`) that reports a chapter as ready, running, or terminated.\n\nThree scripts live together, and each has a job. Iansui, a handwritten-feeling Chinese face, is used for titles. Noto Sans TC is used for reading. Source Serif 4 is used for English textbook passages. JetBrains Mono is used for labels, tabs, and data. The bilingual pairing is the core of the product, and the type system makes the two languages look clearly different.",
+    "keyCharacteristics": [
+      "Admission-ticket cards with a dashed tear-off stub and notches",
+      "Frosted glass panes (16px corners, 1px bright edge, soft ambient shadow) over a fog-grey board with soft colour blobs",
+      "Iansui display / Noto Sans TC body / Source Serif 4 English / JetBrains Mono labels",
+      "Colour as meaning: right, wrong, caution, English",
+      "Small terminal touches: `$` prompts, blinking cursors, status LEDs, process boxes",
+      "Full light and dark themes, plus following the system setting"
+    ],
+    "rules": [
+      {
+        "name": "The Seal Is Rare Rule",
+        "body": "Vermilion is the stamp, not the ink. It marks the exam kind, points, mistakes, and hover. It never fills large areas or body copy.",
+        "section": "colors"
+      },
+      {
+        "name": "The Meaning-Only Rule",
+        "body": "Each tint means something: slate is English, pewter is Chinese, vermilion is warning or wrong, amber is tip or caution, green is right. Never use a tint for decoration.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two Themes Rule",
+        "body": "Every token has a light and a dark value, and both ship. The dark values are defined in `assets/ezhome.css` and repeated in each subject page's inline style. A new colour without a dark value is incomplete.",
+        "section": "colors"
+      },
+      {
+        "name": "The Text Scale Rule",
+        "body": "Every reading size is written as `calc(Npx * var(--ts, 1))`. Chapter views, exam papers, and review set `--ts: 1.2`. Figures and chapter-end practice reset it to 1. Never hard-code a reading size without `--ts`.",
+        "section": "typography"
+      },
+      {
+        "name": "The Script Has a Job Rule",
+        "body": "Never set English textbook passages in the Chinese body face, and never set titles in mono. Each language and role keeps its own face.",
+        "section": "typography"
+      },
+      {
+        "name": "The Latin Apostrophe Rule",
+        "body": "’ and ‘ are drawn with a Latin face (the `EZapos` font-face) so English contractions don't render full-width inside Chinese text.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Blur Rule",
+        "body": "Only the outermost pane blurs. Anything nested inside it uses `--glass-bg-nested` with no blur and no shadow.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Glass Edge Rule",
+        "body": "A glass pane always has the 1px bright edge (`--glass-edge`). Without it the pane reads as a muddy grey box.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** build new surfaces from glass panes (16px corners, `--glass-bg`, 1px `--glass-bd` edge, `--glass-sh`) on the fog board, and blur only the outermost pane.",
+      "**Do** keep the noticeboard vocabulary for structure: ticket stubs, mono metadata, Iansui titles, dotted heading rules, `$` eyebrows.",
+      "**Do** give every new colour a dark-theme value and test both themes plus the system setting.",
+      "**Do** write reading sizes as `calc(Npx * var(--ts, 1))`.",
+      "**Do** put English textbook text in Source Serif 4 inside a slate `en` box, and Chinese explanations in a pewter `zh` box.",
+      "**Do** keep vermilion for stamps, mistakes, and hover only."
+    ],
+    "donts": [
+      "**Don't** use colour decoratively. Every tint means right, wrong, caution, English, or Chinese.",
+      "**Don't** stack blurred glass inside blurred glass.",
+      "**Don't** drop the 1px bright glass edge or the `@supports` solid fallback.",
+      "**Don't** set titles in mono or English passages in the Chinese sans.",
+      "**Don't** let the background blobs become saturated or busy. They are soft light behind glass and never a focal point."
+    ]
+  }
+}

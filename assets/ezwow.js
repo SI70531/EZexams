@@ -5,7 +5,7 @@
    - the answer text types itself out
    - every time the login screen is about to show: a logo intro, the exam cards fly in, 
    - a slowly breathing background (stars in dark mode) and per-subject floating particles
-   Everything is skipped with 減少動畫 (the ezcalm switch) or the device's reduced-motion setting. The intro, banner and typewriter
+   Everything always plays in full, whatever the reduced-motion setting. The intro, banner and typewriter
    stay out of automated test browsers unless window.EZWOW_FORCE is set. Colours come from the page's theme tokens. */
 (function(){
   if(window.__ezwow)return;window.__ezwow=1;
@@ -35,7 +35,6 @@ html.wow-busy .wow-bg i,html.wow-busy .wow-stars{animation-play-state:paused}
 @keyframes wowtw{from{opacity:.45}to{opacity:1}}
 #wowp,#wowt{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
 #wowp{z-index:-1}#wowt{z-index:75}
-html.ezcalm .wow-bg,html.ezcalm #wowp,html.ezcalm #wowt,html.ezcalm .wow-intro,html.ezcalm .wow-banner,html.ezcalm .wow-flash,html.ezcalm .wow-fly{display:none}
 .wow-fly{position:fixed;left:0;top:0;z-index:76;pointer-events:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font:700 19px var(--f-mono);color:var(--bg);background:var(--ok);box-shadow:0 0 18px 4px color-mix(in srgb,var(--ok) 60%,transparent)}
 .wow-flash{position:fixed;inset:0;z-index:74;pointer-events:none;opacity:0;background:radial-gradient(ellipse at 50% 55%,color-mix(in srgb,var(--ok) 38%,transparent),color-mix(in srgb,var(--ok) 6%,transparent) 70%)}
 .wow-shard{position:fixed;z-index:77;pointer-events:none;margin:0;overflow:hidden}

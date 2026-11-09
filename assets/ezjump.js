@@ -24,7 +24,7 @@
 #jump .jp-list button[aria-current="true"]{color:var(--seal);font-weight:700}
 #jump .jp-list button.lv3{padding-left:24px;font-size:13px;color:var(--muted)}
 @media print{#jump{display:none}}
-html.ezcalm #jump .jp-list,html.ezcalm #jump button.jp-pill{transition:none}`;
+`;
   const st=document.createElement("style");st.textContent=css;document.head.appendChild(st);
 
   const box=document.createElement("nav");box.id="jump";box.setAttribute("aria-label","Jump to section");
@@ -57,7 +57,7 @@ html.ezcalm #jump .jp-list,html.ezcalm #jump button.jp-pill{transition:none}`;
       b.addEventListener("click",()=>{
         const bar=document.querySelector("header.top");const off=(bar?bar.getBoundingClientRect().bottom:0)+24;
         const y=window.scrollY+h.getBoundingClientRect().top-off;
-        window.scrollTo({top:Math.max(0,y),behavior:root.classList.contains("ezcalm")?"auto":"smooth"});
+        window.scrollTo({top:Math.max(0,y),behavior:"smooth"});
         close();
       });
       li.appendChild(b);list.appendChild(li);

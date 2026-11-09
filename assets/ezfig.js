@@ -5,7 +5,7 @@
      axes and curves are traced, bars and areas grow, labels fade in one after another
    - every interactive figure (.ilab) draws in the same way in the same way
    - when a chapter tab opens, its content rises in block by block
-   Skipped with 減少動畫 (the ezcalm switch) or the device's reduced-motion setting. Loaded with defer on every subject page. */
+   Always plays in full, whatever the reduced-motion setting. Loaded with defer on every subject page. */
 (function(){
   if(window.__ezfig)return;window.__ezfig=1;
   const root=document.documentElement;

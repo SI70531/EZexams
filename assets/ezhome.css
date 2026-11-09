@@ -16,7 +16,7 @@
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#11212d; --paper:#1c2e3b; --paper2:#172835;
-  --ink:#ccd0cf; --ink70:rgba(204,208,207,.82); --muted:rgba(204,208,207,.66); --line:#2f4352; --line-strong:#4a5c6a;
+  --ink:#ccd0cf; --ink70:rgba(204,208,207,.82); --muted:rgba(204,208,207,.8); --line:#2f4352; --line-strong:#4a5c6a;
   --indigo:#9ba8ab; --indigo-soft:rgba(155,168,171,.1); --indigo-mid:rgba(155,168,171,.22);
   --seal:#ff7d5a; --seal-soft:rgba(255,125,90,.08); --seal-line:rgba(255,125,90,.34);
   --brass:#a9bccb; --brass-soft:rgba(169,188,203,.08); --brass-line:rgba(169,188,203,.3);
@@ -27,7 +27,7 @@
   color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#11212d; --paper:#1c2e3b; --paper2:#172835;
-  --ink:#ccd0cf; --ink70:rgba(204,208,207,.82); --muted:rgba(204,208,207,.66); --line:#2f4352; --line-strong:#4a5c6a;
+  --ink:#ccd0cf; --ink70:rgba(204,208,207,.82); --muted:rgba(204,208,207,.8); --line:#2f4352; --line-strong:#4a5c6a;
   --indigo:#9ba8ab; --indigo-soft:rgba(155,168,171,.1); --indigo-mid:rgba(155,168,171,.22);
   --seal:#ff7d5a; --seal-soft:rgba(255,125,90,.08); --seal-line:rgba(255,125,90,.34);
   --brass:#a9bccb; --brass-soft:rgba(169,188,203,.08); --brass-line:rgba(169,188,203,.3);
@@ -43,7 +43,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);li
 header.wrap{padding-block:max(20px,env(safe-area-inset-top,0px)) 0}
 .topline{display:flex;justify-content:space-between;align-items:center;gap:12px}
 .logo{display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:13px;font-weight:600}
-.logo .mk{display:grid;place-items:center;width:32px;height:32px;border-radius:7px;background:var(--ink);color:var(--bg);font-size:12px}
+.logo .mk{display:grid;place-items:center;width:32px;height:32px;border-radius:8px;background:var(--ink);color:var(--bg);font-size:12px}
 .hero{padding-block:56px 40px;border-bottom:1.5px solid var(--ink)}
 .hero .prompt{font-family:var(--f-mono);font-size:13px;color:var(--brass);font-weight:600}
 @keyframes blink{50%{opacity:0}}
@@ -78,7 +78,7 @@ main{padding-block:36px 72px}
 .ticket .stub::before,.ticket .stub::after{content:"";position:absolute;left:-11px;width:20px;height:20px;border-radius:50%;background:var(--bg);border:1.5px solid var(--ink)}
 .ticket .stub::before{top:-11px;clip-path:inset(50% 0 0 0)}
 .ticket .stub::after{bottom:-11px;clip-path:inset(0 0 50% 0)}
-.stub .k{font-size:10.5px;color:var(--muted);letter-spacing:.08em}
+.stub .k{font-size:11px;color:var(--muted);letter-spacing:.08em}
 .stub .v{font-size:22px;font-weight:600;color:var(--indigo);line-height:1.1}
 .stub .s{font-size:11px;color:var(--muted)}
 .ticket .kind{font-family:var(--f-mono);font-size:11.5px;font-weight:600;color:var(--accent-ink);background:var(--seal);border-radius:4px;padding:1px 8px}

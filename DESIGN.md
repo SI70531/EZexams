@@ -136,8 +136,9 @@ The palette is cool, muted slate-and-fog with one warm accent, Seal Vermilion. T
 - **Amber Caution**: tip boxes, "running" status, syncing LED, star ratings. In dark mode it is #f2bd5a.
 
 ### Neutral
-- **Night Ink**: body text, 1.5px ink borders, hard offset shadows, and the logo mark tile. 76% and 64% alpha versions are used for secondary and muted text.
+- **Night Ink**: body text, 1.5px ink borders, hard offset shadows, and the logo mark tile. 76% and 64% alpha versions are used for secondary text on light surfaces. In dark mode the muted text alpha is 80% (rgba(204,208,207,.8)), so it keeps at least 4.5:1 contrast on the dark Paper Shade.
 - **Fog Board**: the page background behind the glass. In dark mode it is #11212d.
+- **Dark-mode surface literals**: #11212d (Fog Board), #1c2e3b and #172835 (Paper and Paper Shade), #2f4352 and #4a5c6a (hairline and rule strong), and #ff7d5a (Seal Vermilion brightened). These are the intended dark palette, not stray colours.
 - **Paper / Paper Shade**: solid surfaces under the glass. Paper Shade is used for options, inputs, and table headers. In dark mode they are #1c2e3b and #172835.
 - **Hairline / Rule Strong**: cell borders, box borders, dotted heading rules, dashed stub edges. In dark mode they are #2f4352 and #4a5c6a.
 - **Glass Film / Glass Edge**: the translucent pane fill and the bright one-pixel edge that makes the glass read as glass. In dark mode they are rgba(255,255,255,.07) and .16.

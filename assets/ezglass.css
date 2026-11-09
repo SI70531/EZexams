@@ -81,9 +81,9 @@ html::before{
 
 /* home page ticket: soft lift instead of the hard offset shadow; the tear-off notches become glass arcs */
 :root .ticket:hover{transform:translateY(-3px);box-shadow:var(--glass-sh-hover)}
-:root .ticket .stub{border-radius:0 15px 15px 0;border-left-color:var(--glass-line);background:var(--glass-th)}
+:root .ticket .stub{border-radius:0 10px 10px 0;border-left-color:var(--glass-line);background:var(--glass-th)}
 :root .ticket .stub::before,:root .ticket .stub::after{background:transparent;border:1px solid var(--glass-bd)}
-:root .pcb .ph{border-radius:15px 15px 0 0}
+:root .pcb .ph{border-radius:10px 10px 0 0}
 :root .pcb{overflow:hidden}
 :root .examtools{border-radius:16px}
 :root .mcscore{background:var(--glass-score)!important}

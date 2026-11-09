@@ -17,7 +17,7 @@
 #ezgate *{box-sizing:border-box}
 .eg-wrap{width:min(100%,520px);perspective:1400px}
 .eg-brand{display:flex;align-items:center;gap:10px;margin:0 0 18px;font-family:var(--f-mono);font-size:13px;font-weight:600;color:var(--ink)}
-.eg-brand .mk{display:grid;place-items:center;width:32px;height:32px;border-radius:7px;background:var(--ink);color:var(--bg);font-size:12px}
+.eg-brand .mk{display:grid;place-items:center;width:32px;height:32px;border-radius:8px;background:var(--ink);color:var(--bg);font-size:12px}
 .eg-ticket{position:relative;display:block;background:var(--paper);border:1.5px solid var(--ink);border-radius:12px;box-shadow:6px 6px 0 var(--hard);
   transition:transform .32s ease;transform-style:preserve-3d}
 .eg-ticket.flip{transform:rotateY(90deg)}
@@ -159,7 +159,7 @@
     ["#egUser","#egPass","#egPass2"].forEach(i=>$(i).addEventListener("input",()=>$(".eg-acct").classList.remove("bad")));
     ticket.addEventListener("submit",submit);
   }
-  const RM=()=>!!(window.EZcalm&&EZcalm());   /* always animate: Windows with "animation effects" off reports reduced motion, and the site wanted its animations anyway */
+  const RM=()=>false;   /* always animate in full, whatever the reduced-motion setting */
   const pop=x=>{if(!RM()&&x.animate)x.animate([{transform:"scale(.86)"},{transform:"scale(1.07)",offset:.6},{transform:"none"}],{duration:200,easing:"ease-out"});};
   function fill(g,from,digits,gi){const c=cells(g);let i=from;for(const d of digits){if(i>=4)break;c[i].value=d;c[i].classList.add("on");pop(c[i]);i++;}
     if(i>=4&&gi===0&&ticket.dataset.mode==="setpin")cells(cellsets[1])[0].focus();else c[Math.min(i,3)].focus();

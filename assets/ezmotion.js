@@ -3,7 +3,7 @@
    - section titles draw their underline as they scroll into view
    - switching 淺色 / 深色 spreads the new theme out from the button you pressed (browsers with View Transitions)
    - 總複習: mistake cards rise in one after another the first time the tab opens; clearing a mistake says so
-   Everything is skipped with 減少動畫 (the ezcalm switch) or the device's reduced-motion setting.
+   Everything always plays in full, whatever the reduced-motion setting.
    Colours come from the page's theme tokens. Loaded with defer on the home page and every subject page. */
 (function(){
   if(window.__ezmotion)return;window.__ezmotion=1;

@@ -21,7 +21,6 @@
 .fx-sv.fx-rv{transition:none}
 @keyframes fxsin{from{opacity:0;transform:translateY(34px) scale(.97)}to{opacity:1;transform:none}}
 @keyframes fxsout{from{opacity:1;transform:none}to{opacity:0;transform:translateY(-34px) scale(.97)}}
-html.ezcalm .fx-sv{animation:none}
 }
 
 @keyframes fxrise{from{opacity:0;transform:translateY(34px) scale(.94)}to{opacity:1;transform:none}}
@@ -123,7 +122,6 @@ html.ezcalm .fx-sv{animation:none}
   /* only the tab on screen, and only blocks within a few screens below: farther ones just appear normally.
      All positions are read first and the classes written after, so the browser lays the page out once. */
   function arm(root){
-    if(document.documentElement.classList.contains("ezcalm"))return;
     const vh=innerHeight,scope=root===document?[...document.querySelectorAll("section.view:not([hidden])")]:[root];
     const roots=scope.length?scope:[document];
     if(CSS.supports&&CSS.supports("animation-timeline:view()")){      /* every block fades in and out as it crosses the screen edges while scrolling (only blocks that fit on screen; nested ones fade with their parent) */
@@ -160,7 +158,7 @@ html.ezcalm .fx-sv{animation:none}
 
   /* ripple */
   const RIP=".btn,.opt,.ezout,.syncchip,.themebtn,#tabs [data-go],.eg-go,.rvgo,.missbadge,.ticket";
-  const calm=()=>document.documentElement.classList.contains("ezcalm");
+  const calm=()=>false;
   document.addEventListener("pointerdown",e=>{
     if(calm())return;const b=e.target.closest&&e.target.closest(RIP);if(!b||b.disabled)return;
     if(getComputedStyle(b).position==="static")b.classList.add("fx-host");
@@ -175,7 +173,7 @@ html.ezcalm .fx-sv{animation:none}
     const c=e.target.closest&&e.target.closest(".qitem,.rvsec,.syncbox,.ticket");if(!c)return;
     const r=c.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;
     c.style.setProperty("--mx",x+"px");c.style.setProperty("--my",y+"px");
-    if(c.classList.contains("ticket")&&matchMedia("(hover:hover)").matches&&!calm()){
+    if(c.classList.contains("ticket")&&matchMedia("(hover:hover)").matches){
       if(!c.querySelector(".fx-shine")){const s=document.createElement("span");s.className="fx-shine";c.appendChild(s);}
       const rx=((y/r.height)-.5)*-16,ry=((x/r.width)-.5)*20;
       c.classList.add("fx-tilt");c.style.transform="perspective(900px) rotateX("+rx+"deg) rotateY("+ry+"deg) translate(-4px,-8px) scale(1.03)";
@@ -197,7 +195,7 @@ html.ezcalm .fx-sv{animation:none}
     const right=p.q.querySelector(".opt.right"),wrong=p.q.querySelector(".opt.wrong");
     if(right){right.classList.remove("fx-good");void right.offsetWidth;right.classList.add("fx-good");setTimeout(()=>right.classList.remove("fx-good"),800);}
     if(wrong){wrong.classList.remove("fx-bad");void wrong.offsetWidth;wrong.classList.add("fx-bad");setTimeout(()=>wrong.classList.remove("fx-bad"),600);}
-    else if(right&&!calm()){const ab=right.querySelector(".ab")||right,r=ab.getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2);}
+    else if(right){const ab=right.querySelector(".ab")||right,r=ab.getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2);}
   }
   function burst(x,y){
     if(window.EZwowBusy)EZwowBusy(1500);
@@ -259,7 +257,7 @@ html.ezcalm .fx-sv{animation:none}
   box-shadow:5px 5px 0 var(--hard);padding:16px 18px 14px;font:15px/1.7 var(--f-body);transition:top .35s cubic-bezier(.2,.8,.2,1),left .35s cubic-bezier(.2,.8,.2,1)}
 #eztour .tip b{display:block;font-size:16px;margin-bottom:4px}
 #eztour .row{display:flex;justify-content:space-between;align-items:center;margin-top:12px;font-family:var(--f-mono);font-size:12px;color:var(--muted)}
-#eztour .row>span:last-child{display:flex;gap:8px;align-items:center}#eztour .row button{display:inline-block;width:auto;font:600 13.5px var(--f-body);border-radius:7px;padding:6px 14px;cursor:pointer;white-space:nowrap}
+#eztour .row>span:last-child{display:flex;gap:8px;align-items:center}#eztour .row button{display:inline-block;width:auto;font:600 13.5px var(--f-body);border-radius:8px;padding:6px 14px;cursor:pointer;white-space:nowrap}
 #eztour .skip{border:0;background:none;color:var(--muted)}
 #eztour .next{border:1.5px solid var(--ink);background:var(--ink);color:var(--bg)}`;
   function steps(){

@@ -31,3 +31,7 @@ jobs:
             exit 1
           fi
           grep -E "https://.*workers.dev|Current Version ID" deploy.log | while IFS= read -r l; do echo "::notice::$l"; done
+      - name: Deploy TWstock Worker (twstock-ai, separate API key)
+        if: env.HAS_TOKEN == 'true'
+        working-directory: tools
+        run: npx --yes wrangler@4 deploy --config wrangler-twstock.toml

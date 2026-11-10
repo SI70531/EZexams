@@ -21,6 +21,13 @@
              device gets the same one. The answer and the reference stay here (read later with /gen/answer or /gen/wgrade).
         POST /bank/open  {t, s, key, picks:{<slot>:<pick>}}   questions that were answered before the move to AI practice
              (tools/bank.json) and the past-exam answers: the answer of a slot is only returned together with the pick for it.
+   6. TWstock (the same accounts, https://si70531.github.io/TWstock/):
+        GET  /tw/rt?c=2330,2317&idx=1   intraday quotes from TWSE's market information system for up to 80 listed stocks;
+             idx=1 adds the TAIEX, the electronics and the finance index and the front-month TAIEX futures.   (no sign-in)
+        GET  /tw/news?c=2330&n=台積電    recent news headlines and the company's own material announcements.     (no sign-in)
+        POST /tw/analyze {t, code, name, facts}   a written analysis by a team of AI analysts (technical, fundamental,
+             institutional flows, news and world events, risk) with scenarios and entry conditions. Needs a sign-in and
+             counts as one AI call. The numbers come from the page (facts); the headlines are fetched here.
    Only pages from ALLOWED may use it.
    Secrets (Settings → Variables and Secrets): GEMINI_KEY, SUPABASE_SECRET_KEY (device PINs).
    Deployed by .github/workflows/worker.yml with tools/wrangler.toml. Google does not offer Gemini in Hong Kong, where
@@ -69,6 +76,10 @@ export default {
     }
 
     if (!ok) return fail(403, "PERMISSION_DENIED", "This service only serves " + ALLOWED.join(", "));
+    /* ---------- TWstock: public market data (quotes and headlines; no secrets involved) ---------- */
+    if (url.pathname === "/tw/rt" && req.method === "GET") return twRt(url, json);
+    if (url.pathname === "/tw/news" && req.method === "GET") return twNewsRoute(url, json, fail);
+
     /* IPv6 visitors are counted per /64 (one home or phone gets a whole /64, so rotating addresses inside it is free) */
     const rawIp = req.headers.get("CF-Connecting-IP") || "anon";
     const ip = rawIp.includes(":") ? rawIp.split(":").slice(0, 4).join(":") + "::/64" : rawIp;
@@ -115,7 +126,7 @@ export default {
     /* everything below needs a valid sign-in token */
     let tokenIn = url.searchParams.get("t") || (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
     let bodyText = null;
-    if ((url.pathname.startsWith("/pin/") || url.pathname.startsWith("/gen/") || url.pathname.startsWith("/bank/")) && req.method === "POST") {
+    if ((url.pathname.startsWith("/pin/") || url.pathname.startsWith("/gen/") || url.pathname.startsWith("/bank/") || url.pathname.startsWith("/tw/")) && req.method === "POST") {
       bodyText = await req.text();
       if (bodyText.length > (url.pathname.startsWith("/pin/") ? MAX_BODY : GEN_MAX)) return fail(413, "TOO_BIG", "Request too large");
       try { const b = JSON.parse(bodyText); if (b && b.t) tokenIn = b.t; } catch (e) {}
@@ -137,6 +148,9 @@ export default {
       await pinStore(env, acct.id + ":" + dev, "put", { h: await pinHash(env, acct.id, dev, pin), email: acct.email });
       return json({ ok: true });
     }
+
+    /* ---------- TWstock: the AI analyst team ---------- */
+    if (url.pathname === "/tw/analyze" && req.method === "POST") return twAnalyze(env, who, bodyText, json, fail);
 
     /* ---------- AI practice: one question at a time, answers kept here ---------- */
     if (url.pathname === "/gen/next" && req.method === "POST") return genNext(env, acct, who, bodyText, json, fail);
@@ -170,6 +184,168 @@ export default {
     return fail(404, "NOT_FOUND", "Unknown path");
   },
 };
+
+/* ---------- TWstock (/tw/*) ---------- */
+const TW_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36";
+const twCache = new Map();
+/* a short memory per Worker instance, so many open pages do not each hit TWSE */
+async function twCached(key, ms, make) {
+  const hit = twCache.get(key);
+  if (hit && hit.until > Date.now()) return hit.v;
+  const v = await make();
+  if (twCache.size > 300) twCache.clear();
+  twCache.set(key, { v, until: Date.now() + ms });
+  return v;
+}
+const twNum = v => { const n = parseFloat(String(v == null ? "" : v).replace(/,/g, "")); return Number.isFinite(n) ? n : null; };
+const twClip = (v, n) => String(v == null ? "" : v).replace(/\s+/g, " ").trim().slice(0, n);
+/* TWSE market information system: one request carries many symbols (tse_2330.tw|tse_t00.tw|…) */
+async function twMis(chs) {
+  const r = await fetch("https://mis.twse.com.tw/stock/api/getStockInfo.jsp?json=1&delay=0&ex_ch=" + encodeURIComponent(chs.join("|")) + "&_=" + Date.now(),
+    { headers: { "User-Agent": TW_UA, Accept: "application/json, text/plain, */*", Referer: "https://mis.twse.com.tw/stock/fibest.jsp?lang=zh_tw" } });
+  if (!r.ok) throw new Error("MIS " + r.status);
+  const j = await r.json();
+  const first = v => { const n = twNum(String(v == null ? "" : v).split("_")[0]); return n > 0 ? n : null; };
+  return (Array.isArray(j.msgArray) ? j.msgArray : []).map(x => {
+    let z = twNum(x.z);                                   /* "-" when nothing traded in this snapshot: take the best bid or ask */
+    if (!(z > 0)) z = first(x.b) || first(x.a) || null;
+    return { c: String(x.c || ""), n: String(x.n || ""), z, y: twNum(x.y), o: twNum(x.o), h: twNum(x.h), l: twNum(x.l), v: twNum(x.v), tm: String(x.t || ""), d: String(x.d || "") };
+  }).filter(x => x.c);
+}
+/* front-month TAIEX futures: the futures exchange's live quote list, or its daily report when that fails */
+async function twFut() {
+  try {
+    const r = await fetch("https://mis.taifex.com.tw/futures/api/getQuoteList", {
+      method: "POST", headers: { "Content-Type": "application/json", "User-Agent": TW_UA, Referer: "https://mis.taifex.com.tw/futures/" },
+      body: JSON.stringify({ MarketType: "0", SymbolType: "F", KindID: "1", CID: "TXF", ExpireMonth: "", RowSize: "全部", PageNo: "", SortColumn: "", AscDesc: "A" }),
+    });
+    const j = await r.json(), list = (j && j.RtData && j.RtData.QuoteList) || [];
+    const q = list.find(x => /-F$/.test(String(x.SymbolID || "")) && !String(x.SymbolID).includes("/") && twNum(x.CLastPrice) > 0);
+    if (q) {
+      const t = String(q.CTime || "").replace(/\D/g, "");
+      return { src: "rt", n: twClip(q.DispCName || "臺指期", 20), z: twNum(q.CLastPrice), y: twNum(q.CRefPrice), o: twNum(q.COpenPrice), h: twNum(q.CHighPrice), l: twNum(q.CLowPrice), v: twNum(q.CTotalVolume),
+        tm: t.length >= 6 ? t.slice(0, 2) + ":" + t.slice(2, 4) + ":" + t.slice(4, 6) : "" };
+    }
+  } catch (e) {}
+  try {
+    const a = await (await fetch("https://openapi.taifex.com.tw/v1/DailyMarketReportFut", { headers: { "User-Agent": TW_UA, Accept: "application/json" } })).json();
+    const month = x => String(x["ContractMonth(Week)"] || "").trim();
+    const x = a.find(r => String(r.Contract).trim() === "TX" && /^\d{6}$/.test(month(r)) && !/盤後|After/i.test(String(r.TradingSession || "")) && twNum(r.Last) > 0);
+    if (x) {
+      const last = twNum(x.Last), chg = twNum(x.Change) || 0;
+      return { src: "eod", n: "臺指期 " + month(x), z: last, y: last - chg, o: twNum(x.Open), h: twNum(x.High), l: twNum(x.Low), v: twNum(x.Volume), tm: "", d: String(x.Date || "") };
+    }
+  } catch (e) {}
+  return null;
+}
+async function twRt(url, json) {
+  const codes = [...new Set((url.searchParams.get("c") || "").split(",").map(v => v.trim()).filter(v => /^[0-9A-Z]{4,6}$/.test(v)))].slice(0, 80);
+  const out = { at: Date.now(), q: [], idx: [], fut: null };
+  const jobs = [];
+  if (codes.length) jobs.push(twCached("q:" + codes.join(","), 4000, () => twMis(codes.map(c => "tse_" + c + ".tw"))).then(v => { out.q = v; }));
+  if (url.searchParams.get("idx") === "1") {
+    jobs.push(twCached("idx", 4000, () => twMis(["tse_t00.tw", "tse_t13.tw", "tse_t17.tw"])).then(v => { out.idx = v; }));
+    jobs.push(twCached("fut", 8000, twFut).then(v => { out.fut = v; }));
+  }
+  await Promise.all(jobs.map(p => p.catch(e => { out.err = twClip(e && e.message, 80); })));
+  return json(out, 200, { "Cache-Control": "no-store" });
+}
+/* headlines from Google News (RSS search); q may carry "when:14d" to keep them recent */
+async function twHeadlines(q, n) {
+  const r = await fetch("https://news.google.com/rss/search?q=" + encodeURIComponent(q) + "&hl=zh-TW&gl=TW&ceid=TW:zh-Hant", { headers: { "User-Agent": TW_UA } });
+  if (!r.ok) return [];
+  const xml = await r.text(), items = [];
+  const un = v => v.replace(/<!\[CDATA\[|\]\]>/g, "").replace(/<[^>]+>/g, "").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;|&apos;/g, "'").replace(/&amp;/g, "&").trim();
+  for (const m of xml.matchAll(/<item>([\s\S]*?)<\/item>/g)) {
+    const g = t => { const k = m[1].match(new RegExp("<" + t + "[^>]*>([\\s\\S]*?)</" + t + ">")); return k ? un(k[1]) : ""; };
+    const src = g("source"); let title = g("title");
+    if (src && title.endsWith(" - " + src)) title = title.slice(0, -src.length - 3);
+    const at = Date.parse(g("pubDate")) || 0;
+    if (title) items.push({ t: twClip(title, 160), src: twClip(src, 40), u: g("link").slice(0, 600), at });
+  }
+  return items.sort((a, b) => b.at - a.at).slice(0, n);
+}
+/* the company's own material announcements (TWSE open data: every listed company's announcements of the day) */
+async function twAnnouncements(code) {
+  const all = await twCached("ann", 600000, async () => {
+    const r = await fetch("https://openapi.twse.com.tw/v1/opendata/t187ap04_L", { headers: { "User-Agent": TW_UA, Accept: "application/json" } });
+    return r.ok ? await r.json() : [];
+  });
+  const pick = (o, sub) => { const k = Object.keys(o).find(x => x.includes(sub)); return k ? o[k] : ""; };
+  return (Array.isArray(all) ? all : []).filter(x => String(pick(x, "公司代號")).trim() === code).slice(0, 6)
+    .map(x => ({ d: twClip(pick(x, "發言日期"), 12), t: twClip(pick(x, "主旨"), 200), body: twClip(pick(x, "說明"), 500) }));
+}
+async function twNewsRoute(url, json, fail) {
+  const code = (url.searchParams.get("c") || "").trim(), name = twClip(url.searchParams.get("n"), 20);
+  if (!/^[0-9A-Z]{4,6}$/.test(code)) return fail(400, "BAD_CODE", "Bad stock code");
+  const v = await twCached("news:" + code, 300000, async () => {
+    const [news, ann] = await Promise.all([twHeadlines((name ? name + " " : "") + code + " when:14d", 12).catch(() => []), twAnnouncements(code).catch(() => [])]);
+    return { news, ann };
+  });
+  return json({ at: Date.now(), ...v }, 200, { "Cache-Control": "no-store" });
+}
+function twPrompt(code, name, facts, news, ann, world) {
+  const list = (a, f) => (a.length ? a.map(f).join("\n") : "(none found)");
+  const day = t => (t ? new Date(t).toISOString().slice(0, 10) : "");
+  return [
+"You are a team of five analysts at a Taiwan equity research desk, writing for one private investor about a single TWSE-listed stock: " + name + " (" + code + ").",
+"Write everything in Traditional Chinese as used in Taiwan. Be specific and concrete; no filler, no generic textbook lines.",
+"",
+"The five analysts, each with their own view:",
+"1. 技術面分析師: trend, moving averages, KD / RSI / MACD, Bollinger position, volume, support and resistance.",
+"2. 基本面分析師: valuation (P/E, yield, P/B), monthly revenue trend, what the business depends on.",
+"3. 籌碼面分析師: foreign investors, investment trusts and dealers; what their recent buying or selling suggests.",
+"4. 時事與國際分析師: the news headlines, the company's own announcements (board decisions, earnings calls, dividends, capital changes), and world events that can move this stock: US markets and Fed policy, tariffs and export controls, exchange rates, geopolitics, the industry cycle, big customers and competitors.",
+"5. 風險控管: what could go wrong, position sizing and where the idea is proven wrong.",
+"",
+"Rules:",
+"- Use ONLY the numbers in DATA. Never invent a price, ratio, date or event. If something needed is missing, say it is missing.",
+"- When you rely on a headline or an announcement, name it briefly so the reader can find it. Headlines are only titles: do not claim details that a title does not state.",
+"- Every price level you mention must come from DATA (moving averages, recent highs and lows, Bollinger bands, today's range) or be a simple round number near them, and you must say which one it is.",
+"- Nobody can know the future price. Give the direction you think is more likely and why, with rough chances that add up to about 100%, and say plainly what would prove you wrong. Never promise a result.",
+"- 'entry' is about timing: the concrete conditions under which buying makes sense (for example a close above a named level with volume above the 20-day average, or a pull-back to a named support that holds), a price zone, a stop level, and when NOT to buy. If the better choice now is to wait, say so.",
+"- Each analyst: stance is exactly one of 偏多, 中性, 偏空; 2 to 4 points, each one or two sentences.",
+"",
+"Return ONE JSON object and nothing else, in exactly this shape:",
+'{"team":[{"role":"技術面分析師","stance":"偏多","points":["..."]},{"role":"基本面分析師","stance":"中性","points":["..."]},{"role":"籌碼面分析師","stance":"中性","points":["..."]},{"role":"時事與國際分析師","stance":"中性","points":["..."]},{"role":"風險控管","stance":"中性","points":["..."]}],',
+'"summary":{"stance":"偏多|中性|偏空","confidence":"低|中|高","headline":"one sentence","short_term":"the next 1 to 2 weeks","mid_term":"the next 1 to 3 months",',
+'"scenarios":[{"name":"樂觀","chance":"約 30%","trigger":"what has to happen","range":"price area"},{"name":"基本","chance":"約 50%","trigger":"...","range":"..."},{"name":"悲觀","chance":"約 20%","trigger":"...","range":"..."}],',
+'"entry":{"now":"適合進場|等待訊號|不建議進場","conditions":["..."],"zone":"price zone","stop":"stop level and why","avoid":"when not to buy"},',
+'"risks":["..."],"watch":["upcoming events or dates to watch"]}}',
+"",
+"DATA (computed by the page from TWSE figures; prices in NT$, volume in lots of 1,000 shares):",
+facts,
+"",
+"COMPANY HEADLINES (last 14 days, newest first):",
+list(news, x => "- " + day(x.at) + " " + x.t + (x.src ? "（" + x.src + "）" : "")),
+"",
+"COMPANY ANNOUNCEMENTS (material information filed with the exchange):",
+list(ann, x => "- " + x.d + " " + x.t + (x.body ? " — " + x.body : "")),
+"",
+"MARKET AND WORLD HEADLINES (last 3 days):",
+list(world, x => "- " + day(x.at) + " " + x.t + (x.src ? "（" + x.src + "）" : "")),
+  ].join("\n");
+}
+async function twAnalyze(env, who, bodyText, json, fail) {
+  if (!env.GEMINI_KEY) return fail(500, "INTERNAL", "The Worker has no GEMINI_KEY secret yet");
+  let b; try { b = JSON.parse(bodyText); } catch (e) { return fail(400, "BAD_JSON", "Body is not JSON"); }
+  const code = String((b && b.code) || "").trim(), name = twClip(b && b.name, 20) || code;
+  if (!/^[0-9A-Z]{4,6}$/.test(code)) return fail(400, "BAD_CODE", "Bad stock code");
+  let facts; try { facts = JSON.stringify(b.facts || {}); } catch (e) { facts = "{}"; }
+  if (facts.length > 8000) return fail(413, "TOO_BIG", "Too much data");
+  const q = await guard(env, "pin:" + who, "ai");
+  if (q.blocked) return fail(429, "RESOURCE_EXHAUSTED", "Limit reached for this sign-in; try again later", { "Retry-After": String(q.aiWait || 60) });
+  const [news, ann, world] = await Promise.all([
+    twHeadlines(name + " " + code + " when:14d", 12).catch(() => []),
+    twAnnouncements(code).catch(() => []),
+    twCached("world", 600000, () => twHeadlines("台股 OR 美股 OR 聯準會 OR 關稅 OR 匯率 when:3d", 10)).catch(() => []),
+  ]);
+  const g = await geminiJson(env, twPrompt(code, name, facts, news, ann, world), 0.4, 0);
+  if (g.error) return fail(g.error.status === 429 ? 429 : 502, "AI_FAILED", "The analysis could not be written right now", g.error.status === 429 ? { "Retry-After": "60" } : undefined);
+  let a = null; try { a = JSON.parse(g.text); } catch (e) { const m = g.text.match(/\{[\s\S]*\}/); try { a = m ? JSON.parse(m[0]) : null; } catch (e2) { a = null; } }
+  if (!a || !Array.isArray(a.team) || !a.summary) return fail(502, "AI_FAILED", "The analysis came back in an unexpected form; try again");
+  return json({ at: Date.now(), analysis: a, news: news.map(x => ({ t: x.t, src: x.src, u: x.u, at: x.at })), ann: ann.map(x => ({ d: x.d, t: x.t })), world: world.map(x => ({ t: x.t, src: x.src, u: x.u, at: x.at })) });
+}
 
 function callGemini(env, target, body) {
   return fetch(target, { method: "POST", headers: { "Content-Type": "application/json", "x-goog-api-key": env.GEMINI_KEY }, body });

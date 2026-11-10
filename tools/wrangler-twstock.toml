@@ -1,0 +1,33 @@
+# TWstock-only Worker (name "twstock-ai"). Same code as tools/ezexams-worker.js, but its own Cloudflare secrets
+# (GEMINI_KEY for the second Gemini account), so EZexams and TWstock do not share an API key.
+name = "twstock-ai"
+main = "ezexams-worker.js"
+compatibility_date = "2026-01-01"
+workers_dev = true
+
+[placement]
+region = "gcp:us-central1"
+
+# The call to Google goes through this Durable Object, created in North America (locationHint "enam"),
+# so it never leaves from a place where Gemini is not offered.
+[[durable_objects.bindings]]
+name = "RELAY"
+class_name = "GeminiRelay"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["GeminiRelay"]
+
+
+# Per-visitor counters (wrong PINs, AI calls, error reports) and each device's PIN record and the list of recent page errors.
+[[durable_objects.bindings]]
+name = "GUARD"
+class_name = "Guard"
+
+[[durable_objects.bindings]]
+name = "ERRLOG"
+class_name = "ErrLog"
+
+[[migrations]]
+tag = "v2"
+new_sqlite_classes = ["Guard", "ErrLog"]

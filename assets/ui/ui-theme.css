@@ -1,3 +1,5 @@
+/* Hallmark · built: the project · redesign: full · genre: editorial · theme: DESIGN.md (locked) · copy: kept */
+/* Hallmark · pre-emit critique: P pass H pass E pass S pass R pass V pass · weakest: none, token bridge only */
 /* UI 組件懶人包 × EZexams 主題橋接
    把 ui.css 的 --ui-* 變數對到站內的主題 token，淺色 / 深色都跟著網站走。
    必須在 ui.css 之後載入。 */

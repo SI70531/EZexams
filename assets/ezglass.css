@@ -1,3 +1,8 @@
+/* Hallmark · built: the project · redesign: full · genre: editorial · theme: DESIGN.md (locked) · copy: tightened */
+/* Hallmark · pre-emit critique: P pass H pass E pass S pass R pass V pass · weakest: the glass on long pages (kept, waived 29) */
+/* Hallmark · waive 29 · DESIGN.md concept is glass over an admit card; the user said the glass may be touched, so blur is lowered and kept on cards only */
+/* Hallmark · waive 64 · mono labels are a DESIGN.md decision (admit-card stamp voice) */
+/* Hallmark · reworded "← Home" to "Home" · 63 names the arrow glued to link text */
 /* EZexams glassmorphism layer.
    Loaded LAST on every page (home, help, all subjects), so it only restyles surfaces and never touches layout.
    1) Background glow blobs   2) Glass cards / content blocks   3) Glass tables
@@ -17,35 +22,38 @@
   --glass-menu:rgba(246,248,250,.93);        /* popup menus (theme / animation): dense enough to read over text */
   --glass-score:rgba(255,255,255,.86);       /* the 得分 bar: dense, so the text under it does not show through */
   --glass-blur:16px;
-  /* blob colours: lavender / sky / peach */
-  --blob-a:rgba(167,139,250,.55); --blob-b:rgba(96,165,250,.50); --blob-c:rgba(251,146,60,.38);
+  /* blob colours: 朱砂紅 and 石板墨 tints (DESIGN.md palette) */
+  --blob-a:rgba(196,71,42,.22); --blob-b:rgba(37,55,69,.22);
+  --glass-ok-bg:rgba(45,122,62,.16);
+  --glass-code-bg:rgba(255,255,255,.38); --glass-code-bd:rgba(6,20,27,.12); --glass-code-ink:var(--ink);
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --glass-bg:rgba(255,255,255,.07); --glass-bg-nested:rgba(255,255,255,.05); --glass-fig:rgba(236,240,240,.86);
   --glass-bd:rgba(255,255,255,.16); --glass-sh:0 10px 30px rgba(0,0,0,.35); --glass-sh-hover:0 16px 40px rgba(0,0,0,.45);
   --glass-th:rgba(255,255,255,.06); --glass-line:rgba(255,255,255,.12); --glass-fallback:rgba(28,46,59,.92);
   --glass-menu:rgba(22,36,46,.95); --glass-score:rgba(22,36,46,.92);
-  --blob-a:rgba(139,92,246,.38); --blob-b:rgba(56,130,246,.34); --blob-c:rgba(234,120,40,.22)}}
+  --blob-a:rgba(196,71,42,.20); --blob-b:rgba(120,150,175,.16);
+  --glass-ok-bg:rgba(60,160,85,.20);
+  --glass-code-bg:rgba(255,255,255,.12); --glass-code-bd:rgba(255,255,255,.22); --glass-code-ink:#f1f5f4}}
 :root[data-theme="dark"]{
   --glass-bg:rgba(255,255,255,.07); --glass-bg-nested:rgba(255,255,255,.05); --glass-fig:rgba(236,240,240,.86);
   --glass-bd:rgba(255,255,255,.16); --glass-sh:0 10px 30px rgba(0,0,0,.35); --glass-sh-hover:0 16px 40px rgba(0,0,0,.45);
   --glass-th:rgba(255,255,255,.06); --glass-line:rgba(255,255,255,.12); --glass-fallback:rgba(28,46,59,.92);
   --glass-menu:rgba(22,36,46,.95); --glass-score:rgba(22,36,46,.92);
-  --blob-a:rgba(139,92,246,.38); --blob-b:rgba(56,130,246,.34); --blob-c:rgba(234,120,40,.22)}
+  --blob-a:rgba(196,71,42,.20); --blob-b:rgba(120,150,175,.16);
+  --glass-ok-bg:rgba(60,160,85,.20);
+  --glass-code-bg:rgba(255,255,255,.12); --glass-code-bd:rgba(255,255,255,.22); --glass-code-ink:#f1f5f4}
 
 /* ============ 1. Background glow blobs ============ */
-/* Three big soft circles in different corners, sitting under everything (z-index:-1).
-   They live on <html>::before so no HTML change is needed; <body> keeps its own background (it propagates to the canvas). */
+/* Two fixed soft circles (朱砂紅 and 石板墨 tints), under everything (z-index:-1). No drift. */
 html::before{
-  content:"";position:fixed;inset:-10%;z-index:-1;pointer-events:none;
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   background:
-    radial-gradient(circle 480px at 10% 8%,  var(--blob-a), transparent 70%),   /* top-left: lavender */
-    radial-gradient(circle 440px at 92% 26%, var(--blob-b), transparent 70%),   /* right: sky blue */
-    radial-gradient(circle 520px at 62% 98%, var(--blob-c), transparent 70%);   /* bottom: peach */
-  filter:blur(24px);
-  animation:glassdrift 28s ease-in-out infinite alternate;
+    radial-gradient(circle 480px at 10% 8%,  var(--blob-a), transparent 70%),
+    radial-gradient(circle 520px at 92% 90%, var(--blob-b), transparent 70%);
 }
-@keyframes glassdrift{to{transform:translate3d(2.5%,-2%,0) scale(1.06)}}
+html,body{overflow-x:clip}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
 
 
 /* ============ 2. Glass cards ============ */
@@ -66,7 +74,7 @@ html::before{
   -webkit-backdrop-filter:none;backdrop-filter:none;background:var(--glass-bg-nested);box-shadow:none;
 }
 /* finished items (ezdone) keep their green tint: the glass rule above would otherwise win on specificity */
-:root .ezdone{background:rgba(45,122,62,.16)!important;border-color:var(--ok-line,var(--ok,#2e8b57))!important}
+:root .ezdone{background:var(--glass-ok-bg)!important;border-color:var(--ok-line)!important}
 /* popup menus: a deeper, almost solid glass so the words underneath do not bleed through */
 :root :is(.cheat .two>div,.thmenu){background:var(--glass-menu);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px)}
 /* the coloured note boxes keep their tint (English / Chinese / warning / tip) on top of the glass */
@@ -117,13 +125,11 @@ html::before{
 /* The solid near-black (--code) chips looked like holes in the glass. Make them a light see-through film instead,
    with a bright hairline and normal-contrast text, in both themes. */
 :root :is(code,pre){
-  background:rgba(255,255,255,.38);
-  border:1px solid rgba(0,0,0,.08);
-  color:var(--ink);
+  background:var(--glass-code-bg);
+  border:1px solid var(--glass-code-bd);
+  color:var(--glass-code-ink);
 }
 :root :is(code,pre) code{background:transparent;border:0}
-@media (prefers-color-scheme: dark){html:root:not([data-theme="light"]) :is(code,pre){background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.22);color:#f1f5f4}}
-html:root[data-theme="dark"] :is(code,pre){background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.22);color:#f1f5f4}
 
 /* ============ 5. Lecture notes: text 1.2x bigger (font sizes scaled, layout stays at 100%) in the notes, past/mock exams and review ============ */
 /* Only the chapter views (#ch1, #ch2 …). The top bar, tabs and everything else stay at 100%.

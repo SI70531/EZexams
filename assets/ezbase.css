@@ -1,3 +1,6 @@
+/* Hallmark · built: the project · redesign: full · genre: editorial · theme: DESIGN.md (locked) · tokens lifted, labels untracked, motion guarded */
+/* Hallmark · pre-emit critique: P pass H pass E pass S pass R pass V pass · weakest: dense subject pages (kept, content is the product) */
+/* Hallmark · waive 64 · mono labels are a DESIGN.md decision (admit-card stamp voice) */
 /* EZexams shared subject-page styles: design tokens, top bar, tabs, layout, boxes, quiz and exam widgets.
    Each subject page loads this first, then keeps only its own rules in an inline <style>. */
 :root{
@@ -9,6 +12,7 @@
   --ok:#2d7a3e; --ok-soft:rgba(45,122,62,.08); --ok-line:rgba(45,122,62,.3);
   --accent:#253745; --accent-ink:#ffffff; --accent-soft:rgba(37,55,69,.08);
   --bad:#c4472a; --bad-soft:rgba(196,71,42,.06); --warn:#a26300; --warn-soft:rgba(196,128,20,.09); --warn-line:rgba(196,128,20,.32);
+  --fig-ink:#16233b; --fig-cap:#5d6782; --glass-fill:rgba(255,255,255,.38); --bad-red:#c62828; --ok-green:#2e7d32; --ok-row:rgba(45,122,62,.14); --off:rgba(6,20,27,.08);
   --code:#e3e7e7; --fig:#f3f5f5; --hard:#06141b; --shadow:0 6px 18px rgba(6,20,27,.12);
   --f-display:"Source Serif 4","LXGW WenKai TC","Noto Sans TC","DFKai-SB","BiauKai","Kaiti TC",serif;
   --f-body:"EZapos","Source Serif 4","LXGW WenKai TC","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
@@ -116,13 +120,13 @@ th{background:var(--paper2);font-weight:700;font-size:calc(13.5px*var(--ts,1));c
 td.l,th.l{text-align:left}
 .two{display:flex;gap:16px;flex-wrap:wrap}
 .two>div{flex:1 1 260px;min-width:0}
-.fig{background:var(--fig);color:#16233b;border:1px solid var(--line);border-radius:8px;padding:14px;margin:16px 0;text-align:center;overflow-x:auto}
+.fig{background:var(--fig);color:var(--fig-ink);border:1px solid var(--line);border-radius:8px;padding:14px;margin:16px 0;text-align:center;overflow-x:auto}
 .fig svg{max-width:100%;height:auto}
-.fig .cap{color:#5d6782;font-size:calc(13px*var(--ts,1))}
+.fig .cap{color:var(--fig-cap);font-size:calc(13px*var(--ts,1))}
 .cap{font-size:calc(13px*var(--ts,1));color:var(--muted);text-align:center}
 .gantt{margin:14px 12px 22px}
 .gbar{display:flex;border:1.5px solid var(--ink);height:32px;border-radius:3px;overflow:hidden}
-.gbar span{border-right:1.5px solid var(--ink);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:calc(13px*var(--ts,1));color:#16233b;min-width:0}
+.gbar span{border-right:1.5px solid var(--ink);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:calc(13px*var(--ts,1));color:var(--fig-ink);min-width:0}
 .gbar span:last-child{border-right:none}
 .gt{position:relative;height:18px;font-size:calc(12px*var(--ts,1));font-family:var(--f-mono)}
 .gt b{position:absolute;transform:translateX(-50%);font-weight:400}
@@ -148,9 +152,9 @@ td.l,th.l{text-align:left}
 .btn:hover:not([disabled]){border-color:var(--brass);color:var(--seal)}
 .btn.primary{background:var(--indigo);border-color:var(--indigo);color:var(--accent-ink);font-weight:700}
 .btn.primary:hover:not([disabled]){background:var(--seal);border-color:var(--seal);color:var(--accent-ink)}
-.btn[disabled]{opacity:.55;cursor:default}
-.exq{margin:0 0 14px;scroll-margin-top:80px;padding:14px 18px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.38);-webkit-backdrop-filter:blur(12px) saturate(1.2);backdrop-filter:blur(12px) saturate(1.2)}
-.exq>label{display:block;font-size:calc(12px*var(--ts,1));letter-spacing:.18em;color:var(--brass);font-weight:700;margin-top:10px}
+.btn[disabled]{background:var(--off);color:var(--muted);border-color:var(--line);cursor:not-allowed}
+.exq{margin:0 0 14px;scroll-margin-top:80px;padding:14px 18px;border:1px solid var(--line);border-radius:12px;background:var(--glass-fill);-webkit-backdrop-filter:blur(12px) saturate(1.2);backdrop-filter:blur(12px) saturate(1.2)}
+.exq>label{display:block;font-size:calc(12px*var(--ts,1));color:var(--brass);font-weight:700;margin-top:10px}
 .exq textarea{width:100%;min-height:110px;font:inherit;font-size:calc(15.5px*var(--ts,1));line-height:1.75;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:10px 14px;resize:vertical;display:block;margin:6px 0 0;transition:border-color .15s,box-shadow .15s}
 .exq textarea::placeholder{color:var(--muted)}
 .exq textarea:focus{outline:none;border-color:var(--indigo);box-shadow:0 0 0 3px var(--indigo-soft)}
@@ -222,9 +226,9 @@ body.nograde .nogradenote{display:block}
 pre{max-width:100%;overflow-x:auto}
 /* home progress table: score on the first line, details below */
 .pscore{font-weight:700;white-space:nowrap}.psub{display:block;margin:3px -5px 0;font-size:.86em;line-height:1.7;color:var(--muted)}.psub>span{white-space:nowrap;display:inline-block;margin:0 5px}
-.ptodo{color:var(--bad,#c62828);font-weight:600}.pok{color:var(--ok,#2e7d32);font-weight:600}
+.ptodo{color:var(--bad);font-weight:600}.pok{color:var(--ok);font-weight:600}
 /* a finished row in the home progress table turns green */
-#progTable tr:has(.pok)>td{background:rgba(45,122,62,.14)}
+#progTable tr:has(.pok)>td{background:var(--ok-row)}
 /* 總複習: one key-point card per notes section, in notes order; that section's wrong answers follow right after it */
 .rvhow{margin:6px 0 4px}
 .rvchap{margin:26px 0 0}
@@ -244,10 +248,10 @@ pre{max-width:100%;overflow-x:auto}
 .rvone{border-left:3px solid var(--brass);background:var(--brass-soft);border-radius:0 6px 6px 0;padding:7px 12px;margin:10px 0;font-size:1em}
 .rvone .lbl{font-family:var(--f-mono);font-size:calc(11.5px*var(--ts,1));font-weight:700;color:var(--brass);margin-right:8px}
 .rvsec .rvt{margin:10px 0}
-.rvsec.missed{border-color:var(--bad,#c62828);border-left:5px solid var(--bad,#c62828)}
-.rvsec.missed .rvk{background:var(--bad,#c62828)}
-.rvwrong{margin:-6px 0 18px 14px;padding:4px 0 2px 14px;border-left:3px solid var(--bad,#c62828)}
-.rvwrong>.wgh{font-size:calc(14px*var(--ts,1));font-weight:700;color:var(--bad,#c62828);margin:10px 0 0;scroll-margin-top:80px}
+.rvsec.missed{border-color:var(--bad);border-left:5px solid var(--bad)}
+.rvsec.missed .rvk{background:var(--bad)}
+.rvwrong{margin:-6px 0 18px 14px;padding:4px 0 2px 14px;border-left:3px solid var(--bad)}
+.rvwrong>.wgh{font-size:calc(14px*var(--ts,1));font-weight:700;color:var(--bad);margin:10px 0 0;scroll-margin-top:80px}
 .rvwrong .wcard{margin:10px 0}
 @media (max-width:640px){.rvsec{padding:10px 13px 4px}.rvwrong{margin-left:4px;padding-left:10px}}
 /* lecture notes: English first, the Chinese version right under it */
@@ -271,3 +275,11 @@ table.ezfull{display:table;width:100%}
 .view .sum>b.t{display:block;margin-bottom:4px;color:var(--indigo)}
 .view .trap{border:1px solid var(--seal-line);border-left:4px solid var(--seal);background:var(--seal-soft);border-radius:0 8px 8px 0;padding:12px 16px;margin:16px 0}
 .view .trap b.t{color:var(--seal);font-family:var(--f-display)}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}}
+
+.vhead .vmeta{margin:0 0 6px;font-size:calc(14px*var(--ts,1));color:var(--muted)}
+html,body{overflow-x:clip}
+.btn{white-space:nowrap}
+@media(max-width:380px){.btn{padding-inline:10px;font-size:calc(13px*var(--ts,1))}}
+input.eg-in{border:1px solid var(--muted)}

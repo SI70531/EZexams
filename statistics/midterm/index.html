@@ -3,15 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<style>[hidden]{display:none!important}body{margin:0}.chw{margin-top:48px;padding-top:28px;border-top:2px solid var(--ink)}.chw>h2{margin-top:0}</style>
+<style>
+:root{--lit-11212d:#11212d;--lit-1c2e3b:#1c2e3b;--lit-172835:#172835;--lit-ccd0cf:#ccd0cf;--lit-rgba-204-208-207-82:rgba(204,208,207,.82);--lit-rgba-204-208-207-8:rgba(204,208,207,.8);--lit-2f4352:#2f4352;--lit-4a5c6a:#4a5c6a;--lit-9ba8ab:#9ba8ab;--lit-rgba-155-168-171-1:rgba(155,168,171,.1);--lit-rgba-155-168-171-22:rgba(155,168,171,.22);--lit-ff7d5a:#ff7d5a;--lit-rgba-255-125-90-08:rgba(255,125,90,.08);--lit-rgba-255-125-90-34:rgba(255,125,90,.34);--lit-a9bccb:#a9bccb;--lit-rgba-169-188-203-08:rgba(169,188,203,.08);--lit-rgba-169-188-203-3:rgba(169,188,203,.3);--lit-73d48f:#73d48f;--lit-rgba-115-212-143-09:rgba(115,212,143,.09);--lit-rgba-115-212-143-32:rgba(115,212,143,.32);--lit-06141b:#06141b;--lit-f2bd5a:#f2bd5a;--lit-rgba-242-189-90-09:rgba(242,189,90,.09);--lit-rgba-242-189-90-32:rgba(242,189,90,.32);--lit-0d1b25:#0d1b25;--lit-rgba-0-0-0-4:rgba(0,0,0,.4)}
+[hidden]{display:none!important}body{margin:0}.chw{margin-top:48px;padding-top:28px;border-top:2px solid var(--ink)}.chw>h2{margin-top:0}</style>
 <title>Statistics midterm prep｜EZexams</title>
-<meta name="description" content="統計學期中考衝刺：Anderson 14e Ch1–Ch4 白話講義、80 題選擇題、互動圖和期中作業，寫完直接批改。">
+<meta name="description" content="統計學期中考衝刺：Anderson 14e Ch1 to Ch4 白話講義、80 題選擇題、互動圖和期中作業，寫完直接批改。">
 <meta name="theme-color" content="#dde1e0" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#11212d" media="(prefers-color-scheme: dark)">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="EZexams">
 <meta property="og:title" content="Statistics midterm prep｜EZexams">
-<meta property="og:description" content="統計學期中考衝刺：Anderson 14e Ch1–Ch4 白話講義、80 題選擇題、互動圖和期中作業，寫完直接批改。">
+<meta property="og:description" content="統計學期中考衝刺：Anderson 14e Ch1 to Ch4 白話講義、80 題選擇題、互動圖和期中作業，寫完直接批改。">
 <meta property="og:url" content="https://si70531.github.io/EZexams/statistics/midterm/">
 <meta property="og:image" content="https://si70531.github.io/EZexams/assets/og.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -40,26 +42,26 @@
 <style>
 /* Same design system as operating-systems/midterm: pill tabs, progress card on each cover, handwritten headings. */
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#11212d; --paper:#1c2e3b; --paper2:#172835;
-  --ink:#ccd0cf; --ink70:rgba(204,208,207,.82); --muted:rgba(204,208,207,.8); --line:#2f4352; --line-strong:#4a5c6a;
-  --indigo:#9ba8ab; --indigo-soft:rgba(155,168,171,.1); --indigo-mid:rgba(155,168,171,.22);
-  --seal:#ff7d5a; --seal-soft:rgba(255,125,90,.08); --seal-line:rgba(255,125,90,.34);
-  --brass:#a9bccb; --brass-soft:rgba(169,188,203,.08); --brass-line:rgba(169,188,203,.3);
-  --ok:#73d48f; --ok-soft:rgba(115,212,143,.09); --ok-line:rgba(115,212,143,.32);
-  --accent:#9ba8ab; --accent-ink:#06141b; --accent-soft:rgba(155,168,171,.1);
-  --bad:#ff7d5a; --bad-soft:rgba(255,125,90,.08); --warn:#f2bd5a; --warn-soft:rgba(242,189,90,.09); --warn-line:rgba(242,189,90,.32);
-  --code:#0d1b25; --fig:#ccd0cf; --hard:#06141b; --shadow:0 6px 18px rgba(0,0,0,.4);
+  --bg:var(--lit-11212d); --paper:var(--lit-1c2e3b); --paper2:var(--lit-172835);
+  --ink:var(--lit-ccd0cf); --ink70:var(--lit-rgba-204-208-207-82); --muted:var(--lit-rgba-204-208-207-8); --line:var(--lit-2f4352); --line-strong:var(--lit-4a5c6a);
+  --indigo:var(--lit-9ba8ab); --indigo-soft:var(--lit-rgba-155-168-171-1); --indigo-mid:var(--lit-rgba-155-168-171-22);
+  --seal:var(--lit-ff7d5a); --seal-soft:var(--lit-rgba-255-125-90-08); --seal-line:var(--lit-rgba-255-125-90-34);
+  --brass:var(--lit-a9bccb); --brass-soft:var(--lit-rgba-169-188-203-08); --brass-line:var(--lit-rgba-169-188-203-3);
+  --ok:var(--lit-73d48f); --ok-soft:var(--lit-rgba-115-212-143-09); --ok-line:var(--lit-rgba-115-212-143-32);
+  --accent:var(--lit-9ba8ab); --accent-ink:var(--lit-06141b); --accent-soft:var(--lit-rgba-155-168-171-1);
+  --bad:var(--lit-ff7d5a); --bad-soft:var(--lit-rgba-255-125-90-08); --warn:var(--lit-f2bd5a); --warn-soft:var(--lit-rgba-242-189-90-09); --warn-line:var(--lit-rgba-242-189-90-32);
+  --code:var(--lit-0d1b25); --fig:var(--lit-ccd0cf); --hard:var(--lit-06141b); --shadow:0 6px 18px var(--lit-rgba-0-0-0-4);
   color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#11212d; --paper:#1c2e3b; --paper2:#172835;
-  --ink:#ccd0cf; --ink70:rgba(204,208,207,.82); --muted:rgba(204,208,207,.8); --line:#2f4352; --line-strong:#4a5c6a;
-  --indigo:#9ba8ab; --indigo-soft:rgba(155,168,171,.1); --indigo-mid:rgba(155,168,171,.22);
-  --seal:#ff7d5a; --seal-soft:rgba(255,125,90,.08); --seal-line:rgba(255,125,90,.34);
-  --brass:#a9bccb; --brass-soft:rgba(169,188,203,.08); --brass-line:rgba(169,188,203,.3);
-  --ok:#73d48f; --ok-soft:rgba(115,212,143,.09); --ok-line:rgba(115,212,143,.32);
-  --accent:#9ba8ab; --accent-ink:#06141b; --accent-soft:rgba(155,168,171,.1);
-  --bad:#ff7d5a; --bad-soft:rgba(255,125,90,.08); --warn:#f2bd5a; --warn-soft:rgba(242,189,90,.09); --warn-line:rgba(242,189,90,.32);
-  --code:#0d1b25; --fig:#ccd0cf; --hard:#06141b; --shadow:0 6px 18px rgba(0,0,0,.4);
+  --bg:var(--lit-11212d); --paper:var(--lit-1c2e3b); --paper2:var(--lit-172835);
+  --ink:var(--lit-ccd0cf); --ink70:var(--lit-rgba-204-208-207-82); --muted:var(--lit-rgba-204-208-207-8); --line:var(--lit-2f4352); --line-strong:var(--lit-4a5c6a);
+  --indigo:var(--lit-9ba8ab); --indigo-soft:var(--lit-rgba-155-168-171-1); --indigo-mid:var(--lit-rgba-155-168-171-22);
+  --seal:var(--lit-ff7d5a); --seal-soft:var(--lit-rgba-255-125-90-08); --seal-line:var(--lit-rgba-255-125-90-34);
+  --brass:var(--lit-a9bccb); --brass-soft:var(--lit-rgba-169-188-203-08); --brass-line:var(--lit-rgba-169-188-203-3);
+  --ok:var(--lit-73d48f); --ok-soft:var(--lit-rgba-115-212-143-09); --ok-line:var(--lit-rgba-115-212-143-32);
+  --accent:var(--lit-9ba8ab); --accent-ink:var(--lit-06141b); --accent-soft:var(--lit-rgba-155-168-171-1);
+  --bad:var(--lit-ff7d5a); --bad-soft:var(--lit-rgba-255-125-90-08); --warn:var(--lit-f2bd5a); --warn-soft:var(--lit-rgba-242-189-90-09); --warn-line:var(--lit-rgba-242-189-90-32);
+  --code:var(--lit-0d1b25); --fig:var(--lit-ccd0cf); --hard:var(--lit-06141b); --shadow:0 6px 18px var(--lit-rgba-0-0-0-4);
   color-scheme:dark}
 .zhtr{font-family:var(--f-body);font-size:calc(14.5px*var(--ts,1));line-height:1.75;color:var(--ink70);margin-top:10px;padding-top:9px;border-top:1px dashed var(--indigo-mid)}
 .zhtr span{display:inline-block;font-family:var(--f-mono);font-size:calc(11px*var(--ts,1));font-weight:600;color:var(--indigo);border:1px solid var(--indigo-mid);border-radius:4px;padding:0 6px;margin-right:8px;vertical-align:1px}
@@ -103,12 +105,12 @@ table td{text-align:left}
 .p-sorted span i{font-style:normal;color:var(--muted);font-size:calc(10px*var(--ts,1));margin-right:3px}
 .p-sorted span.lo,.p-sorted span.hi{border-color:var(--seal);background:var(--seal-soft);color:var(--seal);font-weight:600}
 </style>
-<header class="top"><div class="bar"><a class="brand" href="../../" title="Back to all subjects"><span class="mk">ST</span><span class="nm">← All subjects</span></a><nav class="tabs" aria-label="章節"><div class="row" id="tabs" role="tablist"></div></nav><div class="theme"><button class="themebtn" id="themeBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="themeMenu" title="外觀：跟隨裝置"><svg class="i-system" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><svg class="i-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2 12h2.2M19.8 12H22M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg><svg class="i-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button><div class="thmenu" id="themeMenu" role="menu" hidden><button type="button" role="menuitemradio" data-t="system">System</button><button type="button" role="menuitemradio" data-t="light">Light</button><button type="button" role="menuitemradio" data-t="dark">Dark</button></div></div></div></header>
+<header class="top"><div class="bar"><a class="brand" href="../../" title="Back to all subjects"><span class="mk">ST</span><span class="nm">← All subjects</span></a><nav class="tabs" aria-label="章節"><div class="row" id="tabs" role="tablist"></div></nav><div class="theme"><button class="themebtn" id="themeBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="themeMenu" title="外觀：跟隨裝置"><svg aria-hidden="true" class="i-system" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><svg aria-hidden="true" class="i-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2 12h2.2M19.8 12H22M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg><svg aria-hidden="true" class="i-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button><div class="thmenu" id="themeMenu" role="menu" hidden><button type="button" role="menuitemradio" data-t="system">System</button><button type="button" role="menuitemradio" data-t="light">Light</button><button type="button" role="menuitemradio" data-t="dark">Dark</button></div></div></div></header>
 <button class="totop" id="toTop" type="button" aria-label="回到頂端">↑</button>
 <main>
 
 <section role="tabpanel" class="view" id="home">
-  <div class="vhead"><div class="pcb" data-pcb="home" role="img"></div><div class="eyebrow">Statistics · Midterm · <span data-examdate>10/21</span></div><h1>Statistics midterm prep</h1>
+  <div class="vhead"><div class="pcb" data-pcb="home" role="img"></div><p class="vmeta">Midterm: <span data-examdate>10/21</span></p><h1>Statistics midterm prep</h1>
   <p>Scope: Anderson, Statistics for Business and Economics, 14e, Ch1 through Ch4. The exam format is close to the midterm assignment: calculations need full working, and interpretation questions are answered in English. The multiple-choice questions here are for quick concept checks; the real practice is the 9 questions of the midterm assignment.</p></div>
   <div class="next" id="nextStep"></div>
   <h3>4-day study plan</h3>
@@ -133,7 +135,7 @@ table td{text-align:left}
   <li>For “explain / interpret / why” questions, write full English sentences and give one reason for each conclusion.</li></ul></div>
 </section>
 
-<section role="tabpanel" class="view" id="ch1" hidden><div class="vhead"><div class="pcb" data-pcb="ch1" role="img"></div><div class="eyebrow">Chapter 1</div><h1>Ch1 Data and Statistics<span class="zhn">Ch1 資料與統計</span></h1><p>Basic data terms, the four measurement scales, categorical vs quantitative data, data sources, descriptive vs inferential statistics. After reading, do the Multiple-choice questions and Problems at the bottom.<span class="zhn">資料的基本名詞、四種衡量尺度、類別與數量資料、資料來源、敘述與推論統計。</span></p></div>
+<section role="tabpanel" class="view" id="ch1" hidden><div class="vhead"><div class="pcb" data-pcb="ch1" role="img"></div><h1>Ch1 Data and Statistics<span class="zhn">Ch1 資料與統計</span></h1><p>Basic data terms, the four measurement scales, categorical vs quantitative data, data sources, descriptive vs inferential statistics. After reading, do the Multiple-choice questions and Problems at the bottom.<span class="zhn">資料的基本名詞、四種衡量尺度、類別與數量資料、資料來源、敘述與推論統計。</span></p></div>
 <h3 data-sec="1.1">1.1 What Is Statistics?<span class="zhn">什麼是統計</span></h3>
 <ul>
 <li><b>Statistics as data (numerical facts)</b>: mean, median, percentages, maximum, etc.<span class="zhn"><b>統計數據（numerical facts）</b>：平均數、中位數、百分比、最大值等。</span></li>
@@ -357,7 +359,7 @@ table td{text-align:left}
 </div></details></div>
 </div>
 </section>
-<section role="tabpanel" class="view" id="ch2" hidden><div class="vhead"><div class="pcb" data-pcb="ch2" role="img"></div><div class="eyebrow">Chapter 2</div><h1>Ch2 Tabular and Graphical Displays<span class="zhn">表格與圖形</span></h1><p>Frequency distributions, bar charts and histograms, skewness, cumulative distributions, stem-and-leaf displays, crosstabulations and scatter diagrams.<span class="zhn">次數分配、長條圖與直方圖、偏態、累積分配、莖葉圖、交叉表與散佈圖。</span></p></div>
+<section role="tabpanel" class="view" id="ch2" hidden><div class="vhead"><div class="pcb" data-pcb="ch2" role="img"></div><h1>Ch2 Tabular and Graphical Displays<span class="zhn">表格與圖形</span></h1><p>Frequency distributions, bar charts and histograms, skewness, cumulative distributions, stem-and-leaf displays, crosstabulations and scatter diagrams.<span class="zhn">次數分配、長條圖與直方圖、偏態、累積分配、莖葉圖、交叉表與散佈圖。</span></p></div>
 <h3 data-sec="2.1">2.1 Summarizing Categorical Data<span class="zhn">類別資料的整理</span></h3>
 <ul>
 <li><b>Frequency distribution</b>: how many items fall in each category.<span class="zhn"><b>次數分配（frequency distribution）</b>：每一類別有幾個。</span></li>
@@ -447,7 +449,7 @@ table td{text-align:left}
 <ul>
 <li>Stem: the leading digits, written to the left of the vertical line; leaf: the last digit, arranged in order on the right.<span class="zhn">莖（stem）：前面的位數，寫在直線左邊；葉（leaf）：最後一位數，依大小排在右邊。</span></li>
 <li><b>Leaf unit</b>: the place value a leaf represents, which can be 100, 10, 1, 0.1…; if not stated, the default is 1. Example: for 1806, 1717… with leaf unit 10, 1682 → stem 16, leaf 8 (truncated, not rounded).<span class="zhn"><b>葉單位（leaf unit）</b>：葉代表的位值，可為 100、10、1、0.1…；未標示預設為 1。例：1806、1717… 以葉單位 10 表示，1682 → 莖 16、葉 8（捨去，不是四捨五入）。</span></li>
-<li><b>Stretched stem-and-leaf display</b>: each stem is written twice, the first row holds leaves 0–4, the second row leaves 5–9. Example: 91,93,94,95,97,98 → <code>9 | 1 3 4</code> / <code>9 | 5 7 8</code>.<span class="zhn"><b>伸展莖葉圖（stretched）</b>：每個莖寫兩次，第一行放葉 0～4，第二行放葉 5～9。例：91,93,94,95,97,98 → <code>9 | 1 3 4</code> / <code>9 | 5 7 8</code>。</span></li>
+<li><b>Stretched stem-and-leaf display</b>: each stem is written twice, the first row holds leaves 0 to 4, the second row leaves 5 to 9. Example: 91,93,94,95,97,98 → <code>9 | 1 3 4</code> / <code>9 | 5 7 8</code>.<span class="zhn"><b>伸展莖葉圖（stretched）</b>：每個莖寫兩次，第一行放葉 0～4，第二行放葉 5～9。例：91,93,94,95,97,98 → <code>9 | 1 3 4</code> / <code>9 | 5 7 8</code>。</span></li>
 </ul>
 <div class="ilab" id="w-hist"><span class="lbl">Interactive · histogram generator</span>
 <div class="lab-row"><label>資料 <select class="h-data"><option value="ceo">作業第 2 題：CEO 開會時數（n=25）</option><option value="age">作業第 5 題：馬拉松年齡（n=40）</option><option value="jacket">作業第 4 題：外套評分（n=20）</option></select></label></div>
@@ -485,11 +487,11 @@ table td{text-align:left}
 <tr class="even">
 <td>Comparison<span class="zhn">比較</span></td>
 <td>Side-by-side bar chart, stacked bar chart<span class="zhn">群組長條圖、堆疊長條圖</span></td>
-<td>—</td>
+<td>, </td>
 </tr>
 <tr class="odd">
 <td>Show relationship<span class="zhn">呈現關係</span></td>
-<td>—</td>
+<td>, </td>
 <td>Scatter diagram + trendline<span class="zhn">散佈圖＋趨勢線</span></td>
 </tr>
 </tbody>
@@ -499,16 +501,16 @@ table td{text-align:left}
 </ul>
 
 
-<div class="sum"><b class="t">Chapter summary</b><span class="zhn"><b>Summary 本章總結</b></span><ul><li>A frequency distribution counts the items in each category; <b>relative frequency</b> = frequency ÷ n, <b>percent frequency</b> = relative frequency × 100. Use relative frequencies to compare groups of different sizes.<span class="zhn">次數分配表算出每一類有幾個；<b>相對次數</b>＝次數 ÷ n，<b>百分比次數</b>＝相對次數 × 100。比較大小不同的群組要用相對次數。</span></li><li>Categorical data: <b>bar chart</b> (bars separated) and <b>pie chart</b> (angle = relative frequency × 360°). Quantitative data: dot plot, <b>histogram</b> (bars touch), cumulative distribution, stem-and-leaf display.<span class="zhn">類別資料：<b>長條圖</b>（長條分開）、<b>圓餅圖</b>（角度＝相對次數 × 360°）。量化資料：點圖、<b>直方圖</b>（長條相連）、累積分配、莖葉圖。</span></li><li>Building a frequency distribution: choose the number of classes (usually 5–20), class width ≈ (largest − smallest) ÷ classes rounded to a convenient number, and non-overlapping class limits that cover all the data.<span class="zhn">做次數分配表：決定組數（通常 5–20 組）、組距≈（最大值 − 最小值）÷ 組數並進位成好算的數、組限不可重疊且要涵蓋全部資料。</span></li><li><b>Skewness</b>: left-skewed = long left tail, coefficient &lt; 0, mean &lt; median; symmetric = 0, mean = median; right-skewed = long right tail, coefficient &gt; 0, mean &gt; median.<span class="zhn"><b>偏態</b>：左偏＝左尾長、係數 &lt; 0、平均數 &lt; 中位數；對稱＝0、平均數＝中位數；右偏＝右尾長、係數 &gt; 0、平均數 &gt; 中位數。</span></li><li>A stem-and-leaf display keeps the original values (stem = leading digits, leaf = last digit, default leaf unit 1).<span class="zhn">莖葉圖保留原始數值（莖＝前面的位數、葉＝最後一位，預設葉單位為 1）。</span></li><li>Crosstabulations show two variables together; <b>Simpson's paradox</b> = a conclusion from grouped data reverses after aggregation (lurking variable). Scatter diagram + trendline shows the relationship of two quantitative variables.<span class="zhn">交叉表同時呈現兩個變數；<b>辛普森悖論</b>＝分組資料的結論在合併後整個反過來（有潛藏變數）。散布圖加趨勢線呈現兩個量化變數的關係。</span></li></ul></div>
-<div class="trap"><b class="t">Common trap</b><span class="zhn"><b>易錯點</b></span><ul><li>Histogram bars <b>touch</b>; bar-chart bars are <b>separated</b>.<span class="zhn">直方圖的長條<b>相連</b>；長條圖的長條<b>分開</b>。</span></li><li>Cumulative frequency accumulates by each class's <b>upper limit</b> (≤59, ≤69, …), not by the single class count.<span class="zhn">累積次數是依各組的<b>上限</b>累加（≤59、≤69…），不是單一組的次數。</span></li><li>Class width: round to a convenient number: (109 − 52) ÷ 6 = 9.5, so use 10.<span class="zhn">組距要進位成方便的數字：(109 − 52) ÷ 6 = 9.5，用 10。</span></li><li>Stem-and-leaf: leaves are <b>truncated, not rounded</b>; a stretched display writes each stem twice (leaves 0–4, then 5–9).<span class="zhn">莖葉圖的葉是<b>無條件捨去、不是四捨五入</b>；延伸莖葉圖每個莖寫兩次（葉 0–4、葉 5–9）。</span></li><li>Skew direction is named by the <b>tail</b>, not by where most of the data sit.<span class="zhn">偏態的方向看<b>尾巴</b>在哪邊，不是看資料集中在哪邊。</span></li><li>Simpson's paradox: read the grouped tables <b>before</b> the aggregated table. In a stacked bar chart of percentages, all bars are the same height (100%).<span class="zhn">辛普森悖論：先看分組表、<b>再</b>看合併表。百分比堆疊長條圖每根長條一樣高（100%）。</span></li></ul></div>
+<div class="sum"><b class="t">Chapter summary</b><span class="zhn"><b>Summary 本章總結</b></span><ul><li>A frequency distribution counts the items in each category; <b>relative frequency</b> = frequency ÷ n, <b>percent frequency</b> = relative frequency × 100. Use relative frequencies to compare groups of different sizes.<span class="zhn">次數分配表算出每一類有幾個；<b>相對次數</b>＝次數 ÷ n，<b>百分比次數</b>＝相對次數 × 100。比較大小不同的群組要用相對次數。</span></li><li>Categorical data: <b>bar chart</b> (bars separated) and <b>pie chart</b> (angle = relative frequency × 360°). Quantitative data: dot plot, <b>histogram</b> (bars touch), cumulative distribution, stem-and-leaf display.<span class="zhn">類別資料：<b>長條圖</b>（長條分開）、<b>圓餅圖</b>（角度＝相對次數 × 360°）。量化資料：點圖、<b>直方圖</b>（長條相連）、累積分配、莖葉圖。</span></li><li>Building a frequency distribution: choose the number of classes (usually 5 to 20), class width ≈ (largest − smallest) ÷ classes rounded to a convenient number, and non-overlapping class limits that cover all the data.<span class="zhn">做次數分配表：決定組數（通常 5 to 20 組）、組距≈（最大值 − 最小值）÷ 組數並進位成好算的數、組限不可重疊且要涵蓋全部資料。</span></li><li><b>Skewness</b>: left-skewed = long left tail, coefficient &lt; 0, mean &lt; median; symmetric = 0, mean = median; right-skewed = long right tail, coefficient &gt; 0, mean &gt; median.<span class="zhn"><b>偏態</b>：左偏＝左尾長、係數 &lt; 0、平均數 &lt; 中位數；對稱＝0、平均數＝中位數；右偏＝右尾長、係數 &gt; 0、平均數 &gt; 中位數。</span></li><li>A stem-and-leaf display keeps the original values (stem = leading digits, leaf = last digit, default leaf unit 1).<span class="zhn">莖葉圖保留原始數值（莖＝前面的位數、葉＝最後一位，預設葉單位為 1）。</span></li><li>Crosstabulations show two variables together; <b>Simpson's paradox</b> = a conclusion from grouped data reverses after aggregation (lurking variable). Scatter diagram + trendline shows the relationship of two quantitative variables.<span class="zhn">交叉表同時呈現兩個變數；<b>辛普森悖論</b>＝分組資料的結論在合併後整個反過來（有潛藏變數）。散布圖加趨勢線呈現兩個量化變數的關係。</span></li></ul></div>
+<div class="trap"><b class="t">Common trap</b><span class="zhn"><b>易錯點</b></span><ul><li>Histogram bars <b>touch</b>; bar-chart bars are <b>separated</b>.<span class="zhn">直方圖的長條<b>相連</b>；長條圖的長條<b>分開</b>。</span></li><li>Cumulative frequency accumulates by each class's <b>upper limit</b> (≤59, ≤69, …), not by the single class count.<span class="zhn">累積次數是依各組的<b>上限</b>累加（≤59、≤69…），不是單一組的次數。</span></li><li>Class width: round to a convenient number: (109 − 52) ÷ 6 = 9.5, so use 10.<span class="zhn">組距要進位成方便的數字：(109 − 52) ÷ 6 = 9.5，用 10。</span></li><li>Stem-and-leaf: leaves are <b>truncated, not rounded</b>; a stretched display writes each stem twice (leaves 0 to 4, then 5 to 9).<span class="zhn">莖葉圖的葉是<b>無條件捨去、不是四捨五入</b>；延伸莖葉圖每個莖寫兩次（葉 0 to 4、葉 5 to 9）。</span></li><li>Skew direction is named by the <b>tail</b>, not by where most of the data sit.<span class="zhn">偏態的方向看<b>尾巴</b>在哪邊，不是看資料集中在哪邊。</span></li><li>Simpson's paradox: read the grouped tables <b>before</b> the aggregated table. In a stacked bar chart of percentages, all bars are the same height (100%).<span class="zhn">辛普森悖論：先看分組表、<b>再</b>看合併表。百分比堆疊長條圖每根長條一樣高（100%）。</span></li></ul></div>
 <div class="quiz" data-quiz="ch2"></div>
 <div class="exam chw noshuf" data-exam="ch2w">
 <h2>Problems (50 pts)</h2>
 <div class="examtools"><span class="score"></span><span class="timer" hidden></span><button class="btn tbtn" type="button" hidden>Start timer</button><button class="btn primary gradeall" type="button">Grade all</button><button class="btn reset" type="button">Clear answer</button><span class="gmsg"></span></div><p class="box tip nogradenote">這裡用關鍵字比對自動批改：有寫到必要的數字或術語就給分。分數僅供參考，寫完一定要展開參考答案對照。</p>
 <h3>Question 1　Commute Times (38 pts)</h3>
-<p>The commute times (minutes) of 20 employees are:</p><div class="calc">12, 15, 18, 22, 25, 25, 27, 28, 30, 31, 33, 34, 35, 36, 38, 40, 42, 45, 50, 58</div><p>Use the classes 10–19, 20–29, 30–39, 40–49 and 50–59.</p>
+<p>The commute times (minutes) of 20 employees are:</p><div class="calc">12, 15, 18, 22, 25, 25, 27, 28, 30, 31, 33, 34, 35, 36, 38, 40, 42, 45, 50, 58</div><p>Use the classes 10 to 19, 20 to 29, 30 to 39, 40 to 49 and 50 to 59.</p>
 <div class="exq" id="ch2w-1-1" data-pts="8"><div class="qtext"><p class="q"><span class="pts">1-1</span>Construct the frequency distribution. (8 points)</p></div><label class="small" for="ch2w-1-1-a">Your answer</label><textarea id="ch2w-1-1-a" rows="6" placeholder="Write your answer here (English or Chinese is fine)"></textarea><div class="gradebar"><button class="btn grade" type="button">Grade this question</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>Show reference answer</summary><div class="inner">
-<div class="box en"><span class="lbl">ENGLISH ANSWER</span>10–19: 3; 20–29: 5; 30–39: 7; 40–49: 3; 50–59: 2 (total 20).<div class="zhtr"><span>中文</span>10–19：3；20–29：5；30–39：7；40–49：3；50–59：2，合計 20。</div></div>
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>10 to 19: 3; 20 to 29: 5; 30 to 39: 7; 40 to 49: 3; 50 to 59: 2 (total 20).<div class="zhtr"><span>中文</span>10 to 19：3；20 to 29：5；30 to 39：7；40 to 49：3；50 to 59：2，合計 20。</div></div>
 </div></details></div>
 <div class="exq" id="ch2w-1-2" data-pts="8"><div class="qtext"><p class="q"><span class="pts">1-2</span>Construct the percent frequency distribution. (8 points)</p></div><label class="small" for="ch2w-1-2-a">Your answer</label><textarea id="ch2w-1-2-a" rows="6" placeholder="Write your answer here (English or Chinese is fine)"></textarea><div class="gradebar"><button class="btn grade" type="button">Grade this question</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>Show reference answer</summary><div class="inner">
 <div class="box en"><span class="lbl">ENGLISH ANSWER</span>15%, 25%, 35%, 15%, 10% (relative frequencies 0.15, 0.25, 0.35, 0.15, 0.10).<div class="zhtr"><span>中文</span>百分比次數：15%、25%、35%、15%、10%。</div></div>
@@ -517,13 +519,13 @@ table td{text-align:left}
 <div class="box en"><span class="lbl">ENGLISH ANSWER</span>Cumulative frequency: 3, 8, 15, 18, 20. Cumulative percent: 15%, 40%, 75%, 90%, 100%.<div class="zhtr"><span>中文</span>累積次數：3、8、15、18、20。累積百分比：15%、40%、75%、90%、100%。</div></div>
 </div></details></div>
 <div class="exq" id="ch2w-1-4" data-pts="4"><div class="qtext"><p class="q"><span class="pts">1-4</span>What percentage of employees commute less than 40 minutes? (4 points)</p></div><label class="small" for="ch2w-1-4-a">Your answer</label><textarea id="ch2w-1-4-a" rows="4" placeholder="Write your answer here (English or Chinese is fine)"></textarea><div class="gradebar"><button class="btn grade" type="button">Grade this question</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>Show reference answer</summary><div class="inner">
-<div class="box en"><span class="lbl">ENGLISH ANSWER</span>75% (15 of 20, the cumulative percent up to the 30–39 class).<div class="zhtr"><span>中文</span>75%（20 人中有 15 人）。</div></div>
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>75% (15 of 20, the cumulative percent up to the 30 to 39 class).<div class="zhtr"><span>中文</span>75%（20 人中有 15 人）。</div></div>
 </div></details></div>
 <div class="exq" id="ch2w-1-5" data-pts="6"><div class="qtext"><p class="q"><span class="pts">1-5</span>Construct a stem-and-leaf display. (6 points)</p></div><label class="small" for="ch2w-1-5-a">Your answer</label><textarea id="ch2w-1-5-a" rows="6" placeholder="Write your answer here (English or Chinese is fine)"></textarea><div class="gradebar"><button class="btn grade" type="button">Grade this question</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>Show reference answer</summary><div class="inner">
 <div class="box en"><span class="lbl">ENGLISH ANSWER</span>1 | 2 5 8<br>2 | 2 5 5 7 8<br>3 | 0 1 3 4 5 6 8<br>4 | 0 2 5<br>5 | 0 8<div class="zhtr"><span>中文</span>莖是十位數、葉是個位數：1|258、2|25578、3|0134568、4|025、5|08。</div></div>
 </div></details></div>
 <div class="exq" id="ch2w-1-6" data-pts="4"><div class="qtext"><p class="q"><span class="pts">1-6</span>Describe the shape of the distribution. (4 points)</p></div><label class="small" for="ch2w-1-6-a">Your answer</label><textarea id="ch2w-1-6-a" rows="4" placeholder="Write your answer here (English or Chinese is fine)"></textarea><div class="gradebar"><button class="btn grade" type="button">Grade this question</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>Show reference answer</summary><div class="inner">
-<div class="box en"><span class="lbl">ENGLISH ANSWER</span>Slightly skewed to the right: most values are in the 30s, with a longer tail toward 50–59 (mean 32.2 is slightly above median 32).<div class="zhtr"><span>中文</span>稍微右偏：多數在 30 幾分鐘，右邊尾巴較長（平均 32.2 略大於中位數 32）。</div></div>
+<div class="box en"><span class="lbl">ENGLISH ANSWER</span>Slightly skewed to the right: most values are in the 30s, with a longer tail toward 50 to 59 (mean 32.2 is slightly above median 32).<div class="zhtr"><span>中文</span>稍微右偏：多數在 30 幾分鐘，右邊尾巴較長（平均 32.2 略大於中位數 32）。</div></div>
 </div></details></div>
 <h3>Question 2　Pie Chart (8 pts)</h3>
 <p>200 students were asked how they usually get to campus: Bus 70, Scooter 60, Car 30, Walk/Bike 40.</p>
@@ -540,7 +542,7 @@ table td{text-align:left}
 </div></details></div>
 </div>
 </section>
-<section role="tabpanel" class="view" id="ch3" hidden><div class="vhead"><div class="pcb" data-pcb="ch3" role="img"></div><div class="eyebrow">Chapter 3</div><h1>Ch3 Numerical Measures<span class="zhn">數值量數</span></h1><p>Mean, median, mode, geometric mean, percentiles, variance and standard deviation, z-scores, Chebyshev, box plots, correlation coefficient.<span class="zhn">平均數、中位數、眾數、幾何平均、百分位數、變異數與標準差、z 分數、柴比雪夫、盒鬚圖、相關係數。</span></p></div>
+<section role="tabpanel" class="view" id="ch3" hidden><div class="vhead"><div class="pcb" data-pcb="ch3" role="img"></div><h1>Ch3 Numerical Measures<span class="zhn">數值量數</span></h1><p>Mean, median, mode, geometric mean, percentiles, variance and standard deviation, z-scores, Chebyshev, box plots, correlation coefficient.<span class="zhn">平均數、中位數、眾數、幾何平均、百分位數、變異數與標準差、z 分數、柴比雪夫、盒鬚圖、相關係數。</span></p></div>
 <ul>
 <li>Computed from a <b>sample</b> → <b>statistic</b>, e.g., x̄, s; computed from the <b>population</b> → <b>parameter</b>, e.g., μ, σ.<span class="zhn">由<b>樣本</b>算出 → <b>統計量（statistic）</b>，例如 x̄、s；由<b>母體</b>算出 → <b>參數（parameter）</b>，例如 μ、σ。</span></li>
 <li>A sample statistic is a <b>point estimator</b> of the population parameter.<span class="zhn">樣本統計量是母體參數的<b>點估計量</b>。</span></li>
@@ -790,7 +792,7 @@ table td{text-align:left}
 </div></details></div>
 </div>
 </section>
-<section role="tabpanel" class="view" id="ch4" hidden><div class="vhead"><div class="pcb" data-pcb="ch4" role="img"></div><div class="eyebrow">Chapter 4</div><h1>Ch4 Introduction to Probability<span class="zhn">機率導論</span></h1><p>Sample space, counting rules, assigning probabilities, addition and multiplication laws, conditional probability, independence, Bayes' theorem.<span class="zhn">樣本空間、計數法則、指派機率、加法律與乘法律、條件機率、獨立、貝氏定理。</span></p></div>
+<section role="tabpanel" class="view" id="ch4" hidden><div class="vhead"><div class="pcb" data-pcb="ch4" role="img"></div><h1>Ch4 Introduction to Probability<span class="zhn">機率導論</span></h1><p>Sample space, counting rules, assigning probabilities, addition and multiplication laws, conditional probability, independence, Bayes' theorem.<span class="zhn">樣本空間、計數法則、指派機率、加法律與乘法律、條件機率、獨立、貝氏定理。</span></p></div>
 <h3 data-sec="4.1">4.1 Random Experiments, Sample Space, Counting Rules<span class="zhn">隨機實驗、樣本空間、計數法則</span></h3>
 <ul>
 <li><b>Probability</b>: between 0 and 1; the closer to 1, the more likely to occur.<span class="zhn"><b>機率</b>：0 到 1 之間，越接近 1 越可能發生。</span></li>
@@ -1015,7 +1017,7 @@ table td{text-align:left}
 </div></details></div>
 </div>
 </section>
-<section role="tabpanel" class="view" id="confuse" hidden><div class="vhead"><div class="pcb" data-pcb="confuse" role="img"></div><div class="eyebrow">Easily confused</div><h1>32 confusable-concept groups</h1><p>Each group comes with a decision method. On an exam, apply the decision method first, then answer.<span class="zhn">每一組都附判斷方法。考試看到題目，先套判斷方法再作答。</span></p></div>
+<section role="tabpanel" class="view" id="confuse" hidden><div class="vhead"><div class="pcb" data-pcb="confuse" role="img"></div><h1>32 confusable-concept groups</h1><p>Each group comes with a decision method. On an exam, apply the decision method first, then answer.<span class="zhn">每一組都附判斷方法。考試看到題目，先套判斷方法再作答。</span></p></div>
 
 <h3>1. Ch 1: data types</h3>
 <h4 class="cfq">1. Element vs. Variable vs. Observation<span class="zhn">元素 vs 變數 vs 觀測值</span></h4>
@@ -1034,7 +1036,7 @@ table td{text-align:left}
 <li>Decision: is 0 "none at all"? Can you say "twice as much"?<span class="zhn">判斷：0 是不是「完全沒有」？能不能說「兩倍」？</span></li>
 <li>0°C is not "no temperature" → <b>interval</b>; year, SAT score → interval.<span class="zhn">攝氏溫度 0°C 不是「沒有溫度」→ <b>區間</b>；年份、SAT 分數 → 區間。</span></li>
 <li>Price, weight, time, hours, distance, age, screen size → <b>ratio</b>.<span class="zhn">價格、重量、時間、時數、距離、年齡、螢幕尺寸 → <b>比率</b>。</span></li>
-<li>Ratings of 0–100 (e.g., the jacket rating in homework problem 4) are usually treated as interval; don't agonize over it if the exam doesn't ask.<span class="zhn">評分 0～100（如作業第 4 題外套評分）通常視為區間；考試若沒問就不用糾結。</span></li>
+<li>Ratings of 0 to 100 (e.g., the jacket rating in homework problem 4) are usually treated as interval; don't agonize over it if the exam doesn't ask.<span class="zhn">評分 0～100（如作業第 4 題外套評分）通常視為區間；考試若沒問就不用糾結。</span></li>
 </ul>
 <h4 class="cfq">4. Can Categorical Data Be Numbers?<span class="zhn">類別資料可以是數字嗎？</span></h4>
 <ul>
@@ -1125,7 +1127,7 @@ table td{text-align:left}
 <h4 class="cfq">11. Stem-and-Leaf Display vs. Histogram<span class="zhn">莖葉圖 vs 直方圖</span></h4>
 <ul>
 <li>A stem-and-leaf display <b>keeps the original values</b> and shows order and shape; a histogram shows only grouped frequencies.<span class="zhn">莖葉圖<b>保留原始數值</b>＋顯示排序與形狀；直方圖只看得到分組次數。</span></li>
-<li>Stretched stem-and-leaf: the same stem appears twice, <b>first row leaves 0–4, second row leaves 5–9</b>. Even if a row has no leaves, write out the stem.<span class="zhn">伸展莖葉圖：同一個莖出現兩次，<b>第一行葉 0～4，第二行葉 5～9</b>。即使某一行沒有葉，也要把莖寫出來。</span></li>
+<li>Stretched stem-and-leaf: the same stem appears twice, <b>first row leaves 0 to 4, second row leaves 5 to 9</b>. Even if a row has no leaves, write out the stem.<span class="zhn">伸展莖葉圖：同一個莖出現兩次，<b>第一行葉 0～4，第二行葉 5～9</b>。即使某一行沒有葉，也要把莖寫出來。</span></li>
 </ul>
 <h4 class="cfq">12. Left Skew vs. Right Skew (the direction follows the tail, not the peak)<span class="zhn">左偏 vs 右偏（方向看尾巴，不是看高峰）</span></h4>
 <ul>
@@ -1352,9 +1354,9 @@ table td{text-align:left}
 </ul>
 
 </section>
-<section role="tabpanel" class="view exam" id="hw" data-exam="hw" hidden><div class="vhead"><div class="pcb" data-pcb="hw" role="img"></div><div class="eyebrow">Midterm Assignment · 100 分</div><h1>Assignment, question by question</h1><p>9 big questions, 100 points in total, same format as the midterm. Answer in the boxes first, then press "Grade this question" or "Grade all" above, and finally expand the reference answers to compare. Sub-questions that need written explanations all have English answers, because the assignment must be submitted in English.</p></div>
+<section role="tabpanel" class="view exam" id="hw" data-exam="hw" hidden><div class="vhead"><div class="pcb" data-pcb="hw" role="img"></div><h1>Assignment, question by question</h1><p>9 big questions, 100 points in total, same format as the midterm. Answer in the boxes first, then press "Grade this question" or "Grade all" above, and finally expand the reference answers to compare. Sub-questions that need written explanations all have English answers, because the assignment must be submitted in English.</p></div>
 <div class="examtools"><span class="score"></span><span class="timer"></span><button class="btn tbtn" type="button">Start timer</button><button class="btn primary gradeall" type="button">Grade all</button><button class="btn reset" type="button">Clear answer</button><span class="gmsg"></span></div><p class="box tip nogradenote">這裡用關鍵字比對自動批改：有寫到必要的數字或術語就給分。分數僅供參考，寫完一定要展開參考答案對照。</p>
-<div class="box en"><span class="lbl">ENGLISH ANSWER — ready to copy</span><p>需要文字說明（comment／explain／interpret／why）的小題，都附有「English answer」英文作答範例。</p>
+<div class="box en"><span class="lbl">ENGLISH ANSWER: ready to copy</span><p>需要文字說明（comment／explain／interpret／why）的小題，都附有「English answer」英文作答範例。</p>
 <p>上傳的作業檔在轉檔時遺失了三份資料：第 1 題的平板比較表、第 5 題 40 位跑者的年齡、第 7 題 Cooper Realty 的交叉表。 這三題都出自課本（Anderson 14e）的習題，以下使用課本原始資料作答。<b>請對照你手上的紙本作業</b>，若數字不同，計算方法完全相同，換數字即可。</p></div>
 
 <h3>Question 1　Tablet PC Comparison<span class="zhn">第 1 章：資料、變數、尺度</span></h3>
@@ -1478,7 +1480,7 @@ table td{text-align:left}
 <li>Categorical variables: Operating System and CPU Manufacturer (they answer "which category does it belong to?").</li>
 <li>Quantitative variables: Cost, Display Size, Battery Life (they answer "how much?" and can be averaged).</li>
 </ul>
-<div class="box en"><span class="lbl">ENGLISH ANSWER — ready to copy</span>
+<div class="box en"><span class="lbl">ENGLISH ANSWER: ready to copy</span>
 <p>Categorical variables: Operating System and CPU Manufacturer. They use labels to identify which category each tablet belongs to. Quantitative variables: Cost, Display Size, and Battery Life. They are numeric values that measure how much or how many, so arithmetic operations are meaningful.</p>
 <div class="zhtr"><span>中文</span>類別變數（categorical）是作業系統（Operating System）和 CPU 製造商（CPU Manufacturer），它們用標籤說明每台平板屬於哪一類。數量變數（quantitative）是價格（Cost）、螢幕尺寸（Display Size）和電池續航（Battery Life），它們是表示「多少」的數值，可以做加減平均等運算。</div></div>
 
@@ -1526,7 +1528,7 @@ table td{text-align:left}
 </tr>
 </tbody>
 </table>
-<div class="box en"><span class="lbl">ENGLISH ANSWER — ready to copy</span>
+<div class="box en"><span class="lbl">ENGLISH ANSWER: ready to copy</span>
 <ul>
 <li>Cost ($): ratio scale. It is numeric, has a true zero (a cost of $0 means no cost), and ratios are meaningful (a $899 tablet costs about twice as much as a $449.50 tablet).</li>
 <li>Operating System: nominal scale. The values (Windows, Android, iOS) are labels with no natural order.</li>
@@ -1556,37 +1558,37 @@ table td{text-align:left}
 </thead>
 <tbody>
 <tr class="odd">
-<td>12–13</td>
+<td>12 to 13</td>
 <td>2</td>
 <td>2/25 = 0.08</td>
 <td>8%</td>
 </tr>
 <tr class="even">
-<td>14–15</td>
+<td>14 to 15</td>
 <td>6</td>
 <td>0.24</td>
 <td>24%</td>
 </tr>
 <tr class="odd">
-<td>16–17</td>
+<td>16 to 17</td>
 <td>1</td>
 <td>0.04</td>
 <td>4%</td>
 </tr>
 <tr class="even">
-<td>18–19</td>
+<td>18 to 19</td>
 <td>6</td>
 <td>0.24</td>
 <td>24%</td>
 </tr>
 <tr class="odd">
-<td>20–21</td>
+<td>20 to 21</td>
 <td>5</td>
 <td>0.20</td>
 <td>20%</td>
 </tr>
 <tr class="even">
-<td>22–23</td>
+<td>22 to 23</td>
 <td>5</td>
 <td>0.20</td>
 <td>20%</td>
@@ -1622,8 +1624,8 @@ table td{text-align:left}
 <li>佐證：平均數 x̄ = 458 / 25 = 18.32 小時，<b>小於</b>中位數 19 小時，符合左偏特徵。</li>
 <li>16～17 小時只有 1 人，中間有明顯凹陷，所以分布並不平滑，可以補充說明「樣本只有 25 筆，形狀不明顯」。</li>
 </ul>
-<div class="box en"><span class="lbl">ENGLISH ANSWER — ready to copy</span>
-<p>The histogram shows that most CEOs spend between 18 and 23 hours per week in meetings (16 of 25, or 64%), with a second cluster at 14–15 hours. Fewer observations fall at the low end (12–13 hours), so the distribution has a longer tail to the left and is slightly skewed to the left. This is supported by the mean (18.32 hours) being slightly less than the median (19 hours). Because the sample is small (n = 25) and the 16–17 hour class has only one observation, the shape is somewhat irregular.</p>
+<div class="box en"><span class="lbl">ENGLISH ANSWER: ready to copy</span>
+<p>The histogram shows that most CEOs spend between 18 and 23 hours per week in meetings (16 of 25, or 64%), with a second cluster at 14 to 15 hours. Fewer observations fall at the low end (12 to 13 hours), so the distribution has a longer tail to the left and is slightly skewed to the left. This is supported by the mean (18.32 hours) being slightly less than the median (19 hours). Because the sample is small (n = 25) and the 16 to 17 hour class has only one observation, the shape is somewhat irregular.</p>
 <div class="zhtr"><span>中文</span>直方圖顯示多數 CEO 每週開會 18～23 小時（25 人中有 16 人，占 64%），14～15 小時也有一群。低時數那一端（12～13 小時）的資料較少，所以分布的長尾在左邊，呈現略微左偏（skewed left）。平均數 18.32 小時略小於中位數 19 小時，也支持這個判斷。因為樣本小（n = 25），16～17 小時那組只有 1 筆，形狀有點不規則。</div></div>
 
 
@@ -1658,7 +1660,7 @@ table td{text-align:left}
 <li>幾何平均數代表「每年固定賺多少，3 年後會得到相同的最終金額」，正確反映實際成長。</li>
 <li>算術平均適用於<b>加法</b>關係；當報酬有正有負、波動越大，算術平均高估越多。</li>
 </ul>
-<div class="box en"><span class="lbl">ENGLISH ANSWER — ready to copy</span>
+<div class="box en"><span class="lbl">ENGLISH ANSWER: ready to copy</span>
 <p>Investment returns compound over time: each year’s return is earned on the value at the end of the previous year, so the growth is multiplicative, not additive. The geometric mean (5.91%) is the constant annual rate that would produce the same ending value as the actual returns ($100 grows to $118.80 in both cases). The arithmetic mean (6.67%) ignores compounding and overstates the actual growth; it would imply an ending value of $121.36. Therefore, the geometric mean is the appropriate measure of the average rate of return over multiple periods.</p>
 <div class="zhtr"><span>中文</span>投資報酬會複利（compound）：每年的報酬是建立在前一年的期末金額上，所以成長是乘法關係，不是加法關係。幾何平均數（5.91%）是「每年固定賺這個比率，最後會得到相同期末金額」的報酬率（兩種情況下 100 元都變成 118.80 元）。算術平均數（6.67%）忽略複利，會高估實際成長，等於期末變成 121.36 元。所以衡量多期平均報酬時應該用幾何平均數。</div></div>
 
@@ -1789,7 +1791,7 @@ table td{text-align:left}
 <li>P₉₀ = 78 + 0.9 × (81 − 78) = 78 + 2.7 = <b>80.7</b></li>
 <li><b>解讀</b>：約 90% 的外套評分 ≤ 80.7 分，約 10% 的外套評分 ≥ 80.7 分。也就是說，評分要高於 80.7 才能擠進前 10%。</li>
 </ul>
-<div class="box en"><span class="lbl">ENGLISH ANSWER — ready to copy</span>
+<div class="box en"><span class="lbl">ENGLISH ANSWER: ready to copy</span>
 <p>The 90th percentile is 80.7. This means that at least 90% of the jackets have a rating of 80.7 or less, and at least 10% of the jackets have a rating of 80.7 or more. In other words, a jacket needs a rating above about 80.7 to be in the top 10%.</p>
 <div class="zhtr"><span>中文</span>第 90 百分位數是 80.7。意思是至少 90% 的外套評分在 80.7 分以下（含），至少 10% 的外套評分在 80.7 分以上（含）。也就是說，外套評分要高於約 80.7 分才能進入前 10%。</div></div>
 
@@ -1809,7 +1811,7 @@ table td{text-align:left}
 <p>Sorted data: 21, 24, 26, 27, 30, 31, 31, 31, 32, 33, 35, 36, 37, 37, 40, 40, 43, 43, 43, 43, 43, 44, 44, 46, 46, 47, 49, 50, 50, 50, 52, 52, 55, 56, 57, 59, 61, 64, 66, 72</p>
 <div class="exq" id="hw-5-1" data-pts="4"><div class="qtext"><p class="q"><span class="pts">5-1</span>Create a stretched stem-and-leaf display. (4 points)</p></div><label class="small" for="hw-5-1-a">Your answer</label><textarea id="hw-5-1-a" rows="4" placeholder="Write your answer here (English or Chinese is fine; use English when handing in homework)"></textarea><div class="gradebar"><button class="btn grade" type="button">Grade this question</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>Show reference answer</summary><div class="inner">
 <p><b>1) 伸展莖葉圖</b></p>
-<p>Write each stem twice: the first line holds leaves 0–4, the second line leaves 5–9 (leaf unit = 1).</p>
+<p>Write each stem twice: the first line holds leaves 0 to 4, the second line leaves 5 to 9 (leaf unit = 1).</p>
 <div class="calc">2 | 1 4
 2 | 6 7
 3 | 0 1 1 1 2 3
@@ -1825,17 +1827,17 @@ table td{text-align:left}
 
 </div></details></div>
 <div class="exq" id="hw-5-2" data-pts="2"><div class="qtext"><p class="q"><span class="pts">5-2</span>Identify the age group with the highest number of runners. (2 points)</p></div><label class="small" for="hw-5-2-a">Your answer</label><textarea id="hw-5-2-a" rows="4" placeholder="Write your answer here (English or Chinese is fine; use English when handing in homework)"></textarea><div class="gradebar"><button class="btn grade" type="button">Grade this question</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>Show reference answer</summary><div class="inner">
-<p>2) The age group with the most runners: 40–44 (9 runners)</p>
-<p>Look for the row with the most leaves: "4 | 0 0 3 3 3 3 3 4 4" has 9 leaves, meaning 9 runners aged 40–44.</p>
-<div class="box en"><span class="lbl">ENGLISH ANSWER — ready to copy</span>
-<p>The 40–44 age group has the highest number of runners, with 9 runners.</p>
+<p>2) The age group with the most runners: 40 to 44 (9 runners)</p>
+<p>Look for the row with the most leaves: "4 | 0 0 3 3 3 3 3 4 4" has 9 leaves, meaning 9 runners aged 40 to 44.</p>
+<div class="box en"><span class="lbl">ENGLISH ANSWER: ready to copy</span>
+<p>The 40 to 44 age group has the highest number of runners, with 9 runners.</p>
 <div class="zhtr"><span>中文</span>40～44 歲這一組的跑者最多，共 9 人。</div></div>
 
 </div></details></div>
 <div class="exq" id="hw-5-3" data-pts="2"><div class="qtext"><p class="q"><span class="pts">5-3</span>Determine the most frequently occurring age. (2 points)</p></div><label class="small" for="hw-5-3-a">Your answer</label><textarea id="hw-5-3-a" rows="4" placeholder="Write your answer here (English or Chinese is fine; use English when handing in homework)"></textarea><div class="gradebar"><button class="btn grade" type="button">Grade this question</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>Show reference answer</summary><div class="inner">
 <p>3) Most frequent age (mode): 43 (5 times)</p>
 <p>In the row "4 | 0 0 3 3 3 3 3 4 4", leaf 3 appears five times, so five runners are 43: the mode.</p>
-<div class="box en"><span class="lbl">ENGLISH ANSWER — ready to copy</span>
+<div class="box en"><span class="lbl">ENGLISH ANSWER: ready to copy</span>
 <p>The most frequently occurring age (the mode) is 43, which appears 5 times.</p>
 <div class="zhtr"><span>中文</span>出現最多次的年齡（眾數，mode）是 43 歲，出現 5 次。</div></div>
 
@@ -1958,7 +1960,7 @@ table td{text-align:left}
 <li>結論：所有資料都介於 −7882.25 與 18099.75 之間，<b>沒有離群值</b>。（下限是負數沒關係，只代表下方不可能有離群值。）</li>
 <li>補充：中位數 4019 偏向盒子左側、右側鬚線較長（最大值 14138），分布呈<b>右偏</b>。</li>
 </ul>
-<div class="box en"><span class="lbl">ENGLISH ANSWER — ready to copy</span>
+<div class="box en"><span class="lbl">ENGLISH ANSWER: ready to copy</span>
 <p>IQR = Q3 − Q1 = 8356.5 − 1861 = 6495.5. Lower limit = Q1 − 1.5(IQR) = −7882.25; upper limit = Q3 + 1.5(IQR) = 18,099.75. All sales values fall within these limits, so there are no outliers in the data set.</p>
 <div class="zhtr"><span>中文</span>四分位距 IQR = Q3 − Q1 = 6495.5。下限 = Q1 − 1.5 × IQR = −7882.25；上限 = Q3 + 1.5 × IQR = 18,099.75。所有營收都落在上下限之間，所以這組資料沒有離群值（outlier）。</div></div>
 
@@ -1972,7 +1974,7 @@ table td{text-align:left}
 <tr class="header">
 <th>初始開價  售出所需天數</th>
 <th>30 天以下</th>
-<th>31–90 天</th>
+<th>31 to 90 天</th>
 <th>超過 90 天</th>
 <th>合計</th>
 </tr>
@@ -1986,14 +1988,14 @@ table td{text-align:left}
 <td><b>100</b></td>
 </tr>
 <tr class="even">
-<td>$150,000–$199,999</td>
+<td>$150,000 to $199,999</td>
 <td>20</td>
 <td>150</td>
 <td>80</td>
 <td>250</td>
 </tr>
 <tr class="odd">
-<td>$200,000–$250,000</td>
+<td>$200,000 to $250,000</td>
 <td>20</td>
 <td>280</td>
 <td>100</td>
@@ -2024,7 +2026,7 @@ table td{text-align:left}
 <li>P(B) = 100/800 = 0.125</li>
 <li>P(A｜B) = 0.0125 / 0.125 = <b>0.10</b>（直接看表：10/100 = 0.10）</li>
 </ul>
-<div class="box en"><span class="lbl">ENGLISH ANSWER — ready to copy</span>
+<div class="box en"><span class="lbl">ENGLISH ANSWER: ready to copy</span>
 <p>P(A | B) = P(A ∩ B) / P(B) = (10/800) / (100/800) = 0.10. Given that the initial asking price is below $150,000, the probability that the home will take more than 90 days to sell is 0.10.</p>
 <div class="zhtr"><span>中文</span>P(A | B) = P(A ∩ B) / P(B) = 0.10。已知初始開價低於 15 萬美元，這間房子超過 90 天才賣出的機率是 0.10。</div></div>
 
@@ -2038,7 +2040,7 @@ table td{text-align:left}
 <li>也可以用乘法檢驗：P(A)·P(B) = 0.25 × 0.125 = 0.03125 ≠ P(A ∩ B) = 0.0125。</li>
 <li>白話解讀：便宜的房子比較快賣掉，超過 90 天的機率從整體的 25% 降到 10%。</li>
 </ul>
-<div class="box en"><span class="lbl">ENGLISH ANSWER — ready to copy</span>
+<div class="box en"><span class="lbl">ENGLISH ANSWER: ready to copy</span>
 <p>No, events A and B are not independent. P(A) = 200/800 = 0.25, while P(A | B) = 0.10. Since P(A | B) ≠ P(A), knowing that the asking price is below $150,000 changes the probability that the home takes more than 90 days to sell. (Equivalently, P(A)P(B) = 0.25 × 0.125 = 0.03125 ≠ P(A ∩ B) = 0.0125.) Homes with a lower asking price are less likely to take more than 90 days to sell.</p>
 <div class="zhtr"><span>中文</span>A 與 B 不獨立（not independent）。P(A) = 0.25，但 P(A | B) = 0.10。因為 P(A | B) ≠ P(A)，知道「開價低於 15 萬」會改變「超過 90 天才賣出」的機率。（等價檢驗：P(A)P(B) = 0.03125 ≠ P(A ∩ B) = 0.0125。）開價較低的房子比較不容易拖過 90 天才賣出。</div></div>
 
@@ -2053,29 +2055,29 @@ table td{text-align:left}
 <li>z = (50 − 40) / 5 = <b>2</b></li>
 <li>意義：這位員工的工時比平均多 <b>2 個標準差</b>，高於平均。</li>
 </ul>
-<div class="box en"><span class="lbl">ENGLISH ANSWER — ready to copy</span>
+<div class="box en"><span class="lbl">ENGLISH ANSWER: ready to copy</span>
 <p>z = (50 − 40) / 5 = 2. The employee’s weekly working time is 2 standard deviations above the mean, so this employee works considerably more hours than the average employee.</p>
 <div class="zhtr"><span>中文</span>z = (50 − 40) / 5 = 2。這位員工的每週工時比平均數高 2 個標準差，工作時數明顯比一般員工多。</div></div>
 
 </div></details></div>
 <div class="exq" id="hw-8-2" data-pts="2"><div class="qtext"><p class="q"><span class="pts">8-2</span>According to Chebyshev’s Theorem, what is the minimum percentage of employees who work between 30 and 50 hours per week? (2 points)</p></div><label class="small" for="hw-8-2-a">Your answer</label><textarea id="hw-8-2-a" rows="4" placeholder="Write your answer here (English or Chinese is fine; use English when handing in homework)"></textarea><div class="gradebar"><button class="btn grade" type="button">Grade this question</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>Show reference answer</summary><div class="inner">
-<p>2) Minimum proportion working 30–50 hours: at least 75%</p>
+<p>2) Minimum proportion working 30 to 50 hours: at least 75%</p>
 <ul>
 <li>30 的 z = (30 − 40)/5 = −2；50 的 z = +2 → 範圍是平均數 ± 2 個標準差。</li>
 <li>1 − 1/z² = 1 − 1/4 = 0.75 → <b>至少 75%</b> 的員工每週工時在 30～50 小時之間。</li>
 </ul>
-<div class="box en"><span class="lbl">ENGLISH ANSWER — ready to copy</span>
+<div class="box en"><span class="lbl">ENGLISH ANSWER: ready to copy</span>
 <p>30 and 50 hours are 2 standard deviations below and above the mean (z = 2). By Chebyshev’s theorem, at least 1 − 1/2² = 0.75, or 75%, of employees work between 30 and 50 hours per week. Chebyshev’s theorem is used because the distribution of working hours is unknown.</p>
 <div class="zhtr"><span>中文</span>30 和 50 小時分別是平均數減、加 2 個標準差（z = 2）。依柴比雪夫定理（Chebyshev’s theorem），至少 1 − 1/2² = 75% 的員工每週工時在 30～50 小時之間。因為工時分布未知，所以用柴比雪夫定理。</div></div>
 
 </div></details></div>
 <div class="exq" id="hw-8-3" data-pts="4"><div class="qtext"><p class="q"><span class="pts">8-3</span>According to Chebyshev’s Theorem, at least 88.89% of employees work within what range of weekly working hours? (4 points)</p></div><label class="small" for="hw-8-3-a">Your answer</label><textarea id="hw-8-3-a" rows="4" placeholder="Write your answer here (English or Chinese is fine; use English when handing in homework)"></textarea><div class="gradebar"><button class="btn grade" type="button">Grade this question</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>Show reference answer</summary><div class="inner">
-<p>3) At least 88.89% of employees fall in what range? 25–55 hours</p>
+<p>3) At least 88.89% of employees fall in what range? 25 to 55 hours</p>
 <ul>
 <li>反推 z：1 − 1/z² = 0.8889 → 1/z² = 0.1111 = 1/9 → z² = 9 → <b>z = 3</b></li>
 <li>範圍：40 ± 3 × 5 = 40 ± 15 → <b>25 到 55 小時</b></li>
 </ul>
-<div class="box en"><span class="lbl">ENGLISH ANSWER — ready to copy</span>
+<div class="box en"><span class="lbl">ENGLISH ANSWER: ready to copy</span>
 <p>Setting 1 − 1/z² = 0.8889 gives z = 3. Therefore, at least 88.89% of employees work within 3 standard deviations of the mean: 40 ± 3(5), that is, between 25 and 55 hours per week.</p>
 <div class="zhtr"><span>中文</span>令 1 − 1/z² = 0.8889，得 z = 3。所以至少 88.89% 的員工工時落在平均數 ± 3 個標準差內：40 ± 3(5)，也就是每週 25～55 小時。</div></div>
 
@@ -2127,7 +2129,7 @@ table td{text-align:left}
 </tbody>
 </table>
 <p>Interpretation: after a positive test, the probability of cancer rises only from 2% to about 2.13%. Because the false-positive rate is 75%, a positive result gives almost no information.</p>
-<div class="box en"><span class="lbl">ENGLISH ANSWER — ready to copy</span>
+<div class="box en"><span class="lbl">ENGLISH ANSWER: ready to copy</span>
 <p>P(C | +) = (0.02)(0.80) / [(0.02)(0.80) + (0.98)(0.75)] = 0.016 / 0.751 ≈ 0.0213. If the PSA test comes back positive, the probability that the patient has prostate cancer is only about 0.0213. Because the false-positive rate is very high (0.75), a positive result increases the probability of cancer only slightly from the prior probability of 0.02.</p>
 <div class="zhtr"><span>中文</span>若 PSA 檢驗結果為陽性，病人罹患攝護腺癌的機率只有約 0.0213。因為偽陽性率（false-positive rate）非常高（0.75），陽性結果只讓罹癌機率從事前機率 0.02 稍微上升。</div></div>
 
@@ -2169,7 +2171,7 @@ table td{text-align:left}
 </tbody>
 </table>
 <p>Interpretation: after a negative test, the probability drops from 2% to about 1.61%, also a small change.</p>
-<div class="box en"><span class="lbl">ENGLISH ANSWER — ready to copy</span>
+<div class="box en"><span class="lbl">ENGLISH ANSWER: ready to copy</span>
 <p>P(C | −) = (0.02)(0.20) / [(0.02)(0.20) + (0.98)(0.25)] = 0.004 / 0.249 ≈ 0.0161. If the PSA test comes back negative, the probability that the patient has prostate cancer is about 0.0161, only slightly lower than the prior probability of 0.02.</p>
 <div class="zhtr"><span>中文</span>若 PSA 檢驗結果為陰性，病人罹癌的機率約 0.0161，只比事前機率 0.02 稍低一點。</div></div>
 
@@ -2270,7 +2272,7 @@ table td{text-align:left}
 </tbody>
 </table>
 <p>Conclusion: posterior probabilities depend heavily on the prior. With the same test, the difference is clearer for the high-risk group (prior 0.4), but because the false-positive rate is so high, the PSA test still has weak discriminating power.</p>
-<div class="box en"><span class="lbl">ENGLISH ANSWER — ready to copy</span>
+<div class="box en"><span class="lbl">ENGLISH ANSWER: ready to copy</span>
 <p>With a prior probability of 0.4: P(C | +) = (0.4)(0.80) / [(0.4)(0.80) + (0.6)(0.75)] = 0.32 / 0.77 ≈ 0.4156. P(C | −) = (0.4)(0.20) / [(0.4)(0.20) + (0.6)(0.25)] = 0.08 / 0.23 ≈ 0.3478. The posterior probabilities depend heavily on the prior probability. For an older patient with a higher prior probability, a positive test raises the probability of cancer to about 0.42 and a negative test lowers it to about 0.35. In both cases the test changes the probability only modestly, which shows that the PSA test has limited ability to distinguish patients with and without cancer because of its high false-positive rate.</p>
 <div class="zhtr"><span>中文</span>事前機率為 0.4 時：P(C | +) ≈ 0.4156，P(C | −) ≈ 0.3478。事後機率（posterior）高度依賴事前機率（prior）。對事前機率較高的年長病人，陽性讓罹癌機率升到約 0.42，陰性讓它降到約 0.35。兩種情況變化都不大，表示因為偽陽性率太高，PSA 檢驗區分有沒有罹癌的能力有限。</div></div>
 
@@ -2314,39 +2316,39 @@ table td{text-align:left}
 </table>
 <p>Not in the assignment but in the lecture notes and worth practicing: weighted mean, coefficient of variation, empirical rule, covariance and correlation coefficient, combinations and permutations, addition law, mutually exclusive vs. independent.</p>
 </section>
-<section role="tabpanel" class="view" id="traps" hidden><div class="vhead"><div class="eyebrow">All chapters</div><h1>Summary &amp; Common Traps<span class="zhn">各章總結與易錯點</span></h1><p>Every chapter's summary and common traps on one page, in chapter order. Read this the night before.<span class="zhn">把每一章的總結和易錯點集中在同一頁，照章節順序排列。考前一晚看這頁。</span></p></div><div id="trapsBody"></div></section>
-<section role="tabpanel" class="view" id="review" hidden><div class="vhead"><div class="pcb" data-pcb="review" role="img"></div><div class="eyebrow">Day before the exam<span class="zhn">考前一天</span></div><h1>Review</h1><p>One key-point card per section in lecture order (mnemonic + key points), with missed questions placed right after that section. For commonly confused concepts, see the "Confusions" tab.<span class="zhn">照講義順序一段一張重點卡（口訣＋重點），錯題直接接在那一段後面。易混淆觀念另見「易混淆」分頁。</span></p></div>
-<p class="small rvhow">One key-point card per section in lecture order: read the <b>mnemonic</b> first, then the key points. Any questions you got wrong in that section appear right after its card (red border); tap "Notes ›" at the top right of the card to go back to the original lecture notes.<span class="zhn">照講義順序，一段一張重點卡：先唸<b>Mnemonic</b>，再看重點。那一段有答錯的題目，會直接接在那張卡的後面（紅框）；按卡片右上的「Notes ›」回到講義原文。</span></p><div class="rvsecs">
+<section role="tabpanel" class="view" id="traps" hidden><div class="vhead"><h1>Summary &amp; Common Traps<span class="zhn">各章總結與易錯點</span></h1><p>Every chapter's summary and common traps on one page, in chapter order. Read this the night before.<span class="zhn">把每一章的總結和易錯點集中在同一頁，照章節順序排列。考前一晚看這頁。</span></p></div><div id="trapsBody"></div></section>
+<section role="tabpanel" class="view" id="review" hidden><div class="vhead"><div class="pcb" data-pcb="review" role="img"></div><h1>Review</h1><p>One key-point card per section in lecture order (mnemonic + key points), with missed questions placed right after that section. For commonly confused concepts, see the "Confusions" tab.<span class="zhn">照講義順序一段一張重點卡（口訣＋重點），錯題直接接在那一段後面。易混淆觀念另見「易混淆」分頁。</span></p></div>
+<p class="small rvhow">One key-point card per section in lecture order: read the <b>mnemonic</b> first, then the key points. Any questions you got wrong in that section appear right after its card (red border); tap "Notes" at the top right of the card to go back to the original lecture notes.<span class="zhn">照講義順序，一段一張重點卡：先唸<b>Mnemonic</b>，再看重點。那一段有答錯的題目，會直接接在那張卡的後面（紅框）；按卡片右上的「Notes」回到講義原文。</span></p><div class="rvsecs">
 <div class="rvchap" data-rch="ch1"><h2 class="rvchh">Ch1 Data and Statistics</h2>
-<div class="rvsec" data-rsec="1.1"><div class="rvsh"><span class="rvk">1.1</span><h3>What Is Statistics?<span class="zhn">什麼是統計</span></h3><button type="button" class="rvgo" data-rsec="1.1" title="Go to this section in the notes">Notes ›</button></div><ul class="rvpts"><li><b>Statistics as data</b> (numerical facts): mean, median, percentages; <b>statistics as a discipline</b>: methods for collecting, analyzing, presenting, and interpreting data (art and science).<span class="zhn"><b>統計數據</b>（numerical facts）：平均數、中位數、百分比；<b>統計學</b>：蒐集、分析、呈現、解釋資料的方法（art and science）。</span></li></ul></div>
-<div class="rvsec" data-rsec="1.2"><div class="rvsh"><span class="rvk">1.2</span><h3>Basic Data Terms (a sure midterm topic, homework Q1)<span class="zhn">資料的基本名詞（期中必考，作業第 1 題）</span></h3><button type="button" class="rvgo" data-rsec="1.2" title="Go to this section in the notes">Notes ›</button></div><div class="box tip rvmn"><span class="lbl">Mnemonic</span><span class="zhn"><b>Mnemonic</b></span><ul><li>"Elements are rows, variables are columns, an observation is a whole row"<span class="zhn">「元素是列、變數是欄、觀測值是一整列」</span></li></ul></div><ul class="rvpts"><li><b>Data set</b> the whole table; <b>element</b> the entity data are collected on (each student); <b>variable</b> a characteristic (age, major); <b>observation</b> the results of one element on all variables.<span class="zhn"><b>data set</b> 整張表；<b>element</b> 被蒐集的對象（每位學生）；<b>variable</b> 特徵（年齡、主修）；<b>observation</b> 某一元素在所有變數上的結果。</span></li><li>n elements → n observations; <b>total data values = elements × variables</b>.<span class="zhn">n 個元素 → n 個觀測值；<b>資料值總數 = 元素數 × 變數數</b>。</span></li><li>When counting variables, <b>the name column (e.g., tablet model) does not count</b>; the header row is not an element.<span class="zhn">數變數時，<b>名稱欄（例如平板型號）不算變數</b>；表頭不算元素。</span></li></ul></div>
-<div class="rvsec" data-rsec="1.3"><div class="rvsh"><span class="rvk">1.3</span><h3>Scales of Measurement<span class="zhn">衡量尺度</span></h3><button type="button" class="rvgo" data-rsec="1.3" title="Go to this section in the notes">Notes ›</button></div><div class="box tip rvmn"><span class="lbl">Mnemonic</span><span class="zhn"><b>Mnemonic</b></span><ul><li>"Nominal, Ordinal, Interval, Ratio": each level has the properties of the previous one<span class="zhn">「名、序、區、比」，每一層都有前一層的性質</span></li></ul></div><ul class="rvpts"><li>Nominal is just labels (postal code, operating system); Ordinal has order but distances are meaningless (satisfaction, rank); Interval has meaningful distances, <b>no true zero</b> (Celsius, SAT, year); Ratio has a true zero (price, time, battery life).<span class="zhn">Nominal 只是標籤（郵遞區號、作業系統）；Ordinal 有順序但間距沒意義（滿意度、名次）；Interval 間距有意義、<b>沒有真正的 0</b>（攝氏、SAT、年份）；Ratio 有真正的 0（價格、時間、續航）。</span></li><li>Decision: label → is there an order? Numeric → <b>does 0 mean none at all?</b> Can say "twice" → ratio; 20°C is not twice as hot as 10°C → interval.<span class="zhn">判斷：是標籤 → 有順序？是數值 → <b>0 代表完全沒有嗎？</b>能說「兩倍」→ 比率；20°C 不是 10°C 的兩倍熱 → 區間。</span></li></ul></div>
-<div class="rvsec" data-rsec="1.4"><div class="rvsh"><span class="rvk">1.4</span><h3>Categorical vs. Quantitative Data<span class="zhn">類別資料 vs 數量資料</span></h3><button type="button" class="rvgo" data-rsec="1.4" title="Go to this section in the notes">Notes ›</button></div><ul class="rvpts"><li><b>Categorical data</b> (qualitative): nominal or ordinal; can be numeric codes, but arithmetic is meaningless (codes cannot be averaged).<span class="zhn"><b>類別資料</b>（qualitative）：名目或順序，可以是數字代碼，但算術沒意義（代碼不能平均）。</span></li><li><b>Quantitative data</b>: interval or ratio; always numeric, arithmetic is allowed, more analysis methods.<span class="zhn"><b>數量資料</b>：區間或比率，一定是數字，可以做算術，分析方法較多。</span></li></ul></div>
-<div class="rvsec" data-rsec="1.5"><div class="rvsh"><span class="rvk">1.5</span><h3>Cross-Sectional vs. Time Series Data<span class="zhn">橫斷面資料 vs 時間序列資料</span></h3><button type="button" class="rvgo" data-rsec="1.5" title="Go to this section in the notes">Notes ›</button></div><ul class="rvpts"><li><b>Cross-sectional</b>: many entities at the same time (building permits by county/city in September 2025). <b>Time series</b>: one entity over many times (Taipei's 36 months of building permits), for trends and forecasting.<span class="zhn"><b>橫斷面</b>：同一時間、多個對象（2025 年 9 月各縣市建照數）。<b>時間序列</b>：同一對象、多個時間點（台北 36 個月建照數），看趨勢、預測。</span></li></ul></div>
-<div class="rvsec" data-rsec="1.6"><div class="rvsh"><span class="rvk">1.6</span><h3>Data Sources<span class="zhn">資料來源</span></h3><button type="button" class="rvgo" data-rsec="1.6" title="Go to this section in the notes">Notes ›</button></div><ul class="rvpts"><li>Existing data: internal records, commercial databases, government, trade associations, the internet.<span class="zhn">既有資料：內部紀錄、商業資料庫、政府、公會、網路。</span></li><li><b>Observational study</b>: variables not controlled (survey, smokers vs non-smokers); <b>experimental study</b>: other variables controlled (RCT). Considerations: time, cost, data errors.<span class="zhn"><b>觀察研究</b>：不控制變數（問卷、吸菸者 vs 非吸菸者）；<b>實驗研究</b>：控制其他變數（RCT）。考量：時間、成本、資料錯誤。</span></li></ul></div>
-<div class="rvsec" data-rsec="1.7"><div class="rvsh"><span class="rvk">1.7</span><h3>Descriptive vs. Inferential Statistics<span class="zhn">敘述統計 vs 推論統計</span></h3><button type="button" class="rvgo" data-rsec="1.7" title="Go to this section in the notes">Notes ›</button></div><ul class="rvpts"><li><b>Descriptive statistics</b>: summarize data with tables, graphs, and numerical measures. <b>Statistical inference</b>: use a sample to estimate population characteristics or test hypotheses.<span class="zhn"><b>敘述統計</b>：用表、圖、數值摘要資料。<b>統計推論</b>：用樣本估計母體特徵或檢定假設。</span></li><li>Population vs sample; census vs sample survey.<span class="zhn">母體 population vs 樣本 sample；普查 census vs 抽樣調查 sample survey。</span></li></ul></div>
-<div class="rvsec" data-rsec="1.8"><div class="rvsh"><span class="rvk">1.8</span><h3>Analytics<span class="zhn">分析學</span></h3><button type="button" class="rvgo" data-rsec="1.8" title="Go to this section in the notes">Notes ›</button></div><ul class="rvpts"><li>Descriptive (what happened) → predictive (model to predict the future) → prescriptive (recommend the best action).<span class="zhn">描述性（過去發生什麼）→ 預測性（建模預測未來）→ 處方性（給最佳行動方案）。</span></li></ul></div>
+<div class="rvsec" data-rsec="1.1"><div class="rvsh"><span class="rvk">1.1</span><h3>What Is Statistics?<span class="zhn">什麼是統計</span></h3><button type="button" class="rvgo" data-rsec="1.1" title="Go to this section in the notes">Notes</button></div><ul class="rvpts"><li><b>Statistics as data</b> (numerical facts): mean, median, percentages; <b>statistics as a discipline</b>: methods for collecting, analyzing, presenting, and interpreting data (art and science).<span class="zhn"><b>統計數據</b>（numerical facts）：平均數、中位數、百分比；<b>統計學</b>：蒐集、分析、呈現、解釋資料的方法（art and science）。</span></li></ul></div>
+<div class="rvsec" data-rsec="1.2"><div class="rvsh"><span class="rvk">1.2</span><h3>Basic Data Terms (a sure midterm topic, homework Q1)<span class="zhn">資料的基本名詞（期中必考，作業第 1 題）</span></h3><button type="button" class="rvgo" data-rsec="1.2" title="Go to this section in the notes">Notes</button></div><div class="box tip rvmn"><span class="lbl">Mnemonic</span><span class="zhn"><b>Mnemonic</b></span><ul><li>"Elements are rows, variables are columns, an observation is a whole row"<span class="zhn">「元素是列、變數是欄、觀測值是一整列」</span></li></ul></div><ul class="rvpts"><li><b>Data set</b> the whole table; <b>element</b> the entity data are collected on (each student); <b>variable</b> a characteristic (age, major); <b>observation</b> the results of one element on all variables.<span class="zhn"><b>data set</b> 整張表；<b>element</b> 被蒐集的對象（每位學生）；<b>variable</b> 特徵（年齡、主修）；<b>observation</b> 某一元素在所有變數上的結果。</span></li><li>n elements → n observations; <b>total data values = elements × variables</b>.<span class="zhn">n 個元素 → n 個觀測值；<b>資料值總數 = 元素數 × 變數數</b>。</span></li><li>When counting variables, <b>the name column (e.g., tablet model) does not count</b>; the header row is not an element.<span class="zhn">數變數時，<b>名稱欄（例如平板型號）不算變數</b>；表頭不算元素。</span></li></ul></div>
+<div class="rvsec" data-rsec="1.3"><div class="rvsh"><span class="rvk">1.3</span><h3>Scales of Measurement<span class="zhn">衡量尺度</span></h3><button type="button" class="rvgo" data-rsec="1.3" title="Go to this section in the notes">Notes</button></div><div class="box tip rvmn"><span class="lbl">Mnemonic</span><span class="zhn"><b>Mnemonic</b></span><ul><li>"Nominal, Ordinal, Interval, Ratio": each level has the properties of the previous one<span class="zhn">「名、序、區、比」，每一層都有前一層的性質</span></li></ul></div><ul class="rvpts"><li>Nominal is just labels (postal code, operating system); Ordinal has order but distances are meaningless (satisfaction, rank); Interval has meaningful distances, <b>no true zero</b> (Celsius, SAT, year); Ratio has a true zero (price, time, battery life).<span class="zhn">Nominal 只是標籤（郵遞區號、作業系統）；Ordinal 有順序但間距沒意義（滿意度、名次）；Interval 間距有意義、<b>沒有真正的 0</b>（攝氏、SAT、年份）；Ratio 有真正的 0（價格、時間、續航）。</span></li><li>Decision: label → is there an order? Numeric → <b>does 0 mean none at all?</b> Can say "twice" → ratio; 20°C is not twice as hot as 10°C → interval.<span class="zhn">判斷：是標籤 → 有順序？是數值 → <b>0 代表完全沒有嗎？</b>能說「兩倍」→ 比率；20°C 不是 10°C 的兩倍熱 → 區間。</span></li></ul></div>
+<div class="rvsec" data-rsec="1.4"><div class="rvsh"><span class="rvk">1.4</span><h3>Categorical vs. Quantitative Data<span class="zhn">類別資料 vs 數量資料</span></h3><button type="button" class="rvgo" data-rsec="1.4" title="Go to this section in the notes">Notes</button></div><ul class="rvpts"><li><b>Categorical data</b> (qualitative): nominal or ordinal; can be numeric codes, but arithmetic is meaningless (codes cannot be averaged).<span class="zhn"><b>類別資料</b>（qualitative）：名目或順序，可以是數字代碼，但算術沒意義（代碼不能平均）。</span></li><li><b>Quantitative data</b>: interval or ratio; always numeric, arithmetic is allowed, more analysis methods.<span class="zhn"><b>數量資料</b>：區間或比率，一定是數字，可以做算術，分析方法較多。</span></li></ul></div>
+<div class="rvsec" data-rsec="1.5"><div class="rvsh"><span class="rvk">1.5</span><h3>Cross-Sectional vs. Time Series Data<span class="zhn">橫斷面資料 vs 時間序列資料</span></h3><button type="button" class="rvgo" data-rsec="1.5" title="Go to this section in the notes">Notes</button></div><ul class="rvpts"><li><b>Cross-sectional</b>: many entities at the same time (building permits by county/city in September 2025). <b>Time series</b>: one entity over many times (Taipei's 36 months of building permits), for trends and forecasting.<span class="zhn"><b>橫斷面</b>：同一時間、多個對象（2025 年 9 月各縣市建照數）。<b>時間序列</b>：同一對象、多個時間點（台北 36 個月建照數），看趨勢、預測。</span></li></ul></div>
+<div class="rvsec" data-rsec="1.6"><div class="rvsh"><span class="rvk">1.6</span><h3>Data Sources<span class="zhn">資料來源</span></h3><button type="button" class="rvgo" data-rsec="1.6" title="Go to this section in the notes">Notes</button></div><ul class="rvpts"><li>Existing data: internal records, commercial databases, government, trade associations, the internet.<span class="zhn">既有資料：內部紀錄、商業資料庫、政府、公會、網路。</span></li><li><b>Observational study</b>: variables not controlled (survey, smokers vs non-smokers); <b>experimental study</b>: other variables controlled (RCT). Considerations: time, cost, data errors.<span class="zhn"><b>觀察研究</b>：不控制變數（問卷、吸菸者 vs 非吸菸者）；<b>實驗研究</b>：控制其他變數（RCT）。考量：時間、成本、資料錯誤。</span></li></ul></div>
+<div class="rvsec" data-rsec="1.7"><div class="rvsh"><span class="rvk">1.7</span><h3>Descriptive vs. Inferential Statistics<span class="zhn">敘述統計 vs 推論統計</span></h3><button type="button" class="rvgo" data-rsec="1.7" title="Go to this section in the notes">Notes</button></div><ul class="rvpts"><li><b>Descriptive statistics</b>: summarize data with tables, graphs, and numerical measures. <b>Statistical inference</b>: use a sample to estimate population characteristics or test hypotheses.<span class="zhn"><b>敘述統計</b>：用表、圖、數值摘要資料。<b>統計推論</b>：用樣本估計母體特徵或檢定假設。</span></li><li>Population vs sample; census vs sample survey.<span class="zhn">母體 population vs 樣本 sample；普查 census vs 抽樣調查 sample survey。</span></li></ul></div>
+<div class="rvsec" data-rsec="1.8"><div class="rvsh"><span class="rvk">1.8</span><h3>Analytics<span class="zhn">分析學</span></h3><button type="button" class="rvgo" data-rsec="1.8" title="Go to this section in the notes">Notes</button></div><ul class="rvpts"><li>Descriptive (what happened) → predictive (model to predict the future) → prescriptive (recommend the best action).<span class="zhn">描述性（過去發生什麼）→ 預測性（建模預測未來）→ 處方性（給最佳行動方案）。</span></li></ul></div>
 </div>
 <div class="rvchap" data-rch="ch2"><h2 class="rvchh">Ch2 Tabular and Graphical Displays<span class="zhn">表格與圖形</span></h2>
-<div class="rvsec" data-rsec="2.1"><div class="rvsh"><span class="rvk">2.1</span><h3>Summarizing Categorical Data<span class="zhn">類別資料的整理</span></h3><button type="button" class="rvgo" data-rsec="2.1" title="Go to this section in the notes">Notes ›</button></div><ul class="rvpts"><li>Relative frequency = frequency ÷ total; percent = relative frequency × 100. Counts alone mislead: A with 10 of 20 (50%) is better than B with 50 of 200 (25%).<span class="zhn">相對次數 = 次數 ÷ 總數；百分比 = 相對次數 × 100。只看次數會誤判：A 20 則中 10 則（50%）比 B 200 則中 50 則（25%）好。</span></li><li>Bar chart: categorical data, bars separated. Pie chart: <b>relative frequency × 360°</b> (0.25 → 90°), suited to few categories and parts of a whole.<span class="zhn">長條圖：類別資料、長條分開。圓餅圖：<b>相對次數 × 360°</b>（0.25 → 90°），適合類別少、看部分占整體。</span></li></ul></div>
-<div class="rvsec" data-rsec="2.2"><div class="rvsh"><span class="rvk">2.2</span><h3>Summarizing Quantitative Data<span class="zhn">數量資料的整理</span></h3><button type="button" class="rvgo" data-rsec="2.2" title="Go to this section in the notes">Notes ›</button></div><div class="box tip rvmn"><span class="lbl">Mnemonic</span><span class="zhn"><b>Mnemonic</b></span><ul><li>Three steps: "classes 5–20 → width ≈ (max − min) ÷ classes, rounded → limits non-overlapping, covering everything"<span class="zhn">三步驟：「組數 5～20 → 組距 ≈ (最大 − 最小) ÷ 組數取整 → 組限不重疊、全涵蓋」</span></li></ul></div><ul class="rvpts"><li>Hudson: (109 − 52) ÷ 6 = 9.5 → class width <b>10</b>. Cumulative frequency accumulates by class upper limit (≤59, ≤69…); cumulative relative frequency = cumulative frequency ÷ n.<span class="zhn">Hudson：(109 − 52) ÷ 6 = 9.5 → 組距取 <b>10</b>。累積次數以各組上限累加（≤59、≤69…），累積相對次數 = 累積次數 ÷ n。</span></li><li>Histogram bars <b>touch</b>; dot plots and stem-and-leaf displays keep the original data.<span class="zhn">直方圖長條<b>相連</b>；點圖、莖葉圖保留原始資料。</span></li><li>Skewness follows the tail: right-skewed (income, spending) mean &gt; median; left-skewed (easy exam) mean &lt; median; symmetric equal.<span class="zhn">偏態看尾巴：右偏（所得、課金）平均 &gt; 中位；左偏（簡單考試）平均 &lt; 中位；對稱相等。</span></li><li>Stem-and-leaf leaf unit: 1682 with leaf unit 10 → stem 16, leaf 8 (<b>truncate</b>, not round); a stretched display writes each stem twice (0–4, 5–9).<span class="zhn">莖葉圖葉單位：1682 用葉單位 10 → 莖 16、葉 8（<b>捨去</b>不是四捨五入）；伸展莖葉圖每個莖寫兩次（0～4、5～9）。</span></li></ul></div>
-<div class="rvsec" data-rsec="2.3"><div class="rvsh"><span class="rvk">2.3</span><h3>Two Variables: Crosstabulation<span class="zhn">兩個變數：交叉表</span></h3><button type="button" class="rvgo" data-rsec="2.3" title="Go to this section in the notes">Notes ›</button></div><ul class="rvpts"><li>Crosstabulation: categorical + categorical, categorical + quantitative, quantitative + quantitative (quantitative must be grouped first).<span class="zhn">交叉表：類別＋類別、類別＋數量、數量＋數量（數量要先分組）。</span></li><li><b>Simpson's paradox</b>: the grouped conclusion reverses after aggregation, caused by a lurking variable (very different group sizes) → look at the grouped tables first.<span class="zhn"><b>辛普森悖論</b>：分組的結論在合併後反轉，原因是隱藏變數（各組樣本數差很多）→ 先看分組表。</span></li></ul></div>
-<div class="rvsec" data-rsec="2.4"><div class="rvsh"><span class="rvk">2.4</span><h3>Two Variables: Graphs<span class="zhn">兩個變數：圖形</span></h3><button type="button" class="rvgo" data-rsec="2.4" title="Go to this section in the notes">Notes ›</button></div><ul class="rvpts"><li><b>Scatter diagram + trendline</b>: two quantitative variables (positive, negative, no relationship).<span class="zhn"><b>散佈圖＋趨勢線</b>：兩個數量變數（正、負、無關係）。</span></li><li>Side-by-side bar chart: compare groups; stacked bar chart: see totals and composition; with percentages every bar is equal in height at 100%.<span class="zhn">群組長條圖：比較各組差異；堆疊長條圖：看總量與組成，用百分比時每條都等高到 100%。</span></li></ul></div>
-<div class="rvsec" data-rsec="2.5"><div class="rvsh"><span class="rvk">2.5</span><h3>Which Graph to Use: Summary Table<span class="zhn">圖形選擇總表</span></h3><button type="button" class="rvgo" data-rsec="2.5" title="Go to this section in the notes">Notes ›</button></div><ul class="rvpts"><li>Distribution: categorical → bar, pie; quantitative → dot plot, histogram, stem-and-leaf. Comparison → side-by-side/stacked bars. Relationship → scatter + trendline.<span class="zhn">分布：類別 → 長條、圓餅；數量 → 點圖、直方圖、莖葉圖。比較 → 群組／堆疊長條圖。關係 → 散佈圖＋趨勢線。</span></li><li>Dashboard: shows KPIs; minimize scrolling, no unnecessary color or 3D, separate with borders.<span class="zhn">Dashboard：呈現 KPI；減少捲動、不要多餘顏色或 3D、用框線分隔。</span></li></ul></div>
+<div class="rvsec" data-rsec="2.1"><div class="rvsh"><span class="rvk">2.1</span><h3>Summarizing Categorical Data<span class="zhn">類別資料的整理</span></h3><button type="button" class="rvgo" data-rsec="2.1" title="Go to this section in the notes">Notes</button></div><ul class="rvpts"><li>Relative frequency = frequency ÷ total; percent = relative frequency × 100. Counts alone mislead: A with 10 of 20 (50%) is better than B with 50 of 200 (25%).<span class="zhn">相對次數 = 次數 ÷ 總數；百分比 = 相對次數 × 100。只看次數會誤判：A 20 則中 10 則（50%）比 B 200 則中 50 則（25%）好。</span></li><li>Bar chart: categorical data, bars separated. Pie chart: <b>relative frequency × 360°</b> (0.25 → 90°), suited to few categories and parts of a whole.<span class="zhn">長條圖：類別資料、長條分開。圓餅圖：<b>相對次數 × 360°</b>（0.25 → 90°），適合類別少、看部分占整體。</span></li></ul></div>
+<div class="rvsec" data-rsec="2.2"><div class="rvsh"><span class="rvk">2.2</span><h3>Summarizing Quantitative Data<span class="zhn">數量資料的整理</span></h3><button type="button" class="rvgo" data-rsec="2.2" title="Go to this section in the notes">Notes</button></div><div class="box tip rvmn"><span class="lbl">Mnemonic</span><span class="zhn"><b>Mnemonic</b></span><ul><li>Three steps: "classes 5 to 20 → width ≈ (max − min) ÷ classes, rounded → limits non-overlapping, covering everything"<span class="zhn">三步驟：「組數 5～20 → 組距 ≈ (最大 − 最小) ÷ 組數取整 → 組限不重疊、全涵蓋」</span></li></ul></div><ul class="rvpts"><li>Hudson: (109 − 52) ÷ 6 = 9.5 → class width <b>10</b>. Cumulative frequency accumulates by class upper limit (≤59, ≤69…); cumulative relative frequency = cumulative frequency ÷ n.<span class="zhn">Hudson：(109 − 52) ÷ 6 = 9.5 → 組距取 <b>10</b>。累積次數以各組上限累加（≤59、≤69…），累積相對次數 = 累積次數 ÷ n。</span></li><li>Histogram bars <b>touch</b>; dot plots and stem-and-leaf displays keep the original data.<span class="zhn">直方圖長條<b>相連</b>；點圖、莖葉圖保留原始資料。</span></li><li>Skewness follows the tail: right-skewed (income, spending) mean &gt; median; left-skewed (easy exam) mean &lt; median; symmetric equal.<span class="zhn">偏態看尾巴：右偏（所得、課金）平均 &gt; 中位；左偏（簡單考試）平均 &lt; 中位；對稱相等。</span></li><li>Stem-and-leaf leaf unit: 1682 with leaf unit 10 → stem 16, leaf 8 (<b>truncate</b>, not round); a stretched display writes each stem twice (0 to 4, 5 to 9).<span class="zhn">莖葉圖葉單位：1682 用葉單位 10 → 莖 16、葉 8（<b>捨去</b>不是四捨五入）；伸展莖葉圖每個莖寫兩次（0～4、5～9）。</span></li></ul></div>
+<div class="rvsec" data-rsec="2.3"><div class="rvsh"><span class="rvk">2.3</span><h3>Two Variables: Crosstabulation<span class="zhn">兩個變數：交叉表</span></h3><button type="button" class="rvgo" data-rsec="2.3" title="Go to this section in the notes">Notes</button></div><ul class="rvpts"><li>Crosstabulation: categorical + categorical, categorical + quantitative, quantitative + quantitative (quantitative must be grouped first).<span class="zhn">交叉表：類別＋類別、類別＋數量、數量＋數量（數量要先分組）。</span></li><li><b>Simpson's paradox</b>: the grouped conclusion reverses after aggregation, caused by a lurking variable (very different group sizes) → look at the grouped tables first.<span class="zhn"><b>辛普森悖論</b>：分組的結論在合併後反轉，原因是隱藏變數（各組樣本數差很多）→ 先看分組表。</span></li></ul></div>
+<div class="rvsec" data-rsec="2.4"><div class="rvsh"><span class="rvk">2.4</span><h3>Two Variables: Graphs<span class="zhn">兩個變數：圖形</span></h3><button type="button" class="rvgo" data-rsec="2.4" title="Go to this section in the notes">Notes</button></div><ul class="rvpts"><li><b>Scatter diagram + trendline</b>: two quantitative variables (positive, negative, no relationship).<span class="zhn"><b>散佈圖＋趨勢線</b>：兩個數量變數（正、負、無關係）。</span></li><li>Side-by-side bar chart: compare groups; stacked bar chart: see totals and composition; with percentages every bar is equal in height at 100%.<span class="zhn">群組長條圖：比較各組差異；堆疊長條圖：看總量與組成，用百分比時每條都等高到 100%。</span></li></ul></div>
+<div class="rvsec" data-rsec="2.5"><div class="rvsh"><span class="rvk">2.5</span><h3>Which Graph to Use: Summary Table<span class="zhn">圖形選擇總表</span></h3><button type="button" class="rvgo" data-rsec="2.5" title="Go to this section in the notes">Notes</button></div><ul class="rvpts"><li>Distribution: categorical → bar, pie; quantitative → dot plot, histogram, stem-and-leaf. Comparison → side-by-side/stacked bars. Relationship → scatter + trendline.<span class="zhn">分布：類別 → 長條、圓餅；數量 → 點圖、直方圖、莖葉圖。比較 → 群組／堆疊長條圖。關係 → 散佈圖＋趨勢線。</span></li><li>Dashboard: shows KPIs; minimize scrolling, no unnecessary color or 3D, separate with borders.<span class="zhn">Dashboard：呈現 KPI；減少捲動、不要多餘顏色或 3D、用框線分隔。</span></li></ul></div>
 </div>
 <div class="rvchap" data-rch="ch3"><h2 class="rvchh">Ch3 Numerical Measures<span class="zhn">數值量數</span></h2>
-<div class="rvsec" data-rsec="3.1"><div class="rvsh"><span class="rvk">3.1</span><h3>Measures of Location<span class="zhn">位置量數</span></h3><button type="button" class="rvgo" data-rsec="3.1" title="Go to this section in the notes">Notes ›</button></div><div class="box tip rvmn"><span class="lbl">Mnemonic</span><span class="zhn"><b>Mnemonic</b></span><ul><li>Percentile: "sort → L = (p/100)(n+1) → integer: take it directly, decimal: interpolate"<span class="zhn">百分位數：「排序 → L = (p/100)(n+1) → 整數直接取，有小數就內插」</span></li></ul></div><ul class="rvpts"><li>The mean is strongly affected by extreme values; with extreme values (income, house prices) use the <b>median</b>; the mode can be bimodal or multimodal.<span class="zhn">平均數受極端值影響大；有極端值（所得、房價）用<b>中位數</b>；眾數可以雙峰、多峰。</span></li><li><b>Weighted mean</b> Σwx ÷ Σw (GPA, average wage: directly averaging 5 wages is wrong).<span class="zhn"><b>加權平均</b> Σwx ÷ Σw（GPA、平均工資：5 種工資直接平均是錯的）。</span></li><li><b>Geometric mean</b>: convert returns to 1 + r (−10% → 0.90), multiply all, take the nth root, then −1.<span class="zhn"><b>幾何平均</b>：報酬率換成 1 + r（−10% → 0.90），全部相乘開 n 次方，再 −1。</span></li><li>80th percentile of 70 rents: L = 0.8 × 71 = 56.8 → 635 + 0.8(649 − 635) = <b>646.2</b>. Q1, Q2, Q3 = 25th, 50th, 75th percentiles.<span class="zhn">70 筆租金 80th：L = 0.8 × 71 = 56.8 → 635 + 0.8(649 − 635) = <b>646.2</b>。Q1、Q2、Q3 = 第 25、50、75 百分位數。</span></li></ul></div>
-<div class="rvsec" data-rsec="3.2"><div class="rvsh"><span class="rvk">3.2</span><h3>Measures of Variability<span class="zhn">離散量數</span></h3><button type="button" class="rvgo" data-rsec="3.2" title="Go to this section in the notes">Notes ›</button></div><ul class="rvpts"><li>Range = max − min (extremely sensitive to extreme values); <b>IQR = Q3 − Q1</b> (not affected by extreme values).<span class="zhn">全距 = 最大 − 最小（對極端值超敏感）；<b>IQR = Q3 − Q1</b>（不受極端值影響）。</span></li><li>Sample variance s² has denominator <b>n − 1</b> (using x̄ underestimates variability); population σ² has denominator N; standard deviation has the same units as the data.<span class="zhn">樣本變異數 s² 分母 <b>n − 1</b>（用 x̄ 會低估變異）；母體 σ² 分母 N；標準差單位和原資料相同。</span></li><li><b>CV = s / x̄ × 100%</b>, for comparison across units: A (100, 10) 10%, B (1000, 50) 5% → B has smaller relative variability.<span class="zhn"><b>CV = s / x̄ × 100%</b>，跨單位比較：A（100, 10）10%、B（1000, 50）5% → B 相對變異較小。</span></li></ul></div>
-<div class="rvsec" data-rsec="3.3"><div class="rvsh"><span class="rvk">3.3</span><h3>Distribution Shape, Relative Location, Outliers<span class="zhn">分布形狀、相對位置、離群值</span></h3><button type="button" class="rvgo" data-rsec="3.3" title="Go to this section in the notes">Notes ›</button></div><div class="box tip rvmn"><span class="lbl">Mnemonic</span><span class="zhn"><b>Mnemonic</b></span><ul><li>"Direction follows the tail; the mean runs with the tail"<span class="zhn">「方向看尾巴，平均數跟著尾巴跑」</span></li></ul></div><ul class="rvpts"><li><b>z = (x − x̄) / s</b>: how many standard deviations from the mean.<span class="zhn"><b>z = (x − x̄) / s</b>：離平均幾個標準差。</span></li><li><b>Chebyshev</b> (any distribution): at least 1 − 1/z²: z = 2 → 75%, z = 3 → 88.89%, z = 4 → 93.75%.<span class="zhn"><b>柴比雪夫</b>（任何分布）：至少 1 − 1/z²：z = 2 → 75%、z = 3 → 88.89%、z = 4 → 93.75%。</span></li><li><b>Empirical rule</b> (bell-shaped only): 68%, 95%, 99.7%. If the distribution is unknown, only Chebyshev applies.<span class="zhn"><b>經驗法則</b>（只有鐘形）：68%、95%、99.7%。分布未知只能用柴比雪夫。</span></li><li>Outliers: |z| &gt; 3, or beyond Q1 − 1.5·IQR, Q3 + 1.5·IQR; not necessarily deleted.<span class="zhn">離群值：|z| &gt; 3，或超出 Q1 − 1.5·IQR、Q3 + 1.5·IQR；不一定要刪。</span></li></ul></div>
-<div class="rvsec" data-rsec="3.4"><div class="rvsh"><span class="rvk">3.4</span><h3>Five-Number Summary and Box Plot<span class="zhn">五數摘要與盒鬚圖</span></h3><button type="button" class="rvgo" data-rsec="3.4" title="Go to this section in the notes">Notes ›</button></div><ul class="rvpts"><li>Five-number summary: minimum, Q1, median, Q3, maximum.<span class="zhn">五數摘要：最小、Q1、中位數、Q3、最大。</span></li><li>Box plot: box spans Q1 to Q3, the line inside is the median; limits only locate and are not drawn; whiskers reach the smallest and largest values within the limits; outliers marked *.<span class="zhn">盒鬚圖：盒子 Q1～Q3、中間一線是中位數；上下限只定位不畫；鬚線到限內的最小最大值；離群值標 *。</span></li><li>Rent: Q1 545, Q3 625, IQR 80 → lower limit 425, upper limit 745.<span class="zhn">租金：Q1 545、Q3 625、IQR 80 → 下限 425、上限 745。</span></li></ul></div>
-<div class="rvsec" data-rsec="3.5"><div class="rvsh"><span class="rvk">3.5</span><h3>Association Between Two Variables<span class="zhn">兩變數的關聯</span></h3><button type="button" class="rvgo" data-rsec="3.5" title="Go to this section in the notes">Notes ›</button></div><ul class="rvpts"><li>Covariance sxy = Σ(x − x̄)(y − ȳ) / (n − 1): shows direction only, affected by units.<span class="zhn">共變異數 sxy = Σ(x − x̄)(y − ȳ) / (n − 1)：只看方向，受單位影響。</span></li><li>Correlation coefficient <b>r = sxy / (sx·sy)</b>: −1 to +1, unitless, shows direction and strength.<span class="zhn">相關係數 <b>r = sxy / (sx·sy)</b>：−1～+1、無單位，看方向和強度。</span></li><li>Measures only <b>linear</b> relationships; <b>correlation does not imply causation</b>. Golf: the longer the distance, the lower the strokes → r ≈ −0.96.<span class="zhn">只衡量<b>線性</b>關係；<b>相關不等於因果</b>。高爾夫：距離越遠桿數越低 → r ≈ −0.96。</span></li></ul></div>
+<div class="rvsec" data-rsec="3.1"><div class="rvsh"><span class="rvk">3.1</span><h3>Measures of Location<span class="zhn">位置量數</span></h3><button type="button" class="rvgo" data-rsec="3.1" title="Go to this section in the notes">Notes</button></div><div class="box tip rvmn"><span class="lbl">Mnemonic</span><span class="zhn"><b>Mnemonic</b></span><ul><li>Percentile: "sort → L = (p/100)(n+1) → integer: take it directly, decimal: interpolate"<span class="zhn">百分位數：「排序 → L = (p/100)(n+1) → 整數直接取，有小數就內插」</span></li></ul></div><ul class="rvpts"><li>The mean is strongly affected by extreme values; with extreme values (income, house prices) use the <b>median</b>; the mode can be bimodal or multimodal.<span class="zhn">平均數受極端值影響大；有極端值（所得、房價）用<b>中位數</b>；眾數可以雙峰、多峰。</span></li><li><b>Weighted mean</b> Σwx ÷ Σw (GPA, average wage: directly averaging 5 wages is wrong).<span class="zhn"><b>加權平均</b> Σwx ÷ Σw（GPA、平均工資：5 種工資直接平均是錯的）。</span></li><li><b>Geometric mean</b>: convert returns to 1 + r (−10% → 0.90), multiply all, take the nth root, then −1.<span class="zhn"><b>幾何平均</b>：報酬率換成 1 + r（−10% → 0.90），全部相乘開 n 次方，再 −1。</span></li><li>80th percentile of 70 rents: L = 0.8 × 71 = 56.8 → 635 + 0.8(649 − 635) = <b>646.2</b>. Q1, Q2, Q3 = 25th, 50th, 75th percentiles.<span class="zhn">70 筆租金 80th：L = 0.8 × 71 = 56.8 → 635 + 0.8(649 − 635) = <b>646.2</b>。Q1、Q2、Q3 = 第 25、50、75 百分位數。</span></li></ul></div>
+<div class="rvsec" data-rsec="3.2"><div class="rvsh"><span class="rvk">3.2</span><h3>Measures of Variability<span class="zhn">離散量數</span></h3><button type="button" class="rvgo" data-rsec="3.2" title="Go to this section in the notes">Notes</button></div><ul class="rvpts"><li>Range = max − min (extremely sensitive to extreme values); <b>IQR = Q3 − Q1</b> (not affected by extreme values).<span class="zhn">全距 = 最大 − 最小（對極端值超敏感）；<b>IQR = Q3 − Q1</b>（不受極端值影響）。</span></li><li>Sample variance s² has denominator <b>n − 1</b> (using x̄ underestimates variability); population σ² has denominator N; standard deviation has the same units as the data.<span class="zhn">樣本變異數 s² 分母 <b>n − 1</b>（用 x̄ 會低估變異）；母體 σ² 分母 N；標準差單位和原資料相同。</span></li><li><b>CV = s / x̄ × 100%</b>, for comparison across units: A (100, 10) 10%, B (1000, 50) 5% → B has smaller relative variability.<span class="zhn"><b>CV = s / x̄ × 100%</b>，跨單位比較：A（100, 10）10%、B（1000, 50）5% → B 相對變異較小。</span></li></ul></div>
+<div class="rvsec" data-rsec="3.3"><div class="rvsh"><span class="rvk">3.3</span><h3>Distribution Shape, Relative Location, Outliers<span class="zhn">分布形狀、相對位置、離群值</span></h3><button type="button" class="rvgo" data-rsec="3.3" title="Go to this section in the notes">Notes</button></div><div class="box tip rvmn"><span class="lbl">Mnemonic</span><span class="zhn"><b>Mnemonic</b></span><ul><li>"Direction follows the tail; the mean runs with the tail"<span class="zhn">「方向看尾巴，平均數跟著尾巴跑」</span></li></ul></div><ul class="rvpts"><li><b>z = (x − x̄) / s</b>: how many standard deviations from the mean.<span class="zhn"><b>z = (x − x̄) / s</b>：離平均幾個標準差。</span></li><li><b>Chebyshev</b> (any distribution): at least 1 − 1/z²: z = 2 → 75%, z = 3 → 88.89%, z = 4 → 93.75%.<span class="zhn"><b>柴比雪夫</b>（任何分布）：至少 1 − 1/z²：z = 2 → 75%、z = 3 → 88.89%、z = 4 → 93.75%。</span></li><li><b>Empirical rule</b> (bell-shaped only): 68%, 95%, 99.7%. If the distribution is unknown, only Chebyshev applies.<span class="zhn"><b>經驗法則</b>（只有鐘形）：68%、95%、99.7%。分布未知只能用柴比雪夫。</span></li><li>Outliers: |z| &gt; 3, or beyond Q1 − 1.5·IQR, Q3 + 1.5·IQR; not necessarily deleted.<span class="zhn">離群值：|z| &gt; 3，或超出 Q1 − 1.5·IQR、Q3 + 1.5·IQR；不一定要刪。</span></li></ul></div>
+<div class="rvsec" data-rsec="3.4"><div class="rvsh"><span class="rvk">3.4</span><h3>Five-Number Summary and Box Plot<span class="zhn">五數摘要與盒鬚圖</span></h3><button type="button" class="rvgo" data-rsec="3.4" title="Go to this section in the notes">Notes</button></div><ul class="rvpts"><li>Five-number summary: minimum, Q1, median, Q3, maximum.<span class="zhn">五數摘要：最小、Q1、中位數、Q3、最大。</span></li><li>Box plot: box spans Q1 to Q3, the line inside is the median; limits only locate and are not drawn; whiskers reach the smallest and largest values within the limits; outliers marked *.<span class="zhn">盒鬚圖：盒子 Q1～Q3、中間一線是中位數；上下限只定位不畫；鬚線到限內的最小最大值；離群值標 *。</span></li><li>Rent: Q1 545, Q3 625, IQR 80 → lower limit 425, upper limit 745.<span class="zhn">租金：Q1 545、Q3 625、IQR 80 → 下限 425、上限 745。</span></li></ul></div>
+<div class="rvsec" data-rsec="3.5"><div class="rvsh"><span class="rvk">3.5</span><h3>Association Between Two Variables<span class="zhn">兩變數的關聯</span></h3><button type="button" class="rvgo" data-rsec="3.5" title="Go to this section in the notes">Notes</button></div><ul class="rvpts"><li>Covariance sxy = Σ(x − x̄)(y − ȳ) / (n − 1): shows direction only, affected by units.<span class="zhn">共變異數 sxy = Σ(x − x̄)(y − ȳ) / (n − 1)：只看方向，受單位影響。</span></li><li>Correlation coefficient <b>r = sxy / (sx·sy)</b>: −1 to +1, unitless, shows direction and strength.<span class="zhn">相關係數 <b>r = sxy / (sx·sy)</b>：−1～+1、無單位，看方向和強度。</span></li><li>Measures only <b>linear</b> relationships; <b>correlation does not imply causation</b>. Golf: the longer the distance, the lower the strokes → r ≈ −0.96.<span class="zhn">只衡量<b>線性</b>關係；<b>相關不等於因果</b>。高爾夫：距離越遠桿數越低 → r ≈ −0.96。</span></li></ul></div>
 </div>
 <div class="rvchap" data-rch="ch4"><h2 class="rvchh">Ch4 Introduction to Probability<span class="zhn">機率導論</span></h2>
-<div class="rvsec" data-rsec="4.1"><div class="rvsh"><span class="rvk">4.1</span><h3>Random Experiments, Sample Space, Counting Rules<span class="zhn">隨機實驗、樣本空間、計數法則</span></h3><button type="button" class="rvgo" data-rsec="4.1" title="Go to this section in the notes">Notes ›</button></div><ul class="rvpts"><li>Sample space S: all experimental outcomes; each outcome is a sample point.<span class="zhn">樣本空間 S：所有實驗結果；每個結果是樣本點。</span></li><li>Multiple-step counting: n₁ × n₂ × … (Bradley 4 × 2 = 8, use a tree diagram).<span class="zhn">多步驟計數：n₁ × n₂ × …（Bradley 4 × 2 = 8，用樹狀圖）。</span></li><li><b>Combination</b> (order does not matter) C(N, n) = N! / [n!(N − n)!]; <b>permutation</b> (order matters) P(N, n) = N! / (N − n)!; P = n! × C; 0! = 1.<span class="zhn"><b>組合</b>（順序不重要）C(N, n) = N! / [n!(N − n)!]；<b>排列</b>（順序重要）P(N, n) = N! / (N − n)!；P = n! × C；0! = 1。</span></li></ul></div>
-<div class="rvsec" data-rsec="4.2"><div class="rvsh"><span class="rvk">4.2</span><h3>Assigning Probabilities<span class="zhn">指派機率</span></h3><button type="button" class="rvgo" data-rsec="4.2" title="Go to this section in the notes">Notes ›</button></div><ul class="rvpts"><li>Two requirements: 0 ≤ P ≤ 1, and all probabilities sum to 1.<span class="zhn">兩個要求：0 ≤ P ≤ 1、全部加起來 = 1。</span></li><li>Classical (equally likely, die 1/6), relative frequency (Lucas: 18 of 40 days → 0.45), subjective (expert judgment).<span class="zhn">古典法（等可能，骰子 1/6）、相對次數法（Lucas：40 天中 18 天 → 0.45）、主觀法（專家判斷）。</span></li><li>Event probability = sum of the probabilities of the sample points it contains.<span class="zhn">事件機率 = 它所含樣本點機率加總。</span></li></ul></div>
-<div class="rvsec" data-rsec="4.3"><div class="rvsh"><span class="rvk">4.3</span><h3>Basic Probability Relationships<span class="zhn">基本機率關係</span></h3><button type="button" class="rvgo" data-rsec="4.3" title="Go to this section in the notes">Notes ›</button></div><ul class="rvpts"><li>Complement P(Aᶜ) = 1 − P(A).<span class="zhn">補集 P(Aᶜ) = 1 − P(A)。</span></li><li><b>Addition law</b> P(A ∪ B) = P(A) + P(B) − P(A ∩ B); Bradley: 0.70 + 0.48 − 0.36 = 0.82.<span class="zhn"><b>加法律</b> P(A ∪ B) = P(A) + P(B) − P(A ∩ B)；Bradley：0.70 + 0.48 − 0.36 = 0.82。</span></li><li>Mutually exclusive → P(A ∩ B) = 0 → just add. Multiplication law P(A ∩ B) = P(B)·P(A|B).<span class="zhn">互斥 → P(A ∩ B) = 0 → 直接相加。乘法律 P(A ∩ B) = P(B)·P(A｜B)。</span></li></ul></div>
-<div class="rvsec" data-rsec="4.4"><div class="rvsh"><span class="rvk">4.4</span><h3>Conditional Probability and Independence<span class="zhn">條件機率與獨立</span></h3><button type="button" class="rvgo" data-rsec="4.4" title="Go to this section in the notes">Notes ›</button></div><ul class="rvpts"><li><b>P(A|B) = P(A ∩ B) / P(B)</b>; from a joint probability table: that cell ÷ the total of B's row (column).<span class="zhn"><b>P(A｜B) = P(A ∩ B) / P(B)</b>；從聯合機率表算：該格 ÷ B 那一列（欄）的合計。</span></li><li>The interior holds joint probabilities, the margins hold marginal probabilities.<span class="zhn">表內是聯合機率，邊緣是邊際機率。</span></li><li><b>Independent</b>: P(A|B) = P(A), equivalent to P(A ∩ B) = P(A)P(B).<span class="zhn"><b>獨立</b>：P(A｜B) = P(A)，等價 P(A ∩ B) = P(A)P(B)。</span></li><li><b>Mutually exclusive ≠ independent</b>: mutually exclusive events with both probabilities &gt; 0 are definitely <b>not</b> independent.<span class="zhn"><b>互斥 ≠ 獨立</b>：兩個機率都 &gt; 0 的互斥事件一定<b>不</b>獨立。</span></li></ul></div>
-<div class="rvsec" data-rsec="4.5"><div class="rvsh"><span class="rvk">4.5</span><h3>Bayes' Theorem<span class="zhn">貝氏定理</span></h3><button type="button" class="rvgo" data-rsec="4.5" title="Go to this section in the notes">Notes ›</button></div><div class="box tip rvmn"><span class="lbl">Mnemonic</span><span class="zhn"><b>Mnemonic</b></span><ul><li>Five table columns: "Events, prior, conditional, joint = prior × conditional, posterior = joint ÷ total"<span class="zhn">表格五欄：「事件、事前、條件、聯合 = 事前 × 條件、事後 = 聯合 ÷ 合計」</span></li></ul></div><ul class="rvpts"><li>Prior P(Aᵢ) → new information B → posterior P(Aᵢ|B); the denominator is the total probability P(B); the Aᵢ must be mutually exclusive and their union everything.<span class="zhn">事前 P(Aᵢ) → 新資訊 B → 事後 P(Aᵢ｜B)；分母是全機率 P(B)；Aᵢ 必須互斥且聯集為全部。</span></li><li>Example: 0.7 × 0.2 = 0.14, 0.3 × 0.9 = 0.27 → P(B) = 0.41 → posteriors 0.3415, 0.6585. The conditional column <b>need not sum to 1</b>.<span class="zhn">例：0.7 × 0.2 = 0.14、0.3 × 0.9 = 0.27 → P(B) = 0.41 → 事後 0.3415、0.6585。條件那一欄加起來<b>不必是 1</b>。</span></li><li>Homework 9: prior 0.02, P(+|C) 0.8, false positive 0.75 → P(C|+) = 0.016 / 0.751 ≈ <b>0.021</b>.<span class="zhn">作業 9：事前 0.02、P(+｜C) 0.8、偽陽性 0.75 → P(C｜+) = 0.016 / 0.751 ≈ <b>0.021</b>。</span></li></ul></div>
+<div class="rvsec" data-rsec="4.1"><div class="rvsh"><span class="rvk">4.1</span><h3>Random Experiments, Sample Space, Counting Rules<span class="zhn">隨機實驗、樣本空間、計數法則</span></h3><button type="button" class="rvgo" data-rsec="4.1" title="Go to this section in the notes">Notes</button></div><ul class="rvpts"><li>Sample space S: all experimental outcomes; each outcome is a sample point.<span class="zhn">樣本空間 S：所有實驗結果；每個結果是樣本點。</span></li><li>Multiple-step counting: n₁ × n₂ × … (Bradley 4 × 2 = 8, use a tree diagram).<span class="zhn">多步驟計數：n₁ × n₂ × …（Bradley 4 × 2 = 8，用樹狀圖）。</span></li><li><b>Combination</b> (order does not matter) C(N, n) = N! / [n!(N − n)!]; <b>permutation</b> (order matters) P(N, n) = N! / (N − n)!; P = n! × C; 0! = 1.<span class="zhn"><b>組合</b>（順序不重要）C(N, n) = N! / [n!(N − n)!]；<b>排列</b>（順序重要）P(N, n) = N! / (N − n)!；P = n! × C；0! = 1。</span></li></ul></div>
+<div class="rvsec" data-rsec="4.2"><div class="rvsh"><span class="rvk">4.2</span><h3>Assigning Probabilities<span class="zhn">指派機率</span></h3><button type="button" class="rvgo" data-rsec="4.2" title="Go to this section in the notes">Notes</button></div><ul class="rvpts"><li>Two requirements: 0 ≤ P ≤ 1, and all probabilities sum to 1.<span class="zhn">兩個要求：0 ≤ P ≤ 1、全部加起來 = 1。</span></li><li>Classical (equally likely, die 1/6), relative frequency (Lucas: 18 of 40 days → 0.45), subjective (expert judgment).<span class="zhn">古典法（等可能，骰子 1/6）、相對次數法（Lucas：40 天中 18 天 → 0.45）、主觀法（專家判斷）。</span></li><li>Event probability = sum of the probabilities of the sample points it contains.<span class="zhn">事件機率 = 它所含樣本點機率加總。</span></li></ul></div>
+<div class="rvsec" data-rsec="4.3"><div class="rvsh"><span class="rvk">4.3</span><h3>Basic Probability Relationships<span class="zhn">基本機率關係</span></h3><button type="button" class="rvgo" data-rsec="4.3" title="Go to this section in the notes">Notes</button></div><ul class="rvpts"><li>Complement P(Aᶜ) = 1 − P(A).<span class="zhn">補集 P(Aᶜ) = 1 − P(A)。</span></li><li><b>Addition law</b> P(A ∪ B) = P(A) + P(B) − P(A ∩ B); Bradley: 0.70 + 0.48 − 0.36 = 0.82.<span class="zhn"><b>加法律</b> P(A ∪ B) = P(A) + P(B) − P(A ∩ B)；Bradley：0.70 + 0.48 − 0.36 = 0.82。</span></li><li>Mutually exclusive → P(A ∩ B) = 0 → just add. Multiplication law P(A ∩ B) = P(B)·P(A|B).<span class="zhn">互斥 → P(A ∩ B) = 0 → 直接相加。乘法律 P(A ∩ B) = P(B)·P(A｜B)。</span></li></ul></div>
+<div class="rvsec" data-rsec="4.4"><div class="rvsh"><span class="rvk">4.4</span><h3>Conditional Probability and Independence<span class="zhn">條件機率與獨立</span></h3><button type="button" class="rvgo" data-rsec="4.4" title="Go to this section in the notes">Notes</button></div><ul class="rvpts"><li><b>P(A|B) = P(A ∩ B) / P(B)</b>; from a joint probability table: that cell ÷ the total of B's row (column).<span class="zhn"><b>P(A｜B) = P(A ∩ B) / P(B)</b>；從聯合機率表算：該格 ÷ B 那一列（欄）的合計。</span></li><li>The interior holds joint probabilities, the margins hold marginal probabilities.<span class="zhn">表內是聯合機率，邊緣是邊際機率。</span></li><li><b>Independent</b>: P(A|B) = P(A), equivalent to P(A ∩ B) = P(A)P(B).<span class="zhn"><b>獨立</b>：P(A｜B) = P(A)，等價 P(A ∩ B) = P(A)P(B)。</span></li><li><b>Mutually exclusive ≠ independent</b>: mutually exclusive events with both probabilities &gt; 0 are definitely <b>not</b> independent.<span class="zhn"><b>互斥 ≠ 獨立</b>：兩個機率都 &gt; 0 的互斥事件一定<b>不</b>獨立。</span></li></ul></div>
+<div class="rvsec" data-rsec="4.5"><div class="rvsh"><span class="rvk">4.5</span><h3>Bayes' Theorem<span class="zhn">貝氏定理</span></h3><button type="button" class="rvgo" data-rsec="4.5" title="Go to this section in the notes">Notes</button></div><div class="box tip rvmn"><span class="lbl">Mnemonic</span><span class="zhn"><b>Mnemonic</b></span><ul><li>Five table columns: "Events, prior, conditional, joint = prior × conditional, posterior = joint ÷ total"<span class="zhn">表格五欄：「事件、事前、條件、聯合 = 事前 × 條件、事後 = 聯合 ÷ 合計」</span></li></ul></div><ul class="rvpts"><li>Prior P(Aᵢ) → new information B → posterior P(Aᵢ|B); the denominator is the total probability P(B); the Aᵢ must be mutually exclusive and their union everything.<span class="zhn">事前 P(Aᵢ) → 新資訊 B → 事後 P(Aᵢ｜B)；分母是全機率 P(B)；Aᵢ 必須互斥且聯集為全部。</span></li><li>Example: 0.7 × 0.2 = 0.14, 0.3 × 0.9 = 0.27 → P(B) = 0.41 → posteriors 0.3415, 0.6585. The conditional column <b>need not sum to 1</b>.<span class="zhn">例：0.7 × 0.2 = 0.14、0.3 × 0.9 = 0.27 → P(B) = 0.41 → 事後 0.3415、0.6585。條件那一欄加起來<b>不必是 1</b>。</span></li><li>Homework 9: prior 0.02, P(+|C) 0.8, false positive 0.75 → P(C|+) = 0.016 / 0.751 ≈ <b>0.021</b>.<span class="zhn">作業 9：事前 0.02、P(+｜C) 0.8、偽陽性 0.75 → P(C｜+) = 0.016 / 0.751 ≈ <b>0.021</b>。</span></li></ul></div>
 </div>
 </div>
 </section>

@@ -152,7 +152,7 @@
       setTimeout(()=>arm(v),60);
       const eb=v.querySelector(".vhead .eyebrow");if(eb&&!eb.dataset.fxTyped)type(eb);}}));
     views.forEach(v=>mo.observe(v,{attributes:true,attributeFilter:["hidden"]}));
-    const v=views.find(x=>!x.hidden);if(v)type(v.querySelector(".vhead .eyebrow"));
+    const v=views.find(x=>!x.hidden);const e0=v&&v.querySelector(".vhead .eyebrow");if(e0)type(e0);
   }
   setTimeout(()=>arm(document),120);
 

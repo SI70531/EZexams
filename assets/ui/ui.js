@@ -146,3 +146,5 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", () => UI.init());
   else UI.init();
 })();
+
+document.documentElement.classList.add("js");

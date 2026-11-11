@@ -46,7 +46,7 @@
 .eg-acct,.eg-reg,.eg-pinrow{display:none}
 .eg-ticket[data-mode="login"] .eg-acct,.eg-ticket[data-mode="register"] .eg-acct{display:block}.eg-ticket[data-mode="register"] .eg-reg{display:block}
 .eg-ticket[data-mode="pin"] .eg-pinrow,.eg-ticket[data-mode="setpin"] .eg-pinrow{display:block}
-.eg-in{display:block;width:100%;margin:0 0 12px;padding:11px 12px;font:500 16px var(--f-body);color:var(--ink);background:var(--paper2);border:1.5px solid var(--line-strong);border-bottom-width:3px;border-radius:8px;outline:none}
+.eg-in{display:block;width:100%;margin:0 0 12px;padding:11px 12px;font:500 16px var(--f-body);color:var(--ink);background:var(--paper2);border:1.5px solid var(--muted);border-bottom-width:3px;border-radius:8px;outline:none}
 .eg-in:focus{border-color:var(--indigo);background:var(--indigo-soft)}
 .eg-acct.bad .eg-in{border-color:var(--seal);animation:egshake .35s}
 .eg-who{font-weight:700;color:var(--ink)}

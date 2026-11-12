@@ -1,3 +1,4 @@
 .impeccable/config.local.json
 .claude/settings.local.json
 .claude/skills/impeccable/scripts/bin/windows-x64/impeccable.exe
+tools/bank.json

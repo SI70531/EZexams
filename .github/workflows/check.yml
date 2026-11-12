@@ -1,0 +1,25 @@
+# Checks every push: page structure (tools/check.py) and a headless-browser smoke test of every page (tools/smoke.py).
+# Problems show up as error annotations on the run; continue-on-error keeps the run green, so no failure emails.
+name: Check pages
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  check:
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Page structure
+        run: python3 tools/check.py | tee check.log || { grep -v " ok$" check.log | while IFS= read -r l; do echo "::error::$l"; done; exit 1; }
+      - uses: actions/setup-python@v5
+        if: always()
+        with:
+          python-version: "3.12"
+      - name: Browser smoke test
+        if: always()
+        run: |
+          pip install -q playwright
+          python -m playwright install --with-deps chromium >/dev/null
+          python tools/smoke.py | tee smoke.log || { grep -vE " (ok|FAIL)$" smoke.log | while IFS= read -r l; do echo "::error::$l"; done; exit 1; }

@@ -4,6 +4,9 @@
 name: Deploy Worker
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["tools/ezexams-worker.js", "tools/bank.enc.json", "tools/wrangler.toml", "tools/wrangler-twstock.toml"]
 jobs:
   deploy:
     continue-on-error: true
@@ -12,6 +15,7 @@ jobs:
       HAS_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      BANK_KEY: ${{ secrets.BANK_KEY }}
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -20,6 +24,17 @@ jobs:
       - name: Skip when Cloudflare is not set up yet
         if: env.HAS_TOKEN != 'true'
         run: echo "Add the CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID repository secrets to deploy the Worker."
+      - name: Stop when the BANK_KEY secret is missing
+        if: env.HAS_TOKEN == 'true' && env.BANK_KEY == ''
+        run: |
+          echo "::error::Add the BANK_KEY repository secret (it decrypts tools/bank.enc.json). The live Worker was left as it is."
+          exit 1
+      - name: Store BANK_KEY in both Workers
+        if: env.HAS_TOKEN == 'true'
+        working-directory: tools
+        run: |
+          printf '%s' "$BANK_KEY" | npx --yes wrangler@4 secret put BANK_KEY
+          printf '%s' "$BANK_KEY" | npx --yes wrangler@4 secret put BANK_KEY --config wrangler-twstock.toml
       - name: Deploy with Wrangler
         if: env.HAS_TOKEN == 'true'
         working-directory: tools

@@ -32,7 +32,19 @@
    Secrets (Settings → Variables and Secrets): GEMINI_KEY, SUPABASE_SECRET_KEY (device PINs).
    Deployed by .github/workflows/worker.yml with tools/wrangler.toml. Google does not offer Gemini in Hong Kong, where
    Taiwanese visitors are often served from, so the Gemini call goes through the GeminiRelay Durable Object in North America. */
-import BANK from "./bank.json";
+import BANK_ENC from "./bank.enc.json";
+/* The question bank is committed only encrypted (tools/bank.py); BANK_KEY (a Worker secret) decrypts it once per isolate. */
+let BANK_P = null;
+function loadBank(env) {
+  if (!BANK_P) BANK_P = (async () => {
+    if (!env.BANK_KEY) throw new Error("The Worker has no BANK_KEY secret yet");
+    const b64 = x => Uint8Array.from(atob(x), c => c.charCodeAt(0));
+    const k = await crypto.subtle.importKey("raw", b64(env.BANK_KEY), "AES-GCM", false, ["decrypt"]);
+    const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64(BANK_ENC.iv) }, k, b64(BANK_ENC.data));
+    return JSON.parse(new TextDecoder().decode(pt));
+  })().catch(e => { BANK_P = null; throw e; });
+  return BANK_P;
+}
 const ALLOWED = ["https://si70531.github.io"];
 /* the Supabase project; the publishable key is meant to be public (it only works together with Row Level Security) */
 const SUPABASE_URL = "https://jyfmolrqxypufwjqexan.supabase.co";
@@ -640,6 +652,7 @@ async function adoptId(uid, s, key, slot) {
   return [...new Uint8Array(d)].slice(0, 16).map(x => x.toString(16).padStart(2, "0")).join("");
 }
 async function genAdopt(env, acct, who, bodyText, json, fail) {
+  let BANK; try { BANK = await loadBank(env); } catch (e) { return fail(500, "INTERNAL", String(e.message || e)); }
   if (!env.GUARD) return fail(500, "INTERNAL", "The Worker has no GUARD binding");
   let r; try { r = JSON.parse(bodyText); } catch (e) { return fail(400, "BAD_JSON", "Body is not JSON"); }
   const kind = r.kind === "w" ? "w" : "mc", s = String(r.s || ""), key = String(r.key || ""), setKey = kind === "w" ? "w:" + key : key;
@@ -668,6 +681,7 @@ async function genAdopt(env, acct, who, bodyText, json, fail) {
 }
 /* questions from before AI practice (tools/bank.json), by slot. The answer of a slot is only sent with the pick for it. */
 async function bankOpen(env, who, bodyText, json, fail) {
+  let BANK; try { BANK = await loadBank(env); } catch (e) { return fail(500, "INTERNAL", String(e.message || e)); }
   let r; try { r = JSON.parse(bodyText); } catch (e) { return fail(400, "BAD_JSON", "Body is not JSON"); }
   const set = BANK[String(r.s || "")] && BANK[String(r.s)][String(r.key || "")];
   if (!set) return fail(404, "NOT_FOUND", "Unknown question set");
@@ -766,6 +780,7 @@ ans
   ].join("\n");
 }
 async function wgrade(env, acct, who, bodyText, json, fail) {
+  let BANK; try { BANK = await loadBank(env); } catch (e) { return fail(500, "INTERNAL", String(e.message || e)); }
   if (!env.GEMINI_KEY) return fail(500, "INTERNAL", "The Worker has no GEMINI_KEY secret yet");
   let r; try { r = JSON.parse(bodyText); } catch (e) { return fail(400, "BAD_JSON", "Body is not JSON"); }
   const blank = !clip(r.ans, 4000).trim(), notes = clip(r.notes, 9000);
@@ -803,6 +818,7 @@ async function wgrade(env, acct, who, bodyText, json, fail) {
   });
 }
 async function wbankOpen(env, who, bodyText, json, fail) {
+  let BANK; try { BANK = await loadBank(env); } catch (e) { return fail(500, "INTERNAL", String(e.message || e)); }
   let r; try { r = JSON.parse(bodyText); } catch (e) { return fail(400, "BAD_JSON", "Body is not JSON"); }
   const set = BANK[String(r.s || "")] && BANK[String(r.s)]["w:" + String(r.key || "")];
   if (!set) return fail(404, "NOT_FOUND", "Unknown question set");

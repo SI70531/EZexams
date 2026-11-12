@@ -112,7 +112,7 @@ To turn on sync for a new subject page, add this line just before the page's mai
 - Chapter exercises generate one question at a time from the chapter notes; the next one is requested after each answer.
 - Wrong answers return as new questions on the same topic. Answers and explanations stay on the Worker until you answer.
 - Mock exams are generated as a whole paper. Written parts are graded by the Worker, which also returns a model answer.
-- Requires a signed-in account. After changing the Worker, run the *Deploy Worker* workflow.
+- Requires a signed-in account. The *Deploy Worker* workflow runs by itself after the Worker changes.
 
 AI grading works without any setup once you are signed in. The pages send requests through a small Cloudflare Worker (`tools/ezexams-worker.js`), which talks to Google Gemini. The API key stays on the server, so it never appears on the website.
 
@@ -129,6 +129,23 @@ A GitHub Action runs every morning and emails you if:
 - The Gemini key stops working.
 
 It also collects errors that visitors' browsers report (message, file, and page only) into a GitHub issue called "Website error reports".
+
+## Question Bank (encrypted)
+
+The questions and answers that predate AI practice live in `tools/bank.enc.json`, encrypted with AES-256-GCM, because the repo and the site are public. The Worker decrypts it with the `BANK_KEY` secret. To edit it:
+
+```
+BANK_KEY=... python3 tools/bank.py decrypt   # writes tools/bank.json (git-ignored)
+BANK_KEY=... python3 tools/bank.py encrypt   # writes tools/bank.enc.json, commit this file
+```
+
+`BANK_KEY` must also be a repository secret: the *Deploy Worker* workflow copies it into both Workers.
+
+## Automatic Checks
+
+- **Check pages** (every push): `tools/check.py` checks that every tag is closed, that no id is used twice, and that every written question has a keyword rule; `tools/smoke.py` opens every page in a headless browser and checks for script errors, empty interactive figures, missing tabs and the home page's term order.
+- **Deploy Worker** runs by itself when the Worker, its config or the bank changes.
+- **Stamp asset versions** runs on every push that changes a page, script or stylesheet.
 
 ## Cache Refresh
 

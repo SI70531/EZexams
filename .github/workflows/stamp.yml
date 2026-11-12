@@ -1,9 +1,15 @@
 # Keeps the ?v=<hash> on script/stylesheet links up to date, so visitors never get a stale cached file.
+# Runs on every push that touches a page or a shared asset; its own commit touches only pages, and pushes made with
+# the default GITHUB_TOKEN do not start new workflow runs, so it cannot loop.
 name: Stamp asset versions
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["**.html", "**.js", "**.css", "!tools/**"]
 permissions:
   contents: write
+concurrency: stamp
 jobs:
   stamp:
     continue-on-error: true
@@ -17,5 +23,5 @@ jobs:
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git commit -am "Stamp asset versions"
-            git push
+            git pull --rebase -q && git push
           fi

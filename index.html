@@ -104,7 +104,6 @@
     </div>
   </section>
   </div>
-  </div>
   </section>
   <section class="term" data-term="final">
   <h2 class="termh">Final prep</h2>
@@ -164,10 +163,11 @@
     if(all.length&&all.every(el=>el.classList.contains("past")))done.push(t);
     /* finished exams fold into one closed box at the bottom of the term */
     const past=all.filter(el=>el.classList.contains("past"));
-    if(past.length&&past.length<all.length){
+    if(past.length){
       const d=document.createElement("details");d.className="pastbox";
       d.innerHTML='<summary>Finished subjects ('+past.length+')</summary><div class="subjgrid pastgrid"></div>';
       past.forEach(el=>d.lastElementChild.appendChild(el));g.after(d);
+      if(past.length===all.length)g.hidden=true;   /* every exam of the term is over: only the closed box is left */
     }});
   done.forEach(t=>terms.appendChild(t));
 })();

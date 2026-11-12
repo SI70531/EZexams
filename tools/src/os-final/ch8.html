@@ -1,0 +1,223 @@
+<section role="tabpanel" class="view" id="ch8" hidden><div class="vhead"><div class="pcb" data-pcb="ch8" role="img"></div><h1>Ch8 Mass-Storage Systems<span class="zhn">大量儲存系統</span></h1><p>Magnetic disks and their timing, SSDs and tape, disk structure, disk attachment (host, NAS, SAN), disk scheduling (FCFS, SSTF, SCAN, C-SCAN, LOOK, C-LOOK), RAID, and stable storage. After reading, do the Multiple-choice question, Short Answer and Essay at the bottom.<span class="zhn">磁碟與存取時間、SSD 與磁帶、磁碟結構、磁碟連接方式（host、NAS、SAN）、磁碟排程（FCFS、SSTF、SCAN、C-SCAN、LOOK、C-LOOK）、RAID、穩定儲存。</span></p></div>
+
+<h3 data-sec="8.1">8.1 Magnetic Disks <span class="star">★★★</span><span class="zhn">磁碟</span></h3>
+<div class="box zh"><span class="lbl">In plain words</span>A disk is a stack of spinning platters with an arm of read-write heads. To read a block the arm first <b>moves to the right track</b> (seek), then <b>waits for the sector to spin under the head</b> (rotational latency), then <b>transfers</b> the data.<span class="zhn"><b>白話</b> 磁碟是一疊旋轉的盤片加一支讀寫頭手臂。讀一塊資料要先<b>把手臂移到對的磁軌</b>（seek），再<b>等那個 sector 轉到讀寫頭下</b>（rotational latency），最後<b>傳資料</b>。</span></div>
+<div class="fig" data-sfig="1"><svg aria-hidden="true" viewBox="0 0 640 200" width="580" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="13">
+<g data-step="0"><ellipse cx="200" cy="60" rx="150" ry="28" fill="#dbe8fb" stroke="#1f5fbf"/><ellipse cx="200" cy="110" rx="150" ry="28" fill="#dbe8fb" stroke="#1f5fbf"/><ellipse cx="200" cy="160" rx="150" ry="28" fill="#dbe8fb" stroke="#1f5fbf"/></g>
+<line data-step="1" x1="200" y1="30" x2="200" y2="195" stroke="#1d2433" stroke-width="3"/><text data-step="1" x="210" y="20" font-size="11">spindle</text>
+<ellipse data-step="2" cx="200" cy="60" rx="95" ry="17" fill="none" stroke="#b3261e" stroke-width="2"/><text data-step="2" x="60" y="20" font-size="11" fill="#b3261e">track t</text>
+<ellipse data-step="3" cx="200" cy="110" rx="95" ry="17" fill="none" stroke="#b3261e" stroke-width="1.5" stroke-dasharray="4 3"/><ellipse data-step="3" cx="200" cy="160" rx="95" ry="17" fill="none" stroke="#b3261e" stroke-width="1.5" stroke-dasharray="4 3"/>
+<line data-step="4" x1="560" y1="60" x2="300" y2="60" stroke="#8a5a00" stroke-width="5"/><line data-step="4" x1="560" y1="110" x2="300" y2="110" stroke="#8a5a00" stroke-width="5"/><line data-step="4" x1="560" y1="160" x2="300" y2="160" stroke="#8a5a00" stroke-width="5"/><line data-step="4" x1="560" y1="40" x2="560" y2="180" stroke="#8a5a00" stroke-width="5"/>
+<text data-step="5" x="360" y="50" font-size="11">read-write head on disk arm</text><text data-step="5" x="568" y="196" font-size="11">arm assembly</text>
+<text data-step="6" x="345" y="134" font-size="11" fill="#b3261e">cylinder c = track t on every platter</text>
+</svg><div class="cap">Moving-head disk mechanism: platters, tracks, the cylinder formed by one track on each platter, and the arm of heads.<span class="zhn">移動式讀寫頭磁碟：盤片、磁軌、各盤片同一磁軌組成的 cylinder，以及讀寫頭手臂。</span></div></div>
+<ul>
+<li>Drives rotate 60 to 250 times per second. <b>Transfer rate</b> = rate at which data flow between drive and computer.<span class="zhn">每秒轉 60 到 250 圈。<b>傳輸率</b>＝磁碟與電腦之間資料流動的速率。</span></li>
+<li><b>Positioning time</b> (random-access time) = <b>seek time</b> (move the arm to the desired cylinder) + <b>rotational latency</b> (time for the desired sector to rotate under the head).<span class="zhn"><b>定位時間</b>（隨機存取時間）＝<b>seek time</b>（手臂移到目標 cylinder）＋ <b>rotational latency</b>（目標 sector 轉到讀寫頭下的時間）。</span></li>
+<li><b>Head crash</b>: the head touches the disk surface; that's bad. Disks can be removable.<span class="zhn"><b>Head crash</b>：讀寫頭碰到盤面，很糟。磁碟可以是可移除的。</span></li>
+<li>A drive attaches through an <b>I/O bus</b> (EIDE, ATA, SATA, USB, Fibre Channel, SCSI, SAS, FireWire). The <b>host controller</b> in the computer uses the bus to talk to the <b>disk controller</b> built into the drive or storage array.<span class="zhn">磁碟透過 <b>I/O bus</b>（EIDE、ATA、SATA、USB、Fibre Channel、SCSI、SAS、FireWire）連接。電腦端的 <b>host controller</b> 經 bus 跟磁碟裡（或儲存陣列裡）的 <b>disk controller</b> 溝通。</span></li>
+<li>Typical figures: platters 0.85" to 14" (commonly 3.5", 2.5", 1.8"); 30 GB to 3 TB per drive; theoretical transfer rate 6 Gb/s, effective about 1 Gb/s; seek time 3 to 12 ms (9 ms common for desktop drives).<span class="zhn">常見數字：盤片 0.85" 到 14"（常見 3.5"、2.5"、1.8"）；每台 30 GB 到 3 TB；理論傳輸率 6 Gb/s、實際約 1 Gb/s；seek time 3 到 12 ms（桌機常見 9 ms）。</span></li>
+</ul>
+<div class="box en"><span class="lbl">FORMULAS</span>Average latency = ½ × one rotation = ½ × 60 ÷ RPM seconds.<br><b>Access latency = average access time = average seek time + average latency.</b><br><b>Average I/O time = average access time + (amount to transfer ÷ transfer rate) + controller overhead.</b><div class="zhtr"><span>中文</span>平均旋轉延遲＝轉半圈的時間＝½ × 60 ÷ RPM 秒。存取延遲＝平均 seek time＋平均旋轉延遲。平均 I/O 時間＝平均存取時間＋（資料量 ÷ 傳輸率）＋控制器負擔。</div></div>
+<div class="calc">4 KB block, 7200 RPM, average seek 5 ms, 1 Gb/s transfer, 0.1 ms controller overhead
+one rotation   = 60 / 7200 s = 8.33 ms → average latency = 4.17 ms
+transfer       = 4 KB / 1 Gb/s = 4 / 131072 s ≈ 0.03 ms
+average I/O    = 5 + 4.17 + 0.03 + 0.1 ≈ 9.30 ms
+(the slide writes the transfer as 0.12 ms and gets 9.39 ms)<span class="zhn">4 KB、7200 RPM、平均 seek 5 ms、傳輸率 1 Gb/s、控制器負擔 0.1 ms
+轉一圈 = 60 / 7200 秒 = 8.33 ms → 平均旋轉延遲 = 4.17 ms
+傳輸 = 4 KB / 1 Gb/s = 4 / 131072 秒 ≈ 0.03 ms
+平均 I/O = 5 + 4.17 + 0.03 + 0.1 ≈ 9.30 ms
+（投影片把傳輸寫成 0.12 ms，得到 9.39 ms）</span></div>
+<div class="box warn"><span class="lbl">Note on the slide's number</span>1 Gb/s = 2<sup>30</sup> bits/s = 131,072 KB/s, so 4 KB takes about 0.03 ms. The slide's "0.12 ms" does not follow from its own fraction 4/131072. On the exam, write every step (seek + latency + transfer + overhead); the method earns the points.<span class="zhn"><b>投影片數字的說明</b> 1 Gb/s = 2<sup>30</sup> bits/s = 131,072 KB/s，所以 4 KB 約 0.03 ms。投影片寫的「0.12 ms」和它自己的 4/131072 對不起來。考試時每一步（seek＋latency＋傳輸＋overhead）都寫出來，方法才是得分重點。</span></div>
+<h4>Solid-State Disks and Magnetic Tape<span class="zhn">固態硬碟與磁帶</span></h4>
+<table class="ezfull" data-fit="1">
+<tr><th></th><th class="l">Solid-state disk (SSD)</th><th class="l">Magnetic tape<span class="zhn">磁帶</span></th></tr>
+<tr><td>What<span class="zhn">是什麼</span></td><td class="l">Nonvolatile memory used like a hard drive; many technology variations.<span class="zhn">當硬碟用的非揮發性記憶體；技術種類很多。</span></td><td class="l">Early secondary-storage medium, evolved from open spools to cartridges; relatively permanent and holds large quantities of data (200 GB to 1.5 TB; LTO-3/4/5, T10000).<span class="zhn">早期的次級儲存，從開放捲盤演變成卡匣；可長久保存、容量大（200 GB 到 1.5 TB；LTO-3/4/5、T10000）。</span></td></tr>
+<tr><td>Pros<span class="zhn">優點</span></td><td class="l">Can be more reliable than HDDs; much faster; <b>no moving parts, so no seek time or rotational latency</b>. Buses can be too slow, so some connect directly to PCI.<span class="zhn">可能比 HDD 可靠；快很多；<b>沒有機械零件，所以沒有 seek time 和旋轉延遲</b>。bus 可能太慢，有的直接接 PCI。</span></td><td class="l">Once data is under the head, transfer rates are comparable to disk (140 MB/s and more).<span class="zhn">資料一到讀寫頭下，傳輸率跟磁碟差不多（140 MB/s 以上）。</span></td></tr>
+<tr><td>Cons<span class="zhn">缺點</span></td><td class="l">More expensive per MB; maybe shorter life span; less capacity (previously).<span class="zhn">每 MB 較貴；壽命可能較短；容量較小（以前）。</span></td><td class="l">Access time slow: random access about <b>1,000 times slower</b> than disk. Mainly for backup, infrequently used data, transfer between systems.<span class="zhn">存取慢：隨機存取比磁碟慢約 <b>1,000 倍</b>。主要用來備份、放少用的資料、在系統間搬資料。</span></td></tr>
+</table>
+
+<h3 data-sec="8.2">8.2 Disk Structure <span class="star">★★</span><span class="zhn">磁碟結構</span></h3>
+<ul>
+<li>Disk drives are addressed as large <b>1-dimensional arrays of logical blocks</b>; the logical block is the <b>smallest unit of transfer</b>. Low-level formatting creates logical blocks on the physical media.<span class="zhn">磁碟被當成一個很大的<b>一維邏輯區塊陣列</b>來定址；邏輯區塊是<b>最小的傳輸單位</b>。低階格式化在實體媒介上建立邏輯區塊。</span></li>
+<li>The array is mapped into the sectors <b>sequentially</b>: sector 0 is the first sector of the first track on the <b>outermost cylinder</b>; mapping proceeds through that track, then the rest of the tracks in that cylinder, then the rest of the cylinders from outermost to innermost.<span class="zhn">這個陣列<b>依序</b>對應到 sector：sector 0 是<b>最外圈 cylinder</b> 第一條磁軌的第一個 sector；先走完那條磁軌，再走同一 cylinder 的其他磁軌，再從外往內走其他 cylinder。</span></li>
+<li>Logical-to-physical translation should be easy, except for <b>bad sectors</b> and a non-constant number of sectors per track (with constant angular velocity).<span class="zhn">邏輯轉實體應該很簡單，但有<b>壞軌</b>，而且每條磁軌的 sector 數不一定相同（constant angular velocity）。</span></li>
+</ul>
+
+<h3 data-sec="8.3">8.3 Disk Attachment: Host, Storage Array, NAS, SAN <span class="star">★★</span><span class="zhn">磁碟連接方式</span></h3>
+<table class="ezfull" data-fit="1">
+<tr><th>Type<span class="zhn">類型</span></th><th class="l">Key points<span class="zhn">重點</span></th></tr>
+<tr><td>Host-attached storage</td><td class="l">Accessed through I/O ports talking to I/O buses. <b>SCSI</b> is a bus with up to 16 devices on one cable; the SCSI initiator requests an operation and SCSI targets perform it; each target can have up to 8 logical units (LUNs). <b>FC</b> (Fibre Channel) is a high-speed serial architecture; it can be a switched fabric with a 24-bit address space, the basis of SANs. I/O is directed to bus ID, device ID, logical unit (LUN).<span class="zhn">透過 I/O port 接 I/O bus。<b>SCSI</b> 是 bus，一條線最多 16 個裝置；initiator 發要求、target 執行；每個 target 最多 8 個 logical unit（LUN）。<b>FC</b>（光纖通道）是高速序列架構，可做成 24 位元位址的交換網路，是 SAN 的基礎。I/O 指向 bus ID、device ID、LUN。</span></td></tr>
+<tr><td>Storage array</td><td class="l">Attach disks or arrays of disks. Has controller(s), ports to connect hosts, memory and controlling software (sometimes NVRAM), a few to thousands of disks; provides RAID, hot spares, hot swap. Shared storage → more efficiency.<span class="zhn">可以接磁碟或磁碟陣列。有控制器、接 host 的 port、記憶體與控制軟體（有時有 NVRAM）、幾顆到幾千顆磁碟；提供 RAID、hot spare、熱插拔。共用儲存 → 更有效率。</span></td></tr>
+<tr><td>NAS (network-attached storage)</td><td class="l">Storage made available <b>over a network</b> rather than a local connection such as a bus. Remotely attaches to <b>file systems</b>; NFS and CIFS are common protocols, implemented via <b>RPCs</b> between host and storage over TCP or UDP on an IP network. <b>iSCSI</b> uses the IP network to carry the SCSI protocol, remotely attaching to <b>devices (blocks)</b>.<span class="zhn">儲存<b>透過網路</b>提供，而不是 bus 那種本地連線。遠端掛載<b>檔案系統</b>；常用協定 NFS、CIFS，用 host 與儲存之間的 <b>RPC</b>，跑在 IP 網路的 TCP 或 UDP 上。<b>iSCSI</b> 用 IP 網路傳 SCSI 協定，遠端掛載<b>裝置（區塊）</b>。</span></td></tr>
+<tr><td>SAN (storage-area network)</td><td class="l">Common in large storage environments: multiple hosts attached to multiple storage arrays, flexible. A SAN is one or more storage arrays connected to one or more <b>Fibre Channel switches</b>; hosts also attach to the switches. Easy to add or remove storage and to add a new host and allocate it storage, over a low-latency FC fabric. (iSCSI and FCoE blur the line between storage and communication networks.)<span class="zhn">大型儲存環境常見：多台 host 接多個儲存陣列，很彈性。SAN＝一或多個儲存陣列接到一或多台 <b>Fibre Channel 交換器</b>，host 也接到交換器。新增／移除儲存、加 host 並分配空間都容易，走低延遲的 FC 網路。（iSCSI、FCoE 讓儲存網路和通訊網路的界線變模糊。）</span></td></tr>
+</table>
+<div class="box tip"><span class="lbl">NAS vs. SAN in one line</span>NAS shares <b>files</b> over the ordinary LAN (NFS, CIFS); SAN shares <b>blocks</b> over a separate storage network (Fibre Channel switches).<span class="zhn"><b>NAS 與 SAN 一句話</b> NAS 走一般區域網路分享<b>檔案</b>（NFS、CIFS）；SAN 走獨立的儲存網路（FC 交換器）分享<b>區塊</b>。</span></div>
+
+<h3 data-sec="8.4">8.4 Disk Scheduling <span class="star">★★★</span><span class="zhn">磁碟排程</span></h3>
+<ul>
+<li>The OS must use the hardware efficiently: for disks this means a fast <b>access time</b> and high <b>disk bandwidth</b>. Minimize seek time; <b>seek time ≈ seek distance</b>.<span class="zhn">OS 要有效使用硬體：對磁碟就是<b>存取時間</b>要快、<b>磁碟頻寬</b>要高。要讓 seek time 最小；<b>seek time ≈ seek distance</b>。</span></li>
+<li><b>Disk bandwidth</b> = total number of bytes transferred ÷ total time between the first request for service and the completion of the last transfer.<span class="zhn"><b>磁碟頻寬</b>＝傳輸的總 bytes ÷（從第一個要求到最後一次傳輸完成的總時間）。</span></li>
+<li>I/O requests come from the OS, system processes and user processes; each includes input or output mode, disk address, memory address and number of sectors. The OS keeps a <b>queue of requests</b> per disk; an idle disk serves a request at once, a busy disk makes work queue. Optimization only makes sense <b>when a queue exists</b>.<span class="zhn">I/O 要求來自 OS、系統 process、使用者 process；每個包含讀或寫、磁碟位址、記憶體位址、sector 數。OS 為每個磁碟維護<b>要求佇列</b>；磁碟閒著就馬上做，忙就排隊。只有<b>有佇列時</b>排程才有意義。</span></li>
+</ul>
+<p>Every example uses cylinders <b>0 to 199</b>, request queue <b>98, 183, 37, 122, 14, 124, 65, 67</b> and the head starting at <b>53</b>.<span class="zhn">範例都用 cylinder <b>0 到 199</b>，要求佇列 <b>98, 183, 37, 122, 14, 124, 65, 67</b>，讀寫頭從 <b>53</b> 開始。</span></p>
+<div class="algmenu" role="list" data-menu="ds8"><button type="button" class="algcard" role="listitem" data-alg-open="ds8-1"><span class="an">Order</span><b>FCFS <span class="star">★★★</span></b><span class="zhn2">先到先服務，640</span><span class="sl">Slide 21</span></button><button type="button" class="algcard" role="listitem" data-alg-open="ds8-2"><span class="an">Greedy</span><b>SSTF <span class="star">★★★</span></b><span class="zhn2">最短尋找時間優先，236</span><span class="sl">Slide 22 to 23</span></button><button type="button" class="algcard" role="listitem" data-alg-open="ds8-3"><span class="an">Sweep</span><b>SCAN (elevator) <span class="star">★★★</span></b><span class="zhn2">電梯演算法</span><span class="sl">Slide 24 to 25</span></button><button type="button" class="algcard" role="listitem" data-alg-open="ds8-4"><span class="an">Sweep</span><b>C-SCAN <span class="star">★★</span></b><span class="zhn2">環狀掃描</span><span class="sl">Slide 26 to 27</span></button><button type="button" class="algcard" role="listitem" data-alg-open="ds8-5"><span class="an">Sweep</span><b>LOOK and C-LOOK <span class="star">★★</span></b><span class="zhn2">只走到最後一個要求</span><span class="sl">Slide 28 to 29</span></button><button type="button" class="algcard" role="listitem" data-alg-open="ds8-6"><span class="an">Choice</span><b>Selecting an algorithm</b><span class="zhn2">怎麼選演算法</span><span class="sl">Slide 30</span></button></div>
+
+<div class="algp" data-alg="ds8-1" data-menu="ds8" hidden>
+<h4 class="alg"><span class="an">Order</span>FCFS (First-Come, First-Served)<span class="sl">Slide 21</span><span class="zhn">先到先服務</span></h4>
+<p>Serve requests in the order they arrive. Fair, but the head swings wildly across the disk.<span class="zhn">照到達順序服務。公平，但讀寫頭在磁碟上大幅來回擺動。</span></p>
+<div class="calc">53 → 98 → 183 → 37 → 122 → 14 → 124 → 65 → 67
+  45 + 85 + 146 + 85 + 108 + 110 + 59 + 2 = 640 cylinders<span class="zhn">53 → 98 → 183 → 37 → 122 → 14 → 124 → 65 → 67
+  45 + 85 + 146 + 85 + 108 + 110 + 59 + 2 = 640 個 cylinder</span></div>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="ds8-2" data-menu="ds8" hidden>
+<h4 class="alg"><span class="an">Greedy</span>SSTF (Shortest Seek Time First)<span class="sl">Slide 22 to 23</span><span class="zhn">最短尋找時間優先</span></h4>
+<p>Select the request with the <b>minimum seek time from the current head position</b>. A form of SJF scheduling; <b>may cause starvation</b> of some requests (far-away requests keep getting skipped).<span class="zhn">選離<b>目前讀寫頭最近</b>的要求。是 SJF 的一種；<b>可能讓某些要求飢餓</b>（遠的一直被跳過）。</span></p>
+<div class="calc">53 → 65 → 67 → 37 → 14 → 98 → 122 → 124 → 183
+  12 + 2 + 30 + 23 + 84 + 24 + 2 + 59 = 236 cylinders<span class="zhn">53 → 65 → 67 → 37 → 14 → 98 → 122 → 124 → 183
+  12 + 2 + 30 + 23 + 84 + 24 + 2 + 59 = 236 個 cylinder</span></div>
+<div class="box warn"><span class="lbl">Common deduction</span>At 67 the nearest request is 37 (distance 30), not 98 (distance 31). Check both sides at every step. SSTF is <b>not optimal</b>: 53 → 37 → 14 → 65 → … gives 208.<span class="zhn"><b>常見扣分</b> 在 67 時最近的是 37（距離 30），不是 98（距離 31）。每一步都要比兩邊。SSTF <b>不是最佳</b>：53 → 37 → 14 → 65 → … 只要 208。</span></div>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="ds8-3" data-menu="ds8" hidden>
+<h4 class="alg"><span class="an">Sweep</span>SCAN (elevator algorithm)<span class="sl">Slide 24 to 25</span><span class="zhn">電梯演算法</span></h4>
+<p>The arm starts at one end of the disk and moves toward the other end, servicing requests until it gets to <b>the end of the disk</b>, where the head movement is reversed and servicing continues. If requests are uniformly dense, the largest density is at the other end and those requests wait the longest.<span class="zhn">手臂從磁碟一端往另一端移，沿路服務要求，一直走到<b>磁碟的盡頭</b>才回頭，回程繼續服務。若要求平均分布，回頭時另一端累積的最多，它們等最久。</span></p>
+<div class="calc">head moving toward 0:
+53 → 37 → 14 → 0 → 65 → 67 → 98 → 122 → 124 → 183
+  (53 − 0) + (183 − 0) = 53 + 183 = 236 cylinders<span class="zhn">讀寫頭往 0 的方向：
+53 → 37 → 14 → 0 → 65 → 67 → 98 → 122 → 124 → 183
+  (53 − 0) + (183 − 0) = 53 + 183 = 236 個 cylinder</span></div>
+<div class="box warn"><span class="lbl">The slide says 208</span>The slide's SCAN figure reports <b>208</b>, which is what you get if the arm turns at 14 instead of going to 0, i.e. LOOK. Strict SCAN goes to the end (0) and gives <b>236</b>. On the exam, state the direction and whether the arm goes to the end, then show the sum.<span class="zhn"><b>投影片寫 208</b> 投影片 SCAN 那張圖寫 <b>208</b>，那是手臂在 14 就回頭（沒走到 0）的結果，也就是 LOOK。嚴格的 SCAN 要走到盡頭 0，結果是 <b>236</b>。考試時先寫方向、有沒有走到底，再列加總。</span></div>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="ds8-4" data-menu="ds8" hidden>
+<h4 class="alg"><span class="an">Sweep</span>C-SCAN (Circular SCAN)<span class="sl">Slide 26 to 27</span><span class="zhn">環狀掃描</span></h4>
+<p>Provides a <b>more uniform wait time</b> than SCAN. The head moves from one end to the other servicing requests; when it reaches the other end it immediately returns to the beginning <b>without servicing any requests on the return trip</b>. Treats the cylinders as a circular list that wraps from the last cylinder to the first.<span class="zhn">等待時間比 SCAN <b>更平均</b>。讀寫頭從一端往另一端移、沿路服務；到底之後立刻回到開頭，<b>回程不服務任何要求</b>。把 cylinder 當成環狀串列，從最後一個接回第一個。</span></p>
+<div class="calc">head moving toward 199:
+53 → 65 → 67 → 98 → 122 → 124 → 183 → 199 ⇒ 0 → 14 → 37
+  servicing sweep: 199 − 53 = 146
+  return jump:     199 − 0  = 199
+  then:            37 − 0   = 37
+  total = 146 + 199 + 37 = 382 cylinders (183 if the return jump is not counted)<span class="zhn">讀寫頭往 199 的方向：
+53 → 65 → 67 → 98 → 122 → 124 → 183 → 199 ⇒ 0 → 14 → 37
+  服務那一趟：199 − 53 = 146
+  回程跳回：  199 − 0 = 199
+  接著：      37 − 0 = 37
+  總共 = 146 + 199 + 37 = 382（不算回程就是 183）</span></div>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="ds8-5" data-menu="ds8" hidden>
+<h4 class="alg"><span class="an">Sweep</span>LOOK and C-LOOK<span class="sl">Slide 28 to 29</span><span class="zhn">LOOK 與 C-LOOK</span></h4>
+<p><b>LOOK</b> is a version of SCAN and <b>C-LOOK</b> a version of C-SCAN: the arm only goes as far as the <b>last request</b> in each direction, then reverses immediately, without first going all the way to the end of the disk.<span class="zhn"><b>LOOK</b> 是 SCAN 的版本、<b>C-LOOK</b> 是 C-SCAN 的版本：手臂每個方向只走到<b>最後一個要求</b>就立刻回頭，不必先走到磁碟盡頭。</span></p>
+<div class="calc">LOOK, head moving toward 0:
+53 → 37 → 14 → 65 → 67 → 98 → 122 → 124 → 183
+  (53 − 14) + (183 − 14) = 39 + 169 = 208 cylinders
+
+C-LOOK, head moving toward 199:
+53 → 65 → 67 → 98 → 122 → 124 → 183 ⇒ 14 → 37
+  (183 − 53) + (183 − 14) + (37 − 14) = 130 + 169 + 23 = 322 cylinders
+  (153 if the jump back from 183 to 14 is not counted)<span class="zhn">LOOK，往 0 的方向：
+53 → 37 → 14 → 65 → 67 → 98 → 122 → 124 → 183
+  (53 − 14) + (183 − 14) = 39 + 169 = 208
+
+C-LOOK，往 199 的方向：
+53 → 65 → 67 → 98 → 122 → 124 → 183 ⇒ 14 → 37
+  (183 − 53) + (183 − 14) + (37 − 14) = 130 + 169 + 23 = 322
+  （不算 183 跳回 14 的話是 153）</span></div>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="ds8-6" data-menu="ds8" hidden>
+<h4 class="alg"><span class="an">Choice</span>Selecting a disk-scheduling algorithm<span class="sl">Slide 30</span><span class="zhn">怎麼選</span></h4>
+<ul>
+<li><b>SSTF</b> is common and has a natural appeal.<span class="zhn"><b>SSTF</b> 很常見、直覺。</span></li>
+<li><b>SCAN and C-SCAN</b> perform better for systems that place a <b>heavy load</b> on the disk: less starvation.<span class="zhn">磁碟<b>負載很重</b>時 <b>SCAN 和 C-SCAN</b> 表現較好：比較不會飢餓。</span></li>
+<li>Performance depends on the number and types of requests, which can be influenced by the <b>file-allocation method</b> and metadata layout.<span class="zhn">效能取決於要求的數量與種類，而這又受<b>檔案配置方式</b>和 metadata 擺放影響。</span></li>
+<li>The disk-scheduling algorithm should be written as a <b>separate module</b> of the OS so it can be replaced if necessary. Either <b>SSTF or LOOK</b> is a reasonable default.<span class="zhn">磁碟排程應寫成 OS 的<b>獨立模組</b>，必要時可以換掉。預設用 <b>SSTF 或 LOOK</b> 都合理。</span></li>
+<li>Rotational latency is difficult for the OS to calculate; the drive controller has small buffers and can queue I/O itself, which affects the OS's ordering.<span class="zhn">旋轉延遲 OS 很難算；磁碟控制器有小緩衝區、自己也能排 I/O 佇列，會影響 OS 排的順序。</span></li>
+</ul>
+<table class="ezfull" data-fit="1">
+<tr><th>Algorithm</th><th>Total (head 53)</th><th class="l">Starvation?<span class="zhn">會不會飢餓</span></th></tr>
+<tr><td>FCFS</td><td>640</td><td class="l">No<span class="zhn">不會</span></td></tr>
+<tr><td>SSTF</td><td>236</td><td class="l">Yes<span class="zhn">會</span></td></tr>
+<tr><td>SCAN (toward 0)</td><td>236 (slide: 208)</td><td class="l">No, but ends wait longer<span class="zhn">不會，但兩端等較久</span></td></tr>
+<tr><td>LOOK (toward 0)</td><td>208</td><td class="l">No</td></tr>
+<tr><td>C-SCAN (toward 199)</td><td>382 (183 without the return)</td><td class="l">No, most uniform wait<span class="zhn">不會，等待最平均</span></td></tr>
+<tr><td>C-LOOK (toward 199)</td><td>322 (153 without the return)</td><td class="l">No</td></tr>
+</table>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="widget" data-w="disk"></div>
+
+<h3 data-sec="8.5">8.5 RAID Structure <span class="star">★★★</span><span class="zhn">RAID 結構</span></h3>
+<div class="box en"><span class="lbl">ANSWER: RAID</span>RAID (redundant array of inexpensive / independent disks) uses multiple disk drives to provide reliability via redundancy. Disk striping uses a group of disks as one storage unit to improve performance; mirroring and parity store redundant data to improve reliability. RAID is arranged into six different levels.<div class="zhtr"><span>中文</span>RAID（容錯式磁碟陣列）用多顆磁碟靠冗餘提供可靠性。striping（分散寫入）把一組磁碟當一個儲存單位以提升效能；mirroring（鏡像）和 parity（同位）存冗餘資料以提升可靠性。RAID 分成六個等級。</div></div>
+<ul>
+<li>Redundancy increases the <b>mean time to failure</b>. <b>Mean time to repair</b> = exposure time when another failure could cause data loss. <b>Mean time to data loss</b> is based on both.<span class="zhn">冗餘提高<b>平均故障間隔</b>。<b>平均修復時間</b>＝這段時間內再壞一顆就會掉資料。<b>平均資料遺失時間</b>由這兩者決定。</span></li>
+<li>Frequently combined with <b>NVRAM</b> to improve write performance.<span class="zhn">常搭配 <b>NVRAM</b> 提升寫入效能。</span></li>
+</ul>
+<div class="calc">mirrored pair, each disk MTTF = 100,000 h, MTTR = 10 h, failures independent
+mean time to data loss = MTTF² / (2 × MTTR)
+                       = 100,000² / (2 × 10) = 500 × 10^6 hours ≈ 57,000 years<span class="zhn">兩顆鏡像、每顆 MTTF = 100,000 小時、MTTR = 10 小時、各自獨立故障
+平均資料遺失時間 = MTTF² / (2 × MTTR)
+                 = 100,000² / (2 × 10) = 500 × 10^6 小時 ≈ 57,000 年</span></div>
+<ul>
+<li><b>Disk striping</b>: bit-level (bit i to disk i) or block-level (block i to disk i).<span class="zhn"><b>Striping</b>：bit 層級（第 i 個 bit 到第 i 顆）或 block 層級（第 i 塊到第 i 顆）。</span></li>
+<li><b>Mirroring / shadowing</b> (RAID 1) keeps a duplicate of each disk. <b>Striped mirrors (RAID 1+0)</b> or <b>mirrored stripes (RAID 0+1)</b> give high performance and high reliability. <b>Block-interleaved parity (RAID 4, 5, 6)</b> uses much less redundancy.<span class="zhn"><b>鏡像</b>（RAID 1）每顆磁碟都有複本。<b>RAID 1+0</b>（先鏡像再 striping）或 <b>RAID 0+1</b>（先 striping 再鏡像）兼顧高效能與高可靠性。<b>區塊交錯同位（RAID 4、5、6）</b>冗餘少很多。</span></li>
+<li>RAID inside a storage array can still fail if the array fails, so automatic <b>replication</b> between arrays is common. A few <b>hot-spare</b> disks are left unallocated to replace a failed disk automatically and have data rebuilt onto them.<span class="zhn">儲存陣列本身壞掉時裡面的 RAID 也救不了，所以陣列之間常做自動<b>複製</b>。保留幾顆 <b>hot spare</b>，壞一顆時自動頂上並重建資料。</span></li>
+</ul>
+<table class="ezfull" data-fit="1">
+<tr><th>Level</th><th class="l">How it works<span class="zhn">做法</span></th><th class="l">Redundancy / note<span class="zhn">冗餘與備註</span></th></tr>
+<tr><td>RAID 0</td><td class="l">Non-redundant block striping.<span class="zhn">只做 block striping，不冗餘。</span></td><td class="l">Fastest, no protection.<span class="zhn">最快、沒有保護。</span></td></tr>
+<tr><td>RAID 1</td><td class="l">Mirrored disks.<span class="zhn">鏡像。</span></td><td class="l">Every disk duplicated (2× disks).<span class="zhn">每顆都有複本（磁碟數 2 倍）。</span></td></tr>
+<tr><td>RAID 2</td><td class="l">Memory-style error-correcting codes (ECC), bit-level.<span class="zhn">類似記憶體的錯誤更正碼，bit 層級。</span></td><td class="l">Several extra disks for ECC.<span class="zhn">要好幾顆額外磁碟放 ECC。</span></td></tr>
+<tr><td>RAID 3</td><td class="l">Bit-interleaved parity.<span class="zhn">bit 交錯同位。</span></td><td class="l">One parity disk.<span class="zhn">一顆同位磁碟。</span></td></tr>
+<tr><td>RAID 4</td><td class="l">Block-interleaved parity, parity on one dedicated disk.<span class="zhn">區塊交錯同位，同位放在固定一顆。</span></td><td class="l">The parity disk becomes a write bottleneck.<span class="zhn">同位磁碟成為寫入瓶頸。</span></td></tr>
+<tr><td>RAID 5</td><td class="l">Block-interleaved <b>distributed</b> parity: data and parity spread over all disks.<span class="zhn">區塊交錯、<b>分散</b>同位：資料和同位分散在所有磁碟。</span></td><td class="l">Most common parity RAID; survives one disk failure.<span class="zhn">最常見的同位 RAID；可容忍壞一顆。</span></td></tr>
+<tr><td>RAID 6</td><td class="l">P + Q redundancy: extra redundant information (e.g. Reed-Solomon codes).<span class="zhn">P + Q 冗餘：多存一份冗餘資訊（例如 Reed-Solomon 碼）。</span></td><td class="l">Survives two disk failures.<span class="zhn">可容忍壞兩顆。</span></td></tr>
+<tr><td>RAID 0+1</td><td class="l">Stripe first, then mirror the whole stripe set.<span class="zhn">先 striping，再把整組鏡像。</span></td><td class="l">One disk failure takes down a whole stripe.<span class="zhn">壞一顆就整組 stripe 失效。</span></td></tr>
+<tr><td>RAID 1+0</td><td class="l">Mirror pairs first, then stripe across the pairs.<span class="zhn">先兩兩鏡像，再對各組 striping。</span></td><td class="l">More robust: a failure affects only its own pair.<span class="zhn">比較穩：壞一顆只影響它那一組。</span></td></tr>
+</table>
+<div class="fig" data-sfig="1"><svg aria-hidden="true" viewBox="0 0 660 170" width="620" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="12">
+<text data-step="0" x="10" y="20" font-weight="bold" font-size="13">RAID 0</text>
+<g data-step="1"><rect x="10" y="30" width="44" height="60" rx="6" fill="#dbe8fb" stroke="#1f5fbf"/><rect x="60" y="30" width="44" height="60" rx="6" fill="#dbe8fb" stroke="#1f5fbf"/><rect x="110" y="30" width="44" height="60" rx="6" fill="#dbe8fb" stroke="#1f5fbf"/><text x="32" y="64" text-anchor="middle">A1</text><text x="82" y="64" text-anchor="middle">A2</text><text x="132" y="64" text-anchor="middle">A3</text></g>
+<text data-step="2" x="200" y="20" font-weight="bold" font-size="13">RAID 1</text>
+<g data-step="3"><rect x="200" y="30" width="44" height="60" rx="6" fill="#dbe8fb" stroke="#1f5fbf"/><rect x="250" y="30" width="44" height="60" rx="6" fill="#fff6e0" stroke="#8a5a00"/><text x="222" y="64" text-anchor="middle">A</text><text x="272" y="64" text-anchor="middle">A′</text></g>
+<text data-step="4" x="340" y="20" font-weight="bold" font-size="13">RAID 4</text>
+<g data-step="5"><rect x="340" y="30" width="44" height="60" rx="6" fill="#dbe8fb" stroke="#1f5fbf"/><rect x="390" y="30" width="44" height="60" rx="6" fill="#dbe8fb" stroke="#1f5fbf"/><rect x="440" y="30" width="44" height="60" rx="6" fill="#fdeeee" stroke="#b3261e"/><text x="362" y="64" text-anchor="middle">A1</text><text x="412" y="64" text-anchor="middle">A2</text><text x="462" y="64" text-anchor="middle">P</text></g>
+<text data-step="6" x="520" y="20" font-weight="bold" font-size="13">RAID 5</text>
+<g data-step="7"><rect x="520" y="30" width="40" height="120" rx="6" fill="#dbe8fb" stroke="#1f5fbf"/><rect x="566" y="30" width="40" height="120" rx="6" fill="#dbe8fb" stroke="#1f5fbf"/><rect x="612" y="30" width="40" height="120" rx="6" fill="#dbe8fb" stroke="#1f5fbf"/>
+<text x="540" y="56" text-anchor="middle">A1</text><text x="586" y="56" text-anchor="middle">A2</text><text x="632" y="56" text-anchor="middle" fill="#b3261e" font-weight="bold">P</text>
+<text x="540" y="94" text-anchor="middle">B1</text><text x="586" y="94" text-anchor="middle" fill="#b3261e" font-weight="bold">P</text><text x="632" y="94" text-anchor="middle">B2</text>
+<text x="540" y="132" text-anchor="middle" fill="#b3261e" font-weight="bold">P</text><text x="586" y="132" text-anchor="middle">C1</text><text x="632" y="132" text-anchor="middle">C2</text></g>
+<text data-step="8" x="10" y="120" font-size="12">0: striping only</text><text data-step="8" x="200" y="120" font-size="12">1: mirror copy</text><text data-step="8" x="340" y="120" font-size="12">4: one parity disk</text><text data-step="8" x="340" y="138" font-size="12">5: parity rotates →</text>
+</svg><div class="cap">RAID 0, 1, 4 and 5 side by side: the red P blocks are parity; in RAID 5 they move from disk to disk.<span class="zhn">RAID 0、1、4、5 並排：紅色 P 是同位；RAID 5 的同位輪流放在不同磁碟。</span></div></div>
+<h4>Other Features and Extensions<span class="zhn">其他功能與延伸</span></h4>
+<ul>
+<li><b>Snapshot</b>: a view of the file system before a set of changes take place (at a point in time). <b>Replication</b>: automatic duplication of writes between separate sites, for redundancy and disaster recovery; synchronous or asynchronous. <b>Hot spare</b>: an unused disk automatically used to replace a failed disk and rebuild the RAID set, decreasing the mean time to repair.<span class="zhn"><b>Snapshot</b>：某一時間點、一批修改發生前的檔案系統樣子。<b>Replication</b>：在不同地點之間自動複製寫入，做冗餘與災難復原；可同步或非同步。<b>Hot spare</b>：閒置磁碟，有磁碟壞掉時自動頂上並重建 RAID，降低平均修復時間。</span></li>
+<li>RAID alone does <b>not prevent or detect data corruption</b> or other errors, just disk failures. <b>Solaris ZFS</b> adds <b>checksums</b> of all data and metadata, kept with the pointer to the object, so it can detect and correct corruption. ZFS also removes volumes and partitions: disks are allocated in <b>pools</b>, and file systems in a pool share it, using and releasing space like <code>malloc()</code> and <code>free()</code>.<span class="zhn">RAID 本身<b>不能防止或偵測資料損毀</b>等錯誤，只能應付磁碟故障。<b>Solaris ZFS</b> 為所有資料與 metadata 加 <b>checksum</b>，跟指向物件的指標存在一起，能偵測並修正損毀。ZFS 也不用 volume 和 partition：磁碟放進<b>儲存池</b>，池裡的檔案系統共用空間，像 <code>malloc()</code>、<code>free()</code> 一樣取用與釋放。</span></li>
+</ul>
+
+<h3 data-sec="8.6">8.6 Stable-Storage Implementation <span class="star">★★</span><span class="zhn">穩定儲存的實作</span></h3>
+<ul>
+<li>The <b>write-ahead log</b> scheme requires <b>stable storage</b>: storage whose data is never lost (due to failure, etc.).<span class="zhn"><b>write-ahead log</b> 需要<b>穩定儲存</b>：資料永遠不會因故障等原因遺失。</span></li>
+<li>To implement it: replicate information on more than one nonvolatile storage medium with <b>independent failure modes</b>, and update information in a controlled manner so the stable data can be recovered after any failure during transfer or recovery.<span class="zhn">實作：把資料複製在多個<b>故障模式互相獨立</b>的非揮發性媒介上，並以受控的方式更新，任何傳輸或恢復中的故障之後都能把資料救回來。</span></li>
+</ul>
+<table class="ezfull" data-fit="1">
+<tr><th>Outcome of a disk write<span class="zhn">寫入的結果</span></th><th class="l">Meaning<span class="zhn">意思</span></th></tr>
+<tr><td>Successful completion</td><td class="l">The data were written correctly on disk.<span class="zhn">資料正確寫到磁碟上。</span></td></tr>
+<tr><td>Partial failure</td><td class="l">A failure occurred in the midst of the transfer: only some sectors were written, and the sector being written may be corrupted.<span class="zhn">傳到一半故障：只寫了部分 sector，正在寫的那個可能已損壞。</span></td></tr>
+<tr><td>Total failure</td><td class="l">The failure occurred before the write started, so the previous data on disk remain intact.<span class="zhn">還沒開始寫就故障，磁碟上的舊資料完好。</span></td></tr>
+</table>
+<div class="box en"><span class="lbl">ANSWER: Two-copy write</span>The system maintains 2 physical blocks per logical block: (1) write to the 1st physical block; (2) when that succeeds, write to the 2nd; (3) declare the operation complete only after the second write completes successfully. If a failure occurs during a block write, the recovery procedure restores the block to a consistent state. Systems frequently use NVRAM as one of the physical copies to accelerate this.<div class="zhtr"><span>中文</span>每個邏輯區塊維護兩個實體區塊：(1) 先寫第一個；(2) 成功後再寫第二個；(3) 第二個也寫成功才宣告完成。寫到一半故障時，恢復程序會把區塊還原成一致的狀態。常用 NVRAM 當其中一份來加速。</div></div>
+
+<div class="sum"><b class="t">Chapter summary</b><span class="zhn"><b>Summary 本章總結</b></span><ul><li>Disk access = <b>seek time + rotational latency + transfer time</b> (+ controller overhead); average latency is half a rotation. SSDs have no seek or rotational latency; tape is cheap and slow (backup).<span class="zhn">磁碟存取＝<b>seek time＋旋轉延遲＋傳輸時間</b>（＋控制器負擔）；平均旋轉延遲是半圈。SSD 沒有 seek 和旋轉延遲；磁帶便宜但慢（拿來備份）。</span></li><li>A disk is a 1-D array of logical blocks mapped sequentially from the outermost cylinder inward.<span class="zhn">磁碟是一維邏輯區塊陣列，從最外圈 cylinder 往內依序對應。</span></li><li>Attachment: host-attached (SCSI, FC), storage arrays, <b>NAS</b> (files over the IP network, NFS / CIFS, iSCSI) and <b>SAN</b> (storage arrays on Fibre Channel switches).<span class="zhn">連接：host-attached（SCSI、FC）、儲存陣列、<b>NAS</b>（透過 IP 網路分享檔案，NFS／CIFS、iSCSI）、<b>SAN</b>（儲存陣列接在 FC 交換器上）。</span></li><li>Disk scheduling minimizes seek distance: <b>FCFS</b>, <b>SSTF</b> (can starve), <b>SCAN</b> (elevator), <b>C-SCAN</b> (uniform wait), <b>LOOK / C-LOOK</b> (turn at the last request). SSTF or LOOK is a reasonable default.<span class="zhn">磁碟排程要讓 seek 距離最小：<b>FCFS</b>、<b>SSTF</b>（會飢餓）、<b>SCAN</b>（電梯）、<b>C-SCAN</b>（等待平均）、<b>LOOK／C-LOOK</b>（走到最後一個要求就回頭）。預設用 SSTF 或 LOOK。</span></li><li><b>RAID</b> improves performance (striping) and reliability (mirroring, parity): levels 0 to 6, 0+1 and 1+0; hot spares, replication, snapshots; ZFS adds checksums.<span class="zhn"><b>RAID</b> 用 striping 提升效能、用鏡像與同位提升可靠性：等級 0 到 6、0+1、1+0；還有 hot spare、replication、snapshot；ZFS 加了 checksum。</span></li><li><b>Stable storage</b>: keep two physical copies and write them one after the other; the write is complete only when both succeed.<span class="zhn"><b>穩定儲存</b>：存兩份實體複本、一份寫完再寫另一份；兩份都成功才算完成。</span></li></ul></div>
+<div class="trap"><b class="t">Common trap</b><span class="zhn"><b>易錯點</b></span><ul><li>Average rotational latency is <b>half</b> a rotation: 7200 RPM → 8.33 ms per turn → 4.17 ms.<span class="zhn">平均旋轉延遲是<b>半圈</b>：7200 RPM → 一圈 8.33 ms → 4.17 ms。</span></li><li>SCAN goes to the <b>end of the disk</b> before turning; LOOK turns at the <b>last request</b>. Always state the direction.<span class="zhn">SCAN 要走到<b>磁碟盡頭</b>才回頭；LOOK 在<b>最後一個要求</b>就回頭。一定要寫方向。</span></li><li>C-SCAN and C-LOOK do <b>not</b> serve requests on the return trip; say whether you count the return jump.<span class="zhn">C-SCAN、C-LOOK 回程<b>不服務</b>；要寫清楚有沒有把回程算進去。</span></li><li>SSTF may <b>starve</b> far requests and is not optimal.<span class="zhn">SSTF 可能讓遠的要求<b>飢餓</b>，而且不是最佳解。</span></li><li>RAID 0 has <b>no</b> redundancy; RAID 4 keeps parity on one disk, RAID 5 spreads it; RAID 6 survives two failures.<span class="zhn">RAID 0 <b>沒有</b>冗餘；RAID 4 同位放一顆、RAID 5 分散放；RAID 6 可壞兩顆。</span></li><li>RAID protects against disk failure, <b>not</b> data corruption (that is what ZFS checksums are for). NAS shares files, SAN shares blocks.<span class="zhn">RAID 防的是磁碟故障，<b>不是</b>資料損毀（那要靠 ZFS checksum）。NAS 分享檔案、SAN 分享區塊。</span></li></ul></div>
+<div class="quiz" data-quiz="ch8"></div>
+<!--CHW8-->
+</section>

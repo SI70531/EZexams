@@ -1,0 +1,306 @@
+<section role="tabpanel" class="view" id="ch7" hidden><div class="vhead"><div class="pcb" data-pcb="ch7" role="img"></div><h1>Ch7 Virtual-Memory Management<span class="zhn">虛擬記憶體管理</span></h1><p>Demand paging, page faults and their EAT, copy-on-write, page replacement (FIFO, OPT, LRU and the approximations), frame allocation, thrashing and the working-set model, kernel memory (buddy, slab), and other considerations. After reading, do the Multiple-choice question, Short Answer and Essay at the bottom.<span class="zhn">demand paging（需求分頁）、page fault 與 EAT、copy-on-write、分頁替換（FIFO、OPT、LRU 與近似法）、frame 分配、thrashing（輾轉）與 working-set model、核心記憶體（buddy、slab）、其他考量。</span></p></div>
+
+<h3 data-sec="7.1">7.1 Background: Virtual Memory <span class="star">★★</span><span class="zhn">背景：虛擬記憶體</span></h3>
+<div class="box zh"><span class="lbl">In plain words</span>A program rarely needs all of its code at once (error handling, rare routines, oversized arrays). Virtual memory keeps only the needed part in memory, so a program can be <b>larger than physical memory</b> and more programs fit at the same time.<span class="zhn"><b>白話</b> 程式很少同時用到全部程式碼（錯誤處理、罕用的 routine、開太大的陣列）。虛擬記憶體只把需要的部分放進記憶體，所以程式可以<b>比實體記憶體還大</b>，同時也能放更多程式。</span></div>
+<div class="box en"><span class="lbl">ANSWER: Virtual memory</span>Virtual memory is the separation of user logical memory from physical memory. Only part of the program needs to be in memory for execution, so the logical address space can be much larger than the physical address space. It allows address spaces to be shared by several processes and allows more efficient process creation. It can be implemented via demand paging or demand segmentation.<div class="zhtr"><span>中文</span>虛擬記憶體把使用者的邏輯記憶體和實體記憶體分開。只要部分程式在記憶體就能執行，所以邏輯位址空間可以遠大於實體位址空間。可讓多個 process 共用位址空間、讓 process 建立更有效率。實作方式：demand paging 或 demand segmentation。</div></div>
+<ul>
+<li>Benefits of running a partially loaded program: not constrained by physical memory; more programs run concurrently (higher CPU utilization and throughput); less I/O needed to load or swap processes.<span class="zhn">只載入部分就能跑的好處：不受實體記憶體大小限制；能同時跑更多程式（CPU 使用率與 throughput 提高）；載入或換出 process 需要的 I/O 較少。</span></li>
+<li><b>Virtual address space</b>: stack grows down from the top, heap grows up; the hole between them is unused until needed (a <b>sparse</b> address space). System libraries are shared by mapping them into the virtual address space; shared memory maps pages read-write; pages can be shared during <code>fork()</code>, speeding process creation.<span class="zhn"><b>虛擬位址空間</b>：stack 從上往下長、heap 從下往上長，中間的洞要用時才配（<b>稀疏</b>位址空間）。系統函式庫靠映射到虛擬位址空間共用；共享記憶體把頁以可讀寫映射；<code>fork()</code> 時可共用頁，加快建立 process。</span></li>
+</ul>
+
+<h3 data-sec="7.2">7.2 Demand Paging <span class="star">★★★</span><span class="zhn">需求分頁</span></h3>
+<ul>
+<li>Bring a page into memory <b>only when it is needed</b>: less I/O, less memory, faster response, more users.<span class="zhn"><b>需要時才</b>把頁載入：I/O 少、記憶體少、反應快、可服務更多使用者。</span></li>
+<li>Page is needed → reference it: <b>invalid reference → abort</b>; <b>not in memory → bring it into memory</b>.<span class="zhn">需要某頁 → 參考它：<b>非法參考 → 終止</b>；<b>不在記憶體 → 載入</b>。</span></li>
+<li><b>Lazy swapper</b>: never swaps a page into memory unless it will be needed. A swapper that deals with pages is a <b>pager</b>.<span class="zhn"><b>Lazy swapper</b>：不需要就絕不換入。以「頁」為單位的 swapper 叫 <b>pager</b>。</span></li>
+<li><b>Valid–invalid bit</b> in each page-table entry: v = in memory (memory resident), i = not in memory (or illegal). Initially all entries are i. If the bit is i during translation → <b>page fault</b>.<span class="zhn">page table 每筆有 <b>valid–invalid bit</b>：v＝在記憶體，i＝不在記憶體（或非法）。一開始全是 i。轉換時遇到 i → <b>page fault</b>。</span></li>
+<li><b>Pure demand paging</b>: start a process with <b>no pages</b> in memory; the very first instruction faults. One instruction may touch several pages (several faults), but <b>locality of reference</b> keeps this rare.<span class="zhn"><b>純需求分頁</b>：process 啟動時記憶體裡<b>一頁都沒有</b>，第一個指令就 fault。一個指令可能碰到好幾頁（好幾次 fault），但<b>參考區域性</b>讓這種情況很少。</span></li>
+<li>Hardware support needed: page table with valid–invalid bit; secondary memory (swap device with <b>swap space</b>); <b>instruction restart</b>.<span class="zhn">需要的硬體支援：有 valid–invalid bit 的 page table；次級儲存（有 <b>swap space</b> 的 swap device）；<b>指令重新執行</b>。</span></li>
+</ul>
+<h4>Steps in Handling a Page Fault <span class="star">★★★</span><span class="zhn">處理 page fault 的步驟</span></h4>
+<div class="box en"><span class="lbl">ANSWER TEMPLATE</span>(1) The first reference to a page not in memory traps to the operating system (page fault). (2) The OS looks at another table to decide: invalid reference → abort; just not in memory → continue. (3) Get an empty frame. (4) Swap the page into the frame via a scheduled disk operation. (5) Reset the tables to indicate the page is now in memory; set the validation bit = v. (6) Restart the instruction that caused the page fault.<div class="zhtr"><span>中文</span>(1) 第一次參考不在記憶體的頁 → trap 給 OS（page fault）。(2) OS 查另一張表：非法參考就終止；只是不在記憶體就繼續。(3) 找一個空 frame。(4) 排一次磁碟操作把頁讀進 frame。(5) 更新表格，標示這頁已在記憶體，valid bit 設成 v。(6) 重新執行造成 page fault 的那個指令。</div></div>
+<div class="fig" data-sfig="1"><svg aria-hidden="true" viewBox="0 0 680 220" width="640" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="13"><defs><marker id="f7a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#1d2433"/></marker><marker id="f7ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#b3261e"/></marker></defs>
+<rect data-step="0" x="10" y="80" width="110" height="40" rx="6" fill="#dbe8fb" stroke="#1f5fbf" stroke-width="1.5"/><text data-step="0" x="65" y="105" text-anchor="middle" font-size="12">load M</text>
+<line data-step="1" x1="120" y1="100" x2="198" y2="100" stroke="#1d2433" stroke-width="1.5" marker-end="url(#f7a)"/><text data-step="1" x="160" y="92" text-anchor="middle" font-size="11">① reference</text>
+<rect data-step="2" x="200" y="80" width="90" height="40" fill="#f2f4f8" stroke="#1d2433"/><text data-step="2" x="245" y="105" text-anchor="middle" font-size="12">page table: i</text>
+<line data-step="3" x1="245" y1="80" x2="245" y2="42" stroke="#b3261e" stroke-width="1.5" marker-end="url(#f7ar)"/><text data-step="3" x="255" y="66" font-size="11" fill="#b3261e">② trap</text>
+<rect data-step="4" x="200" y="8" width="160" height="32" rx="6" fill="#fdeeee" stroke="#b3261e"/><text data-step="4" x="280" y="29" text-anchor="middle" font-size="12">operating system</text>
+<line data-step="5" x1="360" y1="24" x2="498" y2="24" stroke="#1d2433" stroke-width="1.5" marker-end="url(#f7a)"/><text data-step="5" x="430" y="16" text-anchor="middle" font-size="11">③ page is on backing store</text>
+<rect data-step="6" x="500" y="8" width="170" height="40" rx="6" fill="#e7defb" stroke="#64489c"/><text data-step="6" x="585" y="33" text-anchor="middle" font-size="12">backing store</text>
+<line data-step="7" x1="585" y1="48" x2="585" y2="128" stroke="#1d2433" stroke-width="1.5" marker-end="url(#f7a)"/><text data-step="7" x="595" y="92" font-size="11">④ bring in page</text>
+<rect data-step="8" x="500" y="130" width="170" height="80" fill="#eaf6ef" stroke="#1d7a4f"/><rect data-step="8" x="500" y="158" width="170" height="26" fill="#d9f0e2" stroke="#1d7a4f"/><text data-step="8" x="585" y="176" text-anchor="middle" font-size="12">free frame</text>
+<line data-step="9" x1="500" y1="171" x2="292" y2="118" stroke="#1d2433" stroke-width="1.5" marker-end="url(#f7a)"/><text data-step="9" x="380" y="166" font-size="11">⑤ reset page table (v)</text>
+<line data-step="10" x1="200" y1="112" x2="122" y2="112" stroke="#1d7a4f" stroke-width="1.5" marker-end="url(#f7a)"/><text data-step="10" x="120" y="140" font-size="11" fill="#1d7a4f">⑥ restart instruction</text>
+</svg><div class="cap">Steps in handling a page fault, in order ① to ⑥.<span class="zhn">處理 page fault 的步驟，依 ① 到 ⑥ 的順序。</span></div></div>
+<details class="box tip"><summary>The full 12 stages from the slides (for "performance" questions)<span class="zhn">投影片完整 12 個階段（考效能時用）</span></summary><ol>
+<li>Trap to the operating system.</li><li>Save the user registers and process state.</li><li>Determine that the interrupt was a page fault.</li><li>Check that the page reference was legal and determine the location of the page on the disk.</li><li>Issue a read from the disk to a free frame: wait in the device queue, wait for seek and/or latency, begin the transfer.</li><li>While waiting, allocate the CPU to some other user.</li><li>Receive an interrupt from the disk I/O subsystem (I/O completed).</li><li>Save the registers and process state for the other user.</li><li>Determine that the interrupt was from the disk.</li><li>Correct the page table and other tables to show the page is now in memory.</li><li>Wait for the CPU to be allocated to this process again.</li><li>Restore the user registers, process state and new page table, then resume the interrupted instruction.</li></ol><span class="zhn">1 trap 給 OS；2 存使用者暫存器與狀態；3 判斷是 page fault；4 檢查參考合法並找出頁在磁碟的位置；5 發磁碟讀取到空 frame（排隊、seek／latency、開始傳）；6 等待時 CPU 給別人；7 收到磁碟 I/O 完成中斷；8 存另一個使用者的暫存器與狀態；9 判斷中斷來自磁碟；10 更新 page table 等表格；11 等 CPU 再分給這個 process；12 還原暫存器、狀態與新 page table，繼續被中斷的指令。</span></details>
+
+<h3 data-sec="7.3">7.3 Performance of Demand Paging <span class="star">★★★</span><span class="zhn">需求分頁的效能</span></h3>
+<div class="box en"><span class="lbl">FORMULA</span>Page-fault rate 0 ≤ p ≤ 1 (p = 0: no faults; p = 1: every reference faults).<br><b>EAT = (1 − p) × memory access + p × (page-fault overhead + swap page out + swap page in + restart overhead)</b><div class="zhtr"><span>中文</span>page fault 機率 p。沒 fault 就只花一次記憶體存取；fault 就要加上處理 fault、換出、換入、重新執行的時間。</div></div>
+<div class="calc">memory access = 200 ns, page-fault service time = 8 ms = 8,000,000 ns
+EAT = (1 − p) × 200 + p × 8,000,000 = 200 + p × 7,999,800   (ns)
+
+p = 1/1,000:  EAT = 200 + 7,999.8 = 8,199.8 ns ≈ 8.2 µs
+              → slowdown by a factor of 8,199.8 / 200 ≈ 40
+
+degradation &lt; 10%:  220 &gt; 200 + 7,999,800 × p
+                    20 &gt; 7,999,800 × p
+                    p &lt; 0.0000025  → fewer than 1 fault in 400,000 accesses<span class="zhn">記憶體存取 200 ns、page fault 服務時間 8 ms = 8,000,000 ns
+EAT = (1 − p) × 200 + p × 8,000,000 = 200 + p × 7,999,800（ns）
+
+p = 1/1,000：EAT = 200 + 7,999.8 = 8,199.8 ns ≈ 8.2 µs
+             → 慢了約 8,199.8 / 200 ≈ 40 倍
+
+要求變慢 &lt; 10%：220 &gt; 200 + 7,999,800 × p
+               20 &gt; 7,999,800 × p
+               p &lt; 0.0000025 → 每 400,000 次存取不到 1 次 fault</span></div>
+<div class="box warn"><span class="lbl">Common deduction</span>Convert units first: 8 ms = 8,000,000 ns. Mixing ms and ns is the most common mistake.<span class="zhn"><b>常見扣分</b> 先統一單位：8 ms = 8,000,000 ns。ms 和 ns 混用是最常見的錯。</span></div>
+<ul>
+<li>Optimizations: copy the whole process image to swap space at load time, then page in and out of swap space (older BSD UNIX); or demand-page from the program binary on disk and <b>discard</b> rather than page out when freeing a frame, checking whether it is dirty (Solaris, current BSD).<span class="zhn">最佳化：載入時把整個 process 映像先複製到 swap space，之後都在 swap space 換進換出（舊 BSD UNIX）；或直接從磁碟上的執行檔需求分頁，釋放 frame 時沒改過就<b>丟掉</b>不寫回（先看 dirty）（Solaris、現在的 BSD）。</span></li>
+</ul>
+
+<h3 data-sec="7.4">7.4 Copy-on-Write <span class="star">★★</span><span class="zhn">寫入時複製</span></h3>
+<div class="box en"><span class="lbl">ANSWER</span>Copy-on-Write (COW) allows both parent and child processes to initially share the same pages in memory. If either process modifies a shared page, only then is the page copied. COW allows more efficient process creation as only modified pages are copied.<div class="zhtr"><span>中文</span>COW 讓父子 process 一開始共用相同的頁；任一方要修改某個共用頁時，才把那頁複製一份。只複製被改的頁，所以建立 process 更有效率。</div></div>
+<ul>
+<li>Free pages are allocated from a pool of <b>zero-fill-on-demand</b> pages (zeroed first so the new owner cannot read old data).<span class="zhn">空頁從 <b>zero-fill-on-demand</b> 頁池配出（先清成 0，新主人才看不到舊資料）。</span></li>
+<li><code>vfork()</code>: the parent is suspended and the child uses the parent's address space (not copy-on-write); designed for a child that calls <code>exec()</code> right away. Very efficient.<span class="zhn"><code>vfork()</code>：父 process 暫停，子 process 直接用父的位址空間；設計給馬上呼叫 <code>exec()</code> 的子 process。非常有效率。</span></li>
+</ul>
+<div class="fig" data-sfig="1"><svg aria-hidden="true" viewBox="0 0 660 160" width="620" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="13"><defs><marker id="f7b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#1d2433"/></marker><marker id="f7br" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#b3261e"/></marker></defs>
+<rect data-step="0" x="10" y="30" width="100" height="96" rx="6" fill="#dbe8fb" stroke="#1f5fbf"/><text data-step="0" x="60" y="22" text-anchor="middle" font-size="12">process 1</text>
+<rect data-step="0" x="550" y="30" width="100" height="96" rx="6" fill="#dbe8fb" stroke="#1f5fbf"/><text data-step="0" x="600" y="22" text-anchor="middle" font-size="12">process 2</text>
+<rect data-step="1" x="270" y="10" width="120" height="140" fill="#eaf6ef" stroke="#1d7a4f"/><text data-step="1" x="330" y="146" text-anchor="middle" font-size="11">physical memory</text>
+<rect data-step="1" x="290" y="24" width="80" height="24" fill="#fff" stroke="#1d2433"/><text data-step="1" x="330" y="41" text-anchor="middle">page A</text>
+<rect data-step="1" x="290" y="54" width="80" height="24" fill="#fff" stroke="#1d2433"/><text data-step="1" x="330" y="71" text-anchor="middle">page B</text>
+<rect data-step="1" x="290" y="84" width="80" height="24" fill="#fff6e0" stroke="#8a5a00"/><text data-step="1" x="330" y="101" text-anchor="middle">page C</text>
+<line data-step="2" x1="110" y1="50" x2="288" y2="36" stroke="#1d2433" stroke-width="1.3" marker-end="url(#f7b)"/><line data-step="2" x1="550" y1="50" x2="372" y2="36" stroke="#1d2433" stroke-width="1.3" marker-end="url(#f7b)"/>
+<line data-step="2" x1="110" y1="74" x2="288" y2="66" stroke="#1d2433" stroke-width="1.3" marker-end="url(#f7b)"/><line data-step="2" x1="550" y1="74" x2="372" y2="66" stroke="#1d2433" stroke-width="1.3" marker-end="url(#f7b)"/>
+<line data-step="2" x1="550" y1="98" x2="372" y2="96" stroke="#1d2433" stroke-width="1.3" marker-end="url(#f7b)"/>
+<line data-step="3" x1="110" y1="110" x2="288" y2="126" stroke="#b3261e" stroke-width="1.6" marker-end="url(#f7br)"/>
+<rect data-step="4" x="290" y="114" width="80" height="24" fill="#fdeeee" stroke="#b3261e"/><text data-step="4" x="330" y="131" text-anchor="middle" fill="#b3261e">copy of C</text>
+<text data-step="4" x="190" y="140" text-anchor="middle" font-size="11" fill="#b3261e">P1 writes C</text>
+</svg><div class="cap">Copy-on-write: A and B stay shared; only when process 1 modifies C does it get its own copy.<span class="zhn">寫入時複製：A、B 仍共用；process 1 改 C 時才複製一份給它。</span></div></div>
+
+<h3 data-sec="7.5">7.5 Page Replacement Basics <span class="star">★★★</span><span class="zhn">分頁替換的基本流程</span></h3>
+<ul>
+<li>When there is <b>no free frame</b> (all used by process pages, kernel, I/O buffers), <b>page replacement</b> finds some page in memory that is not really in use and pages it out. Goal: an algorithm that gives the <b>minimum number of page faults</b>. The same page may be brought in several times.<span class="zhn">沒有<b>空 frame</b> 時（都被 process、kernel、I/O 緩衝區用掉），<b>分頁替換</b>找一個沒在用的頁換出去。目標：<b>page fault 次數最少</b>。同一頁可能被載入好幾次。</span></li>
+<li>Use the <b>modify (dirty) bit</b> to reduce overhead: only modified pages are written back to disk.<span class="zhn">用 <b>modify（dirty）bit</b> 減少負擔：只有改過的頁才要寫回磁碟。</span></li>
+<li>Page replacement completes the separation between logical and physical memory: a large virtual memory on a smaller physical memory.<span class="zhn">分頁替換讓邏輯與實體記憶體完全分開：小的實體記憶體上可以提供很大的虛擬記憶體。</span></li>
+</ul>
+<div class="box en"><span class="lbl">ANSWER: Basic page replacement</span>(1) Find the location of the desired page on disk. (2) Find a free frame: if there is one, use it; if not, use a page-replacement algorithm to select a victim frame, and write the victim to disk if it is dirty. (3) Bring the desired page into the (newly) free frame; update the page and frame tables. (4) Continue the process by restarting the instruction that caused the trap. Note: there are now potentially 2 page transfers per page fault, increasing EAT.<div class="zhtr"><span>中文</span>(1) 找到所需頁在磁碟的位置。(2) 找空 frame：有就用；沒有就用替換演算法選 victim，dirty 的話寫回磁碟。(3) 把頁讀進空出來的 frame，更新 page table 和 frame table。(4) 重新執行造成 trap 的指令。注意：一次 page fault 可能要傳兩頁，EAT 變大。</div></div>
+<ul>
+<li><b>Frame-allocation algorithm</b> decides how many frames each process gets; <b>page-replacement algorithm</b> decides which frame to replace.<span class="zhn"><b>frame 分配演算法</b>決定每個 process 拿幾個 frame；<b>分頁替換演算法</b>決定換掉哪個 frame。</span></li>
+<li>Evaluate an algorithm by running it on a <b>reference string</b> (page numbers only, not full addresses) and counting page faults. A repeated access to the same page does not fault. More frames normally means fewer faults.<span class="zhn">評估方法：拿一串 <b>reference string</b>（只有頁號）跑，數 page fault。連續參考同一頁不會 fault。frame 越多通常 fault 越少。</span></li>
+</ul>
+
+<h3 data-sec="7.6">7.6 Page-Replacement Algorithms <span class="star">★★★</span><span class="zhn">分頁替換演算法</span></h3>
+<p>All examples use the reference string <b>7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 0, 3, 2, 1, 2, 0, 1, 7, 0, 1</b> with <b>3 frames</b>. Open one card at a time; the simulator below lets you check any string.<span class="zhn">範例都用 reference string <b>7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 0, 3, 2, 1, 2, 0, 1, 7, 0, 1</b>、<b>3 個 frame</b>。一次開一張卡；下面的模擬器可以檢查任何字串。</span></p>
+<div class="algmenu" role="list" data-menu="pr7"><button type="button" class="algcard" role="listitem" data-alg-open="pr7-1"><span class="an">Basic</span><b>FIFO <span class="star">★★★</span></b><span class="zhn2">先進先出，15 次 fault</span><span class="sl">Slide 33 to 35</span></button><button type="button" class="algcard" role="listitem" data-alg-open="pr7-2"><span class="an">Basic</span><b>Belady's anomaly <span class="star">★★</span></b><span class="zhn2">frame 變多反而 fault 變多</span><span class="sl">Slide 34 to 35</span></button><button type="button" class="algcard" role="listitem" data-alg-open="pr7-3"><span class="an">Basic</span><b>Optimal (OPT) <span class="star">★★★</span></b><span class="zhn2">最佳演算法，9 次 fault</span><span class="sl">Slide 36 to 37</span></button><button type="button" class="algcard" role="listitem" data-alg-open="pr7-4"><span class="an">Basic</span><b>LRU <span class="star">★★★</span></b><span class="zhn2">最近最少使用，12 次 fault</span><span class="sl">Slide 38 to 40</span></button><button type="button" class="algcard" role="listitem" data-alg-open="pr7-5"><span class="an">Approx.</span><b>Reference bit and second chance (clock)</b><span class="zhn2">參考位元與第二次機會</span><span class="sl">Slide 41 to 42</span></button><button type="button" class="algcard" role="listitem" data-alg-open="pr7-6"><span class="an">Approx.</span><b>Enhanced second chance</b><span class="zhn2">(reference, modify) 四類</span><span class="sl">Slide 43</span></button><button type="button" class="algcard" role="listitem" data-alg-open="pr7-7"><span class="an">Other</span><b>Counting: LFU and MFU</b><span class="zhn2">計數型演算法</span><span class="sl">Slide 44</span></button><button type="button" class="algcard" role="listitem" data-alg-open="pr7-8"><span class="an">Other</span><b>Page buffering</b><span class="zhn2">保留空 frame 池</span><span class="sl">Slide 45</span></button></div>
+
+<div class="algp" data-alg="pr7-1" data-menu="pr7" hidden>
+<h4 class="alg"><span class="an">Basic</span>FIFO (First-In-First-Out)<span class="sl">Slide 33 to 35</span><span class="zhn">先進先出</span></h4>
+<p>Replace the page that has been in memory the <b>longest</b> (the oldest one). Track ages with a simple FIFO queue.<span class="zhn">換掉在記憶體裡<b>待最久</b>的頁（最老的）。用一個 FIFO 佇列記先後就好。</span></p>
+<table class="refstr ezfull" data-fit="1">
+<tr><th>ref</th><td>7</td><td>0</td><td>1</td><td>2</td><td>0</td><td>3</td><td>0</td><td>4</td><td>2</td><td>3</td><td>0</td><td>3</td><td>0</td><td>3</td><td>2</td><td>1</td><td>2</td><td>0</td><td>1</td><td>7</td><td>0</td><td>1</td></tr>
+<tr><th>f1</th><td>7</td><td>7</td><td>7</td><td>2</td><td></td><td>2</td><td>2</td><td>4</td><td>4</td><td>4</td><td>0</td><td></td><td></td><td></td><td></td><td>0</td><td>0</td><td></td><td></td><td>7</td><td>7</td><td>7</td></tr>
+<tr><th>f2</th><td></td><td>0</td><td>0</td><td>0</td><td></td><td>3</td><td>3</td><td>3</td><td>2</td><td>2</td><td>2</td><td></td><td></td><td></td><td></td><td>1</td><td>1</td><td></td><td></td><td>1</td><td>0</td><td>0</td></tr>
+<tr><th>f3</th><td></td><td></td><td>1</td><td>1</td><td></td><td>1</td><td>0</td><td>0</td><td>0</td><td>3</td><td>3</td><td></td><td></td><td></td><td></td><td>3</td><td>2</td><td></td><td></td><td>2</td><td>2</td><td>1</td></tr>
+<tr><th>fault</th><td>✱</td><td>✱</td><td>✱</td><td>✱</td><td></td><td>✱</td><td>✱</td><td>✱</td><td>✱</td><td>✱</td><td>✱</td><td></td><td></td><td></td><td></td><td>✱</td><td>✱</td><td></td><td></td><td>✱</td><td>✱</td><td>✱</td></tr>
+</table>
+<div class="box en"><span class="lbl">RESULT</span>FIFO with 3 frames: <b>15 page faults</b>. Empty columns are hits (no fault).<div class="zhtr"><span>中文</span>FIFO、3 個 frame：<b>15 次 page fault</b>。空白欄位是命中（沒有 fault）。</div></div>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="pr7-2" data-menu="pr7" hidden>
+<h4 class="alg"><span class="an">Basic</span>Belady's anomaly<span class="sl">Slide 34 to 35</span><span class="zhn">Belady 異常</span></h4>
+<div class="box en"><span class="lbl">ANSWER</span>Belady's anomaly: for some page-replacement algorithms (such as FIFO), the page-fault rate may increase as the number of allocated frames increases.<div class="zhtr"><span>中文</span>Belady 異常：某些替換演算法（例如 FIFO），配給的 frame 變多，page fault 反而變多。</div></div>
+<div class="calc">reference string 1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5   (FIFO)
+3 frames →  9 page faults
+4 frames → 10 page faults   ← more frames, more faults<span class="zhn">reference string 1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5（FIFO）
+3 個 frame →  9 次 page fault
+4 個 frame → 10 次 page fault ← frame 多了，fault 反而多</span></div>
+<p><b>LRU and OPT are stack algorithms</b> and never suffer from Belady's anomaly (with the same string: LRU 10 → 8, OPT 7 → 6).<span class="zhn"><b>LRU 和 OPT 是 stack algorithm</b>，不會有 Belady 異常（同一字串：LRU 10 → 8、OPT 7 → 6）。</span></p>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="pr7-3" data-menu="pr7" hidden>
+<h4 class="alg"><span class="an">Basic</span>Optimal algorithm (OPT)<span class="sl">Slide 36 to 37</span><span class="zhn">最佳演算法</span></h4>
+<p>Replace the page that <b>will not be used for the longest period of time</b>. It gives the lowest possible fault count, but we cannot read the future, so it is used only to <b>measure</b> how well other algorithms perform.<span class="zhn">換掉<b>未來最久不會用到</b>的頁。fault 數最少，但無法預知未來，所以只拿來<b>衡量</b>其他演算法的好壞。</span></p>
+<table class="refstr ezfull" data-fit="1">
+<tr><th>ref</th><td>7</td><td>0</td><td>1</td><td>2</td><td>0</td><td>3</td><td>0</td><td>4</td><td>2</td><td>3</td><td>0</td><td>3</td><td>0</td><td>3</td><td>2</td><td>1</td><td>2</td><td>0</td><td>1</td><td>7</td><td>0</td><td>1</td></tr>
+<tr><th>f1</th><td>7</td><td>7</td><td>7</td><td>2</td><td></td><td>2</td><td></td><td>2</td><td></td><td></td><td>2</td><td></td><td></td><td></td><td></td><td>2</td><td></td><td></td><td></td><td>7</td><td></td><td></td></tr>
+<tr><th>f2</th><td></td><td>0</td><td>0</td><td>0</td><td></td><td>0</td><td></td><td>4</td><td></td><td></td><td>0</td><td></td><td></td><td></td><td></td><td>0</td><td></td><td></td><td></td><td>0</td><td></td><td></td></tr>
+<tr><th>f3</th><td></td><td></td><td>1</td><td>1</td><td></td><td>3</td><td></td><td>3</td><td></td><td></td><td>3</td><td></td><td></td><td></td><td></td><td>1</td><td></td><td></td><td></td><td>1</td><td></td><td></td></tr>
+<tr><th>fault</th><td>✱</td><td>✱</td><td>✱</td><td>✱</td><td></td><td>✱</td><td></td><td>✱</td><td></td><td></td><td>✱</td><td></td><td></td><td></td><td></td><td>✱</td><td></td><td></td><td></td><td>✱</td><td></td><td></td></tr>
+</table>
+<div class="box en"><span class="lbl">RESULT</span>OPT with 3 frames: <b>9 page faults</b>. Example of a choice: at the reference to 2 (4th), frames hold 7, 0, 1; 7 is used again last (at position 18), so 7 is replaced.<div class="zhtr"><span>中文</span>OPT、3 個 frame：<b>9 次 page fault</b>。舉例：參考第 4 個（2）時 frame 有 7、0、1；7 下一次出現最晚（第 18 個），所以換掉 7。</div></div>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="pr7-4" data-menu="pr7" hidden>
+<h4 class="alg"><span class="an">Basic</span>Least Recently Used (LRU)<span class="sl">Slide 38 to 40</span><span class="zhn">最近最少使用</span></h4>
+<p>Use past knowledge instead of the future: replace the page that <b>has not been used for the longest time</b>. Associate the time of last use with each page. Generally good and frequently used.<span class="zhn">用過去推未來：換掉<b>最久沒被用過</b>的頁。每頁記最後使用時間。表現不錯，很常用。</span></p>
+<table class="refstr ezfull" data-fit="1">
+<tr><th>ref</th><td>7</td><td>0</td><td>1</td><td>2</td><td>0</td><td>3</td><td>0</td><td>4</td><td>2</td><td>3</td><td>0</td><td>3</td><td>0</td><td>3</td><td>2</td><td>1</td><td>2</td><td>0</td><td>1</td><td>7</td><td>0</td><td>1</td></tr>
+<tr><th>f1</th><td>7</td><td>7</td><td>7</td><td>2</td><td></td><td>2</td><td></td><td>4</td><td>4</td><td>4</td><td>0</td><td></td><td></td><td></td><td></td><td>1</td><td></td><td>1</td><td></td><td>1</td><td></td><td></td></tr>
+<tr><th>f2</th><td></td><td>0</td><td>0</td><td>0</td><td></td><td>0</td><td></td><td>0</td><td>0</td><td>3</td><td>3</td><td></td><td></td><td></td><td></td><td>3</td><td></td><td>0</td><td></td><td>0</td><td></td><td></td></tr>
+<tr><th>f3</th><td></td><td></td><td>1</td><td>1</td><td></td><td>3</td><td></td><td>3</td><td>2</td><td>2</td><td>2</td><td></td><td></td><td></td><td></td><td>2</td><td></td><td>2</td><td></td><td>7</td><td></td><td></td></tr>
+<tr><th>fault</th><td>✱</td><td>✱</td><td>✱</td><td>✱</td><td></td><td>✱</td><td></td><td>✱</td><td>✱</td><td>✱</td><td>✱</td><td></td><td></td><td></td><td></td><td>✱</td><td></td><td>✱</td><td></td><td>✱</td><td></td><td></td></tr>
+</table>
+<div class="box en"><span class="lbl">RESULT</span>LRU with 3 frames: <b>12 page faults</b>, better than FIFO (15) but worse than OPT (9).<div class="zhtr"><span>中文</span>LRU、3 個 frame：<b>12 次 page fault</b>，比 FIFO（15）好，比 OPT（9）差。</div></div>
+<table class="ezfull" data-fit="1">
+<tr><th>Implementation<span class="zhn">實作方式</span></th><th class="l">How<span class="zhn">做法</span></th><th class="l">Cost<span class="zhn">代價</span></th></tr>
+<tr><td>Counter</td><td class="l">Every page-table entry has a counter; on every reference copy the clock into it. To replace, find the smallest counter.<span class="zhn">每筆有一個 counter；每次參考把時鐘值抄進去。要換時找最小的 counter。</span></td><td class="l">A search through the table is needed.<span class="zhn">要搜尋整張表。</span></td></tr>
+<tr><td>Stack</td><td class="l">Keep a stack of page numbers as a doubly linked list; when a page is referenced, move it to the top. The LRU page is at the bottom.<span class="zhn">用雙向鏈結串列存頁號；某頁被參考就移到最上面。最底下就是 LRU。</span></td><td class="l">Each update is more expensive (up to 6 pointers change), but no search for replacement.<span class="zhn">每次更新較貴（最多改 6 個指標），但換頁時不用搜尋。</span></td></tr>
+</table>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="pr7-5" data-menu="pr7" hidden>
+<h4 class="alg"><span class="an">Approx.</span>Reference bit and second-chance (clock)<span class="sl">Slide 41 to 42</span><span class="zhn">參考位元與第二次機會（時鐘）</span></h4>
+<ul>
+<li>True LRU needs special hardware and is still slow, so approximate it with a <b>reference bit</b>: one bit per page, initially 0, set to 1 by hardware when the page is referenced. Replace any page with bit 0 (if one exists); but we do not know the order.<span class="zhn">真正的 LRU 要特殊硬體而且慢，所以用<b>參考位元</b>近似：每頁一個 bit，一開始 0，被參考時硬體設成 1。換掉任一個 bit 為 0 的頁；但不知道先後順序。</span></li>
+<li><b>Second-chance algorithm</b>: basically FIFO plus the reference bit, arranged as a circular queue with a clock hand. If the page to be replaced has reference bit 0 → replace it. If 1 → set it to 0, leave the page in memory (a second chance) and move on to the next page under the same rules.<span class="zhn"><b>第二次機會演算法</b>：FIFO 加上參考位元，排成環狀佇列，用時鐘指針掃。指到的頁 bit 是 0 → 換掉；是 1 → 清成 0、留在記憶體（給第二次機會），再看下一頁，規則一樣。</span></li>
+<li>If every bit is 1, the hand goes all the way round and it degenerates into FIFO.<span class="zhn">如果全部都是 1，指針會繞一整圈，退化成 FIFO。</span></li>
+</ul>
+<div class="fig" data-sfig="1"><svg aria-hidden="true" viewBox="0 0 620 200" width="560" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="13"><defs><marker id="f7c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#b3261e"/></marker></defs>
+<circle data-step="0" cx="160" cy="100" r="80" fill="none" stroke="#1d2433" stroke-dasharray="5 4"/>
+<g data-step="1"><rect x="135" y="8" width="50" height="26" rx="4" fill="#fff6e0" stroke="#8a5a00"/><text x="160" y="26" text-anchor="middle" font-size="12">A:1</text></g>
+<g data-step="1"><rect x="222" y="58" width="50" height="26" rx="4" fill="#fff6e0" stroke="#8a5a00"/><text x="247" y="76" text-anchor="middle" font-size="12">B:1</text></g>
+<g data-step="1"><rect x="222" y="118" width="50" height="26" rx="4" fill="#dbe8fb" stroke="#1f5fbf"/><text x="247" y="136" text-anchor="middle" font-size="12">C:0</text></g>
+<g data-step="1"><rect x="135" y="166" width="50" height="26" rx="4" fill="#fff6e0" stroke="#8a5a00"/><text x="160" y="184" text-anchor="middle" font-size="12">D:1</text></g>
+<g data-step="1"><rect x="48" y="88" width="50" height="26" rx="4" fill="#fff6e0" stroke="#8a5a00"/><text x="73" y="106" text-anchor="middle" font-size="12">E:0</text></g>
+<line data-step="2" x1="160" y1="100" x2="160" y2="40" stroke="#b3261e" stroke-width="2.4" marker-end="url(#f7c)"/>
+<text data-step="3" x="300" y="40" font-size="12">A has bit 1 → clear to 0, move on</text>
+<text data-step="4" x="300" y="80" font-size="12">B has bit 1 → clear to 0, move on</text>
+<text data-step="5" x="300" y="130" font-size="12" fill="#1f5fbf" font-weight="bold">C has bit 0 → C is the victim</text>
+</svg><div class="cap">Clock algorithm: the hand clears 1-bits as it passes and stops at the first page whose bit is 0.<span class="zhn">時鐘演算法：指針經過時把 1 清成 0，停在第一個 bit 為 0 的頁。</span></div></div>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="pr7-6" data-menu="pr7" hidden>
+<h4 class="alg"><span class="an">Approx.</span>Enhanced second-chance algorithm<span class="sl">Slide 43</span><span class="zhn">加強版第二次機會</span></h4>
+<p>Use the pair <b>(reference bit, modify bit)</b>. A non-modified page is a better victim because it does not have to be written back, cutting I/O cost. The queue may be scanned several times to choose a victim.<span class="zhn">看 <b>(reference bit, modify bit)</b> 這一對。沒被改過的頁比較適合換，因為不用寫回，可以省 I/O。可能要掃佇列好幾圈才選得出 victim。</span></p>
+<table class="ezfull" data-fit="1">
+<tr><th>(ref, mod)</th><th class="l">Meaning<span class="zhn">意思</span></th><th>Priority as victim<span class="zhn">被換的優先順序</span></th></tr>
+<tr><td>(0, 0)</td><td class="l">Neither recently used nor modified: best page to replace.<span class="zhn">最近沒用、也沒改：最適合換。</span></td><td>1st</td></tr>
+<tr><td>(0, 1)</td><td class="l">Not recently used but modified: must be written out first.<span class="zhn">最近沒用但改過：換之前要先寫回。</span></td><td>2nd</td></tr>
+<tr><td>(1, 0)</td><td class="l">Recently used but clean: probably used again soon.<span class="zhn">最近用過但沒改：可能很快又要用。</span></td><td>3rd</td></tr>
+<tr><td>(1, 1)</td><td class="l">Recently used and modified: worst choice.<span class="zhn">最近用過又改過：最不該換。</span></td><td>4th</td></tr>
+</table>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="pr7-7" data-menu="pr7" hidden>
+<h4 class="alg"><span class="an">Other</span>Counting algorithms: LFU and MFU<span class="sl">Slide 44</span><span class="zhn">計數型：LFU、MFU</span></h4>
+<ul>
+<li>Keep a counter of the number of references made to each page.<span class="zhn">每頁記一個被參考次數的計數器。</span></li>
+<li><b>LFU</b> (Least Frequently Used): replace the page with the <b>smallest</b> count.<span class="zhn"><b>LFU</b>（最不常用）：換掉次數<b>最少</b>的頁。</span></li>
+<li><b>MFU</b> (Most Frequently Used): replace the page with the <b>largest</b> count, on the argument that the page with the smallest count was probably just brought in and has yet to be used.<span class="zhn"><b>MFU</b>（最常用）：換掉次數<b>最多</b>的頁，理由是次數最少的可能才剛載入、還沒開始用。</span></li>
+<li>Neither is common: implementation is expensive and they do not approximate OPT well.<span class="zhn">兩者都不常用：實作貴，也不太接近 OPT。</span></li>
+</ul>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="pr7-8" data-menu="pr7" hidden>
+<h4 class="alg"><span class="an">Other</span>Page-buffering algorithms<span class="sl">Slide 45</span><span class="zhn">分頁緩衝</span></h4>
+<ul>
+<li>Always keep a <b>pool of free frames</b>, so a frame is available when needed instead of being found at fault time: read the page into a free frame, then select a victim to evict and add it to the free pool; evict the victim when convenient.<span class="zhn">永遠保留一個<b>空 frame 池</b>，fault 時就有現成的 frame：先把頁讀進空 frame，再選 victim 加回空池，方便時才真的換出。</span></li>
+<li>Possibly keep a list of modified pages and write them to the backing store when it is idle, setting them to non-dirty.<span class="zhn">也可以記一份被改過的頁，backing store 閒著時先寫回，設成不 dirty。</span></li>
+<li>Possibly keep the free frames' contents intact and remember what is in them: if a page is referenced again before reuse, no disk load is needed. Reduces the penalty of picking the wrong victim.<span class="zhn">也可以讓空 frame 的內容保持原樣並記住裡面是哪頁：重新用到之前又被參考，就不用再從磁碟載入。可降低選錯 victim 的代價。</span></li>
+</ul>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="widget" data-w="pagerep"></div>
+
+<h3 data-sec="7.7">7.7 Allocation of Frames <span class="star">★★</span><span class="zhn">frame 的分配</span></h3>
+<ul>
+<li>Each process needs a <b>minimum</b> number of frames; the maximum is the total frames in the system. Two major schemes: <b>fixed allocation</b> and <b>priority allocation</b>.<span class="zhn">每個 process 至少要<b>最低</b>數量的 frame；最多是系統的總 frame 數。兩大類：<b>固定分配</b>、<b>優先權分配</b>。</span></li>
+<li><b>Equal allocation</b>: e.g. 100 frames (after the OS) and 5 processes → 20 frames each; keep some as a free-frame buffer pool.<span class="zhn"><b>平均分配</b>：例如 100 個 frame（扣掉 OS）、5 個 process → 每個 20 個；可留一些當空 frame 池。</span></li>
+<li><b>Proportional allocation</b>: allocate according to process size: a<sub>i</sub> = (s<sub>i</sub> ÷ S) × m, where S = Σ s<sub>i</sub>, m = total frames. Dynamic as the degree of multiprogramming and process sizes change.<span class="zhn"><b>按比例分配</b>：依 process 大小分：a<sub>i</sub> = (s<sub>i</sub> ÷ S) × m，S = 所有 s<sub>i</sub> 總和，m = 總 frame 數。會隨多元程式程度與 process 大小變動。</span></li>
+</ul>
+<div class="calc">m = 64, s1 = 10, s2 = 127 → S = 137
+a1 = 10 / 137 × 64  ≈ 4.67  → about 5 frames
+a2 = 127 / 137 × 64 ≈ 59.3  → about 59 frames<span class="zhn">m = 64、s1 = 10、s2 = 127 → S = 137
+a1 = 10 / 137 × 64 ≈ 4.67 → 約 5 個 frame
+a2 = 127 / 137 × 64 ≈ 59.3 → 約 59 個 frame</span></div>
+<ul>
+<li><b>Priority allocation</b>: proportional allocation using priorities rather than size. When Pi faults, either replace one of its own frames or a frame of a process with a <b>lower priority</b>.<span class="zhn"><b>優先權分配</b>：按優先權而不是大小來比例分配。Pi 發生 fault 時，換掉自己的 frame，或換掉<b>優先權較低</b>的 process 的 frame。</span></li>
+</ul>
+<table class="ezfull" data-fit="1">
+<tr><th></th><th class="l">Global replacement<span class="zhn">全域替換</span></th><th class="l">Local replacement<span class="zhn">區域替換</span></th></tr>
+<tr><td>Choose from<span class="zhn">從哪裡選</span></td><td class="l">The set of <b>all</b> frames; one process can take a frame from another.<span class="zhn"><b>所有</b> frame；可以拿別人的 frame。</span></td><td class="l">Only its <b>own</b> allocated frames.<span class="zhn">只能從<b>自己</b>的 frame 選。</span></td></tr>
+<tr><td>Pros<span class="zhn">優點</span></td><td class="l">Greater throughput, so more common.<span class="zhn">throughput 較高，較常用。</span></td><td class="l">More consistent per-process performance.<span class="zhn">每個 process 的效能比較穩定。</span></td></tr>
+<tr><td>Cons<span class="zhn">缺點</span></td><td class="l">Process execution time can vary greatly.<span class="zhn">執行時間變動大。</span></td><td class="l">Possibly underutilized memory.<span class="zhn">記憶體可能沒充分利用。</span></td></tr>
+</table>
+
+<h3 data-sec="7.8">7.8 Thrashing and the Working-Set Model <span class="star">★★★</span><span class="zhn">輾轉與工作集模型</span></h3>
+<div class="box en"><span class="lbl">ANSWER: Thrashing</span>If a process does not have "enough" pages, the page-fault rate is very high: it faults to get a page, replaces an existing frame, but quickly needs the replaced frame back. This leads to low CPU utilization; the operating system thinks it needs to increase the degree of multiprogramming and adds another process, which makes it worse. Thrashing ≡ a process is busy swapping pages in and out (more time paging than executing).<div class="zhtr"><span>中文</span>process 的頁「不夠」時 page fault 率很高：fault 拿一頁、換掉一個 frame，馬上又需要剛被換掉的。結果 CPU 使用率很低；OS 以為要提高多元程式程度，又加 process 進來，更糟。Thrashing＝process 忙著換頁（花在換頁的時間比執行還多）。</div></div>
+<div class="fig" data-sfig="1"><svg aria-hidden="true" viewBox="0 0 520 210" width="480" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="13">
+<line data-step="0" x1="60" y1="170" x2="480" y2="170" stroke="#1d2433" stroke-width="1.5"/><line data-step="0" x1="60" y1="170" x2="60" y2="20" stroke="#1d2433" stroke-width="1.5"/>
+<text data-step="0" x="270" y="200" text-anchor="middle" font-size="12">degree of multiprogramming</text><text data-step="0" x="20" y="100" text-anchor="middle" font-size="12" transform="rotate(-90 20 100)">CPU utilization</text>
+<path data-step="1" d="M60,165 C140,120 220,40 300,40 C340,40 360,80 380,150 L420,165" fill="none" stroke="#1f5fbf" stroke-width="3"/>
+<line data-step="2" x1="330" y1="20" x2="330" y2="170" stroke="#b3261e" stroke-dasharray="5 4"/>
+<text data-step="3" x="400" y="60" text-anchor="middle" fill="#b3261e" font-weight="bold">thrashing</text>
+</svg><div class="cap">Thrashing: past some degree of multiprogramming, CPU utilization drops sharply.<span class="zhn">Thrashing：多元程式程度超過某點，CPU 使用率急降。</span></div></div>
+<ul>
+<li>Why does demand paging work? The <b>locality model</b>: a process migrates from one locality (set of pages used together) to another; localities may overlap.<span class="zhn">為什麼需求分頁可行？<b>區域性模型</b>：process 從一個 locality（一起被用的一組頁）移到另一個；locality 可能重疊。</span></li>
+<li>Why does thrashing occur? <b>Σ size of localities &gt; total memory size</b>. Limit the effects by using local or priority page replacement.<span class="zhn">為什麼會 thrashing？<b>所有 locality 大小總和 &gt; 記憶體總量</b>。用區域替換或優先權替換可以限制影響。</span></li>
+</ul>
+<h4>Working-Set Model<span class="zhn">工作集模型</span></h4>
+<ul>
+<li><b>Δ ≡ working-set window</b>: a fixed number of page references (e.g. 10,000 instructions).<span class="zhn"><b>Δ＝工作集視窗</b>：固定數量的頁參考（例如 10,000 個指令）。</span></li>
+<li><b>WSS<sub>i</sub></b> (working set of Pi) = total number of pages referenced in the most recent Δ (varies in time). Δ too small → will not cover the entire locality; Δ too large → covers several localities; Δ = ∞ → covers the entire program.<span class="zhn"><b>WSS<sub>i</sub></b>（Pi 的工作集）＝最近 Δ 次參考裡用到的不同頁數（會隨時間變）。Δ 太小 → 蓋不住整個 locality；Δ 太大 → 蓋到好幾個 locality；Δ = ∞ → 整個程式。</span></li>
+<li><b>D = Σ WSS<sub>i</sub></b> = total demand frames (an approximation of locality). If <b>D &gt; m</b> (total frames) → thrashing. Policy: if D &gt; m, suspend or swap out one of the processes.<span class="zhn"><b>D = Σ WSS<sub>i</sub></b>＝總需求 frame 數（近似 locality）。<b>D &gt; m</b>（總 frame 數）→ thrashing。對策：D &gt; m 時暫停或換出某個 process。</span></li>
+</ul>
+<div class="calc">Δ = 10, page references:
+… 2 6 1 5 7 7 7 7 5 1 | 6 2 3 4 1 2 3 4 4 4 3 4 3 4 4 4 1 3 2 3 4 4 4 3 4 4 4 …
+            at t1: WS(t1) = {1, 2, 5, 6, 7}          WSS = 5
+            at t2: WS(t2) = {3, 4}                   WSS = 2<span class="zhn">Δ = 10，頁參考：
+… 2 6 1 5 7 7 7 7 5 1 | 6 2 3 4 1 2 3 4 4 4 3 4 3 4 4 4 1 3 2 3 4 4 4 3 4 4 4 …
+            t1 時：WS(t1) = {1, 2, 5, 6, 7}  WSS = 5
+            t2 時：WS(t2) = {3, 4}           WSS = 2</span></div>
+<ul>
+<li><b>Keeping track of the working set</b>: approximate with an interval timer + a reference bit. Example Δ = 10,000, timer interrupt every 5,000 time units, keep 2 bits per page in memory; on each interrupt copy the reference bits and reset them to 0; if any bit = 1 the page is in the working set. Not completely accurate (we cannot tell <i>when</i> in the 5,000 units the reference happened); improvement: 10 bits and an interrupt every 1,000 units.<span class="zhn"><b>追蹤工作集</b>：用定時器＋參考位元近似。例如 Δ = 10,000、每 5,000 單位中斷一次、每頁在記憶體裡留 2 bits；每次中斷把參考位元複製下來再清成 0；只要有一個 bit 是 1 就算在工作集裡。不完全準（不知道是 5,000 單位內的<i>哪個時間</i>被參考）；改良：10 bits、每 1,000 單位中斷。</span></li>
+<li><b>Page-fault frequency (PFF)</b>: a more direct approach. Establish an acceptable fault-rate range and use local replacement: if the actual rate is too <b>low</b>, the process <b>loses</b> a frame; if too <b>high</b>, it <b>gains</b> a frame.<span class="zhn"><b>Page-fault frequency（PFF）</b>：比較直接。訂一個可接受的 fault 率範圍、用區域替換：太<b>低</b>就<b>拿走</b>一個 frame；太<b>高</b>就<b>多給</b>一個 frame。</span></li>
+</ul>
+
+<h3 data-sec="7.9">7.9 Allocating Kernel Memory <span class="star">★★</span><span class="zhn">核心記憶體配置</span></h3>
+<ul>
+<li>Kernel memory is treated differently from user memory: often allocated from a free-memory pool; the kernel requests structures of varying sizes; some kernel memory must be <b>physically contiguous</b> (e.g. for device I/O).<span class="zhn">核心記憶體和使用者記憶體分開處理：常從空閒記憶體池配；核心要的結構大小不一；有些必須<b>實體連續</b>（例如給裝置 I/O）。</span></li>
+</ul>
+<table class="ezfull" data-fit="1">
+<tr><th></th><th class="l">Buddy system<span class="zhn">夥伴系統</span></th><th class="l">Slab allocator<span class="zhn">slab 配置器</span></th></tr>
+<tr><td>Idea<span class="zhn">做法</span></td><td class="l">Allocates from a fixed-size segment of physically contiguous pages using a <b>power-of-2 allocator</b>: a request is rounded up to the next power of 2; a chunk too big is split into two <b>buddies</b> of the next-lower power of 2 until a suitable size exists.<span class="zhn">從一段實體連續的固定大小記憶體配，用 <b>2 的次方配置器</b>：要求往上取到 2 的次方；太大的塊對半切成兩個 <b>buddy</b>，一直切到大小合適。</span></td><td class="l">A <b>slab</b> is one or more physically contiguous pages; a <b>cache</b> consists of one or more slabs, one cache per unique kernel data structure, filled with <b>objects</b> (instances of that structure) marked free or used. A full slab → allocate from an empty slab; no empty slab → allocate a new slab.<span class="zhn"><b>slab</b>＝一或多個實體連續頁；<b>cache</b>＝一或多個 slab，每種核心資料結構一個 cache，裡面放這種結構的 <b>object</b>，標成 free 或 used。slab 滿了 → 從空 slab 配；沒有空 slab → 再配一個新 slab。</span></td></tr>
+<tr><td>Pros<span class="zhn">優點</span></td><td class="l">Quickly <b>coalesce</b> unused buddies into a larger chunk.<span class="zhn">很快就能把沒用的 buddy <b>合併</b>成大塊。</span></td><td class="l"><b>No fragmentation</b>; fast memory-request satisfaction.<span class="zhn"><b>沒有碎片</b>；要求很快被滿足。</span></td></tr>
+<tr><td>Cons<span class="zhn">缺點</span></td><td class="l"><b>Fragmentation</b> (internal: rounding up).<span class="zhn"><b>碎片</b>（往上取整造成的內部碎片）。</span></td><td class="l">—</td></tr>
+</table>
+<div class="fig" data-sfig="1"><svg aria-hidden="true" viewBox="0 0 640 190" width="600" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="13"><defs><marker id="f7d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#1d2433"/></marker></defs>
+<rect data-step="0" x="170" y="5" width="300" height="30" rx="4" fill="#f2f4f8" stroke="#1d2433"/><text data-step="0" x="320" y="25" text-anchor="middle">256 KB physically contiguous</text>
+<line data-step="1" x1="270" y1="35" x2="175" y2="58" stroke="#1d2433" stroke-width="1.3" marker-end="url(#f7d)"/><line data-step="1" x1="370" y1="35" x2="465" y2="58" stroke="#1d2433" stroke-width="1.3" marker-end="url(#f7d)"/>
+<rect data-step="2" x="80" y="60" width="190" height="28" rx="4" fill="#dbe8fb" stroke="#1f5fbf"/><text data-step="2" x="175" y="79" text-anchor="middle">A<tspan font-size="10">L</tspan> 128 KB</text>
+<rect data-step="2" x="370" y="60" width="190" height="28" rx="4" fill="#f2f4f8" stroke="#1d2433"/><text data-step="2" x="465" y="79" text-anchor="middle">A<tspan font-size="10">R</tspan> 128 KB</text>
+<line data-step="3" x1="140" y1="88" x2="105" y2="110" stroke="#1d2433" stroke-width="1.3" marker-end="url(#f7d)"/><line data-step="3" x1="210" y1="88" x2="235" y2="110" stroke="#1d2433" stroke-width="1.3" marker-end="url(#f7d)"/>
+<rect data-step="4" x="50" y="112" width="110" height="28" rx="4" fill="#dbe8fb" stroke="#1f5fbf"/><text data-step="4" x="105" y="131" text-anchor="middle">B<tspan font-size="10">L</tspan> 64 KB</text>
+<rect data-step="4" x="180" y="112" width="110" height="28" rx="4" fill="#f2f4f8" stroke="#1d2433"/><text data-step="4" x="235" y="131" text-anchor="middle">B<tspan font-size="10">R</tspan> 64 KB</text>
+<line data-step="5" x1="85" y1="140" x2="70" y2="158" stroke="#1d2433" stroke-width="1.3" marker-end="url(#f7d)"/><line data-step="5" x1="125" y1="140" x2="140" y2="158" stroke="#1d2433" stroke-width="1.3" marker-end="url(#f7d)"/>
+<rect data-step="6" x="30" y="160" width="75" height="26" rx="4" fill="#d9f0e2" stroke="#1d7a4f"/><text data-step="6" x="67" y="178" text-anchor="middle" font-size="12">C<tspan font-size="9">L</tspan> 32 KB</text>
+<rect data-step="6" x="110" y="160" width="75" height="26" rx="4" fill="#f2f4f8" stroke="#1d2433"/><text data-step="6" x="147" y="178" text-anchor="middle" font-size="12">C<tspan font-size="9">R</tspan> 32 KB</text>
+<text data-step="7" x="210" y="178" font-size="12" fill="#1d7a4f">← 21 KB request uses C<tspan font-size="9">L</tspan> (11 KB wasted)</text>
+</svg><div class="cap">Buddy system: a 21 KB request on a 256 KB chunk splits 256 → 128 → 64 → 32 and takes one 32 KB buddy.<span class="zhn">夥伴系統：256 KB 上要 21 KB，切成 256 → 128 → 64 → 32，拿一塊 32 KB（浪費 11 KB）。</span></div></div>
+
+<h3 data-sec="7.10">7.10 Other Considerations <span class="star">★★</span><span class="zhn">其他考量</span></h3>
+<table class="ezfull" data-fit="1">
+<tr><th>Issue<span class="zhn">議題</span></th><th class="l">Key points<span class="zhn">重點</span></th></tr>
+<tr><td>Prepaging</td><td class="l">Reduce the many page faults at process startup by bringing in all or some pages before they are referenced. If s pages are prepaged and a fraction α of them is used, compare the cost of the s × α saved faults with the cost of prepaging s × (1 − α) unnecessary pages: α near 0 → prepaging loses; α near 1 → prepaging wins.<span class="zhn">process 剛啟動時 fault 很多，所以事先載入全部或部分會用到的頁。預載 s 頁、其中 α 比例真的用到：比較省下的 s × α 次 fault 與白載的 s × (1 − α) 頁成本。α 接近 0 → 預載划不來；α 接近 1 → 預載划算。</span></td></tr>
+<tr><td>Page size</td><td class="l">Must consider fragmentation, page-table size, resolution, I/O overhead, number of page faults, locality, TLB size and effectiveness. Always a power of 2, usually 2<sup>12</sup> (4,096 bytes) to 2<sup>22</sup> (4,194,304 bytes); on average growing over time.<span class="zhn">要考慮碎片、page table 大小、解析度、I/O 負擔、page fault 數、區域性、TLB 大小與效率。一定是 2 的次方，通常 2<sup>12</sup>（4,096 bytes）到 2<sup>22</sup>（4,194,304 bytes）；整體愈來愈大。</span></td></tr>
+<tr><td>TLB reach</td><td class="l"><b>TLB reach = TLB size × page size</b>, the memory accessible from the TLB. Ideally each process's working set is in the TLB, otherwise there are many faults. Increase the page size (but more fragmentation) or provide <b>multiple page sizes</b> (large pages only for apps that need them).<span class="zhn"><b>TLB reach = TLB 筆數 × 頁大小</b>，靠 TLB 就能存取的記憶體量。最好每個 process 的工作集都在 TLB 裡，不然 fault 很多。可加大頁（但碎片變多）或提供<b>多種頁大小</b>（需要的程式才用大頁）。</span></td></tr>
+<tr><td>Program structure</td><td class="l">int data[128][128], each row stored in one page. Looping column by column (<code>for j … for i … data[i][j] = 0</code>) touches a new page on every access: 128 × 128 = <b>16,384</b> faults. Looping row by row (<code>for i … for j …</code>): <b>128</b> faults.<span class="zhn">int data[128][128]，每一列放一頁。一欄一欄掃（<code>for j … for i …</code>）每次都換頁：128 × 128 = <b>16,384</b> 次 fault。一列一列掃（<code>for i … for j …</code>）：<b>128</b> 次。</span></td></tr>
+<tr><td>I/O interlock</td><td class="l">Pages used for copying a file from a device must be <b>locked</b> in memory so they are not selected for eviction by page replacement.<span class="zhn">正在跟裝置做 I/O 的頁必須<b>鎖</b>在記憶體裡，不能被替換演算法選走。</span></td></tr>
+</table>
+
+<div class="sum"><b class="t">Chapter summary</b><span class="zhn"><b>Summary 本章總結</b></span><ul><li><b>Virtual memory</b> separates logical from physical memory, so only part of a program must be in memory; it is implemented by <b>demand paging</b> (load a page only when it is referenced; an i bit causes a page fault).<span class="zhn"><b>虛擬記憶體</b>把邏輯和實體記憶體分開，只要部分程式在記憶體；用<b>需求分頁</b>實作（被參考才載入；碰到 i bit 就 page fault）。</span></li><li>Page fault: trap → check legal → get a free frame → read the page in → set v → restart the instruction. EAT = (1 − p) × ma + p × fault service time; p must be tiny.<span class="zhn">Page fault：trap → 檢查合法 → 找空 frame → 讀頁 → 設成 v → 重新執行指令。EAT = (1 − p) × ma + p × 服務時間；p 要非常小。</span></li><li><b>Copy-on-write</b> lets parent and child share pages until one writes, making <code>fork()</code> cheap.<span class="zhn"><b>寫入時複製</b>讓父子共用頁到有人寫入為止，<code>fork()</code> 變便宜。</span></li><li>Page replacement: <b>FIFO</b> (Belady's anomaly), <b>OPT</b> (fewest faults, needs the future), <b>LRU</b> (counter or stack), approximations with reference bits (second chance / clock, enhanced with the modify bit), LFU / MFU, page buffering. The dirty bit avoids writing clean pages back.<span class="zhn">分頁替換：<b>FIFO</b>（有 Belady 異常）、<b>OPT</b>（fault 最少、要知道未來）、<b>LRU</b>（counter 或 stack）、用參考位元近似（第二次機會／時鐘、再加 modify bit 的加強版）、LFU／MFU、分頁緩衝。dirty bit 讓沒改的頁不用寫回。</span></li><li>Frames are allocated equally, proportionally (a<sub>i</sub> = s<sub>i</sub>/S × m) or by priority; replacement is global or local.<span class="zhn">frame 用平均、按比例（a<sub>i</sub> = s<sub>i</sub>/S × m）或按優先權分配；替換分全域或區域。</span></li><li><b>Thrashing</b> happens when Σ locality sizes &gt; memory; the <b>working-set model</b> (D = Σ WSS<sub>i</sub> &gt; m → suspend a process) and <b>PFF</b> control it. Kernel memory uses the <b>buddy system</b> or the <b>slab allocator</b>.<span class="zhn">所有 locality 總和 &gt; 記憶體時發生 <b>thrashing</b>；用<b>工作集模型</b>（D = Σ WSS<sub>i</sub> &gt; m → 暫停一個 process）和 <b>PFF</b> 控制。核心記憶體用<b>夥伴系統</b>或 <b>slab 配置器</b>。</span></li></ul></div>
+<div class="trap"><b class="t">Common trap</b><span class="zhn"><b>易錯點</b></span><ul><li>The first few references always fault (the frames start empty); count them.<span class="zhn">一開始 frame 是空的，前幾次參考一定 fault，要算進去。</span></li><li>FIFO evicts the page that <b>arrived</b> earliest; LRU evicts the page <b>used</b> least recently. A hit updates LRU's order but not FIFO's.<span class="zhn">FIFO 換掉最早<b>進來</b>的；LRU 換掉最久沒<b>用</b>的。命中會更新 LRU 的順序，但不會改 FIFO 的順序。</span></li><li>Belady's anomaly happens with FIFO, <b>never</b> with LRU or OPT (stack algorithms).<span class="zhn">Belady 異常出現在 FIFO，LRU 和 OPT（stack algorithm）<b>不會</b>。</span></li><li>Thrashing → CPU utilization goes <b>down</b>; adding more processes makes it worse, not better.<span class="zhn">Thrashing → CPU 使用率<b>下降</b>；再加 process 只會更糟。</span></li><li>Page-fault EAT: convert ms to ns before adding (8 ms = 8,000,000 ns).<span class="zhn">page fault 的 EAT：先把 ms 換成 ns 再算（8 ms = 8,000,000 ns）。</span></li><li>PFF: rate too low → <b>take away</b> a frame; too high → <b>give</b> a frame. MFU replaces the page with the <b>largest</b> count.<span class="zhn">PFF：fault 率太低 → <b>拿走</b> frame；太高 → <b>多給</b> frame。MFU 換掉次數<b>最多</b>的頁。</span></li></ul></div>
+<div class="quiz" data-quiz="ch7"></div>
+<!--CHW7-->
+</section>

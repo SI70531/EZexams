@@ -61,6 +61,10 @@ tools/              Helper scripts and the Cloudflare Worker (see below)
 
 The home page sorts subjects by date automatically. Keep the table sorted by date too.
 
+## Operating Systems Final Page
+
+`operating-systems/final/` is generated: edit the notes in `tools/src/os-final/ch6.html` … `ch8.html`, the written questions in `tools/src/written.py` or the interactive figures in `tools/src/widgets.js`, then run `python3 tools/src/os_final_build.py`. Do not edit the generated files by hand.
+
 ## Editing Questions
 
 Saved answers are matched to questions by their position in `quiz.js`. So:

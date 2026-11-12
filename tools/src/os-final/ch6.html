@@ -1,0 +1,309 @@
+<section role="tabpanel" class="view" id="ch6" hidden><div class="vhead"><div class="pcb" data-pcb="ch6" role="img"></div><h1>Ch6 Memory-Management Strategies<span class="zhn">記憶體管理策略</span></h1><p>Base and limit registers, address binding, logical vs. physical addresses, swapping, contiguous allocation (first / best / worst fit), fragmentation, segmentation, paging, TLB and EAT, and the three page-table structures. After reading, do the Multiple-choice question, Short Answer and Essay at the bottom.<span class="zhn">base／limit 暫存器、address binding（位址綁定）、邏輯位址與實體位址、swapping（置換）、連續配置（first／best／worst fit）、fragmentation（碎片）、segmentation（分段）、paging（分頁）、TLB 與 EAT、三種 page table 結構。</span></p></div>
+
+<h3 data-sec="6.1">6.1 Background: Memory and Protection<span class="zhn">背景：記憶體與保護</span></h3>
+<div class="box zh"><span class="lbl">In plain words</span>A program on disk must first be copied into memory and become a process before it can run. The CPU can directly touch only <b>registers</b> and <b>main memory</b>. Every process must stay inside its own piece of memory, so the hardware checks every address.<span class="zhn"><b>白話</b> 磁碟上的程式要先搬進記憶體、變成 process 才能跑。CPU 能直接碰的只有<b>暫存器</b>和<b>主記憶體</b>。每個 process 只能待在自己那一塊記憶體裡，所以硬體會檢查每一個位址。</span></div>
+<ul>
+<li>A program must be brought (from disk) into memory and placed within a process for it to be run.<span class="zhn">程式要從磁碟載入記憶體、放進一個 process 裡才能執行。</span></li>
+<li><b>Main memory and registers</b> are the only storage the CPU can access directly. The memory unit only sees a stream of addresses plus read requests, or addresses plus data and write requests.<span class="zhn"><b>主記憶體和暫存器</b>是 CPU 唯一能直接存取的儲存裝置。記憶體單元只看到一串「位址＋讀取要求」或「位址＋資料＋寫入要求」。</span></li>
+<li>Register access takes one CPU clock (or less); main memory can take many cycles, causing a <b>stall</b>. A <b>cache</b> sits between main memory and the CPU registers.<span class="zhn">存取暫存器只要一個 clock（或更少）；主記憶體要很多個 cycle，會造成 <b>stall</b>（CPU 空等）。<b>cache</b> 放在主記憶體和暫存器之間。</span></li>
+<li>Protection of memory is required to ensure correct operation.<span class="zhn">需要記憶體保護，系統才能正確運作。</span></li>
+</ul>
+<h4>Base and Limit Registers <span class="star">★★</span><span class="zhn">基底與界限暫存器</span></h4>
+<ul>
+<li>A pair of <b>base</b> and <b>limit</b> registers define the logical address space of a process: base = the smallest legal physical address, limit = the size of the range.<span class="zhn">一對 <b>base</b> 和 <b>limit</b> 暫存器定義 process 的位址空間：base＝最小的合法實體位址，limit＝範圍大小。</span></li>
+<li>The CPU must check every memory access generated in user mode to be sure it is between base and base + limit; otherwise it <b>traps</b> to the OS (addressing error).<span class="zhn">CPU 要檢查 user mode 產生的每一個記憶體存取，確定位址在 base 和 base + limit 之間；不然就 <b>trap</b> 給 OS（addressing error）。</span></li>
+</ul>
+<div class="fig" data-sfig="1"><svg aria-hidden="true" viewBox="0 0 660 170" width="620" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="13"><defs><marker id="f6a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#1d2433"/></marker><marker id="f6ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#b3261e"/></marker></defs>
+<rect data-step="0" x="10" y="55" width="70" height="40" rx="6" fill="#dbe8fb" stroke="#1f5fbf" stroke-width="1.6"/><text data-step="0" x="45" y="80" text-anchor="middle" font-weight="bold">CPU</text>
+<line data-step="1" x1="80" y1="75" x2="148" y2="75" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f6a)"/><text data-step="1" x="114" y="68" text-anchor="middle" font-size="11">address</text>
+<polygon data-step="2" points="150,75 200,40 250,75 200,110" fill="#fff6e0" stroke="#8a5a00" stroke-width="1.5"/><text data-step="2" x="200" y="80" text-anchor="middle" font-size="12">≥ base?</text>
+<line data-step="3" x1="250" y1="75" x2="318" y2="75" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f6a)"/><text data-step="3" x="284" y="68" text-anchor="middle" font-size="11">yes</text>
+<polygon data-step="4" points="320,75 385,40 450,75 385,110" fill="#fff6e0" stroke="#8a5a00" stroke-width="1.5"/><text data-step="4" x="385" y="80" text-anchor="middle" font-size="12">&lt; base+limit?</text>
+<line data-step="5" x1="450" y1="75" x2="528" y2="75" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f6a)"/><text data-step="5" x="489" y="68" text-anchor="middle" font-size="11">yes</text>
+<rect data-step="6" x="530" y="55" width="120" height="40" rx="6" fill="#eaf6ef" stroke="#1d7a4f" stroke-width="1.6"/><text data-step="6" x="590" y="80" text-anchor="middle" font-weight="bold">memory</text>
+<line data-step="7" x1="200" y1="110" x2="200" y2="138" stroke="#b3261e" stroke-width="1.6" marker-end="url(#f6ar)"/><line data-step="7" x1="385" y1="110" x2="385" y2="138" stroke="#b3261e" stroke-width="1.6" marker-end="url(#f6ar)"/>
+<rect data-step="8" x="150" y="140" width="300" height="26" rx="5" fill="#fdeeee" stroke="#b3261e" stroke-width="1.4"/><text data-step="8" x="300" y="158" text-anchor="middle" fill="#b3261e" font-size="12">no → trap to OS monitor (addressing error)</text>
+</svg><div class="cap">Hardware address protection with base and limit registers: two comparisons on every user-mode access.<span class="zhn">用 base 與 limit 做硬體位址保護：每次 user mode 存取都要比兩次。</span></div></div>
+
+<h3 data-sec="6.2">6.2 Address Binding <span class="star">★★★</span><span class="zhn">位址綁定的三個時機</span></h3>
+<ul>
+<li>Addresses are represented in different ways at different stages: source code addresses are usually <b>symbolic</b> (e.g. variable <code>count</code>); the compiler binds them to <b>relocatable</b> addresses ("14 bytes from the beginning of this module"); the linker or loader binds those to <b>absolute</b> addresses (e.g. 74014).<span class="zhn">位址在不同階段長得不一樣：原始碼裡是<b>符號</b>（例如變數 <code>count</code>）；compiler 把它綁成<b>可重定位</b>位址（「這個模組開頭往後 14 bytes」）；linker 或 loader 再綁成<b>絕對</b>位址（例如 74014）。</span></li>
+<li>Each binding maps one address space to another.<span class="zhn">每一次綁定都是把一個位址空間對應到另一個。</span></li>
+</ul>
+<table class="ezfull" data-fit="1">
+<tr><th>When<span class="zhn">時機</span></th><th class="l">What happens<span class="zhn">做法</span></th><th class="l">Consequence<span class="zhn">結果</span></th></tr>
+<tr><td>Compile time</td><td class="l">If the memory location is known a priori, <b>absolute code</b> can be generated.<span class="zhn">事先知道要放哪裡，就直接產生<b>絕對碼</b>。</span></td><td class="l">Must recompile if the starting location changes.<span class="zhn">起始位置一改就要重新編譯。</span></td></tr>
+<tr><td>Load time</td><td class="l">Compiler must generate <b>relocatable code</b> if the location is not known at compile time; binding is done when loading.<span class="zhn">編譯時不知道位置，就產生<b>可重定位碼</b>，載入時才綁。</span></td><td class="l">Must reload to move it.<span class="zhn">要搬就得重新載入。</span></td></tr>
+<tr><td>Execution time</td><td class="l">Binding is delayed until run time if the process can be moved during execution from one memory segment to another.<span class="zhn">process 執行中可能被搬到別段記憶體，就延到執行時才綁。</span></td><td class="l">Needs hardware support for address maps (e.g. base and limit registers, MMU). Used by most OSs.<span class="zhn">需要硬體支援位址對應（base／limit、MMU）。大多數 OS 用這種。</span></td></tr>
+</table>
+<div class="fig" data-sfig="1"><svg aria-hidden="true" viewBox="0 0 660 120" width="620" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="13"><defs><marker id="f6b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#1d2433"/></marker></defs>
+<rect data-step="0" x="5" y="30" width="105" height="44" rx="6" fill="#f2f4f8" stroke="#1d2433"/><text data-step="0" x="57" y="50" text-anchor="middle" font-weight="bold">source</text><text data-step="0" x="57" y="66" text-anchor="middle" font-size="11">symbolic</text>
+<line data-step="1" x1="110" y1="52" x2="168" y2="52" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f6b)"/><text data-step="1" x="139" y="44" text-anchor="middle" font-size="11">compiler</text>
+<rect data-step="2" x="170" y="30" width="115" height="44" rx="6" fill="#dbe8fb" stroke="#1f5fbf"/><text data-step="2" x="227" y="50" text-anchor="middle" font-weight="bold">object module</text><text data-step="2" x="227" y="66" text-anchor="middle" font-size="11">relocatable</text>
+<line data-step="3" x1="285" y1="52" x2="343" y2="52" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f6b)"/><text data-step="3" x="314" y="44" text-anchor="middle" font-size="11">linker</text>
+<rect data-step="4" x="345" y="30" width="125" height="44" rx="6" fill="#dbe8fb" stroke="#1f5fbf"/><text data-step="4" x="407" y="50" text-anchor="middle" font-weight="bold">load module</text><text data-step="4" x="407" y="66" text-anchor="middle" font-size="11">+ other modules</text>
+<line data-step="5" x1="470" y1="52" x2="528" y2="52" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f6b)"/><text data-step="5" x="499" y="44" text-anchor="middle" font-size="11">loader</text>
+<rect data-step="6" x="530" y="30" width="125" height="44" rx="6" fill="#eaf6ef" stroke="#1d7a4f"/><text data-step="6" x="592" y="50" text-anchor="middle" font-weight="bold">in-memory image</text><text data-step="6" x="592" y="66" text-anchor="middle" font-size="11">absolute</text>
+<text data-step="7" x="227" y="100" text-anchor="middle" font-size="11" fill="#8a5a00">compile time</text><text data-step="7" x="499" y="100" text-anchor="middle" font-size="11" fill="#8a5a00">load time</text><text data-step="7" x="592" y="114" text-anchor="middle" font-size="11" fill="#8a5a00">execution time</text>
+</svg><div class="cap">Multistep processing of a user program and where each kind of binding happens.<span class="zhn">使用者程式的多階段處理，以及各種綁定發生的位置。</span></div></div>
+
+<h3 data-sec="6.3">6.3 Logical vs. Physical Address, MMU <span class="star">★★★</span><span class="zhn">邏輯位址、實體位址、MMU</span></h3>
+<div class="box en"><span class="lbl">ANSWER TEMPLATE</span>Logical address: generated by the CPU; also referred to as a virtual address. Physical address: the address seen by the memory unit. Logical and physical addresses are the same in compile-time and load-time address-binding schemes; they differ in the execution-time address-binding scheme.<div class="zhtr"><span>中文</span>邏輯位址：CPU 產生的位址，也叫虛擬位址。實體位址：記憶體單元看到的位址。compile time 和 load time 綁定時兩者相同；execution time 綁定時兩者不同。</div></div>
+<ul>
+<li><b>Logical address space</b> = the set of all logical addresses generated by a program; <b>physical address space</b> = the set of all physical addresses corresponding to them.<span class="zhn"><b>邏輯位址空間</b>＝程式產生的所有邏輯位址；<b>實體位址空間</b>＝它們對應的所有實體位址。</span></li>
+<li><b>MMU (Memory-Management Unit)</b>: the hardware device that at run time maps virtual to physical addresses.<span class="zhn"><b>MMU（記憶體管理單元）</b>：執行時把虛擬位址轉成實體位址的硬體。</span></li>
+<li>Simplest scheme: the base register is renamed the <b>relocation register</b>; its value is added to every address generated by a user process when it is sent to memory. The user program deals with logical addresses and <b>never sees the real physical addresses</b>.<span class="zhn">最簡單的做法：base register 改叫 <b>relocation register</b>，user process 送出的每個位址都加上它。使用者程式只看得到邏輯位址，<b>永遠看不到真正的實體位址</b>。</span></li>
+</ul>
+<div class="fig" data-sfig="1"><svg aria-hidden="true" viewBox="0 0 620 130" width="580" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="13"><defs><marker id="f6c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#1d2433"/></marker></defs>
+<rect x="190" y="10" width="250" height="110" rx="8" fill="#f2f4f8" stroke="#64489c" stroke-dasharray="5 4"/><text x="315" y="28" text-anchor="middle" fill="#64489c" font-size="12">MMU</text>
+<rect data-step="0" x="10" y="60" width="80" height="40" rx="6" fill="#dbe8fb" stroke="#1f5fbf" stroke-width="1.6"/><text data-step="0" x="50" y="85" text-anchor="middle" font-weight="bold">CPU</text>
+<line data-step="1" x1="90" y1="80" x2="273" y2="80" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f6c)"/><text data-step="1" x="140" y="72" text-anchor="middle" font-size="11">logical 346</text>
+<rect data-step="0" x="245" y="34" width="140" height="24" rx="4" fill="#fff6e0" stroke="#8a5a00"/><text data-step="0" x="315" y="51" text-anchor="middle" font-size="12">relocation = 14000</text>
+<circle data-step="2" cx="290" cy="80" r="15" fill="#fff" stroke="#1d2433" stroke-width="1.6"/><text data-step="2" x="290" y="86" text-anchor="middle" font-size="18" font-weight="bold">+</text>
+<line data-step="3" x1="305" y1="80" x2="508" y2="80" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f6c)"/><text data-step="3" x="460" y="72" text-anchor="middle" font-size="11">physical 14346</text>
+<rect data-step="4" x="510" y="60" width="100" height="40" rx="6" fill="#eaf6ef" stroke="#1d7a4f" stroke-width="1.6"/><text data-step="4" x="560" y="85" text-anchor="middle" font-weight="bold">memory</text>
+</svg><div class="cap">Dynamic relocation using a relocation register: 346 + 14000 = 14346.<span class="zhn">用 relocation register 做動態重定位：346 + 14000 = 14346。</span></div></div>
+<h4>Dynamic Loading and Dynamic Linking<span class="zhn">動態載入與動態連結</span></h4>
+<table class="ezfull" data-fit="1">
+<tr><th>Term<span class="zhn">名詞</span></th><th class="l">Meaning<span class="zhn">意思</span></th></tr>
+<tr><td>Dynamic loading</td><td class="l">A routine is not loaded until it is called. Better memory-space utilization (an unused routine is never loaded); useful when large amounts of code handle infrequent cases. <b>No special support from the OS is required</b>; it is implemented through program design (the OS may provide libraries).<span class="zhn">routine 被呼叫時才載入。記憶體利用率較好（沒用到的永遠不載入）；適合大量處理罕見狀況的程式碼。<b>不需要 OS 特別支援</b>，靠程式設計實作（OS 可提供函式庫）。</span></td></tr>
+<tr><td>Static linking</td><td class="l">System libraries and program code are combined by the loader into the binary program image.<span class="zhn">系統函式庫和程式碼由 loader 合併成一個執行檔映像。</span></td></tr>
+<tr><td>Dynamic linking</td><td class="l">Linking is postponed until execution time. A small piece of code, the <b>stub</b>, locates the memory-resident library routine, replaces itself with the routine's address and executes it. The OS checks whether the routine is in the process's address space and adds it if not. Used for <b>shared libraries</b>; easy library patching, versioning may be needed.<span class="zhn">連結延到執行時。一小段程式 <b>stub</b> 去找已在記憶體的函式庫 routine，把自己換成 routine 的位址再執行。OS 檢查 routine 在不在 process 的位址空間，不在就加進去。用於<b>共享函式庫</b>；更新函式庫方便，可能需要版本管理。</span></td></tr>
+</table>
+
+<h3 data-sec="6.4">6.4 Swapping <span class="star">★★</span><span class="zhn">置換</span></h3>
+<ul>
+<li>A process can be <b>swapped</b> temporarily out of memory to a <b>backing store</b> and then brought back into memory for continued execution. The total physical memory space of processes can exceed physical memory.<span class="zhn">process 可以暫時被<b>換出</b>到 <b>backing store</b>，之後再換回記憶體繼續執行。所有 process 的總大小可以超過實體記憶體。</span></li>
+<li><b>Backing store</b>: a fast disk large enough to hold copies of all memory images for all users; must provide direct access to these images.<span class="zhn"><b>Backing store</b>：夠大的快速磁碟，能放所有使用者的記憶體映像，而且要能直接存取。</span></li>
+<li><b>Roll out, roll in</b>: a swapping variant for priority-based scheduling; a lower-priority process is swapped out so a higher-priority process can be loaded and executed.<span class="zhn"><b>Roll out, roll in</b>：用於優先權排班的變形；低優先權的被換出，讓高優先權的載入執行。</span></li>
+<li>The major part of swap time is <b>transfer time</b>; total transfer time is directly proportional to the amount of memory swapped.<span class="zhn">換出換入的時間主要是<b>傳輸時間</b>，跟換的記憶體大小成正比。</span></li>
+<li>Whether a swapped-out process must come back to the <b>same physical addresses</b> depends on the address-binding method (execution-time binding → it can go anywhere). Pending I/O into the process's memory is a problem.<span class="zhn">換回來要不要放<b>同一個實體位置</b>，看用哪種綁定（execution time 綁定就可以放別處）。process 記憶體還有進行中的 I/O 時會出問題。</span></li>
+<li>UNIX, Linux and Windows use modified swapping: normally disabled; started when more than a <b>threshold</b> of memory is allocated, disabled again when demand drops below it.<span class="zhn">UNIX、Linux、Windows 用改良版：平常關閉；記憶體用量超過<b>門檻</b>才啟動，降到門檻以下再關閉。</span></li>
+</ul>
+<p class="q">Context-switch time including swapping<span class="zhn">含 swapping 的 context switch 時間</span></p>
+<div class="calc">100 MB process, disk transfer rate 50 MB/s
+swap out  = 100 / 50 = 2 s = 2000 ms
+swap in (same size) = 2000 ms
+total swapping component of the context switch = 4000 ms = 4 s<span class="zhn">100 MB 的 process，磁碟傳輸率 50 MB/s
+換出 = 100 / 50 = 2 秒 = 2000 ms
+換入（一樣大）= 2000 ms
+context switch 中 swapping 的部分 = 4000 ms = 4 秒</span></div>
+
+<h3 data-sec="6.5">6.5 Contiguous Allocation: First, Best and Worst Fit <span class="star">★★★</span><span class="zhn">連續配置與三種 fit</span></h3>
+<ul>
+<li>Main memory is usually divided into two partitions: the resident OS (usually in <b>low memory</b> with the interrupt vector) and user processes (in high memory). Each process is contained in a <b>single contiguous section</b> of memory.<span class="zhn">主記憶體通常分兩區：常駐 OS（放<b>低位址</b>，和中斷向量在一起）與使用者 process（高位址）。每個 process 占一段<b>連續</b>的記憶體。</span></li>
+<li><b>Relocation registers</b> protect user processes from each other and from changing OS code and data: the base (relocation) register holds the smallest physical address; the limit register holds the range of logical addresses, and every logical address must be <b>less than the limit</b>.<span class="zhn"><b>relocation register</b> 保護 process 之間、以及 OS 的程式和資料：base（relocation）存最小實體位址；limit 存邏輯位址範圍，每個邏輯位址都要<b>小於 limit</b>。</span></li>
+<li><b>Multiple-partition allocation</b> with variable partition sizes: a <b>hole</b> is a block of available memory, holes of various sizes are scattered throughout memory. An arriving process gets memory from a hole large enough; an exiting process frees its partition and adjacent free partitions are combined. The OS keeps (a) allocated partitions and (b) free partitions (holes).<span class="zhn"><b>多重分割配置</b>（大小可變）：<b>hole</b> 是一塊可用的記憶體，大小不一、散落各處。process 來了就從夠大的 hole 切一塊；離開時釋放，相鄰的空區合併。OS 記錄 (a) 已配置區 (b) 空閒區（hole）。</span></li>
+</ul>
+<div class="box en"><span class="lbl">ANSWER: Dynamic storage-allocation problem</span>First-fit: allocate the first hole that is big enough. Best-fit: allocate the smallest hole that is big enough; must search the entire list unless it is ordered by size; produces the smallest leftover hole. Worst-fit: allocate the largest hole; must also search the entire list; produces the largest leftover hole. First-fit and best-fit are better than worst-fit in terms of speed and storage utilization.<div class="zhtr"><span>中文</span>First-fit：配第一個夠大的 hole。Best-fit：配最小的夠大 hole，除非按大小排序否則要掃完整串，剩下的 hole 最小。Worst-fit：配最大的 hole，也要掃完整串，剩下的 hole 最大。速度與空間利用率上，first-fit 和 best-fit 比 worst-fit 好。</div></div>
+<p class="q">Classic exercise: holes 100K, 500K, 200K, 300K, 600K (in order); requests 212K, 417K, 112K, 426K (in order).<span class="zhn">經典題：hole 依序 100K、500K、200K、300K、600K；依序要求 212K、417K、112K、426K。</span></p>
+<table class="ezfull" data-fit="1">
+<tr><th>Request</th><th>First-fit</th><th>Best-fit</th><th>Worst-fit</th></tr>
+<tr><td>212K</td><td>500K → 288K left</td><td>300K → 88K left</td><td>600K → 388K left</td></tr>
+<tr><td>417K</td><td>600K → 183K left</td><td>500K → 83K left</td><td>500K → 83K left</td></tr>
+<tr><td>112K</td><td>288K → 176K left</td><td>200K → 88K left</td><td>388K → 276K left</td></tr>
+<tr><td>426K</td><td><b>must wait</b></td><td>600K → 174K left</td><td><b>must wait</b></td></tr>
+</table>
+<div class="box tip"><span class="lbl">Exam tip</span>Update the hole list after every request; the leftover piece stays in the same place in the list. Only best-fit places all four requests here.<span class="zhn"><b>考試提示</b> 每配一次就更新 hole 清單，剩下的那塊留在原位置。這題只有 best-fit 四個都放得下。</span></div>
+<div class="widget" data-w="fit"></div>
+
+<h3 data-sec="6.6">6.6 Fragmentation <span class="star">★★★</span><span class="zhn">碎片</span></h3>
+<div class="box en"><span class="lbl">ANSWER TEMPLATE</span>External fragmentation: total memory space exists to satisfy a request, but it is not contiguous. Internal fragmentation: allocated memory may be slightly larger than requested memory; this size difference is memory internal to a partition, but not being used.<div class="zhtr"><span>中文</span>外部碎片：總空間夠，但不連續，所以配不出去。內部碎片：配給的比要求的稍大，多出來那塊在分割區裡面卻沒被用到。</div></div>
+<ul>
+<li><b>50-percent rule</b>: first-fit analysis shows that given N allocated blocks, another 0.5N blocks are lost to fragmentation, so <b>one third</b> of memory may be unusable: 0.5N ÷ (N + 0.5N) = 1/3.<span class="zhn"><b>50% 規則</b>：first-fit 分析顯示配了 N 塊，就有 0.5N 塊因碎片浪費，所以大約<b>三分之一</b>記憶體可能不能用：0.5N ÷ (N + 0.5N) = 1/3。</span></li>
+<li>Reduce external fragmentation by <b>compaction</b>: shuffle memory contents to place all free memory together in one large block. Compaction is possible <b>only if relocation is dynamic</b> and done at execution time.<span class="zhn">用<b>壓縮（compaction）</b>減少外部碎片：把記憶體內容搬一搬，讓空閒空間併成一大塊。<b>只有動態重定位</b>（execution time 綁定）才能做。</span></li>
+<li>I/O problem during compaction: latch the job in memory while it is involved in I/O, or do I/O only into OS buffers. The backing store has the same fragmentation problems.<span class="zhn">壓縮時的 I/O 問題：做 I/O 時把工作鎖在記憶體，或 I/O 只進 OS 的緩衝區。backing store 也有同樣的碎片問題。</span></li>
+<li>The other fix is to let the physical address space be <b>noncontiguous</b>: segmentation and paging.<span class="zhn">另一個解法是讓實體位址空間<b>不必連續</b>：segmentation 和 paging。</span></li>
+</ul>
+
+<h3 data-sec="6.7">6.7 Segmentation <span class="star">★★</span><span class="zhn">分段</span></h3>
+<div class="box zh"><span class="lbl">In plain words</span>Segmentation follows the <b>user's view</b>: a program is a collection of logical units (main program, functions, stack, symbol table, arrays …), each a segment of its own length. An address is "which segment + how far into it".<span class="zhn"><b>白話</b> 分段照<b>使用者的觀點</b>：程式是一堆邏輯單位（主程式、函式、stack、symbol table、陣列……），每個是一段，長度各不同。位址就是「第幾段＋段內多遠」。</span></div>
+<ul>
+<li>Logical address = <b>&lt;segment-number, offset&gt;</b>.<span class="zhn">邏輯位址＝<b>&lt;段號, 位移&gt;</b>。</span></li>
+<li><b>Segment table</b>: each entry has a <b>base</b> (starting physical address of the segment) and a <b>limit</b> (length of the segment).<span class="zhn"><b>Segment table</b>：每筆有 <b>base</b>（段在實體記憶體的起點）和 <b>limit</b>（段長）。</span></li>
+<li><b>STBR</b> (segment-table base register) points to the segment table's location in memory; <b>STLR</b> (segment-table length register) is the number of segments; segment number s is legal if <b>s &lt; STLR</b>.<span class="zhn"><b>STBR</b> 指向記憶體中的 segment table；<b>STLR</b> 是段的數量；段號 s 合法的條件是 <b>s &lt; STLR</b>。</span></li>
+<li>Protection: each entry has a validation bit (0 = illegal segment) and read / write / execute privileges. Code sharing happens at the segment level.<span class="zhn">保護：每筆有 validation bit（0＝非法段）和讀／寫／執行權限。程式碼共用以段為單位。</span></li>
+<li>Segments vary in length, so allocation is again a <b>dynamic storage-allocation problem</b> (external fragmentation).<span class="zhn">段長度不一，所以配置又變成<b>動態儲存配置問題</b>（會有外部碎片）。</span></li>
+</ul>
+<div class="fig" data-sfig="1"><svg aria-hidden="true" viewBox="0 0 680 190" width="640" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="13"><defs><marker id="f6d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#1d2433"/></marker><marker id="f6dr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#b3261e"/></marker></defs>
+<rect data-step="0" x="10" y="20" width="60" height="36" rx="6" fill="#dbe8fb" stroke="#1f5fbf" stroke-width="1.6"/><text data-step="0" x="40" y="43" text-anchor="middle" font-weight="bold">CPU</text>
+<rect data-step="0" x="90" y="20" width="36" height="36" fill="#fff" stroke="#1d2433"/><rect data-step="0" x="126" y="20" width="36" height="36" fill="#fff" stroke="#1d2433"/><text data-step="0" x="108" y="43" text-anchor="middle" font-weight="bold">s</text><text data-step="0" x="144" y="43" text-anchor="middle" font-weight="bold">d</text>
+<rect data-step="1" x="200" y="80" width="150" height="90" fill="#f2f4f8" stroke="#1d2433"/><text data-step="1" x="275" y="72" text-anchor="middle" font-size="12">segment table</text><rect data-step="1" x="200" y="112" width="150" height="26" fill="#fff6e0" stroke="#8a5a00"/><text data-step="1" x="240" y="130" text-anchor="middle" font-size="12">limit</text><text data-step="1" x="310" y="130" text-anchor="middle" font-size="12">base</text>
+<line data-step="2" x1="108" y1="56" x2="198" y2="120" stroke="#1d2433" stroke-width="1.5" marker-end="url(#f6d)"/>
+<polygon data-step="3" points="380,38 420,14 460,38 420,62" fill="#fff6e0" stroke="#8a5a00" stroke-width="1.5"/><text data-step="3" x="420" y="43" text-anchor="middle" font-size="12">d &lt; limit?</text>
+<line data-step="3" x1="162" y1="38" x2="378" y2="38" stroke="#1d2433" stroke-width="1.5" marker-end="url(#f6d)"/>
+<line data-step="4" x1="350" y1="125" x2="490" y2="52" stroke="#1d2433" stroke-width="1.3" stroke-dasharray="4 3" marker-end="url(#f6d)"/>
+<circle data-step="4" cx="505" cy="38" r="14" fill="#fff" stroke="#1d2433" stroke-width="1.6"/><text data-step="4" x="505" y="44" text-anchor="middle" font-size="17" font-weight="bold">+</text>
+<line data-step="4" x1="460" y1="38" x2="489" y2="38" stroke="#1d2433" stroke-width="1.5" marker-end="url(#f6d)"/><text data-step="4" x="474" y="30" text-anchor="middle" font-size="10">yes</text>
+<line data-step="5" x1="519" y1="38" x2="578" y2="38" stroke="#1d2433" stroke-width="1.5" marker-end="url(#f6d)"/>
+<rect data-step="6" x="580" y="18" width="90" height="40" rx="6" fill="#eaf6ef" stroke="#1d7a4f" stroke-width="1.6"/><text data-step="6" x="625" y="43" text-anchor="middle" font-weight="bold">memory</text>
+<line data-step="7" x1="420" y1="62" x2="420" y2="138" stroke="#b3261e" stroke-width="1.5" marker-end="url(#f6dr)"/><text data-step="7" x="430" y="104" font-size="11" fill="#b3261e">no</text>
+<rect data-step="8" x="380" y="140" width="190" height="28" rx="5" fill="#fdeeee" stroke="#b3261e"/><text data-step="8" x="475" y="159" text-anchor="middle" font-size="12" fill="#b3261e">trap: addressing error</text>
+</svg><div class="cap">Segmentation hardware: s picks the entry, d is checked against the limit, then added to the base.<span class="zhn">分段硬體：s 選表格那一列，d 先和 limit 比，再加上 base。</span></div></div>
+<p class="q">Example (textbook segment table)<span class="zhn">範例（課本的 segment table）</span></p>
+<table class="ezfull" data-fit="1">
+<tr><th>Segment</th><th>Limit</th><th>Base</th></tr>
+<tr><td>0</td><td>1000</td><td>1400</td></tr><tr><td>1</td><td>400</td><td>6300</td></tr><tr><td>2</td><td>400</td><td>4300</td></tr><tr><td>3</td><td>1100</td><td>3200</td></tr><tr><td>4</td><td>1000</td><td>4700</td></tr>
+</table>
+<div class="calc">&lt;2, 53&gt;   : 53 &lt; 400  ✓ → 4300 + 53  = 4353
+&lt;3, 852&gt;  : 852 &lt; 1100 ✓ → 3200 + 852 = 4052
+&lt;0, 1222&gt; : 1222 ≥ 1000 ✗ → trap (addressing error)<span class="zhn">&lt;2, 53&gt;   ：53 &lt; 400 ✓ → 4300 + 53 = 4353
+&lt;3, 852&gt;  ：852 &lt; 1100 ✓ → 3200 + 852 = 4052
+&lt;0, 1222&gt; ：1222 ≥ 1000 ✗ → trap（位址錯誤）</span></div>
+
+<h3 data-sec="6.8">6.8 Paging <span class="star">★★★</span><span class="zhn">分頁</span></h3>
+<div class="box zh"><span class="lbl">In plain words</span>Cut physical memory into equal-size <b>frames</b> and the program into pages of the <b>same size</b>. Any page can go into any free frame, so there is <b>no external fragmentation</b>; only the last page may be partly empty (internal fragmentation). A <b>page table</b> records which frame holds each page.<span class="zhn"><b>白話</b> 把實體記憶體切成一樣大的 <b>frame</b>，程式切成<b>一樣大</b>的 page。任何 page 都能放進任何空 frame，所以<b>沒有外部碎片</b>；只有最後一頁可能沒塞滿（內部碎片）。<b>page table</b> 記每一頁放在哪個 frame。</span></div>
+<ul>
+<li>The physical address space of a process can be <b>noncontiguous</b>. Avoids external fragmentation and the problem of varying-sized memory chunks.<span class="zhn">process 的實體位址空間可以<b>不連續</b>。避免外部碎片和大小不一的問題。</span></li>
+<li>Physical memory → fixed-size blocks called <b>frames</b> (size a power of 2, between 512 bytes and 16 MB); logical memory → blocks of the same size called <b>pages</b>. Keep track of all free frames.<span class="zhn">實體記憶體切成固定大小的 <b>frame</b>（2 的次方，512 bytes 到 16 MB）；邏輯記憶體切成同樣大小的 <b>page</b>。要記錄所有空 frame。</span></li>
+<li>To run a program of N pages, find N free frames and load it; set up a <b>page table</b> to translate logical to physical addresses. The backing store is split into pages too. Still has <b>internal fragmentation</b>.<span class="zhn">跑 N 頁的程式就找 N 個空 frame 載入；建立 <b>page table</b> 做位址轉換。backing store 也切成 page。仍有<b>內部碎片</b>。</span></li>
+</ul>
+<div class="box en"><span class="lbl">ANSWER: Address translation scheme</span>The address generated by the CPU is divided into a page number (p), used as an index into a page table which contains the base address of each page in physical memory, and a page offset (d), combined with that base address to define the physical memory address sent to the memory unit. For a logical address space of 2<sup>m</sup> and a page size of 2<sup>n</sup>, the page number is the high-order m − n bits and the offset is the low-order n bits.<div class="zhtr"><span>中文</span>CPU 產生的位址分成 page number（p，拿去查 page table，得到該頁在實體記憶體的起點）和 page offset（d，加在起點上得到實體位址）。邏輯位址空間 2<sup>m</sup>、頁大小 2<sup>n</sup>：高 m − n 位是頁號，低 n 位是位移。</div></div>
+<div class="fig" data-sfig="1"><svg aria-hidden="true" viewBox="0 0 680 200" width="640" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="13"><defs><marker id="f6e" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#1d2433"/></marker></defs>
+<rect data-step="0" x="10" y="22" width="60" height="36" rx="6" fill="#dbe8fb" stroke="#1f5fbf" stroke-width="1.6"/><text data-step="0" x="40" y="45" text-anchor="middle" font-weight="bold">CPU</text>
+<rect data-step="0" x="90" y="22" width="40" height="36" fill="#fff" stroke="#1d2433"/><rect data-step="0" x="130" y="22" width="40" height="36" fill="#fff" stroke="#1d2433"/><text data-step="0" x="110" y="45" text-anchor="middle" font-weight="bold">p</text><text data-step="0" x="150" y="45" text-anchor="middle" font-weight="bold">d</text>
+<rect data-step="1" x="230" y="80" width="90" height="110" fill="#f2f4f8" stroke="#1d2433"/><text data-step="1" x="275" y="74" text-anchor="middle" font-size="12">page table</text><rect data-step="1" x="230" y="125" width="90" height="24" fill="#fff6e0" stroke="#8a5a00"/><text data-step="1" x="275" y="142" text-anchor="middle" font-weight="bold">f</text>
+<line data-step="2" x1="110" y1="58" x2="228" y2="135" stroke="#1d2433" stroke-width="1.5" marker-end="url(#f6e)"/>
+<rect data-step="3" x="400" y="22" width="40" height="36" fill="#fff6e0" stroke="#8a5a00"/><rect data-step="3" x="440" y="22" width="40" height="36" fill="#fff" stroke="#1d2433"/><text data-step="3" x="420" y="45" text-anchor="middle" font-weight="bold">f</text><text data-step="3" x="460" y="45" text-anchor="middle" font-weight="bold">d</text>
+<line data-step="3" x1="320" y1="137" x2="418" y2="60" stroke="#1d2433" stroke-width="1.5" marker-end="url(#f6e)"/>
+<line data-step="3" x1="170" y1="40" x2="398" y2="40" stroke="#1d2433" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#f6e)"/><text data-step="3" x="285" y="33" text-anchor="middle" font-size="11">d is copied unchanged</text>
+<line data-step="4" x1="480" y1="40" x2="548" y2="40" stroke="#1d2433" stroke-width="1.5" marker-end="url(#f6e)"/><text data-step="4" x="514" y="32" text-anchor="middle" font-size="11">physical</text>
+<rect data-step="5" x="550" y="10" width="120" height="180" fill="#eaf6ef" stroke="#1d7a4f" stroke-width="1.6"/><text data-step="5" x="610" y="185" text-anchor="middle" font-size="12">physical memory</text><rect data-step="5" x="550" y="28" width="120" height="30" fill="#d9f0e2" stroke="#1d7a4f"/><text data-step="5" x="610" y="48" text-anchor="middle" font-size="12">frame f</text>
+</svg><div class="cap">Paging hardware: p indexes the page table to get frame f; the offset d is kept as it is.<span class="zhn">分頁硬體：用 p 查 page table 得到 frame f；位移 d 原封不動。</span></div></div>
+<p class="q">Paging example: n = 2, m = 4 (32-byte memory, 4-byte pages); page table: page 0 → frame 5, page 1 → frame 6, page 2 → frame 1, page 3 → frame 2.<span class="zhn">分頁範例：n = 2、m = 4（32 bytes 記憶體、每頁 4 bytes）；page table：0→5、1→6、2→1、3→2。</span></p>
+<div class="calc">physical = frame × page size + offset
+logical 0  = page 0, offset 0 → 5 × 4 + 0 = 20
+logical 3  = page 0, offset 3 → 5 × 4 + 3 = 23
+logical 4  = page 1, offset 0 → 6 × 4 + 0 = 24
+logical 13 = page 3, offset 1 → 2 × 4 + 1 = 9<span class="zhn">實體位址 = frame × 頁大小 + offset
+邏輯 0  = 第 0 頁、位移 0 → 5 × 4 + 0 = 20
+邏輯 3  = 第 0 頁、位移 3 → 5 × 4 + 3 = 23
+邏輯 4  = 第 1 頁、位移 0 → 6 × 4 + 0 = 24
+邏輯 13 = 第 3 頁、位移 1 → 2 × 4 + 1 = 9</span></div>
+<div class="widget" data-w="paging"></div>
+<h4>Internal Fragmentation in Paging<span class="zhn">分頁的內部碎片</span></h4>
+<div class="calc">page size = 2,048 bytes, process size = 72,766 bytes
+72,766 = 35 × 2,048 + 1,086   → 35 pages + 1,086 bytes → 36 frames
+internal fragmentation = 2,048 − 1,086 = 962 bytes
+worst case = 1 frame − 1 byte;  on average = 1/2 frame<span class="zhn">頁大小 2,048 bytes、process 72,766 bytes
+72,766 = 35 × 2,048 + 1,086 → 35 頁又 1,086 bytes → 要 36 個 frame
+內部碎片 = 2,048 − 1,086 = 962 bytes
+最差 = 1 個 frame − 1 byte；平均 = 半個 frame</span></div>
+<ul>
+<li>So are small frames better? Each page-table entry takes memory too, so page sizes have been <b>growing</b> over time (Solaris supports 8 KB and 4 MB).<span class="zhn">那 frame 愈小愈好嗎？page table 每一筆也要記憶體，所以頁大小其實<b>愈來愈大</b>（Solaris 支援 8 KB 和 4 MB）。</span></li>
+<li>The process's view and physical memory are now very different; by implementation a process can only access its own memory. The OS keeps a <b>free-frame list</b>.<span class="zhn">process 看到的和實體記憶體已經很不一樣；實作上 process 只能存取自己的記憶體。OS 維護一份 <b>free-frame list</b>。</span></li>
+</ul>
+
+<h3 data-sec="6.9">6.9 Page-Table Implementation: TLB and EAT <span class="star">★★★</span><span class="zhn">page table 實作：TLB 與有效存取時間</span></h3>
+<ul>
+<li>The page table is kept in main memory. <b>PTBR</b> (page-table base register) points to it; <b>PTLR</b> (page-table length register) gives its size.<span class="zhn">page table 放在主記憶體。<b>PTBR</b> 指向它；<b>PTLR</b> 是它的大小。</span></li>
+<li>Then every data / instruction access needs <b>two memory accesses</b> (one for the page table, one for the data), i.e. 2 × memory access time.<span class="zhn">這樣每次存取資料／指令都要<b>兩次記憶體存取</b>（一次查 page table、一次拿資料），時間變兩倍。</span></li>
+<li>Fix: a special fast-lookup hardware cache called <b>associative memory</b> or <b>translation look-aside buffer (TLB)</b>, searched in parallel. If p is in the TLB (hit), take the frame number from it; otherwise (miss) get it from the page table in memory and load it into the TLB for next time.<span class="zhn">解法：用一種快速查表硬體快取，叫<b>關聯式記憶體</b>或 <b>TLB</b>，可平行搜尋。p 在 TLB 裡（hit）就直接拿 frame 號；不在（miss）就去記憶體查 page table，並放進 TLB 下次用。</span></li>
+<li>TLBs are small (64 to 1,024 entries); replacement policies must be considered; some entries can be <b>wired down</b> for permanent fast access.<span class="zhn">TLB 很小（64 到 1,024 筆），要考慮替換策略；有些項目可以<b>固定（wired down）</b>常駐。</span></li>
+<li><b>ASIDs</b> (address-space identifiers) in each TLB entry identify the process, giving address-space protection; without them the TLB must be <b>flushed at every context switch</b>.<span class="zhn">TLB 每筆加 <b>ASID</b> 標出是哪個 process，提供保護；沒有 ASID 的話，每次 context switch 都要<b>清空 TLB</b>。</span></li>
+</ul>
+<div class="box en"><span class="lbl">FORMULA: Effective Access Time</span>Associative lookup = ε time units, memory access = m, hit ratio = α.<br><b>EAT = α(m + ε) + (1 − α)(2m + ε)</b><div class="zhtr"><span>中文</span>查 TLB 花 ε，存取一次記憶體 m，命中率 α。命中：查 TLB＋一次記憶體；沒中：查 TLB＋兩次記憶體（page table＋資料）。</div></div>
+<div class="calc">α = 80%, ε = 20 ns, m = 100 ns
+EAT = 0.80 × (100 + 20) + 0.20 × (200 + 20) = 96 + 44 = 140 ns
+α = 99%:
+EAT = 0.99 × 120 + 0.01 × 220 = 118.8 + 2.2 = 121 ns<span class="zhn">α = 80%、ε = 20 ns、m = 100 ns
+EAT = 0.80 × (100 + 20) + 0.20 × (200 + 20) = 96 + 44 = 140 ns
+α = 99%：
+EAT = 0.99 × 120 + 0.01 × 220 = 118.8 + 2.2 = 121 ns</span></div>
+<div class="box warn"><span class="lbl">Common deduction</span>On a TLB miss the cost is <b>2m + ε</b>, not m + ε: you still search the TLB, then read the page table, then read the data.<span class="zhn"><b>常見扣分</b> TLB miss 的時間是 <b>2m + ε</b>，不是 m + ε：還是先查了 TLB，再讀 page table，再讀資料。</span></div>
+<div class="widget" data-w="eat"></div>
+<h4>Memory Protection and Shared Pages<span class="zhn">記憶體保護與共享頁</span></h4>
+<ul>
+<li>A <b>protection bit</b> per frame marks read-only or read-write (more bits for execute-only, …).<span class="zhn">每個 frame 一個<b>保護位元</b>標示唯讀或可讀寫（可再加位元表示只能執行等）。</span></li>
+<li><b>Valid–invalid bit</b> in each page-table entry: <b>valid</b> = the page is in the process's logical address space (legal); <b>invalid</b> = it is not. Or use the PTLR. Any violation traps to the kernel.<span class="zhn">page table 每筆有 <b>valid–invalid bit</b>：<b>valid</b>＝這頁在 process 的邏輯位址空間內（合法）；<b>invalid</b>＝不在。也可用 PTLR。違規就 trap 給 kernel。</span></li>
+<li><b>Shared code</b>: one copy of read-only (<b>reentrant</b>) code, e.g. text editors, compilers, window systems, is shared among processes, like threads sharing a process space. Sharing read-write pages is also useful for IPC.<span class="zhn"><b>共享程式碼</b>：唯讀（<b>reentrant，可重入</b>）程式碼只放一份給多個 process 共用，例如文字編輯器、compiler、視窗系統，就像 thread 共用同一個 process 空間。共享可讀寫頁也可以用來做 IPC。</span></li>
+<li><b>Private code and data</b>: each process keeps a separate copy; these pages can appear anywhere in the logical address space.<span class="zhn"><b>私有程式碼與資料</b>：每個 process 各有一份，可以放在邏輯位址空間任何地方。</span></li>
+</ul>
+
+<h3 data-sec="6.10">6.10 Structure of the Page Table <span class="star">★★★</span><span class="zhn">page table 的結構</span></h3>
+<p>With a 32-bit logical address space and 4 KB (2<sup>12</sup>) pages, the page table has 2<sup>32</sup> ÷ 2<sup>12</sup> = 2<sup>20</sup> ≈ 1 million entries; at 4 bytes each that is <b>4 MB per process</b>, and we do not want to allocate that contiguously. Three structures fix this.<span class="zhn">32 位元邏輯位址、頁大小 4 KB（2<sup>12</sup>）時，page table 有 2<sup>32</sup> ÷ 2<sup>12</sup> = 2<sup>20</sup> ≈ 一百萬筆；每筆 4 bytes 就是<b>每個 process 4 MB</b>，還不想連續配置。下面三種結構解決這個問題。</span></p>
+<div class="algmenu" role="list" data-menu="pt6"><button type="button" class="algcard" role="listitem" data-alg-open="pt6-1"><span class="an">Structure</span><b>Hierarchical paging <span class="star">★★★</span></b><span class="zhn2">階層式分頁</span><span class="sl">Slide 49 to 54</span></button><button type="button" class="algcard" role="listitem" data-alg-open="pt6-2"><span class="an">Structure</span><b>Hashed page tables</b><span class="zhn2">雜湊分頁表</span><span class="sl">Slide 55 to 56</span></button><button type="button" class="algcard" role="listitem" data-alg-open="pt6-3"><span class="an">Structure</span><b>Inverted page table</b><span class="zhn2">反轉分頁表</span><span class="sl">Slide 57 to 58</span></button></div>
+<div class="algp" data-alg="pt6-1" data-menu="pt6" hidden>
+<h4 class="alg"><span class="an">Structure</span>Hierarchical paging<span class="sl">Slide 49 to 54</span><span class="zhn">階層式分頁</span></h4>
+<ul>
+<li>Break up the logical address space into multiple page tables; the simplest is a <b>two-level page table</b>: we "page the page table". Also called a <b>forward-mapped page table</b>.<span class="zhn">把邏輯位址空間拆成多張 page table；最簡單的是<b>兩層 page table</b>：「把 page table 再分頁」。也叫 <b>forward-mapped page table</b>。</span></li>
+<li>p1 indexes the <b>outer</b> page table; p2 is the displacement within the page of the <b>inner</b> page table.<span class="zhn">p1 查<b>外層</b> page table；p2 是在<b>內層</b> page table 那一頁裡的位置。</span></li>
+</ul>
+<div class="calc">32-bit address, 1 KB page (2^10) → offset d = 10 bits, page number = 22 bits
+page the page table: 22 = p1 (12) + p2 (10)
+| p1 = 12 | p2 = 10 | d = 10 |
+
+64-bit address, 4 KB page → page table has 2^52 entries
+two-level with 2^10 4-byte inner entries: | p1 = 42 | p2 = 10 | d = 12 |
+outer table = 2^42 entries = 2^44 bytes → still too big
+add a 2nd outer table → three-level; the 2nd outer table is still 2^34 bytes,
+and one physical access may need 4 memory accesses<span class="zhn">32 位元位址、頁 1 KB（2^10）→ 位移 d = 10 位，頁號 = 22 位
+把 page table 再分頁：22 = p1（12）+ p2（10）
+| p1 = 12 | p2 = 10 | d = 10 |
+
+64 位元位址、頁 4 KB → page table 有 2^52 筆
+兩層、內層每頁 2^10 筆（每筆 4 bytes）：| p1 = 42 | p2 = 10 | d = 12 |
+外層 = 2^42 筆 = 2^44 bytes → 還是太大
+再加一層外層 → 三層；第二層外層仍有 2^34 bytes，
+而且拿一個實體位置可能要 4 次記憶體存取</span></div>
+<div class="fig" data-sfig="1"><svg aria-hidden="true" viewBox="0 0 660 190" width="620" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="13"><defs><marker id="f6f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#1d2433"/></marker></defs>
+<rect data-step="0" x="10" y="10" width="50" height="30" fill="#fff" stroke="#1d2433"/><rect data-step="0" x="60" y="10" width="50" height="30" fill="#fff" stroke="#1d2433"/><rect data-step="0" x="110" y="10" width="50" height="30" fill="#fff" stroke="#1d2433"/><text data-step="0" x="35" y="30" text-anchor="middle" font-weight="bold">p1</text><text data-step="0" x="85" y="30" text-anchor="middle" font-weight="bold">p2</text><text data-step="0" x="135" y="30" text-anchor="middle" font-weight="bold">d</text>
+<line data-step="1" x1="35" y1="40" x2="128" y2="118" stroke="#1d2433" stroke-width="1.5" marker-end="url(#f6f)"/>
+<rect data-step="2" x="130" y="80" width="100" height="100" fill="#f2f4f8" stroke="#1d2433"/><text data-step="2" x="180" y="75" text-anchor="middle" font-size="12">outer page table</text><rect data-step="2" x="130" y="110" width="100" height="22" fill="#fff6e0" stroke="#8a5a00"/>
+<line data-step="3" x1="230" y1="121" x2="318" y2="121" stroke="#1d2433" stroke-width="1.5" marker-end="url(#f6f)"/>
+<line data-step="3" x1="85" y1="40" x2="318" y2="146" stroke="#1d2433" stroke-width="1.3" stroke-dasharray="4 3" marker-end="url(#f6f)"/>
+<rect data-step="4" x="320" y="80" width="100" height="100" fill="#f2f4f8" stroke="#1d2433"/><text data-step="4" x="370" y="75" text-anchor="middle" font-size="12">page of page table</text><rect data-step="4" x="320" y="136" width="100" height="22" fill="#fff6e0" stroke="#8a5a00"/>
+<line data-step="5" x1="420" y1="147" x2="518" y2="130" stroke="#1d2433" stroke-width="1.5" marker-end="url(#f6f)"/>
+<line data-step="5" x1="135" y1="40" x2="518" y2="112" stroke="#1d2433" stroke-width="1.3" stroke-dasharray="4 3" marker-end="url(#f6f)"/>
+<rect data-step="6" x="520" y="60" width="130" height="120" fill="#eaf6ef" stroke="#1d7a4f"/><text data-step="6" x="585" y="55" text-anchor="middle" font-size="12">memory</text><rect data-step="6" x="520" y="104" width="130" height="34" fill="#d9f0e2" stroke="#1d7a4f"/><text data-step="6" x="585" y="126" text-anchor="middle" font-size="12">frame + d</text>
+</svg><div class="cap">Two-level address translation: p1 → outer table, p2 → inner table, d → inside the frame.<span class="zhn">兩層位址轉換：p1 → 外層表、p2 → 內層表、d → frame 內的位置。</span></div></div>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+<div class="algp" data-alg="pt6-2" data-menu="pt6" hidden>
+<h4 class="alg"><span class="an">Structure</span>Hashed page tables<span class="sl">Slide 55 to 56</span><span class="zhn">雜湊分頁表</span></h4>
+<ul>
+<li>Common in address spaces <b>&gt; 32 bits</b>. The virtual page number is <b>hashed</b> into a page table; each slot holds a chain of elements hashing to the same location.<span class="zhn">常用在<b>超過 32 位元</b>的位址空間。把虛擬頁號<b>雜湊</b>到表裡；每格是一串雜湊到同一位置的元素。</span></li>
+<li>Each element contains (1) the virtual page number, (2) the value of the mapped page frame, (3) a pointer to the next element. Virtual page numbers are compared along the chain; on a match the frame is extracted.<span class="zhn">每個元素有 (1) 虛擬頁號 (2) 對應的 frame (3) 指向下一個的指標。沿著串比對虛擬頁號，對到就取出 frame。</span></li>
+<li>Variation for 64-bit: <b>clustered page tables</b>, where each entry refers to several pages (such as 16) instead of one; especially useful for <b>sparse</b> address spaces (non-contiguous, scattered references).<span class="zhn">64 位元的變形：<b>clustered page table</b>，每筆對應好幾頁（例如 16 頁）；特別適合<b>稀疏</b>的位址空間（參考分散、不連續）。</span></li>
+</ul>
+<div class="fig" data-sfig="1"><svg aria-hidden="true" viewBox="0 0 660 150" width="620" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="13"><defs><marker id="f6g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#1d2433"/></marker></defs>
+<rect data-step="0" x="10" y="20" width="40" height="30" fill="#fff" stroke="#1d2433"/><rect data-step="0" x="50" y="20" width="40" height="30" fill="#fff" stroke="#1d2433"/><text data-step="0" x="30" y="40" text-anchor="middle" font-weight="bold">p</text><text data-step="0" x="70" y="40" text-anchor="middle" font-weight="bold">d</text>
+<line data-step="1" x1="30" y1="50" x2="30" y2="88" stroke="#1d2433" stroke-width="1.5" marker-end="url(#f6g)"/>
+<ellipse data-step="2" cx="30" cy="108" rx="28" ry="18" fill="#e7defb" stroke="#64489c"/><text data-step="2" x="30" y="113" text-anchor="middle" font-size="12">hash</text>
+<line data-step="3" x1="58" y1="108" x2="108" y2="108" stroke="#1d2433" stroke-width="1.5" marker-end="url(#f6g)"/>
+<rect data-step="4" x="110" y="70" width="60" height="76" fill="#f2f4f8" stroke="#1d2433"/><rect data-step="4" x="110" y="96" width="60" height="24" fill="#fff6e0" stroke="#8a5a00"/><text data-step="4" x="140" y="64" text-anchor="middle" font-size="12">hash table</text>
+<line data-step="5" x1="170" y1="108" x2="218" y2="108" stroke="#1d2433" stroke-width="1.5" marker-end="url(#f6g)"/>
+<rect data-step="6" x="220" y="94" width="110" height="28" fill="#fff" stroke="#1d2433"/><text data-step="6" x="275" y="113" text-anchor="middle" font-size="12">q | s | •</text>
+<line data-step="7" x1="330" y1="108" x2="378" y2="108" stroke="#1d2433" stroke-width="1.5" marker-end="url(#f6g)"/>
+<rect data-step="8" x="380" y="94" width="110" height="28" fill="#d9f0e2" stroke="#1d7a4f"/><text data-step="8" x="435" y="113" text-anchor="middle" font-size="12">p | r | •</text><text data-step="8" x="435" y="140" text-anchor="middle" font-size="11" fill="#1d7a4f">match: frame r</text>
+<line data-step="9" x1="490" y1="108" x2="548" y2="60" stroke="#1d2433" stroke-width="1.5" marker-end="url(#f6g)"/>
+<rect data-step="10" x="550" y="20" width="40" height="30" fill="#d9f0e2" stroke="#1d7a4f"/><rect data-step="10" x="590" y="20" width="40" height="30" fill="#fff" stroke="#1d2433"/><text data-step="10" x="570" y="40" text-anchor="middle" font-weight="bold">r</text><text data-step="10" x="610" y="40" text-anchor="middle" font-weight="bold">d</text>
+</svg><div class="cap">Hashed page table: hash p, walk the chain until the virtual page number matches, then use its frame r.<span class="zhn">雜湊分頁表：把 p 雜湊後沿串找，頁號對上了就用它的 frame r。</span></div></div>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+<div class="algp" data-alg="pt6-3" data-menu="pt6" hidden>
+<h4 class="alg"><span class="an">Structure</span>Inverted page table<span class="sl">Slide 57 to 58</span><span class="zhn">反轉分頁表</span></h4>
+<ul>
+<li>Rather than each process having a page table tracking all possible logical pages, <b>track all physical pages</b>: one entry for each real page (frame) of memory, for the whole system.<span class="zhn">不是每個 process 一張表記所有邏輯頁，而是<b>記所有實體頁</b>：整個系統只有一張，每個 frame 一筆。</span></li>
+<li>Each entry holds the <b>virtual address</b> of the page stored in that frame plus information about the <b>owning process</b> (pid). A logical address is &lt;pid, p, d&gt;; the index i of the matching entry is the frame number.<span class="zhn">每筆記這個 frame 裡放的是哪個<b>虛擬頁</b>、屬於哪個 <b>process</b>（pid）。邏輯位址是 &lt;pid, p, d&gt;；對到的那一筆的索引 i 就是 frame 號。</span></li>
+<li><b>Decreases</b> the memory needed to store page tables but <b>increases</b> the time to search the table on each reference. Use a <b>hash table</b> to limit the search to one or a few entries; the TLB accelerates access.<span class="zhn">存 page table 的記憶體<b>變少</b>，但每次查表的時間<b>變多</b>。用<b>雜湊表</b>把搜尋限制在一兩筆；TLB 也能加速。</span></li>
+<li>Shared memory is hard: an entry holds only one mapping of a virtual address to the shared physical address.<span class="zhn">共享記憶體很難做：一筆只能記一個虛擬位址對應到那個共享的實體位址。</span></li>
+</ul>
+<div class="fig" data-sfig="1"><svg aria-hidden="true" viewBox="0 0 660 160" width="620" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="13"><defs><marker id="f6h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#1d2433"/></marker></defs>
+<rect data-step="0" x="10" y="20" width="44" height="30" fill="#fff" stroke="#1d2433"/><rect data-step="0" x="54" y="20" width="36" height="30" fill="#fff" stroke="#1d2433"/><rect data-step="0" x="90" y="20" width="36" height="30" fill="#fff" stroke="#1d2433"/><text data-step="0" x="32" y="40" text-anchor="middle" font-weight="bold">pid</text><text data-step="0" x="72" y="40" text-anchor="middle" font-weight="bold">p</text><text data-step="0" x="108" y="40" text-anchor="middle" font-weight="bold">d</text>
+<line data-step="1" x1="50" y1="50" x2="198" y2="110" stroke="#1d2433" stroke-width="1.5" marker-end="url(#f6h)"/><text data-step="1" x="110" y="96" font-size="11">search</text>
+<rect data-step="2" x="200" y="60" width="140" height="94" fill="#f2f4f8" stroke="#1d2433"/><text data-step="2" x="270" y="54" text-anchor="middle" font-size="12">inverted page table</text><rect data-step="2" x="200" y="100" width="140" height="24" fill="#fff6e0" stroke="#8a5a00"/><text data-step="2" x="270" y="117" text-anchor="middle" font-size="12">i: pid | p</text>
+<line data-step="3" x1="340" y1="112" x2="418" y2="40" stroke="#1d2433" stroke-width="1.5" marker-end="url(#f6h)"/><text data-step="3" x="392" y="90" font-size="11">index i</text>
+<rect data-step="4" x="420" y="20" width="40" height="30" fill="#d9f0e2" stroke="#1d7a4f"/><rect data-step="4" x="460" y="20" width="40" height="30" fill="#fff" stroke="#1d2433"/><text data-step="4" x="440" y="40" text-anchor="middle" font-weight="bold">i</text><text data-step="4" x="480" y="40" text-anchor="middle" font-weight="bold">d</text>
+<line data-step="4" x1="126" y1="35" x2="458" y2="35" stroke="#1d2433" stroke-width="1.2" stroke-dasharray="4 3"/>
+<line data-step="5" x1="500" y1="35" x2="548" y2="35" stroke="#1d2433" stroke-width="1.5" marker-end="url(#f6h)"/>
+<rect data-step="6" x="550" y="10" width="100" height="140" fill="#eaf6ef" stroke="#1d7a4f"/><text data-step="6" x="600" y="145" text-anchor="middle" font-size="12">memory</text>
+</svg><div class="cap">Inverted page table: search for the entry holding &lt;pid, p&gt;; its index i is the frame number.<span class="zhn">反轉分頁表：找存著 &lt;pid, p&gt; 的那一筆，它的索引 i 就是 frame 號。</span></div></div>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="sum"><b class="t">Chapter summary</b><span class="zhn"><b>Summary 本章總結</b></span><ul><li>The CPU can access only <b>registers and main memory</b> directly. <b>Base and limit</b> registers protect memory: every user-mode address must satisfy base ≤ address &lt; base + limit.<span class="zhn">CPU 只能直接存取<b>暫存器和主記憶體</b>。<b>base 和 limit</b> 保護記憶體：user mode 的每個位址都要 base ≤ 位址 &lt; base + limit。</span></li><li>Address binding happens at <b>compile, load or execution time</b>. Logical and physical addresses differ only with execution-time binding, where the <b>MMU</b> (relocation register) maps them at run time.<span class="zhn">位址綁定發生在 <b>compile、load 或 execution time</b>。只有 execution time 綁定時邏輯和實體位址才不同，由 <b>MMU</b>（relocation register）在執行時轉換。</span></li><li><b>Swapping</b> moves a whole process to the backing store and back; its cost is mostly transfer time.<span class="zhn"><b>Swapping</b> 把整個 process 搬到 backing store 再搬回來，花的主要是傳輸時間。</span></li><li>Contiguous allocation uses <b>first / best / worst fit</b> and suffers <b>external fragmentation</b> (fixed by compaction, which needs dynamic relocation). Internal fragmentation = allocated but unused space inside a partition.<span class="zhn">連續配置用 <b>first／best／worst fit</b>，會有<b>外部碎片</b>（用 compaction 解，需要動態重定位）。內部碎片＝分割區裡配了卻沒用到的空間。</span></li><li><b>Segmentation</b>: &lt;segment, offset&gt; with a base/limit per segment (user's view, external fragmentation). <b>Paging</b>: equal pages and frames, &lt;p, d&gt;, page table, no external fragmentation but some internal.<span class="zhn"><b>分段</b>：&lt;段號, 位移&gt;，每段有 base／limit（使用者觀點，有外部碎片）。<b>分頁</b>：一樣大的 page 和 frame、&lt;p, d&gt;、page table，沒有外部碎片但有一點內部碎片。</span></li><li>The page table in memory doubles access time; the <b>TLB</b> fixes it: EAT = α(m + ε) + (1 − α)(2m + ε). Big page tables are handled by <b>hierarchical</b>, <b>hashed</b> or <b>inverted</b> page tables.<span class="zhn">page table 放在記憶體會讓存取時間變兩倍；用 <b>TLB</b> 解決：EAT = α(m + ε) + (1 − α)(2m + ε)。太大的 page table 用<b>階層式</b>、<b>雜湊</b>或<b>反轉</b>分頁表處理。</span></li></ul></div>
+<div class="trap"><b class="t">Common trap</b><span class="zhn"><b>易錯點</b></span><ul><li>Paging removes <b>external</b> fragmentation, not internal; segmentation and contiguous allocation have external fragmentation.<span class="zhn">分頁消除的是<b>外部</b>碎片，不是內部；分段和連續配置才有外部碎片。</span></li><li>Logical = physical only for compile-time and load-time binding; with execution-time binding they <b>differ</b>.<span class="zhn">只有 compile time、load time 綁定時邏輯＝實體；execution time 綁定時兩者<b>不同</b>。</span></li><li>In paging the offset d is copied <b>unchanged</b>; physical address = frame × page size + d (not page × page size).<span class="zhn">分頁時位移 d <b>不變</b>；實體位址 = frame × 頁大小 + d（不是 page × 頁大小）。</span></li><li>Segmentation checks offset <b>&lt; limit</b> and then adds base; an offset equal to the limit is already illegal.<span class="zhn">分段先檢查位移 <b>&lt; limit</b> 再加 base；位移等於 limit 就已經非法。</span></li><li>EAT on a TLB miss is <b>2m + ε</b>. Worst-fit is the worst of the three fits for speed and utilization.<span class="zhn">TLB miss 時是 <b>2m + ε</b>。三種 fit 中 worst-fit 的速度與利用率最差。</span></li><li>Inverted page table: <b>one table for the whole system</b>, one entry per frame; saves memory, costs search time.<span class="zhn">反轉分頁表：<b>整個系統一張</b>，每個 frame 一筆；省記憶體、花搜尋時間。</span></li></ul></div>
+<div class="quiz" data-quiz="ch6"></div>
+<!--CHW6-->
+</section>

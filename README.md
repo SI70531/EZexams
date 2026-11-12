@@ -2,7 +2,7 @@
 
 **Exam Cram Hub:** https://si70531.github.io/EZexams/
 
-EZexams is a study site with notes, practice questions, and mock exams for each midterm.
+EZexams is a study site with notes, practice questions, and mock exams for each midterm and final.
 
 ## Upcoming Midterms
 
@@ -12,6 +12,12 @@ EZexams is a study site with notes, practice questions, and mock exams for each 
 | Operating Systems | Oct 29 | Silberschatz 9th ed., Chapters 1–5 | https://si70531.github.io/EZexams/operating-systems/midterm/ |
 | Data & File Structures | Nov 6 | Gilberg & Forouzan, Chapters 1–3 | https://si70531.github.io/EZexams/data-structures/midterm/ |
 | Economics | Nov 9 | Mankiw, Chapters 1–9 | https://si70531.github.io/EZexams/economics/midterm/ |
+
+## Upcoming Finals
+
+| Subject | Exam Date | What's Covered | Link |
+| --- | --- | --- | --- |
+| Operating Systems | TBA | Silberschatz 9th ed., Chapters 6–8 so far | https://si70531.github.io/EZexams/operating-systems/final/ |
 
 ## How the Project Is Organized
 

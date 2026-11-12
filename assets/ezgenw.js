@@ -95,7 +95,7 @@
       ce.innerHTML="";
       /* answered before, text not here yet: keep the slot shown and fetch the text */
       q.hidden=!answeredQ(B,q);
-      if(!q.hidden&&!ce.innerHTML)ce.innerHTML='<p class="q"><span class="pts">'+esc(q.querySelector(".pts")?q.querySelector(".pts").textContent:"")+'</span>（題目載入中…）</p>';
+      if(!q.hidden&&!ce.innerHTML)ce.innerHTML='<p class="q"><span class="pts">'+esc(q.querySelector(".pts")?q.querySelector(".pts").textContent:"")+'</span>(loading the question…)</p>';
     });
     drawBar(B);
   }

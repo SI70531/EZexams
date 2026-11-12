@@ -44,7 +44,7 @@ function renderQuiz(ch){
   const box=document.querySelector('[data-quiz="'+ch+'"]');if(!box)return;
   pruneQuiz(ch);const qs=QUIZ[ch];const ans=S.quiz[ch]||{};
   box.innerHTML="";
-  const h=document.createElement("h2");h.textContent="Multiple-choice question（"+qs.length+" 題，共 50 分）";box.appendChild(h);
+  const h=document.createElement("h2");h.textContent="Multiple-choice questions ("+qs.length+" questions, 50 pts)";box.appendChild(h);
   const SHOW=window.EZGEN&&EZGEN.isAi(ch)?EZGEN.order(ch,qs):qs.map((_,k)=>k);
   SHOW.forEach((i,pos)=>{
     const it=qs[i];
@@ -155,7 +155,7 @@ document.querySelectorAll(".exam").forEach(ex=>{
     box.className="gres "+(stale?"stale":g.verdict);
     box.innerHTML="";
     const h=document.createElement("div");h.className="ghead";
-    h.textContent=(g.verdict==="correct"?"✓ Correct":g.verdict==="partial"?"△ Partly correct":"✗ Wrong")+"　"+g.score+" / "+q.dataset.pts+" 分"+(stale?" (answer changed; grade again)":"");
+    h.textContent=(g.verdict==="correct"?"✓ Correct":g.verdict==="partial"?"△ Partly correct":"✗ Wrong")+"　"+g.score+" / "+q.dataset.pts+" pts"+(stale?" (answer changed; grade again)":"");
     box.appendChild(h);
     const f=document.createElement("div");f.textContent=g.feedback||"";box.appendChild(f);
     if(!g.ai&&!CHW&&g.missing&&g.missing.length){ /* AI feedback already says what is missing */const m=document.createElement("div");m.className="miss";m.textContent="Missing keywords: "+g.missing.join("、");box.appendChild(m);}
@@ -163,7 +163,7 @@ document.querySelectorAll(".exam").forEach(ex=>{
   function upd(){
     let got=0,graded=0;
     qs.forEach(q=>{const g=st.grade[q.id];if(g){got+=+g.score||0;graded++;}});
-    score.textContent="Score "+(Math.round(got*10)/10)+" / "+total+" 分"+(graded?" (graded "+graded+"/"+qs.length+" questions)":"");
+    score.textContent="Score "+(Math.round(got*10)/10)+" / "+total+" pts"+(graded?" (graded "+graded+"/"+qs.length+" questions)":"");
     EX[id]=Object.assign(EX[id]||{},{total,got,graded,n:qs.length});
     if(typeof refreshPCB==="function"){refreshPCB();renderTabs(S.last);}
   }

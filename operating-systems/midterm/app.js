@@ -47,7 +47,7 @@ function renderQuiz(ch){
   const box=document.querySelector('[data-quiz="'+ch+'"]');if(!box)return;
   pruneQuiz(ch);const qs=QUIZ[ch];const ans=S.quiz[ch]||{};
   box.innerHTML="";
-  const h=document.createElement("h2");h.textContent="Multiple-choice question（"+qs.length+" 題，共 50 分）";box.appendChild(h);
+  const h=document.createElement("h2");h.textContent="Multiple-choice questions ("+qs.length+" questions, 50 pts)";box.appendChild(h);
   const SHOW=window.EZGEN&&EZGEN.isAi(ch)?EZGEN.order(ch,qs):qs.map((_,k)=>k);
   SHOW.forEach((i,pos)=>{
     const it=qs[i];
@@ -203,7 +203,7 @@ document.querySelectorAll(".exam").forEach(ex=>{
     box.className="gres "+(stale?"stale":g.verdict);
     box.innerHTML="";
     const h=document.createElement("div");h.className="ghead";
-    h.textContent=(g.verdict==="correct"?"✓ Correct":g.verdict==="partial"?"△ Partly correct":"✗ Wrong")+"　"+g.score+" / "+q.dataset.pts+" 分"+(stale?" (answer changed; grade again)":"");
+    h.textContent=(g.verdict==="correct"?"✓ Correct":g.verdict==="partial"?"△ Partly correct":"✗ Wrong")+"　"+g.score+" / "+q.dataset.pts+" pts"+(stale?" (answer changed; grade again)":"");
     box.appendChild(h);
     const f=document.createElement("div");f.textContent=g.feedback||"";box.appendChild(f);
     if(!g.ai&&!CHW&&g.missing&&g.missing.length){ /* AI feedback already says what is missing */const m=document.createElement("div");m.className="miss";m.textContent="Missing keywords: "+g.missing.join("、");box.appendChild(m);}
@@ -211,7 +211,7 @@ document.querySelectorAll(".exam").forEach(ex=>{
   function upd(){
     let got=0,graded=0;
     qs.forEach(q=>{const g=st.grade[q.id];if(g){got+=+g.score||0;graded++;}});
-    score.textContent="Score "+(Math.round(got*10)/10)+" / "+total+" 分"+(graded?" (graded "+graded+"/"+qs.length+" questions)":"");
+    score.textContent="Score "+(Math.round(got*10)/10)+" / "+total+" pts"+(graded?" (graded "+graded+"/"+qs.length+" questions)":"");
     EX[id]=Object.assign(EX[id]||{},{total,got,graded,n:qs.length});
     if(typeof refreshPCB==="function"){refreshPCB();renderTabs(S.last);}
   }
@@ -305,7 +305,7 @@ W.states=function(box){
   const S={new:[90,60],ready:[200,170],running:[500,170],waiting:[350,280],terminated:[620,60]};const LP=[[118,128,"end"],[350,206,"middle"],[350,142,"middle"],[468,258,"start"],[232,258,"end"],[590,128,"start"]];
   const T=[["new","ready","admitted","被系統接受，放進 ready queue"],["ready","running","scheduler dispatch","short-term scheduler 選中它，dispatcher 把 CPU 交給它"],["running","ready","interrupt","時間配額用完（timer interrupt）或被更高優先權搶走"],["running","waiting","I/O or event wait","要等 I/O 或某個事件，自己讓出 CPU"],["waiting","ready","I/O or event completion","等的東西好了，回 ready queue 重新排隊（不能直接回 running！）"],["running","terminated","exit","Done"]];
   let cur="new",log=[];
-  box.innerHTML='<div class="wtitle">試試看：按下事件，看 process 怎麼移動</div><svg viewBox="0 0 700 330" class="wsvg"></svg><div class="wbtns"></div><div class="wnote"></div>';
+  box.innerHTML='<div class="wtitle">Try it: press an event and watch the process move</div><svg viewBox="0 0 700 330" class="wsvg"></svg><div class="wbtns"></div><div class="wnote"></div>';
   const svg=box.querySelector("svg"),btns=box.querySelector(".wbtns"),note=box.querySelector(".wnote");
   function draw(){
     const mk=(id,c)=>'<marker id="'+id+'" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:'+c+'"/></marker>';
@@ -359,9 +359,9 @@ W.sched=function(box){
     "SRTF 例（有到達時間）":{alg:"SRTF",ps:[[0,8,1],[1,4,1],[2,9,1],[3,5,1]]},
     "Priority 例（10,1,2,1,5）":{alg:"PRI",ps:[[0,10,3],[0,1,1],[0,2,4],[0,1,5],[0,5,2]]},
     "RR q=4 例（24,3,3）":{alg:"RR",ps:[[0,24,1],[0,3,1],[0,3,1]],q:4}};
-  box.innerHTML='<div class="wtitle">排班模擬器：改數字、換演算法，Gantt chart 和等待時間會自動算</div>'+
-   '<div class="wrow"><label>演算法 <select class="alg"><option value="FCFS">FCFS</option><option value="SJF">SJF（不搶奪）</option><option value="SRTF">SRTF（搶奪式 SJF）</option><option value="PRI">Priority（不搶奪）</option><option value="PPRI">Priority（搶奪）</option><option value="RR">Round Robin</option></select></label><label class="ql">q = <input class="q" type="number" min="1" max="50" value="4"></label></div>'+
-   '<div class="wrow presets"></div><div class="wtable"></div><div class="wrow"><button class="btn add" type="button">＋ 加一個 process</button></div><div class="wgantt"></div><div class="wres"></div>';
+  box.innerHTML='<div class="wtitle">Scheduling simulator: change the numbers or the algorithm; the Gantt chart and waiting times update</div>'+
+   '<div class="wrow"><label>Algorithm <select class="alg"><option value="FCFS">FCFS</option><option value="SJF">SJF (non-preemptive)</option><option value="SRTF">SRTF (preemptive SJF)</option><option value="PRI">Priority (non-preemptive)</option><option value="PPRI">Priority (preemptive)</option><option value="RR">Round Robin</option></select></label><label class="ql">q = <input class="q" type="number" min="1" max="50" value="4"></label></div>'+
+   '<div class="wrow presets"></div><div class="wtable"></div><div class="wrow"><button class="btn add" type="button">+ Add a process</button></div><div class="wgantt"></div><div class="wres"></div>';
   const algS=box.querySelector(".alg"),qI=box.querySelector(".q"),ql=box.querySelector(".ql");
   let ps=[[0,24,1],[0,3,1],[0,3,1]];
   const pr=box.querySelector(".presets");
@@ -370,12 +370,12 @@ W.sched=function(box){
     const k0=Object.keys(presets).find(k=>only.includes(presets[k].alg));for(const k in presets)if(k!==k0)delete presets[k];
     const P=presets[k0];ps=P.ps.map(r=>r.slice());algS.value=P.alg;if(P.q)qI.value=P.q;
     if(only.length===1)algS.closest("label").style.display="none";
-    box.querySelector(".wtitle").textContent="換你試："+box.dataset.name+" 模擬器（改數字，Gantt chart 和等待時間自動算）";
+    box.querySelector(".wtitle").textContent="Your turn: "+box.dataset.name+" simulator (change the numbers; the Gantt chart and waiting times update)";
     pr.insertAdjacentHTML("afterbegin",'<span class="small">還原成上面的例題：</span>');}
   Object.keys(presets).forEach(k=>{const b=el("button",{cls:"btn chip",type:"button"},k);b.onclick=()=>{const P=presets[k];ps=P.ps.map(r=>r.slice());algS.value=P.alg;if(P.q)qI.value=P.q;table();run();};pr.appendChild(b);});
   function usePri(){return /PRI/.test(algS.value);}
   function table(){
-    const w=box.querySelector(".wtable");let h='<table><tr><th>Process</th><th>Arrival</th><th>Burst</th>'+(usePri()?'<th>Priority（小＝優先）</th>':'')+'<th></th></tr>';
+    const w=box.querySelector(".wtable");let h='<table><tr><th>Process</th><th>Arrival</th><th>Burst</th>'+(usePri()?'<th>Priority (small = high)</th>':'')+'<th></th></tr>';
     ps.forEach((r,i)=>{h+='<tr><td>P'+(i+1)+'</td>'+(usePri()?[0,1,2]:[0,1]).map(j=>'<td><input type="number" min="'+(j===1?1:0)+'" max="99" value="'+r[j]+'" data-i="'+i+'" data-j="'+j+'"></td>').join("")+'<td>'+(ps.length>1?'<button class="btn x" type="button" data-del="'+i+'" aria-label="刪除 P'+(i+1)+'">×</button>':'')+'</td></tr>';});
     w.innerHTML=h+'</table>';
     w.querySelectorAll("input").forEach(inp=>inp.addEventListener("input",()=>{let v=Math.max(+inp.min,Math.min(99,parseInt(inp.value)||0));ps[inp.dataset.i][inp.dataset.j]=v;run();}));
@@ -392,14 +392,14 @@ W.sched=function(box){
     const ticks=[0,...seg.map(s=>s.e)];ticks.forEach(x=>{g+='<b style="left:'+(x/end*100)+'%">'+x+'</b>';});g+='</div>';
     box.querySelector(".wgantt").innerHTML=g;
     let tw=0,tt=0,rows='';P.forEach((p,i)=>{const ta=done[i]-p.a,wt=ta-p.b;tw+=wt;tt+=ta;rows+='<tr><td>P'+(i+1)+'</td><td>'+done[i]+'</td><td>'+done[i]+' − '+p.a+' = '+ta+'</td><td>'+ta+' − '+p.b+' = <b>'+wt+'</b></td></tr>';});
-    box.querySelector(".wres").innerHTML='<table><tr><th>Process</th><th>完成時間</th><th>Turnaround = 完成 − 到達</th><th>Waiting = Turnaround − Burst</th></tr>'+rows+'</table><p class="wavg">平均等待時間 = '+tw+' / '+P.length+' = <b>'+fmtN(tw/P.length)+'</b>　平均 turnaround = <b>'+fmtN(tt/P.length)+'</b></p>';
+    box.querySelector(".wres").innerHTML='<table><tr><th>Process</th><th>Completion</th><th>Turnaround = completion − arrival</th><th>Waiting = Turnaround − Burst</th></tr>'+rows+'</table><p class="wavg">平均等待時間 = '+tw+' / '+P.length+' = <b>'+fmtN(tw/P.length)+'</b>　平均 turnaround = <b>'+fmtN(tt/P.length)+'</b></p>';
   }
   table();run();
 };
 
 /* 3. Amdahl */
 W.amdahl=function(box){
-  box.innerHTML='<div class="wtitle">Amdahl 滑桿：拉拉看，serial 比例怎麼限制加速</div><div class="wrow"><label>Serial 比例 S = <b class="sv"></b><input class="s" type="range" min="0" max="100" value="25"></label><label>核心數 N = <b class="nv"></b><input class="n" type="range" min="1" max="64" value="4"></label></div><div class="wcalc"></div><svg class="wsvg amd" viewBox="0 0 640 220"></svg>';
+  box.innerHTML='<div class="wtitle">Amdahl slider: see how the serial fraction limits the speedup</div><div class="wrow"><label>Serial fraction S = <b class="sv"></b><input class="s" type="range" min="0" max="100" value="25"></label><label>Cores N = <b class="nv"></b><input class="n" type="range" min="1" max="64" value="4"></label></div><div class="wcalc"></div><svg class="wsvg amd" viewBox="0 0 640 220"></svg>';
   const s=box.querySelector(".s"),n=box.querySelector(".n");
   function run(){
     const S=+s.value/100,N=+n.value,sp=1/(S+(1-S)/N),mx=S?1/S:Infinity;
@@ -423,7 +423,7 @@ W.banker=function(box){
     "課本例（5 個 process）":{r:"ABC",alloc:[[0,1,0],[2,0,0],[3,0,2],[2,1,1],[0,0,2]],max:[[7,5,3],[3,2,2],[9,0,2],[2,2,2],[4,3,3]],avail:[3,3,2]},
     "模擬 A Q15":null,"模擬 B Q15":null};
   delete presets["模擬 A Q15"];delete presets["模擬 B Q15"];
-  box.innerHTML='<div class="wtitle">Banker\'s 一步一步跑：按「下一步」看 Work 怎麼變</div><div class="wrow presets"></div><div class="wrow"><label>Available <input class="av" value="3 3 2" size="10"></label><span class="small">表格裡的 Allocation、Max 也可以直接改</span></div><div class="wtable"></div><div class="wrow"><button class="btn primary nx" type="button">下一步</button><button class="btn all" type="button">一次跑完</button><button class="btn rs" type="button">重來</button></div><div class="wlog"></div>';
+  box.innerHTML='<div class="wtitle">Banker\'s step by step: press Next and watch Work change</div><div class="wrow presets"></div><div class="wrow"><label>Available <input class="av" value="3 3 2" size="10"></label><span class="small">表格裡的 Allocation、Max 也可以直接改</span></div><div class="wtable"></div><div class="wrow"><button class="btn primary nx" type="button">Next</button><button class="btn all" type="button">Run to end</button><button class="btn rs" type="button">Reset</button></div><div class="wlog"></div>';
   let D=JSON.parse(JSON.stringify(presets["課本例（5 個 process）"]));
   let work,fin,seq,ptr,stuck;
   const pr=box.querySelector(".presets");
@@ -460,7 +460,7 @@ W.banker=function(box){
 
 /* exponential averaging */
 W.expavg=function(box){
-  box.innerHTML='<div class="wtitle">Exponential averaging：拉 α，看預測怎麼追實際值</div><div class="wrow"><label>α = <b class="av2"></b><input class="a" type="range" min="0" max="100" value="50"></label><label>τ0（第一次猜測）<input class="t0" type="number" min="0" max="30" value="10"></label><label>實際 burst（用空白分開）<input class="ts" value="6 4 6 4 13 13 13"></label></div><svg class="wsvg amd" viewBox="0 0 640 230"></svg><div class="wres"></div><p class="wnote">黑線＝實際 burst t(i)，藍線＝預測 τ(i)。α=0 時藍線是一條水平線；α=1 時藍線就是黑線往右移一格。</p>';
+  box.innerHTML='<div class="wtitle">Exponential averaging: move α and watch the prediction follow the real bursts</div><div class="wrow"><label>α = <b class="av2"></b><input class="a" type="range" min="0" max="100" value="50"></label><label>τ0 (first guess)<input class="t0" type="number" min="0" max="30" value="10"></label><label>Actual bursts (space-separated)<input class="ts" value="6 4 6 4 13 13 13"></label></div><svg class="wsvg amd" viewBox="0 0 640 230"></svg><div class="wres"></div><p class="wnote">黑線＝實際 burst t(i)，藍線＝預測 τ(i)。α=0 時藍線是一條水平線；α=1 時藍線就是黑線往右移一格。</p>';
   const A=box.querySelector(".a"),T0=box.querySelector(".t0"),TS=box.querySelector(".ts");
   const f=x=>Math.round(x*100)/100;
   function run(){const a=A.value/100;box.querySelector(".av2").textContent=f(a);

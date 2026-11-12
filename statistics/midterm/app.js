@@ -44,7 +44,7 @@ function renderQuiz(ch){
   const box=document.querySelector('[data-quiz="'+ch+'"]');if(!box)return;
   const qs=QUIZ[ch];const ans=S.quiz[ch]||{};
   box.innerHTML="";
-  const h=document.createElement("h2");h.textContent="Multiple-choice question（"+qs.length+" 題，共 50 分）";box.appendChild(h);
+  const h=document.createElement("h2");h.textContent="Multiple-choice questions ("+qs.length+" questions, 50 pts)";box.appendChild(h);
   const SHOW=window.EZGEN&&EZGEN.isAi(ch)?EZGEN.order(ch,qs):qs.map((_,k)=>k);
   SHOW.forEach((i,pos)=>{
     const it=qs[i];
@@ -181,7 +181,7 @@ document.querySelectorAll(".exam").forEach(ex=>{
     box.className="gres "+(stale?"stale":g.verdict);
     box.innerHTML="";
     const h=document.createElement("div");h.className="ghead";
-    h.textContent=(g.verdict==="correct"?"✓ Correct":g.verdict==="partial"?"△ Partly correct":"✗ Wrong")+"　"+g.score+" / "+q.dataset.pts+" 分"+(stale?" (answer changed; grade again)":"");
+    h.textContent=(g.verdict==="correct"?"✓ Correct":g.verdict==="partial"?"△ Partly correct":"✗ Wrong")+"　"+g.score+" / "+q.dataset.pts+" pts"+(stale?" (answer changed; grade again)":"");
     box.appendChild(h);
     const f=document.createElement("div");f.textContent=g.feedback||"";box.appendChild(f);
     if(!g.ai&&!CHW&&g.missing&&g.missing.length){ /* AI feedback already says what is missing */const m=document.createElement("div");m.className="miss";m.textContent="Missing keywords: "+g.missing.join("、");box.appendChild(m);}
@@ -189,7 +189,7 @@ document.querySelectorAll(".exam").forEach(ex=>{
   function upd(){
     let got=0,graded=0;
     qs.forEach(q=>{const g=st.grade[q.id];if(g){got+=+g.score||0;graded++;}});
-    score.textContent="Score "+(Math.round(got*10)/10)+" / "+total+" 分"+(graded?" (graded "+graded+"/"+qs.length+" questions)":"");
+    score.textContent="Score "+(Math.round(got*10)/10)+" / "+total+" pts"+(graded?" (graded "+graded+"/"+qs.length+" questions)":"");
     EX[id]=Object.assign(EX[id]||{},{total,got,graded,n:qs.length});
     if(typeof refreshPCB==="function"){refreshPCB();renderTabs(S.last);}
   }
@@ -338,7 +338,7 @@ const svg=(w,h,inner)=>'<svg viewBox="0 0 '+w+' '+h+'" role="img">'+inner+'</svg
 (function(){const el=document.getElementById("w-scale");if(!el)return;
  const ITEMS=[["攝氏溫度","Interval","0°C 不代表沒有溫度，沒有真正的 0。"],["商品價格（元）","Ratio","0 元＝完全沒有，200 元是 100 元的兩倍。"],["滿意度（差／普通／好）","Order","有順序，但間距不一定相等。"],["作業系統（Windows／iOS／Android）","Nominal","只是名稱，沒有順序。"],["西元出生年份","Interval","0 年不代表沒有時間，年份不能說兩倍。"],["電池續航（小時）","Ratio","時間有真正的 0。"],["郵遞區號","Nominal","雖然是數字，但只是代碼，加減沒有意義。"],["班上名次（第 1、2、3 名）","Order","有先後，但第 1 名和第 2 名的差距不固定。"],["每週讀書時數","Ratio","0 小時＝完全沒讀。"],["SAT 分數","Interval","課本把 SAT 分數當區間尺度，沒有真正的 0。"]];
  const list=$(el,".sc-list");const OPTS=["Nominal","Order","Interval","Ratio"];
- function build(){list.innerHTML="";ITEMS.forEach((it,i)=>{const d=document.createElement("div");d.className="sc-item";d.innerHTML='<span class="nm"></span><select><option value="">選尺度…</option>'+OPTS.map(o=>'<option>'+o+'</option>').join("")+'</select><span class="why" hidden></span>';$(d,".nm").textContent=it[0];list.appendChild(d);});$(el,".sc-score").textContent="";}
+ function build(){list.innerHTML="";ITEMS.forEach((it,i)=>{const d=document.createElement("div");d.className="sc-item";d.innerHTML='<span class="nm"></span><select><option value="">Pick a scale…</option>'+OPTS.map(o=>'<option>'+o+'</option>').join("")+'</select><span class="why" hidden></span>';$(d,".nm").textContent=it[0];list.appendChild(d);});$(el,".sc-score").textContent="";}
  build();
  $(el,".sc-check").addEventListener("click",()=>{let ok=0;$$(list,".sc-item").forEach((d,i)=>{const v=$(d,"select").value,it=ITEMS[i],w=$(d,".why");d.classList.toggle("ok",v===it[1]);d.classList.toggle("no",v!==it[1]);if(v===it[1])ok++;w.hidden=false;w.textContent=(v===it[1]?"Correct.":"Correct answer: "+it[1]+"。")+it[2];});$(el,".sc-score").textContent="Correct "+ok+" / "+ITEMS.length;});
  $(el,".sc-reset").addEventListener("click",build);
@@ -358,7 +358,7 @@ const svg=(w,h,inner)=>'<svg viewBox="0 0 '+w+' '+h+'" role="img">'+inner+'</svg
    if(cls.length<=14||i%2===0)g+='<text x="'+(x+bw/2)+'" y="'+(PH-B+14)+'" text-anchor="middle">'+(W===1?c[0]:c[0]+"–"+c[1])+'</text>';});
   g+='<text x="'+((PW+L)/2)+'" y="'+(PH-4)+'" text-anchor="middle">組別（每組 '+W+'）</text>';
   $(el,".h-svg").innerHTML=svg(PW,PH,g);
-  let t='<table><tr><th>組別</th>'+cls.map(c=>'<td>'+(W===1?c[0]:c[0]+"–"+c[1])+'</td>').join("")+'</tr><tr><th>次數</th>'+cls.map(c=>'<td>'+c[2]+'</td>').join("")+'</tr><tr><th>百分比</th>'+cls.map(c=>'<td>'+f(c[2]/n*100,1)+'%</td>').join("")+'</tr></table>';
+  let t='<table><tr><th>Class</th>'+cls.map(c=>'<td>'+(W===1?c[0]:c[0]+"–"+c[1])+'</td>').join("")+'</tr><tr><th>Frequency</th>'+cls.map(c=>'<td>'+c[2]+'</td>').join("")+'</tr><tr><th>Percent</th>'+cls.map(c=>'<td>'+f(c[2]/n*100,1)+'%</td>').join("")+'</tr></table>';
   $(el,".h-table").innerHTML=t;
   const m=mean(a),md=median(a);
   $(el,".h-note").textContent="Total "+cls.length+" 組。平均數 "+f(m)+"、中位數 "+f(md)+(Math.abs(m-md)<0.05*(a[a.length-1]-a[0])?"，兩者接近，大致對稱。":m<md?"，平均數 < 中位數，偏向左偏。":"，平均數 > 中位數，偏向右偏。")+(cls.length<4?" 組數太少，形狀被壓扁了。":cls.length>15?" 組數太多，每組只有零星幾筆，形狀很破碎。":"");}
@@ -384,7 +384,7 @@ const svg=(w,h,inner)=>'<svg viewBox="0 0 '+w+' '+h+'" role="img">'+inner+'</svg
   outs.forEach(v=>{g+='<text class="t-seal" x="'+X(v)+'" y="'+(Y+5)+'" text-anchor="middle" style="font-size:16px">*</text>';});
   [[q1,"Q1"],[md,"Median"],[q3,"Q3"]].forEach(([v,t])=>{g+='<text x="'+X(v)+'" y="'+(Y+34)+'" text-anchor="middle">'+t+'</text>';});
   $(el,".p-box").innerHTML=svg(PW,100,g);
-  $(el,".p-five").textContent="五數摘要：最小 "+a[0]+"、Q1 "+f(q1,2)+"、中位數 "+f(md,2)+"、Q3 "+f(q3,2)+"、最大 "+a[n-1]+"\nIQR = "+f(q3,2)+" − "+f(q1,2)+" = "+f(iqr,2)+"\n下限 = Q1 − 1.5·IQR = "+f(lo,2)+"；上限 = Q3 + 1.5·IQR = "+f(hi,2)+"\n"+(outs.length?"離群值（* 標示）："+outs.join(", ")+"。鬚線只畫到限內最遠的資料點 "+wl+" 和 "+wh+"。":"沒有離群值，鬚線畫到最小值和最大值。");}
+  $(el,".p-five").textContent="Five-number summary: min "+a[0]+"、Q1 "+f(q1,2)+"、中位數 "+f(md,2)+"、Q3 "+f(q3,2)+"、最大 "+a[n-1]+"\nIQR = "+f(q3,2)+" − "+f(q1,2)+" = "+f(iqr,2)+"\n下限 = Q1 − 1.5·IQR = "+f(lo,2)+"；上限 = Q3 + 1.5·IQR = "+f(hi,2)+"\n"+(outs.length?"離群值（* 標示）："+outs.join(", ")+"。鬚線只畫到限內最遠的資料點 "+wl+" 和 "+wh+"。":"沒有離群值，鬚線畫到最小值和最大值。");}
  ta.addEventListener("input",draw);pp.addEventListener("input",draw);
  $$(el,".p-ex").forEach(b=>b.addEventListener("click",()=>{ta.value=DATA[b.dataset.ex].join(" ");draw();}));draw();
 })();
@@ -403,7 +403,7 @@ const svg=(w,h,inner)=>'<svg viewBox="0 0 '+w+' '+h+'" role="img">'+inner+'</svg
   g+='<line class="mk-mean" x1="'+X(-k)+'" y1="20" x2="'+X(-k)+'" y2="140"/><line class="mk-mean" x1="'+X(k)+'" y1="20" x2="'+X(k)+'" y2="140"/>';
   g+='<text class="t-seal" x="'+X(0)+'" y="16" text-anchor="middle">μ ± '+f(k,2)+'σ = '+f(m-k*s,2)+' ～ '+f(m+k*s,2)+'</text>';
   $(el,".c-svg").innerHTML=svg(PW,PH,g);
-  $(el,".c-out").textContent="範圍：μ ± zσ = "+m+" ± "+f(k,2)+"×"+s+" = "+f(m-k*s,2)+" ～ "+f(m+k*s,2)+"\n柴比雪夫（任何分布）：至少 1 − 1/z² = "+(k>1?f(cheb*100,2)+"%":"0%（z 要大於 1 才有意義）")+"\n鐘形分布實際比例：約 "+f(norm*100,2)+"%"+(Math.abs(k-1)<0.03?"（經驗法則 68%）":Math.abs(k-2)<0.03?"（經驗法則 95%）":Math.abs(k-3)<0.03?"（經驗法則 99.7%）":"")+"\n→ 分布未知只能用柴比雪夫；題目說鐘形才能用經驗法則。";}
+  $(el,".c-out").textContent="Range: μ ± zσ = "+m+" ± "+f(k,2)+"×"+s+" = "+f(m-k*s,2)+" ～ "+f(m+k*s,2)+"\n柴比雪夫（任何分布）：至少 1 − 1/z² = "+(k>1?f(cheb*100,2)+"%":"0%（z 要大於 1 才有意義）")+"\n鐘形分布實際比例：約 "+f(norm*100,2)+"%"+(Math.abs(k-1)<0.03?"（經驗法則 68%）":Math.abs(k-2)<0.03?"（經驗法則 95%）":Math.abs(k-3)<0.03?"（經驗法則 99.7%）":"")+"\n→ 分布未知只能用柴比雪夫；題目說鐘形才能用經驗法則。";}
  [z,mu,sd].forEach(i=>i.addEventListener("input",draw));draw();
 })();
 
@@ -457,7 +457,7 @@ const svg=(w,h,inner)=>'<svg viewBox="0 0 '+w+' '+h+'" role="img">'+inner+'</svg
   g+='<text class="t-ink" x="'+(X0+wC+8)+'" y="44">沒病且陽性（偽陽性）'+f(fpp*N,1)+' 人</text><text x="'+(X0+wC+8)+'" y="'+(24+fp*110+16)+'">沒病且陰性 '+f(tn*N,1)+' 人</text>';
   g+='<text class="t-seal" x="20" y="152">有病 '+f(p*N,1)+' 人：陽性 '+f(tp*N,1)+'、陰性 '+f(fn*N,1)+'</text>';
   $(el,".b-svg").innerHTML=svg(PW,160,g);
-  $(el,".b-table").innerHTML='<table><tr><th>事件</th><th>事前</th><th>P(+|·)</th><th>聯合 P(·∩+)</th><th>事後 P(·|+)</th><th>P(−|·)</th><th>聯合 P(·∩−)</th><th>事後 P(·|−)</th></tr><tr><td>有病 C</td><td>'+f(p,3)+'</td><td>'+f(se)+'</td><td>'+f(tp,4)+'</td><td><b>'+f(tp/pos,4)+'</b></td><td>'+f(1-se)+'</td><td>'+f(fn,4)+'</td><td><b>'+f(fn/neg,4)+'</b></td></tr><tr><td>沒病</td><td>'+f(1-p,3)+'</td><td>'+f(fp)+'</td><td>'+f(fpp,4)+'</td><td>'+f(fpp/pos,4)+'</td><td>'+f(1-fp)+'</td><td>'+f(tn,4)+'</td><td>'+f(tn/neg,4)+'</td></tr><tr><td>合計</td><td>1</td><td></td><td>P(+) = '+f(pos,4)+'</td><td>1</td><td></td><td>P(−) = '+f(neg,4)+'</td><td>1</td></tr></table>';
+  $(el,".b-table").innerHTML='<table><tr><th>Event</th><th>Prior</th><th>P(+|·)</th><th>Joint P(·∩+)</th><th>Posterior P(·|+)</th><th>P(−|·)</th><th>Joint P(·∩−)</th><th>Posterior P(·|−)</th></tr><tr><td>有病 C</td><td>'+f(p,3)+'</td><td>'+f(se)+'</td><td>'+f(tp,4)+'</td><td><b>'+f(tp/pos,4)+'</b></td><td>'+f(1-se)+'</td><td>'+f(fn,4)+'</td><td><b>'+f(fn/neg,4)+'</b></td></tr><tr><td>沒病</td><td>'+f(1-p,3)+'</td><td>'+f(fp)+'</td><td>'+f(fpp,4)+'</td><td>'+f(fpp/pos,4)+'</td><td>'+f(1-fp)+'</td><td>'+f(tn,4)+'</td><td>'+f(tn/neg,4)+'</td></tr><tr><td>合計</td><td>1</td><td></td><td>P(+) = '+f(pos,4)+'</td><td>1</td><td></td><td>P(−) = '+f(neg,4)+'</td><td>1</td></tr></table>';
   $(el,".b-out").textContent="P(C|+) = "+f(p,3)+"×"+f(se)+" / ("+f(p,3)+"×"+f(se)+" + "+f(1-p,3)+"×"+f(fp)+") = "+f(tp,4)+" / "+f(pos,4)+" = "+f(tp/pos,4)+"\nP(C|−) = "+f(p,3)+"×"+f(1-se)+" / ("+f(p,3)+"×"+f(1-se)+" + "+f(1-p,3)+"×"+f(1-fp)+") = "+f(fn,4)+" / "+f(neg,4)+" = "+f(fn/neg,4)+"\n→ 陽性後罹病機率從 "+f(p*100,1)+"% 變成 "+f(tp/pos*100,1)+"%；陰性後變成 "+f(fn/neg*100,1)+"%。";}
  [P,SE,FP].forEach(i=>i.addEventListener("input",draw));
  $$(el,".b-ex").forEach(b=>b.addEventListener("click",()=>{P.value=b.dataset.p;SE.value=0.8;FP.value=0.75;draw();}));draw();

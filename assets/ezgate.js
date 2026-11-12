@@ -121,16 +121,16 @@
        password field); browsers that cannot mask a text field keep the password field */
     const MASK=!!(window.CSS&&CSS.supports&&CSS.supports("-webkit-text-security","disc"));
     const PIN_T=MASK?"text":"password",PIN_C=MASK?"mask":"";
-    const row=n=>'<div class="eg-cells" data-row="'+n+'">'+[1,2,3,4].map(i=>'<div class="eg-cell" data-n="'+i+'"><input type="'+PIN_T+'" class="'+PIN_C+'" inputmode="numeric" pattern="[0-9]*" enterkeyhint="go" maxlength="1" autocomplete="off" aria-label="PIN 碼第 '+i+' 位"></div>').join("")+'</div>';
+    const row=n=>'<div class="eg-cells" data-row="'+n+'">'+[1,2,3,4].map(i=>'<div class="eg-cell" data-n="'+i+'"><input type="'+PIN_T+'" class="'+PIN_C+'" inputmode="numeric" pattern="[0-9]*" enterkeyhint="go" maxlength="1" autocomplete="off" aria-label="PIN digit '+i+'"></div>').join("")+'</div>';
     root.innerHTML='<div class="eg-wrap"><div class="eg-brand"><span class="mk">EZ</span>EZexams</div>'+
       '<form class="eg-ticket" data-mode="login" novalidate autocomplete="off"><div class="eg-main">'+
         '<div class="eg-prompt" id="egPrompt"></div><h1 class="eg-h" id="egH"></h1><p class="eg-p" id="egP"></p>'+
         '<div class="eg-acct"><div class="eg-lab"><span>Username</span></div>'+
           '<input class="eg-in" id="egUser" type="text" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" maxlength="20" aria-label="Username">'+
-          '<div class="eg-lab"><span>Password</span><button type="button" class="eg-eye" id="egEyeP" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span>顯示</span></button></div>'+
+          '<div class="eg-lab"><span>Password</span><button type="button" class="eg-eye" id="egEyeP" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span>Show</span></button></div>'+
           '<input class="eg-in" id="egPass" type="password" autocomplete="current-password" maxlength="72" aria-label="Password">'+
           '<div class="eg-reg"><div class="eg-lab"><span>Confirm password</span></div><input class="eg-in" id="egPass2" type="password" autocomplete="new-password" maxlength="72" aria-label="Confirm password"></div></div>'+
-        '<div class="eg-pinrow"><div class="eg-lab"><span>PIN</span><button type="button" class="eg-eye" id="egEye" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span>顯示</span></button></div>'+
+        '<div class="eg-pinrow"><div class="eg-lab"><span>PIN</span><button type="button" class="eg-eye" id="egEye" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span>Show</span></button></div>'+
         row(1)+'<div class="eg-confirm"><div class="eg-lab"><span>Confirm</span></div>'+row(2)+'</div></div>'+
         '<button class="eg-go" type="submit" id="egGo"><span id="egGoT"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>'+
         '<p class="eg-msg" id="egMsg" role="status"></p>'+

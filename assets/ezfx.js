@@ -17,10 +17,9 @@
 .fx-rv{opacity:0;transform:translateY(46px) scale(.96) rotate(.6deg);transition:opacity .7s cubic-bezier(.2,.9,.25,1),transform .8s cubic-bezier(.2,1.2,.3,1)}
 .fx-rv.fx-in{opacity:1;transform:none}
 @supports (animation-timeline:view()){
-.fx-sv{animation:fxsin linear forwards,fxsout linear forwards;animation-timeline:view(),view();animation-range:entry 0% entry 100%,exit 0% exit 100%}
+.fx-sv{animation:fxsin linear forwards;animation-timeline:view();animation-range:entry 0% entry 100%}   /* no fade-out on the way up: a block that is still on screen (e.g. right under the tab bar after a jump) must stay visible */
 .fx-sv.fx-rv{transition:none}
 @keyframes fxsin{from{opacity:0;transform:translateY(34px) scale(.97)}to{opacity:1;transform:none}}
-@keyframes fxsout{from{opacity:1;transform:none}to{opacity:0;transform:translateY(-34px) scale(.97)}}
 }
 
 @keyframes fxrise{from{opacity:0;transform:translateY(34px) scale(.94)}to{opacity:1;transform:none}}

@@ -156,7 +156,7 @@ h3.allseen .missbadge{background:#5b6cd6}
         const box=document.querySelector("#"+id+" .quiz[data-quiz]"),key=box&&box.dataset.quiz;
         const st=S.exam&&S.exam[id];const a=key?(S.quiz&&S.quiz[key]||{}):(st&&st.done&&st.ans||{});
         MOCK[id].forEach((it,i)=>{const pk=a[i];if(pk===undefined||same(pk,it.a)||it.a==null||typeof it.q!=="string")return;
-          mc(out,it,i,pk,chOf(it),(NAME[id]||id)+" 第 "+(i+1)+" questions",id,key||null);});
+          mc(out,it,i,pk,chOf(it),(NAME[id]||id)+" question "+(i+1),id,key||null);});
       });
     }
     document.querySelectorAll(".exam .exq").forEach(q=>{
@@ -168,7 +168,7 @@ h3.allseen .missbadge{background:#5b6cd6}
       const vw=q.closest(".view"),vid=vw?vw.id:id,ch=CH.includes(vid)?vid:null;
       const bh=q.closest(".exam").querySelector("h2"),part=bh?bh.textContent.replace(/[（(].*$/,"").trim():"Q&A"; /* e.g. Problems, Fill-in ＆ Quiz */
       const where=NAME[id]||(ch?(NAME[ch]||ch)+" "+part:id);
-      out.push({m:match({q:qt,e:ref?ref.textContent:"",sec:q.dataset.sec},ch),ch,src:where+" "+(pts?pts.textContent:q.id),go:vid,qid:q.id,q:qt.slice(0,700),yours:"得 "+g.score+" / "+q.dataset.pts+" 分",right:"See the reference answer",e:g.feedback||""});
+      out.push({m:match({q:qt,e:ref?ref.textContent:"",sec:q.dataset.sec},ch),ch,src:where+" "+(pts?pts.textContent:q.id),go:vid,qid:q.id,q:qt.slice(0,700),yours:"Scored "+g.score+" / "+q.dataset.pts+" pts",right:"See the reference answer",e:g.feedback||""});
     });
     return out;
   }

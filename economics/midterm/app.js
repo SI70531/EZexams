@@ -159,7 +159,7 @@ function renderExam(id){
     const rep=sec.querySelector(".report");
     if(e.done){
       const by={};qs.forEach((q,i)=>{const c="ch"+q.ch;by[c]=by[c]||[0,0];by[c][1]++;if(EZsame(a[i],q.a))by[c][0]++;});
-      let h='<h3>各章答對率</h3><table class="prog"><tr><th class="l">章節</th><th>答對</th><th></th></tr>';
+      let h='<h3>各章答對率</h3><table class="prog"><tr><th class="l">章節</th><th>Correct</th><th></th></tr>';
       Object.keys(by).forEach(c=>{const[r,n]=by[c];h+='<tr><td class="l"><button class="btn" data-go="'+c+'">'+CHN[c]+'</button></td><td>'+r+' / '+n+'</td><td>'+(r<n?"回去複習":"OK")+'</td></tr>';});
       rep.innerHTML=h+'</table>';rep.hidden=false;
     }else rep.hidden=true;

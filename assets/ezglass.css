@@ -1,7 +1,6 @@
 /* Hallmark · built: the project · redesign: full · genre: editorial · theme: DESIGN.md (locked) · copy: tightened */
 /* Hallmark · pre-emit critique: P pass H pass E pass S pass R pass V pass · weakest: the glass on long pages (kept, waived 29) */
-/* Hallmark · waive 29 · DESIGN.md concept is glass over an admit card; the user said the glass may be touched, so blur is lowered and kept on cards only */
-/* Hallmark · waive 64 · mono labels are a DESIGN.md decision (admit-card stamp voice) */
+/* Hallmark · waive 29 · DESIGN.md names frosted glass as the system and the cards are the only blurred layers, nested glass is flat · the user said the glass may be touched and it stays, blur 16px */
 /* Hallmark · reworded "← Home" to "Home" · 63 names the arrow glued to link text */
 /* EZexams glassmorphism layer.
    Loaded LAST on every page (home, help, all subjects), so it only restyles surfaces and never touches layout.
@@ -56,36 +55,39 @@ html,body{overflow-x:clip}
 @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
 
 
-/* ============ 2. Glass cards ============ */
-/* `:root` in front lifts specificity above the page's own inline rules (.box.en, .qitem …) without !important. */
-:root :is(.ticket,.syncbox,.pcb,.box,.calc,.fig,.qa,.examtools,.qitem,.qscore,.day,.next,.rvsec,.cheat .two>div,.thmenu){
+/* ============ 2. Surfaces by role ============ */
+/* Floating things (tickets, the process card, the exam toolbar, menus) are frosted glass with one hairline edge and no resting shadow.
+   Everything you read or answer in is a flat pane, and each kind of pane has its own corner and fill.
+   `:root` in front lifts specificity above the page's own inline rules without !important. */
+:root :is(.ticket,.pcb,.examtools,.thmenu){
   background:var(--glass-bg);
   -webkit-backdrop-filter:blur(var(--glass-blur));
   backdrop-filter:blur(var(--glass-blur));
-  border:1px solid var(--glass-bd);
+  border:1px solid var(--line);
   border-radius:16px;
-  box-shadow:var(--glass-sh);
 }
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
-  :root :is(.ticket,.syncbox,.pcb,.box,.calc,.fig,.qa,.examtools,.qitem,.qscore,.day,.next,.rvsec,.cheat .two>div,.thmenu,table){background:var(--glass-fallback)}
+  :root :is(.ticket,.pcb,.examtools,.thmenu){background:var(--glass-fallback)}
 }
-/* glass inside glass: drop the second blur (a blur of an already-blurred layer looks the same and costs a lot of GPU on long pages) */
-:root :is(.qitem,.rvsec,.qa,.day,.cheat .two>div,.fig,.next,.pcb) :is(.box,.calc,.fig,.qa,table,.pcb){
-  -webkit-backdrop-filter:none;backdrop-filter:none;background:var(--glass-bg-nested);box-shadow:none;
-}
-/* finished items (ezdone) keep their green tint: the glass rule above would otherwise win on specificity */
+/* notes and code: tight 8px corners, the glass tint */
+:root :is(.box,.calc){background:var(--glass-bg);border:1px solid var(--line);border-radius:8px;box-shadow:none}
+/* figures and tables: square-ish 4px corners on a lighter fill, so they read as plates */
+:root :is(.fig,table){background:var(--glass-fig);border:1px solid var(--line);border-radius:4px;box-shadow:none}
+/* question and answer cards: 12px corners, a nested tint */
+:root :is(.qitem,.qscore,.qa){background:var(--glass-bg-nested);border:1px solid var(--line);border-radius:12px;box-shadow:none}
+/* review, next-step and sync panes: 12px corners and a stronger edge */
+:root :is(.rvsec,.next,.syncbox,.cheat .two>div){background:var(--glass-bg);border:1px solid var(--line-strong);border-radius:12px;box-shadow:none}
+/* finished items (ezdone) keep their green tint */
 :root .ezdone{background:var(--glass-ok-bg)!important;border-color:var(--ok-line)!important}
 /* popup menus: a deeper, almost solid glass so the words underneath do not bleed through */
-:root :is(.cheat .two>div,.thmenu){background:var(--glass-menu);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px)}
-/* the coloured note boxes keep their tint (English / Chinese / warning / tip) on top of the glass */
+:root :is(.cheat .two>div,.thmenu){background:var(--glass-menu)}
+/* the coloured note boxes keep their tint (English / Chinese / warning / tip) */
 :root .box.en  {background:linear-gradient(var(--indigo-soft),var(--indigo-soft)),var(--glass-bg)}
 :root .box.zh  {background:linear-gradient(var(--brass-soft),var(--brass-soft)),var(--glass-bg)}
 :root .box.warn{background:linear-gradient(var(--seal-soft),var(--seal-soft)),var(--glass-bg)}
 :root .box.tip {background:linear-gradient(var(--warn-soft),var(--warn-soft)),var(--glass-bg)}
-:root .fig{background:var(--glass-fig)}
-:root .box,:root .fig,:root .calc{border-radius:16px}
-/* answer options inside a question card: see-through instead of a solid grey slab (right / wrong states keep their colours) */
-:root .opt:not(.right):not(.wrong){background:var(--glass-bg-nested);border-color:var(--glass-bd)}
+/* answer options inside a question card: see-through (right / wrong keep their colours) */
+:root .opt:not(.right):not(.wrong){background:var(--glass-bg-nested);border-color:var(--line)}
 
 /* home page ticket: soft lift instead of the hard offset shadow; the tear-off notches become glass arcs */
 :root .ticket:hover{transform:translateY(-3px);box-shadow:var(--glass-sh-hover)}
@@ -96,27 +98,12 @@ html,body{overflow-x:clip}
 :root .examtools{border-radius:16px}
 :root .mcscore{background:var(--glass-score)!important}
 
-/* ============ 3. Glass tables ============ */
-/* The table itself is the glass block, shrink-wrapped so no empty glass is left beside narrow tables.
-   Cells are transparent; dividers are 1px hairlines; the header gets a faint extra tint. */
-:root table{
-  width:fit-content;max-width:100%;
-  border-collapse:separate;border-spacing:0;
-  background:var(--glass-bg);
-  -webkit-backdrop-filter:blur(var(--glass-blur));
-  backdrop-filter:blur(var(--glass-blur));
-  border:1px solid var(--glass-bd);
-  border-radius:16px;
-  box-shadow:var(--glass-sh);
-  overflow-x:auto;
-}
+/* ============ 3. Tables ============ */
+/* The table is a plate, shrink-wrapped so no empty pane is left beside narrow tables.
+   Cells are transparent with 1px hairline dividers; the header gets a faint extra tint. */
+:root table{width:fit-content;max-width:100%;border-collapse:separate;border-spacing:0;overflow-x:auto}
 :root table.ezfull,:root table.prog{width:100%}
-:root table :is(th,td){
-  background:transparent;
-  border:0;
-  border-right:1px solid var(--glass-line);
-  border-bottom:1px solid var(--glass-line);
-}
+:root table :is(th,td){background:transparent;border:0;border-right:1px solid var(--glass-line);border-bottom:1px solid var(--glass-line)}
 :root table :is(th,td):last-child{border-right:0}
 :root table>:last-child>tr:last-child>*{border-bottom:0}
 :root table th{background:var(--glass-th)}
@@ -140,4 +127,32 @@ html,body{overflow-x:clip}
 
 /* section headings (h3 is a flex row with a dotted rule): put the Chinese line on its own row under the title */
 :root h3:has(>.zhn){flex-wrap:wrap}
-:root h3>.zhn{order:2;flex:0 0 100%;margin-top:0;font-weight:500}
+:root h3>.zhn{order:2;flex:0 0 100%;margin-top:0}
+
+/* ============ 6. Redesign layer: surfaces by role ============ */
+/* Blurred glass stays on the things that float (top bar, tools bar, menus, tickets, the process card).
+   Everything you read or answer in is a flat paper panel with one hairline, so the lecture text sits on a still surface. */
+
+/* the study plan is a ruled list, not a stack of cards */
+:root .plan{gap:0;margin:20px 0;border-top:1px solid var(--line)}
+html:root:root .day{background:transparent;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:16px 4px}
+
+/* the masthead: title first, large; the date line under it; no terminal cursor */
+:root .vhead{padding:48px 0 32px;margin-bottom:32px}
+:root .vhead>h1{order:-1;font-size:calc(clamp(32px,4.4vw,46px)*var(--ts,1));line-height:1.15;margin:0 0 12px}
+:root .vhead .eyebrow::before,:root .vhead .eyebrow::after{content:none}
+:root .vhead .eyebrow,:root .vhead .vmeta{font-family:var(--f-body);font-size:calc(14px*var(--ts,1));font-weight:400;color:var(--muted);margin:0 0 8px}
+
+/* tabs: plain words with an underline for the current chapter, not a row of boxed mono buttons */
+:root nav.tabs button{font-family:var(--f-body);font-size:calc(14px*var(--ts,1));font-weight:400;border:0;border-radius:0;background:transparent;color:var(--muted);padding:0 16px;height:58px;transition:color .15s,box-shadow .15s}
+:root nav.tabs button:hover{background:transparent;color:var(--ink)}
+:root nav.tabs button[aria-current="true"]{background:transparent;color:var(--ink);font-weight:700;box-shadow:inset 0 -3px 0 var(--seal)}
+:root nav.tabs button::after{top:0;bottom:auto}
+:root nav.tabs .sep{flex:0 0 1px;width:1px;height:20px;margin:0 8px;background:var(--line)}
+
+/* small labels in the body face, a step smaller */
+:root :is(.labtag,.lab-row label,.labgrid label,.note .star,.note .f,.qitem .hwtag){font-family:var(--f-body);letter-spacing:0}
+@media (prefers-reduced-motion:reduce){:root nav.tabs button{transition:none}}
+/* chapter chips in the study plan are outlined, so the hero holds no row of filled buttons */
+:root .day .t button{background:transparent;border:1px solid var(--line)}
+:root .day .t button.rvdone{background:var(--ok-soft);border-color:var(--ok-line)}

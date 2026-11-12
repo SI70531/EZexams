@@ -42,7 +42,7 @@ typography:
     fontWeight: 400
     lineHeight: 1.7
   label:
-    fontFamily: "JetBrains Mono, Menlo, Consolas, Noto Sans TC, monospace"
+    fontFamily: "JetBrains Mono, Menlo, Consolas, Noto Sans TC, monospace"   # box labels, ticket metadata, badges, status lines; tabs and the date line use the body face
     fontSize: "12.5px"
     fontWeight: 600
     lineHeight: 1.5
@@ -115,7 +115,7 @@ Three scripts live together, and each has a job. Iansui, a handwritten-feeling C
 **Key Characteristics:**
 - Admission-ticket cards with a dashed tear-off stub and notches
 - Frosted glass panes (16px corners, 1px bright edge, soft ambient shadow) over a fog-grey board with soft colour blobs
-- Iansui display / Noto Sans TC body / Source Serif 4 English / JetBrains Mono labels
+- Iansui display / Noto Sans TC body / Source Serif 4 English / JetBrains Mono stamps, figures and codes
 - Colour as meaning: right, wrong, caution, English
 - Small terminal touches: `$` prompts, blinking cursors, status LEDs, process boxes
 - Full light and dark themes, plus following the system setting
@@ -129,7 +129,7 @@ The palette is cool, muted slate-and-fog with one warm accent, Seal Vermilion. T
 
 ### Secondary
 - **Slate Ink**: the primary action and the English voice. Used for primary buttons, the active tab, English note boxes and their labels, table header text, focus outlines, list markers, and progress bars. In dark mode it becomes #9ba8ab, with dark text on it.
-- **Pewter**: the Chinese-explanation voice. Used for Chinese note boxes (`.box.zh`), mono eyebrows and prompts, group-heading rules, and hover borders on answer options.
+- **Pewter**: the Chinese-explanation voice. Used for Chinese note boxes (`.box.zh`), prompts, group-heading rules, and hover borders on answer options.
 
 ### Tertiary (state)
 - **Pass Green**: correct answers, finished chapters ("terminated"), the synced LED. In dark mode it is #73d48f.
@@ -165,7 +165,7 @@ The palette is cool, muted slate-and-fog with one warm accent, Seal Vermilion. T
 - **Title** (700, 24px, 1.4): section headings (h3). A dotted rule extends from the heading to the edge. A Chinese subtitle (`.zhn`) wraps onto its own line beneath.
 - **Body** (400, 16px, 1.8): Chinese and mixed reading text. Lead paragraphs are capped at 60ch.
 - **English body** (400, 17px, 1.7): English passages in `.box.en`, set in Source Serif 4.
-- **Label** (500–600, 11.5–13px, mono): tabs, eyebrows, box labels, ticket metadata (`dt`), stub date, badges, status lines.
+- **Label** (500–600, 11.5–13px, mono): box labels, ticket metadata (`dt`), stub date, badges, status lines. Tabs, the date line under the title and small tags (`.labtag`, `.hwtag`) are set in the body face, sentence case.
 
 ### Named Rules
 **The Text Scale Rule.** Every reading size is written as `calc(Npx * var(--ts, 1))`. Chapter views, exam papers, and review set `--ts: 1.2`. Figures and chapter-end practice reset it to 1. Never hard-code a reading size without `--ts`.
@@ -179,7 +179,7 @@ The palette is cool, muted slate-and-fog with one warm accent, Seal Vermilion. T
 The layout is a single reading column. Subject pages cap `main` at 860px. The home page wrap is 960px, and the sticky top bar's inner row is 1000px. Side padding is `max(16px, env(safe-area-inset-*))` everywhere, and the top bar respects safe areas, because the site is installed as a PWA on phones and iPads.
 
 - **Home:** subjects are a two-column grid (gap 44px × 24px) that becomes one column at 760px or narrower. Upcoming exams sort by date. Finished exams drop to 60% opacity and move into a collapsible "past" area.
-- **Subject page:** a sticky 58px top bar holds the brand, a mono tab strip that scrolls sideways, and the theme button. Each view opens with a `.vhead`: an eyebrow, the headline, a lead paragraph, and a process-status card on the right. Then come notes, boxes, tables, figures, and questions.
+- **Subject page:** a sticky 58px top bar holds the brand, a tab strip of plain words that scrolls sideways, the current chapter underlined in vermilion, and the theme button. Each view opens with a `.vhead`: the headline, a date line, a lead paragraph, and a process-status card on the right. Then come notes, boxes, tables, figures, and questions.
 - **Side by side:** `.two`, `.three`, and `.four` are wrapping flex or auto-fit grids (minimum columns 260 / 200 / 180px), so they stack naturally on phones.
 - **Breakpoints observed:** 520, 640, 760, 900px.
 - **Rhythm:** boxes and tables keep 14px vertical margins. Sections open with 44px above the h3, and the bottom padding of `main` is 72–96px so the back-to-top button never covers content.
@@ -197,6 +197,8 @@ The noticeboard's hard offset shadows (`Npx Npx 0` in Night Ink) remain on small
 - **Hard offset** (`3px 3px 0` to `5px 5px 0` Night Ink): noticeboard controls. On press it shrinks by 1px and the control moves 1px toward it.
 
 ### Named Rules
+**Surfaces by Role.** Blurred glass is for things that float: the top bar, the exam toolbar, menus, tickets and the process card. Everything you read or answer in (note boxes, figures, tables, question cards, review cards, the next-step card) is a flat pane: the glass fill, a 1px `--line` border, 12px corners, no blur and no shadow. The 7-day plan is a ruled list, not a stack of cards.
+
 **The One Blur Rule.** Only the outermost pane blurs. Anything nested inside it uses `--glass-bg-nested` with no blur and no shadow.
 
 **The Glass Edge Rule.** A glass pane always has the 1px bright edge (`--glass-edge`). Without it the pane reads as a muddy grey box.
@@ -222,7 +224,7 @@ Calm and precise; the colour appears on hover, not at rest.
 - **Focus:** a 2px Slate Ink outline with a 2px offset, on every interactive element.
 
 ### Tabs (subject top bar)
-- A segmented strip of mono buttons (12.5px/500) with 1.5px ink borders, joined edge to edge. Groups are split by a short ink dash.
+- A row of plain-word tabs (14px/500, body face), no boxes. The current chapter is ink and bold with a 3px vermilion underline; running or finished chapters show a 3px bar on top. Groups are split by a 1px hairline.
 - **Active:** a Slate Ink fill with white text, `aria-current="true"`.
 - **State bar:** a 3px bottom bar, amber while the chapter is "running" and green once it is "terminated".
 

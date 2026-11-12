@@ -33,6 +33,7 @@ assets/             Shared code and styles used by every page
   ezchw.js          AI grading for written questions
   ezplan.js         Builds an N-day study plan
   ezwrong.js        Wrong-answer review area
+  ezsubject.js      Chapter multiple-choice block, keyword grader and progress row shared by OS and Statistics pages
   ezquiz.js         Score bar and answer timestamps
   ezgen.js          AI practice, one question at a time (chapter exercises and mock exams)
   ezsearch.js       Search bar (press / or Ctrl+K)
@@ -67,7 +68,7 @@ The home page sorts subjects by date automatically. Keep the table sorted by dat
 
 ## Editing Questions
 
-Saved answers are matched to questions by their position in `quiz.js`. So:
+Saved answers are matched to questions by their position in `quiz.js`. So (and `tools/check.py` enforces this through `tools/quiz_lock.json`; run `python3 tools/check.py --lock` after adding questions at the end):
 
 - Fixing a typo is always safe.
 - Add new questions at the **end** of a chapter. Adding or deleting in the middle moves every answer after it to the wrong question.

@@ -4,9 +4,12 @@
    (A stray </div> once pushed the whole "Final prep" term out of #terms on the home page.)
 2. Duplicate ids inside one page.
 3. Every chapter written question (.exq) has a keyword rule in KEYS / KEYS_MORE, so grading without AI works.
+4. Saved answers are matched to questions by position, so no question set in a quiz.js may get shorter and no question
+   may move to another position. tools/quiz_lock.json records every set; run "python3 tools/check.py --lock" after
+   adding questions at the END of a set (or fixing a typo) to update it.
 Exits with 1 and prints file:line for every problem found.
 """
-import glob, os, re, sys
+import glob, hashlib, json, os, re, subprocess, sys
 from html.parser import HTMLParser
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -56,8 +59,42 @@ def keys_of(folder):
             names |= set(re.findall(r'"((?:ch\d+w|past|mock-[a-z])-\d+)"\s*:', open(p, encoding="utf-8").read()))
     return names
 
+LOCK = os.path.join(ROOT, "tools", "quiz_lock.json")
+NODE = """const fs=require('fs');const out={};for(const f of process.argv.slice(1)){const src=fs.readFileSync(f,'utf8');
+const QUIZ=new Function(src+';return typeof QUIZ!=="undefined"?QUIZ:{}')();const r={};
+for(const k in QUIZ){r[k]=QUIZ[k].map(q=>q&&q.q?String(q.q):'')}out[f]=r}console.log(JSON.stringify(out))"""
+
+def quiz_sets():
+    files = sorted(glob.glob(os.path.join(ROOT, "*", "*", "quiz.js")))
+    raw = json.loads(subprocess.check_output(["node", "-e", NODE] + files))
+    h = lambda t: hashlib.sha1(re.sub(r"\W+", "", t.lower()).encode()).hexdigest()[:10] if t else ""
+    return {os.path.relpath(f, ROOT): {k: [h(q) for q in v] for k, v in sets.items()} for f, sets in raw.items()}
+
+def check_lock(update):
+    now = quiz_sets()
+    if update or not os.path.exists(LOCK):
+        json.dump(now, open(LOCK, "w"), indent=0, sort_keys=True)
+        print("wrote", os.path.relpath(LOCK, ROOT))
+        return []
+    old, errs = json.load(open(LOCK)), []
+    for f, sets in old.items():
+        for k, qs in sets.items():
+            cur = now.get(f, {}).get(k)
+            if cur is None:
+                errs.append("%s: question set %s was removed (saved answers point at it)" % (f, k)); continue
+            if len(cur) < len(qs):
+                errs.append("%s: set %s shrank from %d to %d questions" % (f, k, len(qs), len(cur)))
+            for i, hq in enumerate(qs[:len(cur)]):
+                if hq and cur[i] != hq and hq in cur:
+                    errs.append("%s: set %s question %d moved to position %d" % (f, k, i + 1, cur.index(hq) + 1))
+    return errs
+
 def main():
     problems = 0
+    lock_errs = check_lock("--lock" in sys.argv)
+    for e in lock_errs:
+        print(e)
+    problems += len(lock_errs)
     pages = sorted(glob.glob(os.path.join(ROOT, "*.html")) + glob.glob(os.path.join(ROOT, "*", "*", "index.html")))
     for path in pages:
         rel = os.path.relpath(path, ROOT)

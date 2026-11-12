@@ -163,7 +163,7 @@ a = re.sub(r"/\* 2026-10-26: some ch1/ch2/ch5.*?\n\(function\(\)\{const MIG=.*?\
 rep('const PID={home:0,ch1:1,ch2:2,ch3:3,ch4:4,ch5:5,past:6,"mock-a":7,"mock-b":8,review:9};', 'const PID={home:0,ch6:6,ch7:7,ch8:8,traps:9,review:10};')
 rep('const c=["ch1","ch2","ch3","ch4","ch5"].filter(c=>procState(c).state==="terminated").length;return {state:"running",done:c,n:5};', 'const c=["ch6","ch7","ch8"].filter(c=>procState(c).state==="terminated").length;return {state:"running",done:c,n:3};')
 rep('EZGEN.attach({course:"Operating Systems",s:"os",ai:["ch1","ch2","ch3","ch4","ch5"]', 'EZGEN.attach({course:"Operating Systems",s:"osf",ai:["ch6","ch7","ch8"]')
-rep('else if(n>=qs.length&&ch==="ch5"){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";nb.textContent="Start past exam";nb.dataset.go="past";', 'else if(n>=qs.length&&ch==="ch8"){const nb=document.createElement("button");nb.className="btn primary";nb.type="button";nb.textContent="Summary & traps";nb.dataset.go="traps";')
+rep('window.EZLAST={ch:"ch5",label:"Start past exam",go:"past"};', 'window.EZLAST={ch:"ch8",label:"Summary & traps",go:"traps"};')
 a = re.sub(r"const KEYS=\{\n.*?\n\};\n", "const KEYS={};\n", a, count=1, flags=re.S)
 rep("Operating Systems midterm exam", "Operating Systems final exam")
 # widgets

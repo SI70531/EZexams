@@ -1,0 +1,661 @@
+<section role="tabpanel" class="view" id="ch4" hidden><div class="vhead"><div class="pcb" data-pcb="ch4" role="img"></div><h1>Ch4 Stacks<span class="zhn">堆疊</span></h1><p>Basic stack operations (push, pop, stack top), the linked-list implementation and its eight algorithms, the four kinds of stack applications (reversing, parsing, postponement, backtracking), the stack ADT, and the array implementation. After reading, do the multiple choice and the written part at the bottom.<span class="zhn">堆疊的基本運算（push、pop、stack top）、用鏈結串列實作的八個演算法、四類堆疊應用（反轉、剖析、延後處理、回溯）、堆疊 ADT 與陣列實作。讀完做最下面的選擇題和手寫題。</span></p></div>
+<div class="box slmap"><span class="lbl">Slide map</span><a class="slk" href="#s4-1" data-sec-link="s4-1">4-1 Basic Stack Operations</a> (3 to 13) → <a class="slk" href="#s4-2" data-sec-link="s4-2">4-2 Stack Linked List Implementation</a> (14 to 37) → <a class="slk" href="#s4-3" data-sec-link="s4-3">4-3 Stack Applications</a> (38 to 77) → <a class="slk" href="#s4-4" data-sec-link="s4-4">4-4 Stack ADT</a> (78 to 80) → <a class="slk" href="#s4-5" data-sec-link="s4-5">4-5 Array Implementation</a> (81 to 84).</div>
+
+<h3 id="s4-1" data-sec="4-1">4-1 Basic Stack Operations <span class="star">★★★</span><span class="zhn">堆疊的基本運算</span></h3>
+<h4>What a stack is <span class="sl">Slide 3 to 4</span><span class="zhn">什麼是堆疊</span></h4>
+<ul>
+<li><i>A stack is a linear list in which <mark>all additions and deletions are restricted to one end, called the top</mark>.</i><span class="zhn">堆疊是一種線性串列，所有新增和刪除都只能在同一端進行，這一端叫做 top（頂端）。</span></li>
+<li><b>LIFO</b> (<mark>last in, first out</mark>): data input as {5, 10, 15, 20} are removed as {20, 15, 10, 5}.<span class="zhn">後進先出：依序放入 5、10、15、20，取出的順序是 20、15、10、5。</span></li>
+<li>In Ch3's terms a stack is a <b>restricted list</b>, so <b>traversal does not apply</b> to it.<span class="zhn">用 Ch3 的說法，stack 是受限串列（restricted list），所以不能做 traversal（走訪）。</span></li>
+</ul>
+<div class="box zh"><span class="lbl">In plain words</span>Think of a pile of plates: you can only put a plate on the top and take the top plate off. The plate you put on last is the first one you take.<span class="zhn"><b>白話</b> 想像一疊盤子：只能把盤子放在最上面、也只能拿最上面那個。最後放上去的，最先被拿走。</span></div>
+
+<h4>The three basic operations <span class="sl">Slide 5 to 11</span> <span class="star">★★★</span><span class="zhn">三個基本運算</span></h4>
+<figure class="fig"><svg viewBox="0 0 720 200" width="640" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="13" role="img"><defs><marker id="f4oa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#1d2433"/></marker><marker id="f4or" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#d64933"/></marker></defs><text data-step="0" x="110" y="18" text-anchor="middle" font-size="14" fill="#1d2433" font-weight="700">Push</text><path data-step="0" d="M70,60 V170 H150 V60" fill="none" stroke="#1d2433" stroke-width="2"/><rect data-step="0" x="78" y="144" width="64" height="22" rx="3" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="110" y="159" text-anchor="middle" font-size="12" fill="#1d2433">green</text><rect data-step="1" x="178" y="30" width="64" height="22" rx="3" fill="#fde7c8" stroke="#1d2433" stroke-width="1.4"/><text data-step="1" x="210" y="45" text-anchor="middle" font-size="12" fill="#1d2433">blue</text><line data-step="2" x1="178" y1="52" x2="140" y2="112" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f4oa)"/><rect data-step="3" x="78" y="118" width="64" height="22" rx="3" fill="#fde7c8" stroke="#1d2433" stroke-width="1.4"/><text data-step="3" x="110" y="133" text-anchor="middle" font-size="12" fill="#1d2433">blue</text><text data-step="3" x="160" y="132" text-anchor="start" font-size="11" fill="#d64933">← top</text><text data-step="4" x="330" y="18" text-anchor="middle" font-size="14" fill="#1d2433" font-weight="700">Pop</text><path data-step="4" d="M290,60 V170 H370 V60" fill="none" stroke="#1d2433" stroke-width="2"/><rect data-step="4" x="298" y="144" width="64" height="22" rx="3" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.4"/><text data-step="4" x="330" y="159" text-anchor="middle" font-size="12" fill="#1d2433">green</text><rect data-step="4" x="298" y="118" width="64" height="22" rx="3" fill="#fde7c8" stroke="#1d2433" stroke-width="1.4"/><text data-step="4" x="330" y="133" text-anchor="middle" font-size="12" fill="#1d2433">blue</text><line data-step="5" x1="360" y1="118" x2="400" y2="58" stroke="#d64933" stroke-width="1.6" marker-end="url(#f4or)"/><rect data-step="6" x="398" y="30" width="64" height="22" rx="3" fill="#fde7c8" stroke="#1d2433" stroke-width="1.4"/><text data-step="6" x="430" y="45" text-anchor="middle" font-size="12" fill="#1d2433">blue</text><text data-step="6" x="430" y="70" text-anchor="middle" font-size="11" fill="#d64933">returned</text><line data-step="6" x1="300" y1="129" x2="360" y2="129" stroke="#d64933" stroke-width="1.6"/><text data-step="7" x="560" y="18" text-anchor="middle" font-size="14" fill="#1d2433" font-weight="700">Stack top</text><path data-step="7" d="M520,60 V170 H600 V60" fill="none" stroke="#1d2433" stroke-width="2"/><rect data-step="7" x="528" y="144" width="64" height="22" rx="3" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.4"/><text data-step="7" x="560" y="159" text-anchor="middle" font-size="12" fill="#1d2433">green</text><rect data-step="7" x="528" y="118" width="64" height="22" rx="3" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.4"/><text data-step="7" x="560" y="133" text-anchor="middle" font-size="12" fill="#1d2433">blue</text><line data-step="8" x1="590" y1="118" x2="630" y2="58" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f4oa)"/><rect data-step="9" x="628" y="30" width="64" height="22" rx="3" fill="#fde7c8" stroke="#1d2433" stroke-width="1.4"/><text data-step="9" x="660" y="45" text-anchor="middle" font-size="12" fill="#1d2433">blue</text><text data-step="9" x="660" y="70" text-anchor="middle" font-size="11" fill="#1d2433">copy only</text><text data-step="9" x="560" y="192" text-anchor="middle" font-size="11" fill="#8a93a6">blue stays in the stack</text></svg><figcaption class="cap">Figures 4-2 to 4-4: push adds blue on top; pop removes blue and returns it; stack top returns a copy of blue and leaves the stack unchanged.<span class="zhn">圖 4-2 到 4-4：push 把 blue 放到最上面；pop 把 blue 拿走並回傳；stack top 只回傳 blue 的複本，堆疊不變。</span></figcaption></figure>
+<div class="tbl"><table>
+<tr><th>Operation</th><th class="l">What it does</th><th class="l">Error condition</th></tr>
+<tr><td><b>Push</b><span class="zhn">推入</span></td><td class="l"><i>Adds an item at the top of the stack.</i><span class="zhn">在頂端加入一筆資料。</span></td><td class="l"><mark><b>Overflow</b></mark>: <i>there is not enough room</i> for the new item.<span class="zhn">溢位：空間不夠放新資料。</span></td></tr>
+<tr><td><b>Pop</b><span class="zhn">彈出</span></td><td class="l"><i>Removes the item at the top of the stack and returns it to the user.</i><span class="zhn">移除頂端資料並回傳給使用者。</span></td><td class="l"><mark><b>Underflow</b></mark>: pop is called when the stack is <b>empty</b>.<span class="zhn">下溢：堆疊是空的還呼叫 pop。</span></td></tr>
+<tr><td><b>Stack top</b><span class="zhn">取頂端</span></td><td class="l"><i>Copies the data at the top of the stack and returns it, <mark>but does not delete it</mark>.</i><span class="zhn">複製頂端資料回傳，但不刪除。</span></td><td class="l"><b>Underflow</b> if the stack is empty.<span class="zhn">堆疊是空的也會 underflow。</span></td></tr>
+</table></div>
+<div class="box warn"><span class="lbl">Watch the words</span>Push can only <b>overflow</b>; pop and stack top can only <b>underflow</b>. Stack top <b>does not change</b> the stack.<span class="zhn"><b>注意用詞</b> push 只會 overflow；pop 和 stack top 只會 underflow。stack top 不會改變堆疊。</span></div>
+
+<h4>Stack example for three operations <span class="sl">Slide 12 to 13</span><span class="zhn">三種運算的例子（圖 4-5）</span></h4>
+<div class="tbl"><table>
+<tr><th>Step</th><th>Operation</th><th class="l">Stack after (top first)</th><th class="l">Returned</th></tr>
+<tr><td>1</td><td>Push green</td><td class="l">green</td><td class="l">—</td></tr>
+<tr><td>2</td><td>Push blue</td><td class="l">blue, green</td><td class="l">—</td></tr>
+<tr><td>3</td><td>Pop</td><td class="l">green</td><td class="l">blue</td></tr>
+<tr><td>4</td><td>Push red</td><td class="l">red, green</td><td class="l">—</td></tr>
+<tr><td>5</td><td>Stack top</td><td class="l">red, green <span class="zhn">不變</span></td><td class="l">red (copy)</td></tr>
+<tr><td>6</td><td>Pop</td><td class="l">green</td><td class="l">red</td></tr>
+<tr><td>7</td><td>Pop</td><td class="l">(empty)</td><td class="l">green</td></tr>
+</table></div>
+<div class="lab" data-lab="stackops"></div>
+
+<h3 id="s4-2" data-sec="4-2">4-2 Stack Linked List Implementation <span class="star">★★★</span><span class="zhn">用鏈結串列實作堆疊</span></h3>
+<h4>Data structure: head and data node <span class="sl">Slide 14 to 17</span><span class="zhn">資料結構：head 與資料節點</span></h4>
+<ul>
+<li>We <i>need two different structures</i>: a <b>head</b> and a <b>data node</b>.<span class="zhn">需要兩種結構：head 和資料節點。</span></li>
+<li>The <b>stack head</b> holds the <b>metadata</b> and has two attributes: a <mark><b>top</b> pointer</mark> and a <mark><b>count</b></mark> of the number of elements.<span class="zhn">stack head 放 metadata，有兩個屬性：指向頂端的 top 指標，以及元素個數 count。</span></li>
+<li>The <b>data node</b> is <i>a typical linked list data node</i>: <b>data</b> and a pointer to the <b>next</b> node.<span class="zhn">資料節點就是一般的鏈結串列節點：data 加上指向下一個節點的 next 指標。</span></li>
+</ul>
+<figure class="fig"><svg viewBox="0 0 650 180" width="600" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="13" role="img"><defs><marker id="f4pa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#1d2433"/></marker><marker id="f4pr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#d64933"/></marker></defs><text data-step="0" x="70" y="18" text-anchor="middle" font-size="12" fill="#1d2433" font-weight="700">(a) Conceptual</text><path data-step="0" d="M30,40 V150 H110 V40" fill="none" stroke="#1d2433" stroke-width="2"/><rect data-step="0" x="38" y="124" width="64" height="22" rx="3" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="70" y="139" text-anchor="middle" font-size="12" fill="#1d2433">green</text><rect data-step="0" x="38" y="98" width="64" height="22" rx="3" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="70" y="113" text-anchor="middle" font-size="12" fill="#1d2433">blue</text><rect data-step="0" x="38" y="72" width="64" height="22" rx="3" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="70" y="87" text-anchor="middle" font-size="12" fill="#1d2433">red</text><text data-step="0" x="122" y="74" text-anchor="start" font-size="11" fill="#d64933">top</text><text data-step="1" x="300" y="18" text-anchor="middle" font-size="12" fill="#1d2433" font-weight="700">(b) Physical: head + data nodes</text><rect data-step="1" x="190" y="40" width="96" height="30" rx="3" fill="#eef1f7" stroke="#1d2433" stroke-width="1.4"/><rect data-step="1" x="196" y="46" width="40" height="18" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="1" x="216" y="60" text-anchor="middle" font-size="12" fill="#1d2433">3</text><rect data-step="1" x="252" y="46" width="26" height="18" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><text data-step="1" x="216" y="84" text-anchor="middle" font-size="10" fill="#8a93a6">count</text><text data-step="1" x="265" y="84" text-anchor="middle" font-size="10" fill="#8a93a6">top</text><line data-step="2" x1="268" y1="55" x2="318" y2="55" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f4pa)"/><rect data-step="3" x="320" y="40" width="62" height="30" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="3" x="351" y="60" text-anchor="middle" font-size="12" fill="#1d2433">red</text><rect data-step="3" x="382" y="40" width="26" height="30" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><text data-step="3" x="351" y="84" text-anchor="middle" font-size="10" fill="#8a93a6">data</text><text data-step="3" x="395" y="84" text-anchor="middle" font-size="10" fill="#8a93a6">next</text><line data-step="4" x1="395" y1="55" x2="430" y2="95" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f4pa)"/><rect data-step="5" x="432" y="80" width="62" height="30" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="5" x="463" y="100" text-anchor="middle" font-size="12" fill="#1d2433">blue</text><rect data-step="5" x="494" y="80" width="26" height="30" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><text data-step="5" x="463" y="124" text-anchor="middle" font-size="10" fill="#8a93a6">data</text><text data-step="5" x="507" y="124" text-anchor="middle" font-size="10" fill="#8a93a6">next</text><line data-step="6" x1="507" y1="95" x2="542" y2="135" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f4pa)"/><rect data-step="7" x="544" y="120" width="62" height="30" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="7" x="575" y="140" text-anchor="middle" font-size="12" fill="#1d2433">green</text><rect data-step="7" x="606" y="120" width="26" height="30" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><path data-step="7" d="M610,124 L628,146 M628,124 L610,146" stroke="#d64933" stroke-width="1.4"/><text data-step="7" x="575" y="164" text-anchor="middle" font-size="10" fill="#8a93a6">data</text><text data-step="7" x="619" y="164" text-anchor="middle" font-size="10" fill="#8a93a6">next</text></svg><figcaption class="cap">Figure 4-6: the conceptual stack and its physical form. The head's top points to the newest node; the last node's next is null.<span class="zhn">圖 4-6：概念上的堆疊與實體結構。head 的 top 指向最新的節點；最後一個節點的 next 是 null。</span></figcaption></figure>
+<pre><b>stack</b>
+   count  &lt;integer&gt;
+   top    &lt;node pointer&gt;
+<b>end</b> stack
+
+<b>node</b>
+   data   &lt;dataType&gt;
+   next   &lt;node pointer&gt;
+<b>end</b> node
+<span class="c">Figure 4-7　Stack data structure</span></pre>
+
+<h4>Stack algorithms <span class="sl">Slide 18 to 20</span><span class="zhn">堆疊演算法</span></h4>
+<p><mark>Eight stack operations</mark> are <i>sufficient to solve any basic stack problem</i>. The <b>four most common</b> are <b>create stack, push stack, pop stack</b> and <b>destroy stack</b> (Figure 4-8).<span class="zhn">八個堆疊運算就足以解決任何基本的堆疊問題。最常用的四個是 create、push、pop、destroy（圖 4-8）。</span></p>
+<div class="tbl"><table>
+<tr><th>Figure 4-8</th><th class="l">Before</th><th class="l">After</th></tr>
+<tr><td>Create stack</td><td class="l">No stack: count ?, top ?</td><td class="l"><b>Empty stack</b>: count 0, top null</td></tr>
+<tr><td>Push stack (empty)</td><td class="l">count 0, top null</td><td class="l">count 1, top → green</td></tr>
+<tr><td>Push stack (with data)</td><td class="l">count 1, top → green</td><td class="l">count 2, top → blue → green</td></tr>
+<tr><td>Pop stack</td><td class="l">count 2, top → blue → green</td><td class="l">count 1, top → green</td></tr>
+<tr><td>Destroy stack</td><td class="l">count 1, top → green</td><td class="l"><b>No stack</b>: count 0, top null, nodes recycled</td></tr>
+</table></div>
+<p>Each operation below is a card. Open one to see its pseudocode and how it works.<span class="zhn">下面每個運算是一張卡片，點開看虛擬碼與說明。</span></p>
+<div class="algmenu" role="list" data-menu="m42"><button type="button" class="algcard" role="listitem" data-alg-open="m42-1"><span class="an">Algorithm 4-1</span><b>createStack</b><span class="zhn2">建立堆疊</span><span class="sl">Slide 21</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m42-2"><span class="an">Algorithm 4-2</span><b>pushStack</b><span class="zhn2">推入</span><span class="sl">Slide 22 to 25</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m42-3"><span class="an">Algorithm 4-3</span><b>popStack</b><span class="zhn2">彈出</span><span class="sl">Slide 26 to 29</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m42-4"><span class="an">Algorithm 4-4</span><b>stackTop</b><span class="zhn2">取頂端</span><span class="sl">Slide 30 to 31</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m42-5"><span class="an">Algorithm 4-5</span><b>emptyStack</b><span class="zhn2">是否為空</span><span class="sl">Slide 32 to 33</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m42-6"><span class="an">Algorithm 4-6</span><b>fullStack</b><span class="zhn2">是否已滿</span><span class="sl">Slide 34</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m42-7"><span class="an">Algorithm 4-7</span><b>stackCount</b><span class="zhn2">元素個數</span><span class="sl">Slide 35 to 36</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m42-8"><span class="an">Algorithm 4-8</span><b>destroyStack</b><span class="zhn2">刪除堆疊</span><span class="sl">Slide 37</span></button></div>
+
+<div class="algp" data-alg="m42-1" data-menu="m42" hidden>
+<h4 class="alg"><span class="an">Algorithm 4-1</span>createStack<span class="sl">Slide 21</span><span class="zhn">建立堆疊</span></h4>
+<p><i>Initializes the metadata for the stack structure.</i><span class="zhn">把堆疊的 metadata 設成初始值。</span></p>
+<pre><b>algorithm</b> createStack (ref stack &lt;metadata&gt;)
+Initializes metadata for a stack.
+   <b>Pre</b>    stack is structure for metadata
+   <b>Post</b>   metadata initialized
+1 <mark>stack.count = 0</mark>
+2 <mark>stack.top   = null</mark>
+3 return
+<b>end</b> createStack
+<span class="c">Algorithm 4-1　Create stack</span></pre>
+<p>After createStack the stack exists but is <b>empty</b> (count 0, top null). Before it there is <b>no stack</b> at all.<span class="zhn">createStack 之後堆疊存在但是空的（count 0、top null）；之前則是根本沒有堆疊。</span></p>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="m42-2" data-menu="m42" hidden>
+<h4 class="alg"><span class="an">Algorithm 4-2</span>pushStack<span class="sl">Slide 22 to 25</span><span class="zhn">推入</span></h4>
+<p>Steps: <i>find memory for the node → assign the data → set the next pointer → update the stack top pointer → add 1 to stack count</i>. <b>pNew</b> is <i>a new pointer to identify the data to be inserted</i>.<span class="zhn">步驟：配置節點記憶體 → 放入資料 → 設定 next 指標 → 更新 top 指標 → count 加 1。pNew 是指向要插入資料的新指標。</span></p>
+<figure class="fig"><svg viewBox="0 0 460 175" width="440" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="13" role="img"><defs><marker id="f4ua" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#1d2433"/></marker><marker id="f4ur" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#d64933"/></marker></defs><text data-step="0" x="40" y="66" text-anchor="start" font-size="12" fill="#1d2433">stack</text><rect data-step="0" x="30" y="76" width="96" height="30" rx="3" fill="#eef1f7" stroke="#1d2433" stroke-width="1.4"/><rect data-step="0" x="36" y="82" width="40" height="18" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="56" y="96" text-anchor="middle" font-size="12" fill="#1d2433">2</text><rect data-step="0" x="92" y="82" width="26" height="18" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="56" y="120" text-anchor="middle" font-size="10" fill="#8a93a6">count</text><text data-step="0" x="105" y="120" text-anchor="middle" font-size="10" fill="#8a93a6">top</text><rect data-step="0" x="220" y="76" width="62" height="30" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="251" y="96" text-anchor="middle" font-size="12" fill="#1d2433">blue</text><rect data-step="0" x="282" y="76" width="26" height="30" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="251" y="120" text-anchor="middle" font-size="10" fill="#8a93a6">data</text><text data-step="0" x="295" y="120" text-anchor="middle" font-size="10" fill="#8a93a6">next</text><line data-step="0" x1="295" y1="91" x2="330" y2="131" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f4ua)"/><rect data-step="0" x="332" y="116" width="62" height="30" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="363" y="136" text-anchor="middle" font-size="12" fill="#1d2433">green</text><rect data-step="0" x="394" y="116" width="26" height="30" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><path data-step="0" d="M398,120 L416,142 M416,120 L398,142" stroke="#d64933" stroke-width="1.4"/><text data-step="0" x="363" y="160" text-anchor="middle" font-size="10" fill="#8a93a6">data</text><text data-step="0" x="407" y="160" text-anchor="middle" font-size="10" fill="#8a93a6">next</text><line data-step="0" x1="108" y1="91" x2="216" y2="91" stroke="#8a93a6" stroke-width="1.4" stroke-dasharray="5 4"/><text data-step="0" x="160" y="84" text-anchor="middle" font-size="10" fill="#8a93a6">old top</text><text data-step="1" x="40" y="22" text-anchor="start" font-size="12" fill="#d64933" font-weight="700">pNew</text><rect data-step="1" x="110" y="8" width="62" height="30" rx="3" fill="#fde7c8" stroke="#1d2433" stroke-width="1.4"/><text data-step="1" x="141" y="28" text-anchor="middle" font-size="12" fill="#1d2433">red</text><rect data-step="1" x="172" y="8" width="26" height="30" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><text data-step="1" x="141" y="52" text-anchor="middle" font-size="10" fill="#8a93a6">data</text><text data-step="1" x="185" y="52" text-anchor="middle" font-size="10" fill="#8a93a6">next</text><line data-step="2" x1="185" y1="23" x2="236" y2="72" stroke="#d64933" stroke-width="1.6" marker-end="url(#f4ur)"/><text data-step="2" x="232" y="34" text-anchor="start" font-size="11" fill="#d64933">② newPtr->next = stack.top</text><line data-step="3" x1="100" y1="84" x2="112" y2="46" stroke="#d64933" stroke-width="1.6" marker-end="url(#f4ur)"/><text data-step="3" x="14" y="140" text-anchor="start" font-size="11" fill="#d64933">③ stack.top = newPtr</text><text data-step="4" x="50" y="160" text-anchor="start" font-size="11" fill="#d64933">④ count = 2 + 1 = 3</text></svg><figcaption class="cap">Figure 4-9: pushing red. The new node's next takes the old top (blue) first, then top moves to the new node, then count becomes 3.<span class="zhn">圖 4-9：push red。先讓新節點的 next 接上舊的 top（blue），再把 top 移到新節點，最後 count 變 3。</span></figcaption></figure>
+<pre><b>algorithm</b> pushStack (ref stack &lt;metadata&gt;,
+                    val data  &lt;dataType&gt;)
+Insert (push) one item into the stack.
+   <b>Pre</b>    stack is metadata structure to a valid stack
+          data contain data to be pushed into stack
+   <b>Post</b>   data have been pushed in stack
+   <b>Return</b> true if successful; false if memory overflow
+1 if (stack full)
+  1 success = false
+2 else
+  1 allocate (newPtr)
+  2 <mark>newPtr-&gt;data = data</mark>
+  3 <mark>newPtr-&gt;next = stack.top</mark>
+  4 <mark>stack.top    = newPtr</mark>
+  5 <mark>stack.count  = stack.count + 1</mark>
+  6 success = true
+3 end if
+4 return success
+<b>end</b> pushStack
+<span class="c">Algorithm 4-2　Push stack design</span></pre>
+<p><b>Three conditions</b> (Figure 4-8): insert into an <b>empty</b> stack, insert into a stack <b>with data</b>, and insert when <b>the available memory is exhausted</b>. The same lines handle the first two (when the stack is empty, stack.top is null, so the new node's next becomes null). For the third case the algorithm <mark><i>passes back an overflow Boolean rather than handling the overflow</i></mark>.<span class="zhn">三種情況：空堆疊插入、有資料的堆疊插入、記憶體用完時插入。前兩種用同樣幾行就處理好（空堆疊時 stack.top 是 null，新節點的 next 自然是 null）。第三種情況，演算法回傳一個 overflow 的布林值，而不是自己處理 overflow。</span></p>
+<div class="box warn"><span class="lbl">Order matters</span>Line 2.3 (<code>newPtr-&gt;next = stack.top</code>) must come <b>before</b> line 2.4 (<code>stack.top = newPtr</code>). Reversed, the new node points to itself and the rest of the stack is lost.<span class="zhn"><b>順序很重要</b> 2.3 一定要在 2.4 之前。順序反過來，新節點會指向自己，下面整串都會不見。</span></div>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="m42-3" data-menu="m42" hidden>
+<h4 class="alg"><span class="an">Algorithm 4-3</span>popStack<span class="sl">Slide 26 to 29</span><span class="zhn">彈出</span></h4>
+<p><i>Return the data at the top of the stack to the calling algorithm → delete the node → recycle the node.</i><span class="zhn">把頂端資料交給呼叫者 → 刪除節點 → 回收節點記憶體。</span></p>
+<figure class="fig"><svg viewBox="0 0 470 200" width="450" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="13" role="img"><defs><marker id="f4qa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#1d2433"/></marker><marker id="f4qr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#d64933"/></marker></defs><text data-step="0" x="30" y="66" text-anchor="start" font-size="12" fill="#1d2433">stack</text><rect data-step="0" x="20" y="76" width="96" height="30" rx="3" fill="#eef1f7" stroke="#1d2433" stroke-width="1.4"/><rect data-step="0" x="26" y="82" width="40" height="18" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="46" y="96" text-anchor="middle" font-size="12" fill="#1d2433">3</text><rect data-step="0" x="82" y="82" width="26" height="18" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="46" y="120" text-anchor="middle" font-size="10" fill="#8a93a6">count</text><text data-step="0" x="95" y="120" text-anchor="middle" font-size="10" fill="#8a93a6">top</text><line data-step="0" x1="98" y1="91" x2="140" y2="91" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f4qa)"/><rect data-step="0" x="142" y="76" width="62" height="30" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="173" y="96" text-anchor="middle" font-size="12" fill="#1d2433">red</text><rect data-step="0" x="204" y="76" width="26" height="30" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="173" y="120" text-anchor="middle" font-size="10" fill="#8a93a6">data</text><text data-step="0" x="217" y="120" text-anchor="middle" font-size="10" fill="#8a93a6">next</text><line data-step="0" x1="217" y1="91" x2="252" y2="131" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f4qa)"/><rect data-step="0" x="254" y="116" width="62" height="30" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="285" y="136" text-anchor="middle" font-size="12" fill="#1d2433">blue</text><rect data-step="0" x="316" y="116" width="26" height="30" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="285" y="160" text-anchor="middle" font-size="10" fill="#8a93a6">data</text><text data-step="0" x="329" y="160" text-anchor="middle" font-size="10" fill="#8a93a6">next</text><line data-step="0" x1="329" y1="131" x2="364" y2="171" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f4qa)"/><rect data-step="0" x="366" y="156" width="62" height="30" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="397" y="176" text-anchor="middle" font-size="12" fill="#1d2433">green</text><rect data-step="0" x="428" y="156" width="26" height="30" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><path data-step="0" d="M432,160 L450,182 M450,160 L432,182" stroke="#d64933" stroke-width="1.4"/><text data-step="0" x="397" y="200" text-anchor="middle" font-size="10" fill="#8a93a6">data</text><text data-step="0" x="441" y="200" text-anchor="middle" font-size="10" fill="#8a93a6">next</text><text data-step="1" x="130" y="22" text-anchor="start" font-size="12" fill="#d64933" font-weight="700">dltPtr</text><line data-step="1" x1="160" y1="28" x2="175" y2="72" stroke="#d64933" stroke-width="1.6" marker-end="url(#f4qr)"/><text data-step="2" x="250" y="40" text-anchor="start" font-size="11" fill="#d64933">① dataOut = red (copied out)</text><line data-step="3" x1="88" y1="108" x2="250" y2="140" stroke="#d64933" stroke-width="1.6" marker-end="url(#f4qr)"/><text data-step="3" x="30" y="150" text-anchor="start" font-size="11" fill="#d64933">② stack.top = stack.top->next</text><text data-step="4" x="30" y="170" text-anchor="start" font-size="11" fill="#d64933">③ count = 3 − 1 = 2</text><rect data-step="5" x="140" y="74" width="92" height="34" rx="3" fill="none" stroke="#d64933" stroke-width="1.4" stroke-dasharray="4 3"/><text data-step="5" x="238" y="70" text-anchor="start" font-size="11" fill="#d64933">④ recycle (dltPtr)</text></svg><figcaption class="cap">Figure 4-10: popping red. dltPtr remembers the top node, the data is copied out, top moves to blue, count becomes 2, and the old node is recycled.<span class="zhn">圖 4-10：pop red。dltPtr 先記住頂端節點，資料複製出去，top 移到 blue，count 變 2，最後回收舊節點。</span></figcaption></figure>
+<pre><b>algorithm</b> popStack (ref stack   &lt;metadata&gt;,
+                   ref dataOut &lt;dataType&gt;)
+This algorithm pops the item on the top of the stack and returns
+it to the user.
+   <b>Pre</b>    stack is metadata structure to a valid stack
+          dataOut is a reference variable to receive the data
+   <b>Post</b>   Data have been returned to calling algorithm
+   <b>Return</b> true if successful; false if underflow
+1 if (stack empty)
+  1 success = false
+2 else
+  1 <mark>dltPtr      = stack.top</mark>
+  2 <mark>dataOut     = stack.top-&gt;data</mark>
+  3 <mark>stack.top   = stack.top-&gt;next</mark>
+  4 <mark>stack.count = stack.count - 1</mark>
+  5 <mark>recycle (dltPtr)</mark>
+  6 success = true
+3 end if
+4 return success
+<b>end</b> popStack
+<span class="c">Algorithm 4-3　Pop stack</span></pre>
+<p><b>Why dltPtr first</b>: after line 2.3 the old top node is no longer reachable from the head, so we must remember it to recycle it. <code>dataOut</code> is <b>ref</b> because the data goes back to the caller; the return value only says success or <b>underflow</b>.<span class="zhn"><b>為什麼先記 dltPtr</b>：2.3 之後從 head 已經找不到舊的頂端節點，不先記住就無法回收。dataOut 是 ref，因為資料要交回給呼叫者；回傳值只表示成功或 underflow。</span></p>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="m42-4" data-menu="m42" hidden>
+<h4 class="alg"><span class="an">Algorithm 4-4</span>stackTop<span class="sl">Slide 30 to 31</span><span class="zhn">取頂端</span></h4>
+<p><i>Returns the data at the top of the stack to the calling module <mark>without deleting the top node</mark>.</i> Usage: <i>to see what will be deleted before the stack is popped</i>.<span class="zhn">把頂端資料交給呼叫者，但不刪除頂端節點。用途：pop 之前先看看會刪掉什麼。</span></p>
+<pre><b>algorithm</b> stackTop (val stack   &lt;metadata&gt;,
+                   ref dataOut &lt;dataType&gt;)
+This algorithm retrieves the data from the top of the stack
+without changing the stack.
+   <b>Pre</b>    stack is metadata structure to a valid stack
+          dataOut is a reference variable to receive the data
+   <b>Post</b>   data have been returned to calling algorithm
+   <b>Return</b> true if data returned, false if underflow
+1 if (stack empty)
+  1 success = false
+2 else
+  1 <mark>dataOut = stack.top-&gt;data</mark>
+  2 success = true
+3 end if
+4 return success
+<b>end</b> stackTop
+<span class="c">Algorithm 4-4　Stack top pseudocode</span></pre>
+<p>Compare with popStack: here <code>stack</code> is passed <b>val</b> (it is not changed), there it is <b>ref</b>.<span class="zhn">和 popStack 比：這裡 stack 用 val 傳（不會被改），popStack 用 ref。</span></p>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="m42-5" data-menu="m42" hidden>
+<h4 class="alg"><span class="an">Algorithm 4-5</span>emptyStack<span class="sl">Slide 32 to 33</span><span class="zhn">是否為空</span></h4>
+<p><i>To implement the concept of <mark>data hiding</mark></i>: the calling program may not access the stack head node, so it needs a way <i>to check whether the stack is empty</i>.<span class="zhn">為了實現資料隱藏：呼叫的程式不能直接碰 stack head，所以要提供一個方法檢查堆疊是否為空。</span></p>
+<pre><b>algorithm</b> emptyStack (val stack &lt;metadata&gt;)
+Determines if stack is empty and returns a Boolean.
+   <b>Pre</b>    stack is metadata structure to a valid stack
+   <b>Post</b>   returns stack status
+   <b>Return</b> Boolean, true: stack empty, false: stack contains data
+1 if (<mark>stack not empty</mark>)
+  1 result = false
+2 else
+  1 result = true
+3 end if
+4 return result
+<b>end</b> emptyStack
+<span class="c">Algorithm 4-5　Empty stack</span></pre>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="m42-6" data-menu="m42" hidden>
+<h4 class="alg"><span class="an">Algorithm 4-6</span>fullStack<span class="sl">Slide 34</span><span class="zhn">是否已滿</span></h4>
+<p><i>Another implementation of data hiding.</i> In a linked list stack the stack is full when there is <b>no memory available</b> for another node.<span class="zhn">資料隱藏的另一個例子。鏈結串列的堆疊「滿」是指記憶體不夠再配置一個節點。</span></p>
+<pre><b>algorithm</b> fullStack (val stack &lt;metadata&gt;)
+Determines if stack is full and returns a Boolean.
+   <b>Pre</b>    stack is metadata structure to a valid stack
+   <b>Post</b>   returns stack status
+   <b>Return</b> Boolean, true: stack full, false: memory available
+1 if (<mark>memory available</mark>)
+  1 result = false
+2 else
+  1 result = true
+3 end if
+4 return result
+<b>end</b> fullStack
+<span class="c">Algorithm 4-6　Full stack</span></pre>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="m42-7" data-menu="m42" hidden>
+<h4 class="alg"><span class="an">Algorithm 4-7</span>stackCount<span class="sl">Slide 35 to 36</span><span class="zhn">元素個數</span></h4>
+<p><i>Returns the number of elements in the stack</i>; <i>another implementation of the data-hiding principle of structured programming</i>.<span class="zhn">回傳堆疊中的元素個數；同樣是結構化程式設計中資料隱藏原則的實作。</span></p>
+<pre><b>algorithm</b> stackCount (val stack &lt;metadata&gt;)
+Returns the number of elements currently in stack.
+   <b>Pre</b>    stack is metadata structure to a valid stack
+   <b>Post</b>   returns stack count
+   <b>Return</b> integer count of number of elements in stack
+1 <mark>return (stack.count)</mark>
+<b>end</b> stackCount
+<span class="c">Algorithm 4-7　Stack count</span></pre>
+<p>Because the head keeps <code>count</code>, this is O(1); no need to walk the nodes.<span class="zhn">因為 head 裡就存著 count，所以是 O(1)，不用一個一個數節點。</span></p>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="m42-8" data-menu="m42" hidden>
+<h4 class="alg"><span class="an">Algorithm 4-8</span>destroyStack<span class="sl">Slide 37</span><span class="zhn">刪除堆疊</span></h4>
+<p><i>Delete all data in a stack</i>: it <i>releases all nodes back to the dynamic memory</i>.<span class="zhn">刪除堆疊中所有資料，把所有節點歸還給動態記憶體。</span></p>
+<pre><b>algorithm</b> destroyStack (ref stack &lt;metadata&gt;)
+This algorithm releases all nodes back to the dynamic memory.
+   <b>Pre</b>    stack is metadata structure to a valid stack
+   <b>Post</b>   stack empty and all nodes recycled
+1 loop (<mark>stack.top not null</mark>)
+  1 <mark>temp      = stack.top</mark>
+  2 <mark>stack.top = stack.top-&gt;next</mark>
+  3 <mark>recycle (temp)</mark>
+2 end loop
+3 <mark>stack.count = 0</mark>
+4 return
+<b>end</b> destroyStack
+<span class="c">Algorithm 4-8　Destroy stack</span></pre>
+<p>Same idea as Ch3's destroyList: remember the top node in <code>temp</code>, move top down, then recycle temp. Unlike destroyList, count is reset <b>once after the loop</b>, not decreased inside it.<span class="zhn">和 Ch3 的 destroyList 一樣：先用 temp 記住頂端節點，top 往下移，再回收 temp。不同的是 count 在迴圈結束後一次設成 0，而不是在迴圈裡一直減 1。</span></p>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<h3 id="s4-3" data-sec="4-3">4-3 Stack Applications <span class="star">★★★</span><span class="zhn">堆疊的應用</span></h3>
+<p>Stack applications are <i>classified into four categories</i>: <mark><b>reversing data, parsing data, postponing data usage</b> and <b>backtracking steps</b></mark>.<span class="zhn">堆疊的應用分成四類：反轉資料、剖析資料、延後使用資料、回溯步驟。</span></p>
+<div class="tbl"><table>
+<tr><th>Category</th><th class="l">Idea</th><th class="l">Examples in the slides</th></tr>
+<tr><td><b>Reversing data</b><span class="zhn">反轉</span></td><td class="l"><i>The first and the last elements are exchanged, and all positions between them are relatively exchanged.</i><span class="zhn">第一個和最後一個交換，中間的也都相對地交換位置。</span></td><td class="l">Reverse a list; convert decimal to binary</td></tr>
+<tr><td><b>Parsing</b><span class="zhn">剖析</span></td><td class="l"><i>Break data into independent pieces for further processing.</i><span class="zhn">把資料拆成獨立的小片段再進一步處理。</span></td><td class="l">Matching parentheses</td></tr>
+<tr><td><b>Postponement</b><span class="zhn">延後</span></td><td class="l"><i>The use of data is postponed for a while.</i><span class="zhn">資料先存起來，晚一點再用。</span></td><td class="l">Infix to postfix; evaluating postfix</td></tr>
+<tr><td><b>Backtracking</b><span class="zhn">回溯</span></td><td class="l">Remember each decision point so we can go back to it. Used in <i>computer gaming, decision analysis, expert systems</i>.<span class="zhn">記住每個決策點，必要時退回去。用在電腦遊戲、決策分析、專家系統。</span></td><td class="l">Goal seeking; eight queens problem</td></tr>
+</table></div>
+<div class="algmenu" role="list" data-menu="m43"><button type="button" class="algcard" role="listitem" data-alg-open="m43-1"><span class="an">Reversing</span><b>Reverse a list</b><span class="zhn2">反轉數列</span><span class="sl">Slide 39 to 41</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m43-2"><span class="an">Reversing</span><b>Decimal to binary</b><span class="zhn2">十進位轉二進位</span><span class="sl">Slide 42 to 44</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m43-3"><span class="an">Parsing</span><b>Parse parentheses</b><span class="zhn2">括號配對</span><span class="sl">Slide 45 to 48</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m43-4"><span class="an">Postponement</span><b>Infix to postfix</b><span class="zhn2">中序轉後序</span><span class="sl">Slide 49 to 62</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m43-5"><span class="an">Postponement</span><b>Evaluate postfix</b><span class="zhn2">計算後序式</span><span class="sl">Slide 63 to 66</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m43-6"><span class="an">Backtracking</span><b>Goal seeking</b><span class="zhn2">找目標路徑</span><span class="sl">Slide 67 to 71</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m43-7"><span class="an">Backtracking</span><b>Eight queens</b><span class="zhn2">八皇后</span><span class="sl">Slide 72 to 77</span></button></div>
+
+<div class="algp" data-alg="m43-1" data-menu="m43" hidden>
+<h4 class="alg"><span class="an">Reversing</span>Reverse a list<span class="sl">Slide 39 to 41</span><span class="zhn">反轉數列</span></h4>
+<p><i>Read a list of integers and print them in reverse.</i> Push every number while reading; then pop until the stack is empty.<span class="zhn">讀入一串整數，倒過來印出。邊讀邊 push，讀完再一直 pop 到空。</span></p>
+<pre><b>algorithm</b> reverseNumber
+   This program reverses a list of integers read from
+   the keyboard by pushing them into a stack and
+   retrieving them one by one.
+1 createStack (stack)
+2 prompt (Enter a number)
+3 read (number)
+   <b>Fill stack</b>
+4 loop (<mark>not end of data AND not fullStack(stack)</mark>)
+  1 <mark>pushStack (stack, number)</mark>
+  2 prompt (Enter next number: &lt;EOF&gt; to stop)
+  3 read (number)
+5 end loop
+   <b>Now print numbers in reverse</b>
+6 loop (<mark>not emptyStack(stack)</mark>)
+  1 <mark>popStack (stack, dataOut)</mark>
+  2 print (dataOut)
+7 end loop
+<b>end</b> reverseNumber
+<span class="c">Algorithm 4-9　Reverse a number series</span></pre>
+<p>The fill loop stops on end of data <b>or</b> a full stack (no overflow); the print loop stops when the stack is empty (no underflow).<span class="zhn">填入迴圈在資料讀完「或」堆疊滿時停止（不會 overflow）；印出迴圈在堆疊空時停止（不會 underflow）。</span></p>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="m43-2" data-menu="m43" hidden>
+<h4 class="alg"><span class="an">Reversing</span>Decimal to binary<span class="sl">Slide 42 to 44</span><span class="zhn">十進位轉二進位</span></h4>
+<p>The simple version prints <code>number modulo 2</code> and halves the number, but <mark><i>it creates the binary number backward</i></mark> (lowest bit first):<span class="zhn">簡單版會印出 number mod 2 再除以 2，但產生的二進位數是反的（最低位先出來）：</span></p>
+<pre>1 read (number)
+2 loop (number &gt; 0)
+  1 digit = number modulo 2
+  2 print (digit)
+  3 number = number/2
+3 end loop</pre>
+<p><i>Resolve the backward problem by using a stack</i>: push each digit, then pop them all.<span class="zhn">用堆疊解決順序反過來的問題：每個位元先 push，最後全部 pop 出來。</span></p>
+<pre><b>algorithm</b> decimalToBinary
+This algorithm reads an integer from the keyboard and
+prints its binary equivalent. It uses a stack to reverse
+the order of 0's and 1's produced.
+1 createStack (stack)
+2 prompt (Enter a decimal to convert to binary)
+3 read (number)
+4 loop (number &gt; 0)
+  1 <mark>digit   = number modulo 2</mark>
+  2 <mark>pushOK  = push (stack, digit)</mark>
+  3 if (pushOK false)
+    1 print (Stack overflow creating digit)
+    2 quit algorithm
+  4 end if
+  5 <mark>number  = number / 2</mark>
+5 end loop
+   <b>Binary number created in stack. Now print it.</b>
+6 loop (not emptyStack(stack))
+  1 popStack (stack, digit)
+  2 print (digit)
+7 end loop
+8 return
+<b>end</b> decimalToBinary
+<span class="c">Algorithm 4-10　Convert decimal to binary</span></pre>
+<div class="tbl"><table>
+<tr><th>number</th><th>digit = number mod 2</th><th>number / 2</th><th class="l">Stack (top first)</th></tr>
+<tr><td>19</td><td>1</td><td>9</td><td class="l">1</td></tr>
+<tr><td>9</td><td>1</td><td>4</td><td class="l">1 1</td></tr>
+<tr><td>4</td><td>0</td><td>2</td><td class="l">0 1 1</td></tr>
+<tr><td>2</td><td>0</td><td>1</td><td class="l">0 0 1 1</td></tr>
+<tr><td>1</td><td>1</td><td>0</td><td class="l">1 0 0 1 1</td></tr>
+</table></div>
+<p>Popping prints <b>10011</b> = 19. Without the stack the loop would print 11001.<span class="zhn">pop 出來印的是 10011，就是 19。不用堆疊會印出 11001（反了）。</span></p>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="m43-3" data-menu="m43" hidden>
+<h4 class="alg"><span class="an">Parsing</span>Parse parentheses<span class="sl">Slide 45 to 48</span><span class="zhn">括號配對</span></h4>
+<p>One common parsing problem is <b>unmatched parentheses</b> in an algebraic expression: <i>the opening parenthesis can be missing</i> or <i>the closing parenthesis can be missing</i> (Figure 4-11).<span class="zhn">常見的剖析問題是代數式中括號不配對：可能少了左括號，也可能少了右括號（圖 4-11）。</span></p>
+<div class="calc">(a) Opening parenthesis not matched:   ( ( A + B ) / C        ← one "(" left in the stack at the end
+(b) Closing parenthesis not matched:     ( A + B ) / C )      ← ")" arrives when the stack is empty</div>
+<pre><b>algorithm</b> parseParens
+This algorithm reads a source program and parses it to make
+sure all opening-closing parentheses are paired.
+1 loop (more data)
+  1 read (character)
+  2 if (character is an opening parenthesis)
+    1 <mark>pushStack (stack, character)</mark>
+  3 else
+    1 if (character is closing parenthesis)
+      1 if (<mark>emptyStack (stack)</mark>)
+        1 print (<mark>Error: Closing parenthesis not matched</mark>)
+      2 else
+        1 <mark>popStack(stack, token)</mark>
+      3 end if
+    2 end if
+  4 end if
+2 end loop
+3 if (<mark>not emptyStack (stack)</mark>)
+  1 print (<mark>Error: Opening parenthesis not matched</mark>)
+<b>end</b> parseParens
+<span class="c">Algorithm 4-11　Parse parentheses</span></pre>
+<div class="box tip"><span class="lbl">Two error places</span>Closing not matched is found <b>inside the loop</b> (a ")" with an empty stack). Opening not matched is found <b>after the loop</b> (the stack is not empty).<span class="zhn"><b>兩個錯誤出現的位置</b> 右括號不配對在迴圈裡發現（遇到 ")" 時堆疊是空的）；左括號不配對在迴圈結束後發現（堆疊不是空的）。</span></div>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="m43-4" data-menu="m43" hidden>
+<h4 class="alg"><span class="an">Postponement</span>Infix to postfix<span class="sl">Slide 49 to 62</span><span class="zhn">中序轉後序</span></h4>
+<p>An arithmetic expression has <b>three formats</b>: <mark>prefix, infix, postfix</mark>.<span class="zhn">算術式有三種寫法：前序、中序、後序。</span></p>
+<div class="calc">Prefix:   + a b      the operator comes before the operands
+Infix:    a + b      the operator comes between the operands
+Postfix:  a b +      the operator comes after the operands</div>
+<p><b>Disadvantage of infix</b>: we <i>need to use parentheses to control the evaluation of the operators</i>. Postfix and prefix <mark><i>do not need parentheses</i></mark>; <i>each provides only one evaluation rule</i>.<span class="zhn">中序的缺點：要用括號控制運算順序。後序和前序不需要括號，每種都只有一種計算規則。</span></p>
+<h4>Manual transformation <span class="sl">Slide 51 to 52</span><span class="zhn">手動轉換</span></h4>
+<ol><li><b>Step 1</b>: fully parenthesize the expression by precedence.<span class="zhn">依優先順序把整個式子加上括號。</span></li>
+<li><b>Step 2</b>: move each operator to just after its closing parenthesis.<span class="zhn">把每個運算子移到它對應的右括號後面。</span></li>
+<li><b>Step 3</b>: remove all parentheses.<span class="zhn">把括號全部拿掉。</span></li></ol>
+<div class="calc">A + B * C
+Step 1: ( A + ( B * C ) )
+Step 2: ( A ( B C * ) + )
+Step 3: A B C * +
+
+( A + B ) * C + D + E * F - G
+Step 1: ( ( ( ( ( A + B ) * C ) + D ) + ( E * F ) ) - G )
+Step 2: ( ( ( ( ( A B + ) C * ) D + ) ( E F * ) + ) G - )
+Step 3: A B + C * D + E F * + G -</div>
+<h4>Algorithmic transformation and the precedence rule <span class="sl">Slide 53 to 55</span> <span class="star">★★★</span><span class="zhn">用堆疊轉換與優先順序規則</span></h4>
+<ul>
+<li>If the token is an <b>operand</b>: <mark><i>output it directly</i></mark>.<span class="zhn">token 是運算元：直接輸出。</span></li>
+<li>If the token is an <b>operator</b>: if its priority is <b>higher</b> than the operator at the top of the stack, <mark>push it</mark>; if its priority is <b>lower or equal</b>, <mark>pop the stack until a lower priority is at the top</mark>, then push the token.<span class="zhn">token 是運算子：優先權比堆疊頂端高就 push；小於或等於就一直 pop，直到頂端的優先權比較低，再把 token push 進去。</span></li>
+<li><b>"("</b> is always pushed; <b>")"</b> pops and outputs operators until "(" (the parentheses are not output). At the end, pop everything left.<span class="zhn">"(" 一律 push；")" 會一直 pop 並輸出運算子直到遇到 "("（括號本身不輸出）。最後把堆疊剩下的全部 pop 出來。</span></li>
+</ul>
+<div class="calc">Priority 2:  *  /
+Priority 1:  +  -
+Priority 0:  (
+
+A * B          →  A B *
+A * B + C      →  A B * C +
+A + B * C      →  A B C * +
+A + B * C - D/E  →  A B C * + D E / - +   (as written on slide 55; Figure 4-12 gives A B C * + D E / -)</div>
+<div class="box warn"><span class="lbl">Note on slide 55</span>Slide 55 writes the answer with an extra "+" at the end. Tracing the algorithm (Figure 4-12, steps a to k) gives <b>A B C * + D E / -</b>: there are only three operators to output after "+" is already out, so the extra "+" is a typo.<span class="zhn"><b>投影片 55 的說明</b> 投影片 55 的答案最後多了一個「+」。照演算法一步一步做（圖 4-12 的 a 到 k）得到的是 A B C * + D E / -，「+」早就輸出過了，最後那個 + 是筆誤。</span></div>
+<div class="tbl"><table>
+<tr><th>Fig 4-12</th><th class="l">Infix left</th><th class="l">Stack (bottom → top)</th><th class="l">Postfix</th></tr>
+<tr><td>(a)</td><td class="l">A+B*C−D/E</td><td class="l"></td><td class="l"></td></tr>
+<tr><td>(b)</td><td class="l">+B*C−D/E</td><td class="l"></td><td class="l">A</td></tr>
+<tr><td>(c)</td><td class="l">B*C−D/E</td><td class="l">+</td><td class="l">A</td></tr>
+<tr><td>(d)</td><td class="l">*C−D/E</td><td class="l">+</td><td class="l">AB</td></tr>
+<tr><td>(e)</td><td class="l">C−D/E</td><td class="l">+ *</td><td class="l">AB</td></tr>
+<tr><td>(f)</td><td class="l">−D/E</td><td class="l">+ *</td><td class="l">ABC</td></tr>
+<tr><td>(g)</td><td class="l">D/E</td><td class="l">−</td><td class="l">ABC*+</td></tr>
+<tr><td>(h)</td><td class="l">/E</td><td class="l">−</td><td class="l">ABC*+D</td></tr>
+<tr><td>(i)</td><td class="l">E</td><td class="l">− /</td><td class="l">ABC*+D</td></tr>
+<tr><td>(j)</td><td class="l"></td><td class="l">− /</td><td class="l">ABC*+DE</td></tr>
+<tr><td>(k)</td><td class="l"></td><td class="l"></td><td class="l">ABC*+DE/−</td></tr>
+</table></div>
+<p>At (g) the "−" has priority 1 ≤ "*" (2), so "*" pops; then "−" ≤ "+" (1), so "+" pops too; then "−" is pushed.<span class="zhn">在 (g)，"−" 的優先權 1 ≤ "*" 的 2，所以 "*" 先出；"−" 又 ≤ "+" 的 1，所以 "+" 也出；最後 "−" 才 push。</span></p>
+<pre><b>algorithm</b> inToPostFix (val formula &lt;string&gt;)
+Convert infix formula to postfix.
+   <b>Pre</b>    formula is infix notation that has been edited
+          to ensure that there are no syntactical errors
+   <b>Post</b>   postfix formula has been formatted as a string
+   <b>Return</b> postfix formula
+1 createStack (stack)
+2 set postFix to null string
+3 looper = 0
+4 loop (looper &lt; sizeof formula)
+  1 token = formula[looper]
+  2 if (<mark>token is open parenthesis</mark>)
+    1 <mark>pushStack (stack, token)</mark>
+  3 elseif (<mark>token is close parenthesis</mark>)
+    1 popStack (stack, token)
+    2 loop (<mark>token not open parenthesis</mark>)
+      1 concatenate token to postFix
+      2 popStack (stack, token)
+    3 end loop
+  4 elseif (token is operator)
+       <b>Test priority of token to token at top of stack</b>
+    1 stackTop (stack, topToken)
+    2 loop (not emptyStack (stack)
+            AND <mark>priority(token) &lt;= priority(topToken)</mark>)
+      1 popStack (stack, tokenOut)
+      2 concatenate tokenOut to postFix
+      3 stackTop (stack, topToken)
+    3 end loop
+    4 <mark>pushStack (stack, token)</mark>
+  5 else
+       <b>Character is operand</b>
+    1 <mark>Concatenate token to postFix.</mark>
+  6 end if
+  7 looper = looper + 1
+5 end loop
+   <b>Input formula empty. Pop stack to postFix</b>
+6 loop (not emptyStack (stack))
+  1 popStack (stack, token)
+  2 concatenate token to postFix
+7 end loop
+8 return postFix
+<b>end</b> inToPostFix
+<span class="c">Algorithm 4-12　Convert infix to postfix</span></pre>
+<p><b>Analysis</b> (slide 61): <i>if the stack is empty, the operator is pushed and we continue</i>; <i>if the new operator's priority is lower than or equal to that of the operator at the top, the top token is moved to the output string, and we loop to recheck the new top</i>.<span class="zhn">分析：堆疊是空的就直接 push；新運算子的優先權小於或等於頂端運算子時，把頂端的移到輸出字串，再回頭檢查新的頂端。</span></p>
+<h4>Table 4-1: A * B − (C + D) + E <span class="sl">Slide 62</span><span class="zhn">表 4-1 轉換範例</span></h4>
+<div class="tbl"><table>
+<tr><th class="l">Input buffer</th><th class="l">Operator stack</th><th class="l">Output string</th></tr>
+<tr><td class="l">A*B−(C+D)+E</td><td class="l">Empty</td><td class="l">Empty</td></tr>
+<tr><td class="l">*B−(C+D)+E</td><td class="l">Empty</td><td class="l">A</td></tr>
+<tr><td class="l">B−(C+D)+E</td><td class="l">*</td><td class="l">A</td></tr>
+<tr><td class="l">−(C+D)+E</td><td class="l">*</td><td class="l">AB</td></tr>
+<tr><td class="l">−(C+D)+E</td><td class="l">Empty</td><td class="l">AB*</td></tr>
+<tr><td class="l">(C+D)+E</td><td class="l">−</td><td class="l">AB*</td></tr>
+<tr><td class="l">C+D)+E</td><td class="l">−(</td><td class="l">AB*</td></tr>
+<tr><td class="l">+D)+E</td><td class="l">−(</td><td class="l">AB*C</td></tr>
+<tr><td class="l">D)+E</td><td class="l">−(+</td><td class="l">AB*C</td></tr>
+<tr><td class="l">)+E</td><td class="l">−(+</td><td class="l">AB*CD</td></tr>
+<tr><td class="l">+E</td><td class="l">−</td><td class="l">AB*CD+</td></tr>
+<tr><td class="l">+E</td><td class="l">Empty</td><td class="l">AB*CD+−</td></tr>
+<tr><td class="l">E</td><td class="l">+</td><td class="l">AB*CD+−</td></tr>
+<tr><td class="l"></td><td class="l">+</td><td class="l">AB*CD+−E</td></tr>
+<tr><td class="l"></td><td class="l">Empty</td><td class="l"><b>AB*CD+−E+</b></td></tr>
+</table></div>
+<p class="small">The slide prints "AD*" in the row for "C+D)+E"; it should be AB*, as in the rows around it.<span class="zhn">投影片在 "C+D)+E" 那一列印成 "AD*"，應該是 AB*（和上下列一樣）。</span></p>
+<div class="lab" data-lab="postfix"></div>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="m43-5" data-menu="m43" hidden>
+<h4 class="alg"><span class="an">Postponement</span>Evaluate postfix<span class="sl">Slide 63 to 66</span><span class="zhn">計算後序式</span></h4>
+<p>Example: <code>A B C + *</code> with a = 2, b = 4, c = 6. In postfix we <mark><i>postpone the use of the operands, not the operators</i></mark>: operands are pushed; <i>when we find an operator, <mark>pop the two operands at the top</mark></i>, compute, and push the result.<span class="zhn">例子：A B C + *，a = 2、b = 4、c = 6。計算後序式時延後使用的是運算元，不是運算子：運算元先 push；遇到運算子就 pop 頂端兩個運算元，算完再把結果 push 回去。</span></p>
+<div class="tbl"><table>
+<tr><th>Fig 4-13</th><th class="l">Postfix left</th><th class="l">Stack (bottom → top)</th><th class="l">Action</th></tr>
+<tr><td>(a)</td><td class="l">2 4 6 + *</td><td class="l"></td><td class="l"></td></tr>
+<tr><td>(b)</td><td class="l">4 6 + *</td><td class="l">2</td><td class="l">push 2</td></tr>
+<tr><td>(c)</td><td class="l">6 + *</td><td class="l">2 4</td><td class="l">push 4</td></tr>
+<tr><td>(d)</td><td class="l">+ *</td><td class="l">2 4 6</td><td class="l">push 6</td></tr>
+<tr><td>(e)</td><td class="l">*</td><td class="l">2 10</td><td class="l">pop 6, pop 4: 4 + 6 = 10, push</td></tr>
+<tr><td>(f)</td><td class="l"></td><td class="l">20</td><td class="l">pop 10, pop 2: 2 * 10 = 20, push</td></tr>
+</table></div>
+<div class="box warn"><span class="lbl">Note</span><i>We push the operand <b>values</b> into the stack, not the operand names.</i> The <b>first</b> pop is <b>operand2</b> (the right operand); this matters for − and /.<span class="zhn"><b>注意</b> push 進堆疊的是運算元的「值」，不是名稱。第一次 pop 出來的是 operand2（右邊的運算元），做減法和除法時順序很重要。</span></div>
+<pre><b>algorithm</b> postFixEvaluate (val expr &lt;string&gt;)
+This algorithm evaluates a postfix expression and returns its
+value.
+   <b>Pre</b>    a valid expression
+   <b>Post</b>   postfix value computed
+   <b>Return</b> value of expression
+1 exprSize = length of string
+2 createStack (stack)
+3 index = 0
+4 loop (index &lt; exprSize)
+  1 if (<mark>expr[index] is operand</mark>)
+    1 <mark>pushStack (stack, expr[index])</mark>
+  2 else
+    1 <mark>popStack (stack, operand2)</mark>
+    2 <mark>popStack (stack, operand1)</mark>
+    3 operator = expr[index]
+    4 <mark>value    = calculate (operand1, operator, operand2)</mark>
+    5 <mark>pushStack (stack, value)</mark>
+  3 end if
+  4 index = index + 1
+5 end loop
+6 popStack (stack, result)
+7 return (result)
+<b>end</b> postFixEvaluate
+<span class="c">Algorithm 4-13　Evaluation of postfix expression</span></pre>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="m43-6" data-menu="m43" hidden>
+<h4 class="alg"><span class="an">Backtracking</span>Goal seeking<span class="sl">Slide 67 to 71</span><span class="zhn">找目標路徑</span></h4>
+<p><i>Every time we get to a decision point, we need to remember where it is, so that we can get back to it if necessary.</i><span class="zhn">每到一個決策點（岔路）就要記住它，必要時才能退回來。</span></p>
+<figure class="fig"><svg viewBox="0 0 620 200" width="580" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="13" role="img"><defs><marker id="f4ma" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#1d2433"/></marker><marker id="f4mr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#d64933"/></marker></defs><line data-step="1" x1="30" y1="100" x2="107.5" y2="100" stroke="#1d2433" stroke-width="1.6"/><line data-step="3" x1="107.5" y1="100" x2="185" y2="100" stroke="#1d2433" stroke-width="1.6"/><line data-step="5" x1="185" y1="100" x2="247" y2="65" stroke="#1d2433" stroke-width="1.6"/><line data-step="5" x1="185" y1="100" x2="247" y2="135" stroke="#1d2433" stroke-width="1.6"/><line data-step="7" x1="247" y1="65" x2="324.5" y2="65" stroke="#1d2433" stroke-width="1.6"/><line data-step="9" x1="324.5" y1="65" x2="378.75" y2="32" stroke="#1d2433" stroke-width="1.6"/><line data-step="11" x1="378.75" y1="32" x2="456.25" y2="32" stroke="#1d2433" stroke-width="1.6"/><line data-step="9" x1="324.5" y1="65" x2="402" y2="65" stroke="#1d2433" stroke-width="1.6"/><line data-step="9" x1="324.5" y1="65" x2="378.75" y2="100" stroke="#1d2433" stroke-width="1.6"/><line data-step="11" x1="378.75" y1="100" x2="456.25" y2="100" stroke="#1d2433" stroke-width="1.6"/><line data-step="13" x1="456.25" y1="100" x2="533.75" y2="100" stroke="#1d2433" stroke-width="1.6"/><line data-step="7" x1="247" y1="135" x2="324.5" y2="135" stroke="#1d2433" stroke-width="1.6"/><line data-step="9" x1="324.5" y1="135" x2="402" y2="135" stroke="#1d2433" stroke-width="1.6"/><line data-step="11" x1="402" y1="135" x2="479.5" y2="135" stroke="#1d2433" stroke-width="1.6"/><line data-step="13" x1="479.5" y1="135" x2="557" y2="135" stroke="#1d2433" stroke-width="1.6"/><line data-step="9" x1="324.5" y1="135" x2="378.75" y2="170" stroke="#1d2433" stroke-width="1.6"/><line data-step="11" x1="378.75" y1="170" x2="456.25" y2="170" stroke="#1d2433" stroke-width="1.6"/><circle data-step="0" cx="30" cy="100" r="4.5" fill="#1d2433"/><text data-step="0" x="30" y="120" text-anchor="middle" font-size="11" fill="#1d2433">1</text><circle data-step="2" cx="107.5" cy="100" r="4.5" fill="#1d2433"/><text data-step="2" x="107.5" y="120" text-anchor="middle" font-size="11" fill="#1d2433">2</text><circle data-step="4" cx="185" cy="100" r="4.5" fill="#1d2433"/><text data-step="4" x="185" y="120" text-anchor="middle" font-size="11" fill="#1d2433">3</text><circle data-step="6" cx="247" cy="65" r="4.5" fill="#1d2433"/><text data-step="6" x="247" y="85" text-anchor="middle" font-size="11" fill="#1d2433">4</text><circle data-step="8" cx="324.5" cy="65" r="4.5" fill="#1d2433"/><text data-step="8" x="324.5" y="85" text-anchor="middle" font-size="11" fill="#1d2433">5</text><circle data-step="10" cx="378.75" cy="32" r="4.5" fill="#1d2433"/><text data-step="10" x="378.75" y="52" text-anchor="middle" font-size="11" fill="#1d2433">6</text><rect data-step="12" x="450.25" y="26" width="12" height="12" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><circle data-step="12" cx="456.25" cy="32" r="3" fill="#1d2433"/><text data-step="12" x="456.25" y="52" text-anchor="middle" font-size="11" fill="#1d2433">7</text><rect data-step="10" x="396" y="59" width="12" height="12" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><circle data-step="10" cx="402" cy="65" r="3" fill="#1d2433"/><text data-step="10" x="402" y="85" text-anchor="middle" font-size="11" fill="#1d2433">8</text><circle data-step="10" cx="378.75" cy="100" r="4.5" fill="#1d2433"/><text data-step="10" x="378.75" y="120" text-anchor="middle" font-size="11" fill="#1d2433">9</text><circle data-step="12" cx="456.25" cy="100" r="4.5" fill="#1d2433"/><text data-step="12" x="456.25" y="120" text-anchor="middle" font-size="11" fill="#1d2433">10</text><rect data-step="14" x="527.75" y="94" width="12" height="12" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><circle data-step="14" cx="533.75" cy="100" r="3" fill="#1d2433"/><text data-step="14" x="533.75" y="120" text-anchor="middle" font-size="11" fill="#1d2433">11</text><circle data-step="6" cx="247" cy="135" r="4.5" fill="#1d2433"/><text data-step="6" x="247" y="155" text-anchor="middle" font-size="11" fill="#1d2433">12</text><circle data-step="8" cx="324.5" cy="135" r="4.5" fill="#1d2433"/><text data-step="8" x="324.5" y="155" text-anchor="middle" font-size="11" fill="#1d2433">13</text><circle data-step="10" cx="402" cy="135" r="4.5" fill="#1d2433"/><text data-step="10" x="402" y="155" text-anchor="middle" font-size="11" fill="#1d2433">14</text><circle data-step="12" cx="479.5" cy="135" r="4.5" fill="#1d2433"/><text data-step="12" x="479.5" y="155" text-anchor="middle" font-size="11" fill="#1d2433">15</text><circle data-step="14" cx="557" cy="135" r="8" fill="#d64933"/><text data-step="14" x="557" y="155" text-anchor="middle" font-size="11" fill="#1d2433">16</text><circle data-step="10" cx="378.75" cy="170" r="4.5" fill="#1d2433"/><text data-step="10" x="378.75" y="190" text-anchor="middle" font-size="11" fill="#1d2433">17</text><rect data-step="12" x="450.25" y="164" width="12" height="12" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><circle data-step="12" cx="456.25" cy="170" r="3" fill="#1d2433"/><text data-step="12" x="456.25" y="190" text-anchor="middle" font-size="11" fill="#1d2433">18</text><text data-step="0" x="30" y="18" text-anchor="middle" font-size="11" fill="#1f5fbf" font-weight="700">start</text><text data-step="14" x="571" y="140" text-anchor="start" font-size="11" fill="#d64933" font-weight="700">goal</text><text data-step="14" x="545.75" y="104" text-anchor="start" font-size="10" fill="#8a93a6">dead end</text></svg><figcaption class="cap">Figure 4-14: the map. Node 3 and node 5 and node 13 are branch points; 7, 8, 11 and 18 are dead ends; 16 is the goal.<span class="zhn">圖 4-14：地圖。3、5、13 是岔路；7、8、11、18 是死路；16 是目標。</span></figcaption></figure>
+<p><b>Stack trace (Figure 4-15)</b>: nodes on the path are pushed as we go; at a branch point the other branches are pushed too (B8, B9, B12 …). At a dead end we pop back to the last branch point and take that branch. Final stack from the bottom: <code>1 2 3 12 13 B17 14 15 16</code> (goal).<span class="zhn"><b>堆疊追蹤（圖 4-15）</b>：走過的節點一路 push；遇到岔路時把其他分支也 push（B8、B9、B12……）。走到死路就 pop 回最近的岔路，改走那條。最後堆疊由下到上是 1 2 3 12 13 B17 14 15 16（目標）。</span></p>
+<div class="tbl"><table>
+<tr><th>Fig 4-15</th><th class="l">Stack, bottom → top</th><th class="l">What happened</th></tr>
+<tr><td>(a)</td><td class="l">1 2 3 B12</td><td class="l">At 3: push the other branch B12, go up to 4</td></tr>
+<tr><td>(b)</td><td class="l">1 2 3 B12 4 5 B9 B8</td><td class="l">At 5: push branches B9 and B8, go to 6</td></tr>
+<tr><td>(c)</td><td class="l">… B9 B8 6 7 end</td><td class="l">7 is a dead end: pop back to B8</td></tr>
+<tr><td>(d)</td><td class="l">… B12 4 5 B9 8 end</td><td class="l">8 is a dead end: pop back to B9</td></tr>
+<tr><td>(e)</td><td class="l">… B12 4 5 9 10 11 end</td><td class="l">11 is a dead end: pop back to B12</td></tr>
+<tr><td>(f)</td><td class="l">1 2 3 12 13 B17 14 15 16 goal</td><td class="l">Goal found</td></tr>
+</table></div>
+<pre><b>algorithm</b> seekGoal (val map &lt;map structure&gt;)
+This algorithm determines the path to a desired goal.
+   <b>Pre</b>    a graph containing the path
+   <b>Post</b>   path printed
+1 createStack (stack)
+2 pMap = map.start
+3 loop (pMap not null AND goalNotFound)
+  1 if (pMap is goal)
+    1 set goalNotFound to false
+  2 else
+    1 <mark>pushStack (stack, pMap)</mark>
+    2 if (<mark>pMap is a branch point</mark>)
+      1 loop (more branch points)
+        1 create branchPoint node
+        2 <mark>pushStack (stack, branchPoint)</mark>
+      2 end loop
+    3 end if
+    4 advance to next node
+  3 end if
+4 end loop
+5 if (emptyStack (stack))
+  1 print (There is no path to your goal)
+6 else
+  1 print (The path to your goal is:)
+  2 loop (not emptyStack (stack))
+    1 popStack (stack, pMap)
+    2 if (<mark>pMap not branchPoint</mark>)
+      1 print(pMap-&gt;nodeName)
+    3 end if
+  3 end loop
+  4 print (End of Path)
+7 end if
+8 return
+<b>end</b> seekGoal
+<span class="c">Algorithm 4-14　Print path to goal (seekGoal)</span></pre>
+<p>When printing, branch-point entries are skipped, so only the real path is printed (in reverse, from the goal back to the start).<span class="zhn">印出時跳過岔路的紀錄，只印真正走過的路（順序是從目標倒回起點）。</span></p>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="m43-7" data-menu="m43" hidden>
+<h4 class="alg"><span class="an">Backtracking</span>Eight queens<span class="sl">Slide 72 to 77</span><span class="zhn">八皇后</span></h4>
+<p><i>A classic chess problem</i>: <i>place eight queens on the chessboard so that <mark>no queen can capture another queen</mark></i> (a queen captures along its row, column and both diagonals).<span class="zhn">經典西洋棋問題：在棋盤上放八個皇后，讓任何皇后都吃不到別的皇后（皇后可以吃同一列、同一行和兩條斜線上的棋子）。</span></p>
+<figure class="fig"><svg viewBox="0 0 560 190" width="500" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="13" role="img"><defs><marker id="f4ka" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#1d2433"/></marker><marker id="f4kr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#d64933"/></marker></defs><text data-step="0" x="26" y="49" text-anchor="middle" font-size="11" fill="#8a93a6">1</text><text data-step="0" x="58" y="18" text-anchor="middle" font-size="11" fill="#8a93a6">1</text><rect data-step="0" x="40" y="26" width="36" height="36" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><rect data-step="0" x="76" y="26" width="36" height="36" rx="3" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.4"/><rect data-step="0" x="112" y="26" width="36" height="36" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><rect data-step="0" x="148" y="26" width="36" height="36" rx="3" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="26" y="85" text-anchor="middle" font-size="11" fill="#8a93a6">2</text><text data-step="0" x="94" y="18" text-anchor="middle" font-size="11" fill="#8a93a6">2</text><rect data-step="0" x="40" y="62" width="36" height="36" rx="3" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.4"/><rect data-step="0" x="76" y="62" width="36" height="36" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><rect data-step="0" x="112" y="62" width="36" height="36" rx="3" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.4"/><rect data-step="0" x="148" y="62" width="36" height="36" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="26" y="121" text-anchor="middle" font-size="11" fill="#8a93a6">3</text><text data-step="0" x="130" y="18" text-anchor="middle" font-size="11" fill="#8a93a6">3</text><rect data-step="0" x="40" y="98" width="36" height="36" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><rect data-step="0" x="76" y="98" width="36" height="36" rx="3" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.4"/><rect data-step="0" x="112" y="98" width="36" height="36" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><rect data-step="0" x="148" y="98" width="36" height="36" rx="3" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="26" y="157" text-anchor="middle" font-size="11" fill="#8a93a6">4</text><text data-step="0" x="166" y="18" text-anchor="middle" font-size="11" fill="#8a93a6">4</text><rect data-step="0" x="40" y="134" width="36" height="36" rx="3" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.4"/><rect data-step="0" x="76" y="134" width="36" height="36" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><rect data-step="0" x="112" y="134" width="36" height="36" rx="3" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.4"/><rect data-step="0" x="148" y="134" width="36" height="36" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="1" x="94" y="51" text-anchor="middle" font-size="18" fill="#d64933" font-weight="700">Q</text><text data-step="2" x="166" y="87" text-anchor="middle" font-size="18" fill="#d64933" font-weight="700">Q</text><text data-step="3" x="58" y="123" text-anchor="middle" font-size="18" fill="#d64933" font-weight="700">Q</text><text data-step="4" x="130" y="159" text-anchor="middle" font-size="18" fill="#d64933" font-weight="700">Q</text><text data-step="1" x="280" y="50" text-anchor="start" font-size="12" fill="#1d2433">row 1 → col 2</text><text data-step="2" x="280" y="80" text-anchor="start" font-size="12" fill="#1d2433">row 2 → col 4</text><text data-step="3" x="280" y="110" text-anchor="start" font-size="12" fill="#1d2433">row 3 → col 1</text><text data-step="4" x="280" y="140" text-anchor="start" font-size="12" fill="#1d2433">row 4 → col 3</text><text data-step="4" x="280" y="172" text-anchor="start" font-size="11" fill="#8a93a6">no two queens share a row, column or diagonal</text></svg><figcaption class="cap">Figure 4-16 (b): the first four queens solution. The stack holds the [row, col] of each queen placed.<span class="zhn">圖 4-16 (b)：四皇后的第一個解。堆疊存放每個已放好的皇后的 [row, col]。</span></figcaption></figure>
+<div class="tbl"><table>
+<tr><th>Fig 4-17</th><th class="l">Stack (top first)</th><th class="l">What happened</th></tr>
+<tr><td>Step 1</td><td class="l">1,1</td><td class="l">Queen at row 1, col 1</td></tr>
+<tr><td>Step 2</td><td class="l">2,3 · 1,1</td><td class="l">Row 2: col 3 is the first safe column</td></tr>
+<tr><td>Step 3</td><td class="l">2,4 · 1,1</td><td class="l">Row 3 has no safe column → <b>backtrack</b>: pop 2,3 and try col 4</td></tr>
+<tr><td>Step 4</td><td class="l">3,2 · 2,4 · 1,1</td><td class="l">Row 3 col 2; then row 4 has no safe column</td></tr>
+<tr><td>Step 5</td><td class="l">1,2</td><td class="l">Backtrack all the way: row 1 moves to col 2</td></tr>
+<tr><td>Step 6</td><td class="l">2,4 · 1,2</td><td class="l">Row 2 col 4</td></tr>
+<tr><td>Step 7</td><td class="l">3,1 · 2,4 · 1,2</td><td class="l">Row 3 col 1</td></tr>
+<tr><td>Step 8</td><td class="l">4,3 · 3,1 · 2,4 · 1,2</td><td class="l">Row 4 col 3: solution</td></tr>
+</table></div>
+<p><b>Generalized solution</b> (slide 77): 1. <i>place a queen in a position in a row</i>; 2. <i>examine all positions in the next row to see if a queen can be placed there</i>; 3. <i>if we cannot place a queen in the next row, <mark>backtrack to the last positioned queen</mark>, try to position her in the next column</i>, and go to step 2 again.<span class="zhn">一般化的解法：1. 在某列放一個皇后；2. 檢查下一列每個位置能不能放；3. 下一列放不下就回溯到上一個放好的皇后，把她移到下一行，再回到步驟 2。</span></p>
+<pre><b>Algorithm</b> queens8 (val boardSize &lt;integer&gt;)
+Position chess queens on a game board so that no queen can capture
+any other queen.
+   <b>Pre</b>    boardSize is number of rows &amp; columns on board
+   <b>Post</b>   queens' positions printed
+1 createStack (stack)
+2 set row to 1
+3 set col to 0
+4 loop (row &lt;= boardSize)
+  1 loop (col &lt;= boardSize AND row &lt;= boardSize)
+    1 add 1 to col
+    2 if (<mark>not guarded (row, col)</mark>)
+      1 place queen at board [row][col]
+      2 <mark>pushStack (stack, [row, col])</mark>
+      3 add 1 to row
+      4 set col to 0
+    3 end if
+       <b>At end of row. Back up to previous position.</b>
+    4 loop (<mark>col &gt;= boardSize</mark>)
+      1 <mark>popStack (stack, [row, col])</mark>
+      2 remove queen at board[row][col]
+    5 end loop
+  2 end loop
+5 end loop
+6 printBoard (stack)
+7 return
+<b>end</b> queens8
+<span class="c">Algorithm 4-15　Eight queens problem</span></pre>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<h3 id="s4-4" data-sec="4-4">4-4 Stack Abstract Data Type Implementation <span class="star">★★</span><span class="zhn">堆疊 ADT 實作</span></h3>
+<ul>
+<li><i>Stack is an abstract data type</i>: we <i>can put it in a library and call it whenever we need it</i>. The slides <i>use a linked list for implementation</i> (Figure 4-19).<span class="zhn">堆疊是抽象資料型態，可以放進函式庫，需要時呼叫。投影片用鏈結串列實作（圖 4-19）。</span></li>
+<li>The ADT implements the <mark>eight known procedures</mark>: create stack, push stack, pop stack, stack top, empty stack, full stack, stack count, destroy stack.<span class="zhn">ADT 實作八個已知的程序：create、push、pop、stack top、empty、full、count、destroy。</span></li>
+<li>The user sees only the conceptual view (a stack with a top); the head with count and top and the linked nodes are hidden (<b>data hiding</b>).<span class="zhn">使用者只看到概念上的堆疊；head（count、top）和鏈結節點都被藏起來（資料隱藏）。</span></li>
+</ul>
+
+<h3 id="s4-5" data-sec="4-5">4-5 Stack ADT: Array Implementation <span class="star">★★★</span><span class="zhn">用陣列實作堆疊</span></h3>
+<ul>
+<li><b>When to use it</b>: <mark><i>if a stack's maximum size can be calculated before the program is written</i></mark>. <i>Array implementation is more efficient.</i><span class="zhn">什麼時候用：寫程式之前就能算出堆疊的最大容量時。陣列實作比較有效率。</span></li>
+<li><i>One additional metadata element is required</i>: <mark>the maximum number of elements in the stack</mark> (stackMax).<span class="zhn">需要多一個 metadata：堆疊的最大元素個數（stackMax）。</span></li>
+</ul>
+<figure class="fig"><svg viewBox="0 0 470 180" width="460" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="13" role="img"><defs><marker id="f4ya" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#1d2433"/></marker><marker id="f4yr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#d64933"/></marker></defs><rect data-step="0" x="150" y="10" width="320" height="44" rx="3" fill="#eef1f7" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="190" y="26" text-anchor="middle" font-size="11" fill="#1d2433">stackAry</text><rect data-step="0" x="172" y="32" width="36" height="18" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="268" y="26" text-anchor="middle" font-size="11" fill="#1d2433">count</text><rect data-step="0" x="250" y="32" width="36" height="18" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="268" y="46" text-anchor="middle" font-size="12" fill="#1d2433">3</text><text data-step="0" x="346" y="26" text-anchor="middle" font-size="11" fill="#1d2433">stackMax</text><rect data-step="0" x="328" y="32" width="36" height="18" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="346" y="46" text-anchor="middle" font-size="12" fill="#1d2433">5</text><text data-step="0" x="424" y="26" text-anchor="middle" font-size="11" fill="#1d2433">top</text><rect data-step="0" x="406" y="32" width="36" height="18" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="424" y="46" text-anchor="middle" font-size="12" fill="#1d2433">2</text><rect data-step="1" x="130" y="120" width="60" height="26" rx="3" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.4"/><text data-step="1" x="160" y="164" text-anchor="middle" font-size="11" fill="#8a93a6">[0]</text><rect data-step="1" x="190" y="120" width="60" height="26" rx="3" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.4"/><text data-step="1" x="220" y="164" text-anchor="middle" font-size="11" fill="#8a93a6">[1]</text><rect data-step="1" x="250" y="120" width="60" height="26" rx="3" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.4"/><text data-step="1" x="280" y="164" text-anchor="middle" font-size="11" fill="#8a93a6">[2]</text><rect data-step="1" x="310" y="120" width="60" height="26" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="1" x="340" y="164" text-anchor="middle" font-size="11" fill="#8a93a6">[3]</text><rect data-step="1" x="370" y="120" width="60" height="26" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="1" x="400" y="164" text-anchor="middle" font-size="11" fill="#8a93a6">[4]</text><line data-step="2" x1="190" y1="52" x2="150" y2="116" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f4ya)"/><line data-step="3" x1="424" y1="52" x2="262" y2="116" stroke="#d64933" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#f4yr)"/><text data-step="3" x="330" y="100" text-anchor="start" font-size="11" fill="#d64933">top = index 2 (not a pointer)</text><text data-step="0" x="30" y="70" text-anchor="start" font-size="12" fill="#1d2433">Top</text><path data-step="0" d="M30,80 V170 H100 V80" fill="none" stroke="#1d2433" stroke-width="2"/><rect data-step="0" x="38" y="144" width="54" height="22" rx="3" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="65" y="159" text-anchor="middle" font-size="12" fill="#1d2433"></text><rect data-step="0" x="38" y="118" width="54" height="22" rx="3" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="65" y="133" text-anchor="middle" font-size="12" fill="#1d2433"></text><rect data-step="0" x="38" y="92" width="54" height="22" rx="3" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="65" y="107" text-anchor="middle" font-size="12" fill="#1d2433"></text></svg><figcaption class="cap">Figure 4-20: stackAry points to the array, count is 3, stackMax is 5, and top is the index 2 of the top element.<span class="zhn">圖 4-20：stackAry 指向陣列，count 是 3，stackMax 是 5，top 是頂端元素的索引 2。</span></figcaption></figure>
+<div class="tbl"><table>
+<tr><th class="l">Difference from the linked list version (slide 83)</th></tr>
+<tr><td class="l">1. <mark>The stack top is an <b>index</b> rather than a pointer.</mark><span class="zhn">top 是索引，不是指標。</span></td></tr>
+<tr><td class="l">2. <mark>Must store the maximum number of elements.</mark><span class="zhn">一定要存最大元素個數。</span></td></tr>
+<tr><td class="l">3. <mark>Don't need next fields.</mark><span class="zhn">不需要 next 欄位。</span></td></tr>
+</table></div>
+<pre>Stack Definitions for Array Implementation
+
+<b>stack</b>
+   stackAry  &lt;pointer to array of dataType&gt;
+   count     &lt;integer&gt;
+   stackMax  &lt;integer&gt;
+   top       &lt;index&gt;
+<b>end</b> stack
+<span class="c">Algorithm 4-16　Stack array definition</span></pre>
+<div class="box zh"><span class="lbl">In plain words</span>With an array, the elements sit next to each other, so the "next" element is just index − 1; no next pointers are needed. Since arrays are 0-based, top = count − 1 (3 elements → top = 2). The stack is full when count equals stackMax.<span class="zhn"><b>白話</b> 用陣列時元素一個挨著一個，下一個就是索引減 1，不需要 next 指標。陣列從 0 開始，所以 top = count − 1（3 個元素 → top = 2）。count 等於 stackMax 時堆疊就滿了。</span></div>
+
+<div class="sum"><b class="t">Chapter summary</b><span class="zhn"><b>Summary 本章總結</b></span><ul>
+<li>A <b>stack</b> is a linear list where all additions and deletions happen at one end, the <b>top</b>: <b>LIFO</b>.<span class="zhn">堆疊是只能在頂端新增、刪除的線性串列：後進先出。</span></li>
+<li>Three basic operations: <b>push</b> (overflow if no room), <b>pop</b> (underflow if empty), <b>stack top</b> (returns the top without deleting; underflow if empty).<span class="zhn">三個基本運算：push（沒空間會 overflow）、pop（空的會 underflow）、stack top（回傳頂端但不刪除；空的會 underflow）。</span></li>
+<li>Linked list implementation: a <b>head</b> (count, top) and <b>data nodes</b> (data, next). Eight operations: create, push, pop, stack top, empty, full, count, destroy.<span class="zhn">鏈結串列實作：head（count、top）＋資料節點（data、next）。八個運算：create、push、pop、stack top、empty、full、count、destroy。</span></li>
+<li>Four application types: <b>reversing</b> (reverse a list, decimal to binary), <b>parsing</b> (parentheses), <b>postponement</b> (infix to postfix, evaluating postfix), <b>backtracking</b> (goal seeking, eight queens).<span class="zhn">四類應用：反轉（反轉數列、十進位轉二進位）、剖析（括號配對）、延後（中序轉後序、計算後序式）、回溯（找目標、八皇后）。</span></li>
+<li>Infix to postfix: operands go straight to the output; an operator pops every operator of <b>higher or equal</b> priority first, then is pushed. Priority: * / = 2, + − = 1, ( = 0.<span class="zhn">中序轉後序：運算元直接輸出；運算子先把優先權大於或等於自己的都 pop 出來，再 push。優先權：* / 是 2，+ − 是 1，( 是 0。</span></li>
+<li>Array implementation: use it when the maximum size is known in advance; top is an <b>index</b>, stackMax is stored, no next fields.<span class="zhn">陣列實作：事先知道最大容量時使用；top 是索引、要存 stackMax、不需要 next。</span></li>
+</ul></div>
+<div class="trap"><b class="t">Common trap</b><span class="zhn"><b>易錯點</b></span><ul>
+<li><b>Stack top does not delete</b>; pop does. Both can underflow, only push can overflow.<span class="zhn">stack top 不會刪除，pop 才會。兩者都可能 underflow，只有 push 會 overflow。</span></li>
+<li>pushStack: <b>newPtr-&gt;next = stack.top</b> must come before <b>stack.top = newPtr</b>.<span class="zhn">pushStack：newPtr->next = stack.top 一定要在 stack.top = newPtr 之前。</span></li>
+<li>popStack: save <b>dltPtr = stack.top</b> before moving top, or the node cannot be recycled.<span class="zhn">popStack：移動 top 之前先存 dltPtr = stack.top，否則節點無法回收。</span></li>
+<li>Infix to postfix pops on <b>lower or equal</b> priority (≤), not only lower: A − B + C → A B − C +.<span class="zhn">中序轉後序遇到「小於或等於」就要 pop，不是只有小於：A − B + C → A B − C +。</span></li>
+<li>Evaluating postfix: the first pop is <b>operand2</b>; compute operand1 operator operand2 (8 2 − is 6, not −6).<span class="zhn">計算後序式：第一次 pop 的是 operand2，算 operand1 運算子 operand2（8 2 − 是 6，不是 −6）。</span></li>
+<li>Decimal to binary without a stack prints the bits <b>backward</b>; the stack reverses them.<span class="zhn">十進位轉二進位不用堆疊會把位元印反；堆疊負責把順序反轉回來。</span></li>
+<li>In the array version, top is an <b>index</b> (count − 1), not a pointer, and there are <b>no next fields</b>.<span class="zhn">陣列版本的 top 是索引（count − 1）不是指標，而且沒有 next 欄位。</span></li>
+</ul></div>
+<div class="quiz" data-quiz="ch4"></div>
+<!--CHW4-->
+</section>

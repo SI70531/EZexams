@@ -18,6 +18,7 @@ EZexams is a study site with notes, practice questions, and mock exams for each 
 | Subject | Exam Date | What's Covered | Link |
 | --- | --- | --- | --- |
 | Operating Systems | TBA | Silberschatz 9th ed., Chapters 6–8 so far | https://si70531.github.io/EZexams/operating-systems/final/ |
+| Data & File Structures | TBA | Gilberg & Forouzan, Chapter 4 so far | https://si70531.github.io/EZexams/data-structures/final/ |
 
 ## How the Project Is Organized
 
@@ -65,6 +66,10 @@ The home page sorts subjects by date automatically. Keep the table sorted by dat
 ## Operating Systems Final Page
 
 `operating-systems/final/` is generated: edit the notes in `tools/src/os-final/ch6.html` … `ch8.html`, the written questions in `tools/src/written.py` or the interactive figures in `tools/src/widgets.js`, then run `python3 tools/src/os_final_build.py`. Do not edit the generated files by hand.
+
+## Data & File Structures Final Page
+
+`data-structures/final/` is generated from the midterm page as a template: edit the notes in `tools/src/ds-final/ch4.html` (one file per chapter) or the interactive figures in `tools/src/ds_labs.js`, then run `python3 tools/src/ds_final_build.py`. To add a chapter, write `tools/src/ds-final/chN.html` and add it to `CHAPTERS` in the build script. Do not edit the generated files by hand.
 
 ## Editing Questions
 

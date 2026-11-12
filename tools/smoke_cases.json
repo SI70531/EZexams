@@ -164,6 +164,71 @@
    "id": "ch8w-11",
    "pts": 6,
    "answer": "SCAN (elevator) moves the arm from one end of the disk to the other, servicing requests, then reverses at the end. C-SCAN services requests in one direction only and returns to the beginning without servicing on the return trip, giving a more uniform wait time. LOOK is SCAN that reverses at the last request instead of going to the end of the disk. SSTF can starve requests far from the head. SSTF or LOOK is a reasonable default; SCAN and C-SCAN suit systems with a heavy disk load.\nSCAN（電梯）手臂從一端走到另一端沿路服務，到底才回頭。C-SCAN 只單向服務，到底後直接回到開頭、回程不服務，等待時間較平均。LOOK 是走到最後一個要求就回頭的 SCAN。SSTF 會讓遠的要求飢餓。預設可選 SSTF 或 LOOK；磁碟負載重時 SCAN、C-SCAN 較好。"
+  },
+  {
+   "id": "past-1",
+   "pts": 5,
+   "answer": "Mutual exclusion, hold and wait, no preemption, circular wait.\n互斥、持有並等待、不可搶奪、循環等待。"
+  },
+  {
+   "id": "past-2",
+   "pts": 5,
+   "answer": "Internal fragmentation and external fragmentation.\n內部碎片、外部碎片。"
+  },
+  {
+   "id": "past-3",
+   "pts": 10,
+   "answer": "(a) A cycle in the resource-allocation graph: with one instance per resource type, a cycle means deadlock. (b) No. Each resource type has several instances, so a cycle does not necessarily mean deadlock. P2 holds an instance of R1 and P4 an instance of R2, and neither waits for anything; when P2 releases R1 (or P4 releases R2), P1 or P3 can get it, so the cycle is broken and all processes can finish.\n(a) 資源配置圖有環（cycle）；每種資源只有一個 instance 時，有環就是死結。(b) 不會。這是多 instance 的系統，有環不一定死結。P2 拿著 R1 的一個 instance、P4 拿著 R2 的一個 instance，它們不等任何資源；P2 釋放 R1（或 P4 釋放 R2）後，P1 或 P3 就能拿到，環被打破，大家都能完成。"
+  },
+  {
+   "id": "past-4",
+   "pts": 5,
+   "answer": "Many-to-one, one-to-one, many-to-many, and two-level (a many-to-many model that also allows one-to-one binding).\n多對一、一對一、多對多、雙層（多對多加上可綁定一對一的混合）。"
+  },
+  {
+   "id": "past-5",
+   "pts": 5,
+   "answer": "For some page-replacement algorithms (e.g. FIFO), the page-fault rate may increase as the number of allocated frames increases. Example: the string 1,2,3,4,1,2,5,1,2,3,4,5 gives 9 faults with 3 frames but 10 with 4 frames under FIFO. Stack algorithms such as LRU and OPT do not have it.\n某些替換演算法（例如 FIFO），frame 變多時 page fault 反而變多。例：1,2,3,4,1,2,5,1,2,3,4,5 用 FIFO，3 個 frame 9 次、4 個 frame 10 次。LRU、OPT 這類 stack algorithm 不會。（參考答案把原因寫成「降低 CPU 使用率」並不正確，重點只在 frame 多、fault 反而多。）"
+  },
+  {
+   "id": "past-6",
+   "pts": 5,
+   "answer": "Thrashing: a process does not have enough frames, so it page-faults constantly and spends more time paging than executing; CPU utilization drops, the OS adds more processes to raise utilization, and it gets worse. Prevention: the working-set model (give each process enough frames for its working set; if the total demand D > m, suspend a process), page-fault frequency (add frames when the fault rate is too high, take them away when it is too low), and limiting the degree of multiprogramming / using local replacement.\nThrashing：process 的 frame 不夠，一直 page fault，換頁時間比執行還多；CPU 使用率下降，OS 又加 process 進來，越來越糟。預防：working-set model（給足工作集的 frame，總需求 D > m 就暫停一個 process）、page-fault frequency（fault 率高就加 frame、低就減）、限制多元程式程度或用區域替換。"
+  },
+  {
+   "id": "past-7",
+   "pts": 5,
+   "answer": "TLB reach is the amount of memory accessible from the TLB: TLB reach = (TLB size) × (page size). Increase it by increasing the page size or by providing multiple page sizes.\nTLB reach：靠 TLB 就能存取到的記憶體量 = TLB 筆數 × 頁大小。增加方法：加大頁大小，或提供多種頁大小。"
+  },
+  {
+   "id": "past-8",
+   "pts": 5,
+   "answer": "(1) FIFO: 15. (2) Optimal: 9. (3) LRU: 12. (4) LFU: 13 (ties between pages with the same count broken by FIFO order, i.e. the page loaded earliest is replaced).\n(1) FIFO：15 次。(2) Optimal：9 次。(3) LRU：12 次。(4) LFU：13 次（次數相同時，換掉最早載入的那頁）。原卷沒有附答案，這裡是算出來的。"
+  },
+  {
+   "id": "past-9",
+   "pts": 25,
+   "answer": "(1) Total = Available + Σ Allocation: A = 3+2+3+2+1+1 = 12, B = 3+0+1+1+3+4 = 12, C = 2+0+2+0+1+3 = 8, D = 1+1+1+3+2+2 = 10 → (12, 12, 8, 10). (2) Need = Max − Allocation: P0 (2,2,1,1), P1 (2,1,3,1), P2 (0,2,1,3), P3 (0,1,1,2), P4 (2,2,3,3). (3) Yes. (1,1,0,0) ≤ Need P1 (2,1,3,1) and ≤ Available (3,3,2,1). Pretend to grant: Available = (2,2,2,1), Allocation P1 = (4,2,2,1), Need P1 = (1,0,3,1). Safety: P0 (2,2,1,1) ≤ (2,2,2,1) → Work (4,2,2,2); P3 (0,1,1,2) → (5,5,3,4); P4 (2,2,3,3) → (6,9,6,6); P1 (1,0,3,1) → (10,11,8,7); P2 (0,2,1,3) → (12,12,8,10). Safe sequence , so it can be granted. (4) No. (0,0,2,0) ≤ Need P4 (2,2,3,3) and ≤ Available (3,3,2,1), but after pretending to grant, Available = (3,3,0,1) and Need P4 = (2,2,1,3). Every process needs at least one C or more D than available (P0 needs C=1, P1 C=3, P2 C=1 and D=3, P3 C=1, P4 C=1), so no process can finish: the state is unsafe and P4 must wait.\n(1) 總數 = Available + Allocation 加總 = (12, 12, 8, 10)。(2) Need = Max − Allocation：P0 (2,2,1,1)、P1 (2,1,3,1)、P2 (0,2,1,3)、P3 (0,1,1,2)、P4 (2,2,3,3)。(3) 可以。(1,1,0,0) ≤ Need 且 ≤ Available；假裝給了之後 Available = (2,2,2,1)，可找到安全序列 ，所以立刻給。(4) 不行。雖然 (0,0,2,0) ≤ Need 且 ≤ Available，但給了之後 Available = (3,3,0,1)，每個 process 都還要至少一個 C，沒人能完成 → unsafe，P4 要等。（原卷答案只寫到假裝分配，沒有做安全檢查；第 (4) 小題也誤寫成 P1。）"
+  },
+  {
+   "id": "past-10",
+   "pts": 15,
+   "answer": "(a) EAT = α(m + ε) + (1 − α)(2m + ε) = 0.8 × (200 + 10) + 0.2 × (400 + 10) = 168 + 82 = 250 ns. (b) 210α + 410(1 − α) ≤ 230 → 410 − 200α ≤ 230 → α ≥ 0.9, so the hit ratio must be at least 90%: every miss costs an extra 200 ns memory access for the page table, so more hits are needed to bring the average down.\n(a) EAT = 0.8 × 210 + 0.2 × 410 = 250 ns。(b) 210α + 410(1 − α) ≤ 230 → α ≥ 0.9，命中率至少 90%：每次 miss 要多一次 200 ns 去讀 page table，所以要更多命中才能把平均拉低。（原卷 (b) 把命中率寫成 ε，其實是 α。）"
+  },
+  {
+   "id": "past-11",
+   "pts": 10,
+   "answer": "Speedup ≤ 1 / (S + (1 − S)/N) with S = 0.4. N = 4: 1 / (0.4 + 0.6/4) = 1 / 0.55 ≈ 1.82. N → ∞: speedup → 1/S = 1/0.4 = 2.5.\nspeedup ≤ 1 / (S + (1 − S)/N)，S = 0.4。N = 4：1 / (0.4 + 0.15) = 1 / 0.55 ≈ 1.82。N → ∞：趨近 1/S = 2.5。"
+  },
+  {
+   "id": "past-12",
+   "pts": 10,
+   "answer": "(a) 0.9 × (10 + 100) + 0.1 × (10 + 100 + 100) = 99 + 21 = 120 ns. (b) A miss now needs two page-table accesses plus the data access: 0.9 × 110 + 0.1 × (10 + 300) = 99 + 31 = 130 ns.\n(a) 0.9 × 110 + 0.1 × 210 = 120 ns。(b) 兩層 page table，miss 時要讀兩次 page table 再讀資料：0.9 × 110 + 0.1 × 310 = 130 ns。（原卷題目漏了「10 ns」。）"
+  },
+  {
+   "id": "past-13",
+   "pts": 10,
+   "answer": "(a) 8 = 2³ pages → 3 bits of page number; 1,024 = 2¹⁰ bytes → 10 bits of offset; logical address = 3 + 10 = 13 bits. (b) 32 = 2⁵ frames → 5 bits of frame number + 10 bits of offset = 15 bits.\n(a) 8 = 2³ 頁 → 頁號 3 位；1,024 = 2¹⁰ → offset 10 位；邏輯位址 = 13 位。(b) 32 = 2⁵ 個 frame → 5 位 + offset 10 位 = 15 位。"
   }
  ]
 }

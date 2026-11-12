@@ -5,6 +5,8 @@ import json, re, html, sys, os
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 from written import W
+sys.path.insert(0, os.path.join(HERE, "os-final"))
+from past1 import PAST, TOPICS
 
 REPO = os.path.dirname(os.path.dirname(HERE))
 MID = REPO + "/operating-systems/midterm"
@@ -97,7 +99,7 @@ head = head.replace("</head>", extra_css + "\n</head>", 1)
 
 home = """<section role="tabpanel" class="view" id="home">
   <div class="vhead"><div class="pcb" data-pcb="home" role="img"></div><p class="vmeta">Final: <span data-examdate>TBA</span></p><h1>Operating Systems final prep</h1>
-  <p>Silberschatz, Operating System Concepts 9th ed. For now the page covers the three chapters below; the exam scope and date are not set yet. More chapters and past exams will be added when they are available.</p></div>
+  <p>Silberschatz, Operating System Concepts 9th ed. For now the page covers the three chapters below; the exam scope and date are not set yet. Past exam 1 is under the Past exam tab; more chapters and past exams will be added when they are available.</p></div>
   <div class="next" id="nextStep"></div>
   <h3>Chapters so far</h3>
   <div class="scope">
@@ -114,8 +116,29 @@ home = """<section role="tabpanel" class="view" id="home">
   <li>Write in English. For "list" questions, just list the terms; add a short explanation if you have time.</li>
   <li>Always show your work on calculation questions (page replacement, EAT, disk scheduling): formula → numbers → answer. Even a wrong answer can earn partial credit for the work.</li>
   <li>For disk scheduling, always write the head direction and whether you count the return trip.</li></ul></div>
+  <h3>Past exams</h3>
+  <p><button class="btn" data-go="past">Past exam 1</button> 13 questions; it also tests Ch4 threads and Ch5 deadlock.</p>
 </section>
 """
+
+def past_section():
+    total = sum(x[0] for x in PAST)
+    rows = "".join('<tr><td>%d</td><td>%s</td><td class="l">%s</td><td>%s</td></tr>' % (i, ("%d%%" % pts) if given else "—", TOPICS[i - 1], ch)
+                   for i, (pts, given, ch, q, en, zh, k) in enumerate(PAST, 1))
+    out = ['<section role="tabpanel" class="view exam" id="past" data-exam="past" data-mins="110" hidden><div class="vhead"><div class="pcb" data-pcb="past" role="img"></div><h1>Past exam 1</h1><p>A past OS final. Answer in the boxes (English or Chinese is fine), then press "Grade this question" or "Grade all". The reference answers follow the answer sheet that came with the paper, with its gaps filled in and its mistakes corrected; each correction is noted in the Chinese line.<span class="zhn">一份歷屆期末考。參考答案以原卷附的答案為準，缺的補齊、錯的更正，更正處都寫在中文說明裡。</span></p></div><div class="examtools"><span class="score"></span><span class="timer"></span><button class="btn tbtn" type="button">Start timer</button><button class="btn primary gradeall" type="button">Grade all</button><button class="btn reset" type="button">Clear answer</button><span class="gmsg"></span></div><p class="box tip nogradenote">This uses keyword matching for automatic grading: you get credit for including the required terms (English or Chinese) or numbers. The score is only a reference; always open the reference answer to compare.</p>',
+           '<h3>What this paper covers</h3>',
+           '<table class="ezfull" data-fit="1"><tr><th>Q</th><th>Points</th><th class="l">Topic</th><th>Chapter</th></tr>' + rows + '</table>',
+           '<p class="small">"—" = the paper gives no points for that question; 5 points are assumed here, so the total is %d. Note that the paper also tests Ch4 (threads, Amdahl) and Ch5 (deadlock), not only Ch6 to Ch8.<span class="zhn">「—」表示原卷沒標配分，這裡先算 5 分，所以總分是 %d。注意這份考卷也考了 Ch4（thread、Amdahl）和 Ch5（死結），不只 Ch6 到 Ch8。</span></p>' % (total, total),
+           '<h3>Questions</h3>']
+    for i, (pts, given, ch, q, en, zh, keys) in enumerate(PAST, 1):
+        qid = "past-%d" % i
+        out.append('<div class="exq" id="%s" data-pts="%g"><div class="qtext"><p class="q"><span class="pts">Q%d · %s</span>%s</p></div><label class="small" for="%s-a">Your answer</label><textarea id="%s-a" rows="%d" placeholder="Write your answer here (English or Chinese is fine)"></textarea><div class="gradebar"><button class="btn grade" type="button">Grade this question</button><span class="gstat"></span></div><div class="gres" hidden></div><details class="qa"><summary>Show reference answer</summary><div class="inner">' % (qid, pts, i, ("%d%%" % pts) if given else "5 (not given)", q, qid, qid, 4 if pts <= 5 else 7))
+        out.append('<div class="box en"><span class="lbl">ANSWER</span>%s<div class="zhtr"><span>中文</span>%s</div></div>' % (en, zh))
+        out.append("</div></details></div>")
+        tw = sum(k[0] for k in keys)
+        KEYS_MORE[qid] = [{"w": round(k[0] * pts / tw, 4), "re": k[1], "k": plain(k[2])} for k in keys]
+    out.append("</section>")
+    return "\n".join(out)
 
 traps = '<section role="tabpanel" class="view" id="traps" hidden><div class="vhead"><h1>Summary &amp; Common Traps<span class="zhn">各章總結與易錯點</span></h1><p>Every chapter\'s summary and common traps on one page, in chapter order. Read this the night before.<span class="zhn">把每一章的總結和易錯點集中在同一頁，照章節順序排列。考前一晚看這頁。</span></p></div><div id="trapsBody"></div></section>'
 
@@ -123,7 +146,7 @@ tail_i = lines.index("</main>")
 tail = "\n".join(lines[tail_i:])
 tail = tail.replace('data-key="os-midterm-v1"', 'data-key="os-final-v1"')
 
-page = head + "\n\n" + home + "\n" + "\n".join(chapters) + "\n" + traps + "\n\n" + tail
+page = head + "\n\n" + home + "\n" + "\n".join(chapters) + "\n" + traps + "\n" + past_section() + "\n\n" + tail
 open(OUT + "/index.html", "w", encoding="utf-8").write(page)
 
 # ---------- quiz.js ----------
@@ -157,10 +180,10 @@ def rep(old, new, count=1):
     assert a.count(old) >= 1, old[:80]
     a = a.replace(old, new) if count == 0 else a.replace(old, new, count)
 rep("/* operating-systems midterm page logic", "/* operating-systems final page logic")
-a = re.sub(r'const VIEWS=\[.*?\];', 'const VIEWS=[["home","Home"],["ch6","Ch6 Memory"],["ch7","Ch7 Virtual Mem"],["ch8","Ch8 Storage"],["traps","Summary & traps"]];', a, count=1)
+a = re.sub(r'const VIEWS=\[.*?\];', 'const VIEWS=[["home","Home"],["ch6","Ch6 Memory"],["ch7","Ch7 Virtual Mem"],["ch8","Ch8 Storage"],["traps","Summary & traps"],["|"],["past","Past exam 1"]];', a, count=1)
 rep('const KEY="os-midterm-v1";', 'const KEY="os-final-v1";')
 a = re.sub(r"/\* 2026-10-26: some ch1/ch2/ch5.*?\n\(function\(\)\{const MIG=.*?\n.*?save\(\);\}\)\(\);\n", "", a, count=1, flags=re.S)
-rep('const PID={home:0,ch1:1,ch2:2,ch3:3,ch4:4,ch5:5,past:6,"mock-a":7,"mock-b":8,review:9};', 'const PID={home:0,ch6:6,ch7:7,ch8:8,traps:9,review:10};')
+rep('const PID={home:0,ch1:1,ch2:2,ch3:3,ch4:4,ch5:5,past:6,"mock-a":7,"mock-b":8,review:9};', 'const PID={home:0,ch6:6,ch7:7,ch8:8,traps:9,past:11,review:10};')
 rep('const c=["ch1","ch2","ch3","ch4","ch5"].filter(c=>procState(c).state==="terminated").length;return {state:"running",done:c,n:5};', 'const c=["ch6","ch7","ch8"].filter(c=>procState(c).state==="terminated").length;return {state:"running",done:c,n:3};')
 rep('EZGEN.attach({course:"Operating Systems",s:"os",ai:["ch1","ch2","ch3","ch4","ch5"]', 'EZGEN.attach({course:"Operating Systems",s:"osf",ai:["ch6","ch7","ch8"]')
 rep('window.EZLAST={ch:"ch5",label:"Start past exam",go:"past"};', 'window.EZLAST={ch:"ch8",label:"Summary & traps",go:"traps"};')
@@ -173,7 +196,7 @@ i1 = a.index("\n", i1) + 1
 a = a[:i0] + open(os.path.join(HERE, "widgets.js"), encoding="utf-8").read() + a[i1:]
 # home
 rep('[["ch1","Ch1 chapter exercises"],["ch2","Ch2 chapter exercises"],["ch3","Ch3 chapter exercises"],["ch4","Ch4 chapter exercises"],["ch5","Ch5 chapter exercises"]]', '[["ch6","Ch6 chapter exercises"],["ch7","Ch7 chapter exercises"],["ch8","Ch8 chapter exercises"]]')
-a = re.sub(r'  \[\["past","Last year\'s past exam"\].*?\n  \}\);\n', "", a, count=1, flags=re.S)
+rep('[["past","Last year\'s past exam"],["mock-a","Mock exam A"],["mock-b","Mock exam B"]]', '[["past","Past exam 1"]]')
 rep('"Write "+next[1]+" (60 min; press “Grade all” when done)"', '"Do "+next[1]')
 rep("All done. The day before the exam, read the Review cheat notes and must-draw diagrams, then get some sleep.", "All chapters done. Read the Summary & traps tab the night before the exam.")
 # written blocks

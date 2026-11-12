@@ -5,14 +5,14 @@
   addEventListener("scroll",()=>tt.classList.toggle("show",scrollY>500),{passive:true});
   tt.addEventListener("click",()=>scrollTo({top:0,behavior:"smooth"}));
 })();
-const VIEWS=[["home","Home"],["ch6","Ch6 Memory"],["ch7","Ch7 Virtual Mem"],["ch8","Ch8 Storage"],["traps","Summary & traps"]];
+const VIEWS=[["home","Home"],["ch6","Ch6 Memory"],["ch7","Ch7 Virtual Mem"],["ch8","Ch8 Storage"],["traps","Summary & traps"],["|"],["past","Past exam 1"]];
 const KEY="os-final-v1";
 window.EZLAST={ch:"ch8",label:"Summary & traps",go:"traps"};   /* last chapter and its "next" button (assets/ezsubject.js) */
 let S={quiz:{},exam:{}};
 try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(S,JSON.parse(raw));}catch(e){}
 
 const tabs=document.getElementById("tabs");
-const PID={home:0,ch6:6,ch7:7,ch8:8,traps:9,review:10};
+const PID={home:0,ch6:6,ch7:7,ch8:8,traps:9,past:11,review:10};
  /* a chapter is done only when its written part is done too */
 function procState(id){
   if(QUIZ[id]){const w=chwStat(id),n=QUIZ[id].length+w.n,k=Object.keys(S.quiz[id]||{}).length+w.k;return {state:k===0?"new":k<n?"running":"terminated",done:k,n};}
@@ -364,6 +364,11 @@ function renderHome(){
   [["ch6","Ch6 chapter exercises"],["ch7","Ch7 chapter exercises"],["ch8","Ch8 chapter exercises"]].forEach(([c,n])=>{
     html+=chRow(c,n);
     if(!next&&!chScore(c).done)next=[c,n.replace(" chapter exercises","")];
+  });
+  [["past","Past exam 1"]].forEach(([id,n])=>{
+    const e=EX[id]||{graded:0,total:100,got:0};
+    html+='<tr><td class="l"><button class="btn" data-go="'+id+'">'+n+'</button></td><td>'+(e.graded?("Score "+(Math.round(e.got*10)/10)+" / "+e.total):"Not started")+'</td></tr>';
+    if(!next&&!e.graded)next=[id,n];
   });
   t.innerHTML=html;
   const ns=document.getElementById("nextStep");

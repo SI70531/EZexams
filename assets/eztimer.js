@@ -23,6 +23,7 @@
         tt.textContent=(h?h+":":"")+String(m).padStart(2,"0")+":00";};
     inp.addEventListener("change",()=>{let v=Math.round(+inp.value);if(!(v>=1))v=def;if(v>600)v=600;inp.value=v;show();});
     new MutationObserver(()=>{w.hidden=tb.hidden;}).observe(tb,{attributes:true,attributeFilter:["hidden"]});
+    show();   /* the clock shows the chosen minutes from the start, not the page's own 60:00 */
   }
   function minutes(tools,fb){
     const i=tools.querySelector(".tmins");const v=i?Math.round(+i.value):NaN;

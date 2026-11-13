@@ -12,6 +12,7 @@ os.makedirs(OUT, exist_ok=True)
 
 # (id, tab label, card title, card text)
 CHAPTERS = [
+    ("ch3", "Ch3 Lists (3-4+)", "Ch3 Linked Lists, 3-4 to 3-6", "From slide 68: the build-list program (menu, addNode, removeNode, printList), testing, append lists, array of lists, circularly, doubly and multilinked lists."),
     ("ch4", "Ch4 Stacks", "Ch4 Stacks", "Push, pop and stack top; the linked-list stack and its eight algorithms; reversing, parsing, infix to postfix, postfix evaluation, backtracking; array implementation."),
 ]
 IDS = [c[0] for c in CHAPTERS]
@@ -113,7 +114,7 @@ rep("return {state:\"running\",done:c,n:3};", "return {state:\"running\",done:c,
 sub(r'if\(window\.EZGEN\)EZGEN\.attach\(\{course:"Data Structures",s:"ds",ai:\[.*?\],fixed:\[.*?\],scope:\{.*?\},mock:\[.*?\],batch:\[.*?\],',
     'if(window.EZGEN)EZGEN.attach({course:"Data Structures",s:"dsf",ai:[' + Q(IDS) + '],')
 rep("Data and File Structures midterm exam (Gilberg & Forouzan, Data Structures: A Pseudocode Approach; chapters: introduction/pseudocode/ADT/Big-O, searching and hashing, linked lists).",
-    "Data and File Structures final exam (Gilberg & Forouzan, Data Structures: A Pseudocode Approach; chapters: stacks).")
+    "Data and File Structures final exam (Gilberg & Forouzan, Data Structures: A Pseudocode Approach; chapters: linked lists (processing a list, append, array of lists, circular, doubly and multilinked lists) and stacks).")
 rep("const days=Math.round((EXAM_DAY-today)/86400000);", "if(!EXAM_DAY){cd.innerHTML=EXAM_TAG+'<b>TBA</b><span>Exam date not announced yet</span>';}\n  const days=EXAM_DAY?Math.round((EXAM_DAY-today)/86400000):null;")
 rep("cd.innerHTML=days>0?", "if(EXAM_DAY)cd.innerHTML=days>0?")
 sub(r'\[\["ch1","Ch1 chapter exercises"\],\["ch2","Ch2 chapter exercises"\],\["ch3","Ch3 chapter exercises"\]\]',

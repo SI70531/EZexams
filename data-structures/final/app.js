@@ -6,10 +6,10 @@
   tt.addEventListener("click",()=>scrollTo({top:0,behavior:"smooth"}));
 })();
 
-const VIEWS=[["home","Home"],["ch4","Ch4 Stacks"],["traps","Summary & traps"]];
+const VIEWS=[["home","Home"],["ch3","Ch3 Lists (3-4+)"],["ch4","Ch4 Stacks"],["traps","Summary & traps"]];
 const EXMC={};
 const MCVIEW=Object.fromEntries(Object.entries(EXMC).map(([v,k])=>[k,v]));
-const CHAPTERS=["ch4"];
+const CHAPTERS=["ch3","ch4"];
 const EXAMS=[];
 const EXAM_DAY=(window.EZDATES&&EZDATES.day())||null;   /* the date lives in assets/ezdates.js */
 const EXAM_TAG='<span class="cdk">EXAM '+(EXAM_DAY?(EXAM_DAY.getMonth()+1)+'/'+EXAM_DAY.getDate():'TBA')+'</span>';
@@ -21,7 +21,7 @@ const tabs=document.getElementById("tabs");
 function quizCount(k){const a=S.quiz[k]||{};return Object.keys(a).filter(x=>QUIZ[k]&&QUIZ[k][x]).length;}
 function quizRight(k){const a=S.quiz[k]||{};return Object.keys(a).filter(x=>QUIZ[k]&&QUIZ[k][x]&&a[x]===QUIZ[k][x].a).length;}
 function quizDone(ch){return QUIZ[ch]&&quizCount(ch)>=QUIZ[ch].length;}
-const PID={home:0,ch4:4,traps:5};
+const PID={home:0,ch3:3,ch4:4,traps:5};
  /* a chapter is done only when its written part is done too */
 function procState(id){
   if(CHAPTERS.includes(id)){const w=chwStat(id),n=QUIZ[id].length+w.n,k=quizCount(id)+w.k;return {state:k===0?"new":k<n?"running":"terminated",done:k,n};}
@@ -46,7 +46,7 @@ document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b
 window.addEventListener("hashchange",()=>{const h=location.hash.slice(1);if(h&&h!==S.last)show(h);});
 
 /* AI practice, one question at a time (assets/ezgen.js); chapter exercises are made on demand, answers stay on the Worker */
-if(window.EZGEN)EZGEN.attach({course:"Data Structures",s:"dsf",ai:["ch4"],get:()=>S,quiz:()=>QUIZ,save:()=>save(),render:c=>{renderQuiz(c);afterAnswer(c)},renderAll:()=>{Object.keys(QUIZ).forEach(renderQuiz);renderTabs(S.last)}});
+if(window.EZGEN)EZGEN.attach({course:"Data Structures",s:"dsf",ai:["ch3","ch4"],get:()=>S,quiz:()=>QUIZ,save:()=>save(),render:c=>{renderQuiz(c);afterAnswer(c)},renderAll:()=>{Object.keys(QUIZ).forEach(renderQuiz);renderTabs(S.last)}});
 
 /* ---------- multiple choice ---------- */
 function renderQuiz(key){
@@ -170,7 +170,7 @@ let SAMPLE=null;
 const EX={};
 function rubricPrompt(items){
   return [
-"You are grading answers to a Data and File Structures final exam (Gilberg & Forouzan, Data Structures: A Pseudocode Approach; chapters: stacks).",
+"You are grading answers to a Data and File Structures final exam (Gilberg & Forouzan, Data Structures: A Pseudocode Approach; chapters: linked lists (processing a list, append, array of lists, circular, doubly and multilinked lists) and stacks).",
 "The student may answer in English OR Traditional Chinese, or a mix. Judge only the concepts, numbers, pseudocode statements and steps, never the language, spelling or grammar.",
 "Scoring procedure (follow it the same way every time, so the same answer always gets the same score):",
 "1. Split the reference answer into its key points (ideas, keywords, numbers, steps) and give each an equal share of the item's points.",
@@ -323,7 +323,7 @@ function renderHome(){
   const t=document.getElementById("progTable");
   let html='<tr><th class="l">Item</th><th class="l">Status</th></tr>';
   let next=null;
-  [["ch4","Ch4 chapter exercises"]].forEach(([c,n])=>{
+  [["ch3","Ch3 chapter exercises"],["ch4","Ch4 chapter exercises"]].forEach(([c,n])=>{
     html+=chRow(c,n);
     if(!next&&!chScore(c).done)next=[c,n.replace(" chapter exercises","")];
   });
@@ -1099,11 +1099,12 @@ if(window.EZgenw){
   const T=k=>((VIEWS.find(v=>v[0]===k)||[])[1])||k;
   const blk=(key,view,views,box,batch)=>({key,exam:key,view,views,title:T(view||key)+(batch?"（混合章節）":""),box,batch});
   EZgenw.attach({course:"Data and File Structures",subject:"data-structures",s:"dsf",pct:true,get:()=>S,save:()=>save(),blocks:[
+    blk("ch3w","ch3",["ch3"],document.querySelector('[data-exam="ch3w"]'),false),
     blk("ch4w","ch4",["ch4"],document.querySelector('[data-exam="ch4w"]'),false)
   ].filter(b=>b.box)});
 /* Ch1–Ch3 written questions: show the percent labels from the page (F1 · 2%, Q1 · 5% …) on every question, answered or not.
    Only the label text changes; the stored questions and answers are left as they are. */
-["ch4w"].forEach(key=>{
+["ch3w","ch4w"].forEach(key=>{
   const box=document.querySelector('[data-exam="'+key+'"]');if(!box)return;
   const fix=()=>{box.querySelectorAll(".exq").forEach(q=>{
     const src=q.querySelector(":scope > .pts"),t=q.querySelector(".qtext .pts");

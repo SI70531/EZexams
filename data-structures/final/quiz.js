@@ -4,5 +4,6 @@
    counts must not change). */
 const EZSTUB=n=>Array.from({length:n},()=>({}));
 const QUIZ = {
+ "ch3":EZSTUB(20),
  "ch4":EZSTUB(20)
 };

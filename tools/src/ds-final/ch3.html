@@ -1,0 +1,453 @@
+<section role="tabpanel" class="view" id="ch3" hidden><div class="vhead"><div class="pcb" data-pcb="ch3" role="img"></div><h1>Ch3 Linked Lists (3-4 to 3-6)<span class="zhn">鏈結串列（3-4 到 3-6）</span></h1><p>The second half of Ch3, from slide 68: putting the list algorithms together into one program, testing insert and delete, list applications (append lists, array of lists), and complex list structures (circularly, doubly and multilinked lists). 3-1 to 3-3 were in the midterm; the midterm page still has them.<span class="zhn">Ch3 後半（投影片 68 起）：把串列演算法組成一個完整程式、測試插入與刪除、串列應用（串接、串列陣列），以及進階串列結構（環狀、雙向、多重鏈結）。3-1 到 3-3 是期中考範圍，期中考頁面還在。</span></p></div>
+<div class="box slmap"><span class="lbl">Slide map</span><a class="slk" href="#s3-4" data-sec-link="s3-4">3-4 Processing a Linked List</a> (68 to 81) → <a class="slk" href="#s3-5" data-sec-link="s3-5">3-5 List Applications</a> (82 to 92) → <a class="slk" href="#s3-6" data-sec-link="s3-6">3-6 Complex Linked List Structures</a> (93 to 115).</div>
+<div class="box zh"><span class="lbl">Quick recap from 3-1 to 3-3</span>The list head holds <b>count, pos, head</b>; each node holds <b>data</b> and <b>link</b>. <code>searchList (list, pPre, pLoc, target)</code> returns found and sets pPre (predecessor) and pLoc (current); <code>insertNode (list, pPre, dataIn)</code> and <code>deleteNode (list, pPre, pLoc, dataOut)</code> do the physical work; <code>getNext (list, fromWhere, dataOut)</code> traverses (fromWhere 0 = start from the first node).<span class="zhn"><b>3-1 到 3-3 快速複習</b> list head 存 count、pos、head；每個節點有 data 和 link。searchList 回傳是否找到，並設定 pPre（前一個）和 pLoc（目前）；insertNode、deleteNode 做實際的插入刪除；getNext 走訪（fromWhere 0 表示從第一個節點開始）。</span></div>
+
+<h3 id="s3-4" data-sec="3-4">3-4 Processing a Linked List <span class="star">★★</span><span class="zhn">處理鏈結串列</span></h3>
+<p><i>An integrated program</i> (Figure 3-18): <i>a menu module that combines related modules</i>, with <b>three high-level modules</b> and <b>ten low-level algorithms</b>. <mark>Six new algorithms</mark> are required: <i>the main line, a menu module to interact with the user, a module to get data from the user, a module to add a node, a module to remove a node, a module to print the list</i>.<span class="zhn">一個整合的程式（圖 3-18）：用選單模組把相關模組組起來，有三個高階模組、十個低階演算法。需要六個新演算法：主程式、跟使用者互動的選單、讀取使用者資料、新增節點、刪除節點、印出串列。</span></p>
+<figure class="fig"><svg viewBox="0 0 690 196" width="660" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="13" role="img"><defs><marker id="f3ca" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#1d2433"/></marker><marker id="f3cr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#d64933"/></marker></defs><rect data-step="0" x="300" y="6" width="90" height="26" rx="3" fill="#fde7c8" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="345" y="23.5" text-anchor="middle" font-size="11" fill="#1d2433">LinkedList</text><path data-step="1" d="M345,32 V51 H51 V70" fill="none" stroke="#1d2433" stroke-width="1.4"/><rect data-step="2" x="8" y="70" width="86" height="26" rx="3" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.4"/><text data-step="2" x="51" y="87.5" text-anchor="middle" font-size="11" fill="#1d2433">createList</text><path data-step="1" d="M345,32 V51 H149 V70" fill="none" stroke="#1d2433" stroke-width="1.4"/><rect data-step="2" x="106" y="70" width="86" height="26" rx="3" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.4"/><text data-step="2" x="149" y="87.5" text-anchor="middle" font-size="11" fill="#1d2433">menu</text><path data-step="1" d="M345,32 V51 H247 V70" fill="none" stroke="#1d2433" stroke-width="1.4"/><rect data-step="2" x="204" y="70" width="86" height="26" rx="3" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.4"/><text data-step="2" x="247" y="87.5" text-anchor="middle" font-size="11" fill="#1d2433">getData</text><path data-step="1" d="M345,32 V51 H345 V70" fill="none" stroke="#1d2433" stroke-width="1.4"/><rect data-step="2" x="302" y="70" width="86" height="26" rx="3" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.4"/><text data-step="2" x="345" y="87.5" text-anchor="middle" font-size="11" fill="#1d2433">addNode</text><path data-step="1" d="M345,32 V51 H443 V70" fill="none" stroke="#1d2433" stroke-width="1.4"/><rect data-step="2" x="400" y="70" width="86" height="26" rx="3" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.4"/><text data-step="2" x="443" y="87.5" text-anchor="middle" font-size="11" fill="#1d2433">removeNode</text><path data-step="1" d="M345,32 V51 H541 V70" fill="none" stroke="#1d2433" stroke-width="1.4"/><rect data-step="2" x="498" y="70" width="86" height="26" rx="3" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.4"/><text data-step="2" x="541" y="87.5" text-anchor="middle" font-size="11" fill="#1d2433">printList</text><path data-step="1" d="M345,32 V51 H639 V70" fill="none" stroke="#1d2433" stroke-width="1.4"/><rect data-step="2" x="596" y="70" width="86" height="26" rx="3" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.4"/><text data-step="2" x="639" y="87.5" text-anchor="middle" font-size="11" fill="#1d2433">destroyList</text><path data-step="3" d="M345,96 V116 H268 V136" fill="none" stroke="#1d2433" stroke-width="1.4"/><rect data-step="4" x="228" y="136" width="80" height="26" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="4" x="268" y="153.5" text-anchor="middle" font-size="11" fill="#1d2433">searchList</text><path data-step="3" d="M345,96 V116 H354 V136" fill="none" stroke="#1d2433" stroke-width="1.4"/><rect data-step="4" x="314" y="136" width="80" height="26" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="4" x="354" y="153.5" text-anchor="middle" font-size="11" fill="#1d2433">insertNode</text><path data-step="3" d="M443,96 V116 H444 V136" fill="none" stroke="#1d2433" stroke-width="1.4"/><rect data-step="4" x="404" y="136" width="80" height="26" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="4" x="444" y="153.5" text-anchor="middle" font-size="11" fill="#1d2433">searchList</text><path data-step="3" d="M443,96 V116 H530 V136" fill="none" stroke="#1d2433" stroke-width="1.4"/><rect data-step="4" x="490" y="136" width="80" height="26" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="4" x="530" y="153.5" text-anchor="middle" font-size="11" fill="#1d2433">deleteNode</text><path data-step="3" d="M541,96 V116 H630 V136" fill="none" stroke="#1d2433" stroke-width="1.4"/><rect data-step="4" x="590" y="136" width="80" height="26" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="4" x="630" y="153.5" text-anchor="middle" font-size="11" fill="#1d2433">getNext</text><text data-step="4" x="10" y="186" text-anchor="start" font-size="11" fill="#8a93a6">addNode = searchList + insertNode; removeNode = searchList + deleteNode; printList loops on getNext</text></svg><figcaption class="cap">Figure 3-18: design for build linked list. addNode and removeNode each call searchList first; printList loops on getNext.<span class="zhn">圖 3-18：建立鏈結串列的設計。addNode、removeNode 都先呼叫 searchList；printList 重複呼叫 getNext。</span></figcaption></figure>
+<div class="algmenu" role="list" data-menu="m34"><button type="button" class="algcard" role="listitem" data-alg-open="m34-1"><span class="an">Algorithm 3-11</span><b>buildLinkedList</b><span class="zhn2">主程式</span><span class="sl">Slide 70</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m34-2"><span class="an">Algorithm 3-12</span><b>menu</b><span class="zhn2">選單</span><span class="sl">Slide 71</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m34-3"><span class="an">Algorithm 3-13</span><b>addNode</b><span class="zhn2">新增節點</span><span class="sl">Slide 72 to 74</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m34-4"><span class="an">Algorithm 3-14</span><b>removeNode</b><span class="zhn2">刪除節點</span><span class="sl">Slide 75 to 76</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m34-5"><span class="an">Algorithm 3-15</span><b>printList</b><span class="zhn2">印出串列</span><span class="sl">Slide 77 to 79</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m34-6"><span class="an">Testing</span><b>Insert &amp; delete tests</b><span class="zhn2">測試插入與刪除</span><span class="sl">Slide 80 to 81</span></button></div>
+
+<div class="algp" data-alg="m34-1" data-menu="m34" hidden>
+<h4 class="alg"><span class="an">Algorithm 3-11</span>buildLinkedList<span class="sl">Slide 70</span><span class="zhn">主程式</span></h4>
+<pre><b>algorithm</b> buildLinkedList
+This program builds a linked list that can be modified or printed
+by the user.
+1 print (Welcome to exploring linked lists.)
+2 <mark>createList (list)</mark>
+3 loop (option not quit)
+  1 <mark>option = menu ()</mark>
+  2 if (option add)
+    1 dataIn = getData()
+    2 <mark>addNode (list, dataIn)</mark>
+  3 elseif (option delete)
+    1 print (Enter key of data to be deleted.)
+    2 read (deleteKey)
+    3 <mark>removeNode (list, deleteKey)</mark>
+  4 elseif (option print)
+    1 <mark>printList (list)</mark>
+  5 end if
+4 end loop
+5 <mark>destroyList (list)</mark>
+6 print (Exploration complete. Thank you.)
+<b>end</b> buildLinkedList
+<span class="c">Algorithm 3-11　Build a linked list</span></pre>
+<p>The main line only creates the list, loops on the menu choice and calls one module per choice, then destroys the list when the user quits.<span class="zhn">主程式只負責建立串列、依選單的選擇呼叫對應的模組，使用者結束時再刪除串列。</span></p>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="m34-2" data-menu="m34" hidden>
+<h4 class="alg"><span class="an">Algorithm 3-12</span>menu<span class="sl">Slide 71</span><span class="zhn">選單</span></h4>
+<pre><b>algorithm</b> menu
+Display a menu and read user option.
+   <b>Pre</b>    Nothing
+   <b>Return</b> Valid choice
+1 print (.......MENU.......)
+2 print (A: Add new data.)
+3 print (D: Delete data.)
+4 print (P: Print list.)
+5 print (Q: Quit)
+6 valid = false
+7 loop (<mark>valid false</mark>)
+  1 print (Enter your choice: ")
+  2 read (choice)
+  3 if (choice equal 'A' or 'D' or 'P' or 'Q')
+    1 valid = true
+  4 else
+    1 print (Invalid choice. Choices are &lt;A, D, P, Q&gt;)
+  5 end if
+8 end loop
+9 return choice
+<b>end</b> menu
+<span class="c">Algorithm 3-12　Menu for building a linked list</span></pre>
+<p>The loop repeats until the user types a valid choice, so the main line only ever receives A, D, P or Q.<span class="zhn">迴圈一直重複到使用者輸入有效的選項，所以主程式只會收到 A、D、P、Q。</span></p>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="m34-3" data-menu="m34" hidden>
+<h4 class="alg"><span class="an">Algorithm 3-13</span>addNode<span class="sl">Slide 72 to 74</span><span class="zhn">新增節點</span></h4>
+<p>Steps: <i>get the data for the new node → search the list to locate the insertion point → once we know the insertion point, use insertNode to physically place the data in the list</i>.<span class="zhn">步驟：取得新節點的資料 → 搜尋串列找插入位置 → 知道位置後用 insertNode 實際放進串列。</span></p>
+<pre><b>algorithm</b> addNode (ref list   &lt;metadata&gt;,
+                  val dataIn &lt;dataType&gt;)
+Add data to a linked list.
+   <b>Pre</b>    list is metadata structure to a valid list
+          dataIn are data to be inserted into list
+   <b>Post</b>   data have been inserted into list in key sequence
+1 <mark>found = searchList (list, pPre, pLoc, dataIn.key)</mark>
+2 if (found)
+     <b>Error: Key already exists</b>
+  1 print (Error: Data already in list. Not added.)
+3 else
+  1 <mark>success = insertNode (list, pPre, dataIn)</mark>
+  2 if (success false)
+    1 print (Error: Out of memory. Program quitting.)
+    2 abort algorithm
+  3 end if
+4 return
+<b>end</b> addNode
+<span class="c">Algorithm 3-13　Add node to linked list</span></pre>
+<p><b>Analysis</b>: it uses two previously developed algorithms, <b>searchList</b> and <b>insertNode</b>. <i>When inserting data into a list we need to decide <mark>whether duplicate data will be allowed</mark></i>; <i>a node is generally considered a duplicate if its key matches an existing node's key</i>. We also <i>decide how to handle memory overflow</i>: here, <i>abort the program and print a message</i>.<span class="zhn">分析：用了兩個之前寫好的演算法 searchList 和 insertNode。插入時要決定是否允許重複資料；key 跟現有節點相同通常就算重複。也要決定記憶體不足怎麼處理：這裡是印訊息並結束程式。</span></p>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="m34-4" data-menu="m34" hidden>
+<h4 class="alg"><span class="an">Algorithm 3-14</span>removeNode<span class="sl">Slide 75 to 76</span><span class="zhn">刪除節點</span></h4>
+<p><i>Given the key of the node to be removed, call <mark>searchList</mark> to determine its location and predecessor, then <mark>deleteNode</mark> to do the physical deletion.</i><span class="zhn">給定要刪除節點的 key，先呼叫 searchList 找到它的位置和前一個節點，再用 deleteNode 實際刪除。</span></p>
+<pre><b>algorithm</b> removeNode (ref list &lt;metadata&gt;,
+                     val key  &lt;keyType&gt;)
+This algorithm deletes a node from the linked list.
+   <b>Pre</b>    list is metadata structure to a valid list
+          key is the key to be located and deleted
+   <b>Post</b>   the node has been deleted
+          -or- a warning message printed if not found
+1 <mark>found = searchList (list, pPre, pLoc, key)</mark>
+2 if (found)
+  1 <mark>deleteNode (list, pPre, pLoc, deleteData)</mark>
+3 else
+  1 print (Error: Key not in list.)
+4 end if
+5 return
+<b>end</b> removeNode
+<span class="c">Algorithm 3-14　Remove data from linked list</span></pre>
+<p><b>Statement 2</b>: <i>verify that the data being deleted actually exist</i>; searchList <i>returns true if the key was found, false if it doesn't exist</i>.<span class="zhn">第 2 行：確認要刪的資料真的存在；searchList 找到 key 回傳 true，不存在回傳 false。</span></p>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="m34-5" data-menu="m34" hidden>
+<h4 class="alg"><span class="an">Algorithm 3-15</span>printList<span class="sl">Slide 77 to 79</span><span class="zhn">印出串列</span></h4>
+<p><i>One of the more common uses of linked list traversals</i>: we traverse the list and print all of the key fields. Algorithm 3-15 <i>prints a sequential number and the key</i>, calling traverse (<b>getNext</b>) in a loop <i>until all of the data have been printed</i>.<span class="zhn">鏈結串列走訪最常見的用途之一：走過整個串列印出每個 key。Algorithm 3-15 印出序號和 key，在迴圈中呼叫 getNext，直到所有資料都印完。</span></p>
+<pre><b>algorithm</b> printList (val list &lt;metadata&gt;)
+This algorithm traverses a linked list and prints the key in each
+node.
+   <b>Pre</b>    list is metadata structure to a valid list
+   <b>Post</b>   All keys have been printed
+1 if (<mark>emptyList (list)</mark>)
+  1 print (No data in list.)
+2 else
+  1 print (**** Begin Data Print ****)
+  2 count = 0
+  3 <mark>moreData = getNext (list, 0, dataPtr)</mark>
+  4 loop (moreData true)
+    1 count = count + 1
+    2 print (count, dataPtr-&gt;key)
+    3 <mark>moreData = getNext (list, 1, dataPtr)</mark>
+  5 end loop
+  6 print (**** End Data Print ****)
+3 end if
+4 return
+<b>end</b> printList
+<span class="c">Algorithm 3-15　Print linked list</span></pre>
+<p><b>Analysis</b>: <i>test for an empty list before starting the loop</i>; <i>print a start and end message to assure the user that all of the data were printed</i>; <i>the data from each node are numbered so that the user knows how many elements are in the list</i>; <mark><i>the first call to traverse (getNext) must have a fromWhere flag of zero</i></mark> (later calls use 1).<span class="zhn">分析：開始迴圈前先檢查是否為空；印開始與結束訊息，讓使用者確定全部印完；每筆資料編號，讓使用者知道有幾個元素；第一次呼叫 getNext 的 fromWhere 一定要是 0（之後用 1）。</span></p>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="m34-6" data-menu="m34" hidden>
+<h4 class="alg"><span class="an">Testing</span>Insert &amp; delete tests<span class="sl">Slide 80 to 81</span><span class="zhn">測試插入與刪除</span></h4>
+<p><i>Testing linked list algorithms requires careful planning.</i> Test every position where a pointer changes differently.<span class="zhn">測試鏈結串列演算法要仔細規劃，每一種指標改法不同的位置都要測。</span></p>
+<div class="tbl"><table>
+<tr><th class="l">Four tests for the insert logic</th><th class="l">Four tests for the delete logic</th></tr>
+<tr><td class="l">1. <mark>Insert a node into a null list</mark><span class="zhn">插入到空串列</span></td><td class="l">1. <mark>Delete to a null list</mark><span class="zhn">刪到變成空串列</span></td></tr>
+<tr><td class="l">2. <mark>Insert a node before the first data node</mark><span class="zhn">插在第一個節點之前</span></td><td class="l">2. <mark>Delete the first data node in the list</mark><span class="zhn">刪除第一個節點</span></td></tr>
+<tr><td class="l">3. <mark>Insert between two data nodes</mark><span class="zhn">插在兩個節點之間</span></td><td class="l">3. <mark>Delete a node between two data nodes</mark><span class="zhn">刪除中間的節點</span></td></tr>
+<tr><td class="l">4. <mark>Insert after the last node</mark><span class="zhn">插在最後一個節點之後</span></td><td class="l">4. <mark>Delete the node at the end of the list</mark><span class="zhn">刪除最後一個節點</span></td></tr>
+</table></div>
+<div class="box tip"><span class="lbl">Why these four</span>The beginning (pPre is null, so head changes), the middle, and the end (the new or deleted node's link is null) each run different lines; the null list is the edge case of both.<span class="zhn"><b>為什麼是這四種</b> 開頭（pPre 是 null，要改 head）、中間、結尾（新節點或被刪節點的 link 是 null）各走不同的程式碼；空串列則是兩者的邊界情況。</span></div>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<h3 id="s3-5" data-sec="3-5">3-5 List Applications <span class="star">★★★</span><span class="zhn">串列的應用</span></h3>
+<div class="algmenu" role="list" data-menu="m35"><button type="button" class="algcard" role="listitem" data-alg-open="m35-1"><span class="an">Algorithms 3-16 to 3-18</span><b>Append lists</b><span class="zhn2">串接兩個串列</span><span class="sl">Slide 82 to 88</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m35-2"><span class="an">Algorithms 3-19 to 3-21</span><b>Array of lists</b><span class="zhn2">串列陣列</span><span class="sl">Slide 89 to 92</span></button></div>
+
+<div class="algp" data-alg="m35-1" data-menu="m35" hidden>
+<h4 class="alg"><span class="an">Algorithms 3-16 to 3-18</span>Append lists<span class="sl">Slide 82 to 88</span><span class="zhn">串接兩個串列</span></h4>
+<p><i>Build two linked lists, then append the second one to the end of the first one.</i> How: <mark><i>change the link pointer in the last node of the first list to point to the first node of the second list</i></mark> (Figure 3-19).<span class="zhn">建兩個串列，把第二個接到第一個後面。做法：把第一個串列最後一個節點的 link 改成指向第二個串列的第一個節點（圖 3-19）。</span></p>
+<figure class="fig"><svg viewBox="0 0 470 182" width="460" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="13" role="img"><defs><marker id="f3aa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#1d2433"/></marker><marker id="f3ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#d64933"/></marker></defs><text data-step="0" x="10" y="24" text-anchor="start" font-size="11" fill="#1d2433" font-weight="700">list1</text><rect data-step="0" x="10" y="30" width="70" height="22" rx="3" fill="#eef1f7" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="24" y="45" text-anchor="middle" font-size="11" fill="#1d2433">5</text><rect data-step="0" x="58" y="33" width="16" height="16" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="66" y="64" text-anchor="middle" font-size="9" fill="#8a93a6">head</text><text data-step="0" x="24" y="64" text-anchor="middle" font-size="9" fill="#8a93a6">count</text><line data-step="0" x1="80" y1="41" x2="98" y2="41" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f3aa)"/><rect data-step="0" x="100" y="30" width="34" height="22" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="117" y="45" text-anchor="middle" font-size="11" fill="#1d2433">5</text><rect data-step="0" x="134" y="30" width="12" height="22" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><line data-step="0" x1="144" y1="41" x2="160" y2="41" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f3aa)"/><rect data-step="0" x="162" y="30" width="34" height="22" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="179" y="45" text-anchor="middle" font-size="11" fill="#1d2433">10</text><rect data-step="0" x="196" y="30" width="12" height="22" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><line data-step="0" x1="206" y1="41" x2="222" y2="41" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f3aa)"/><rect data-step="0" x="224" y="30" width="34" height="22" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="241" y="45" text-anchor="middle" font-size="11" fill="#1d2433">15</text><rect data-step="0" x="258" y="30" width="12" height="22" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><line data-step="0" x1="268" y1="41" x2="284" y2="41" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f3aa)"/><rect data-step="0" x="286" y="30" width="34" height="22" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="303" y="45" text-anchor="middle" font-size="11" fill="#1d2433">20</text><rect data-step="0" x="320" y="30" width="12" height="22" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><line data-step="0" x1="330" y1="41" x2="346" y2="41" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f3aa)"/><rect data-step="0" x="348" y="30" width="34" height="22" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="365" y="45" text-anchor="middle" font-size="11" fill="#1d2433">25</text><rect data-step="0" x="382" y="30" width="12" height="22" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><path data-step="0" d="M384,33 L392,49 M392,33 L384,49" stroke="#d64933" stroke-width="1.2"/><text data-step="0" x="10" y="104" text-anchor="start" font-size="11" fill="#1d2433" font-weight="700">list2</text><rect data-step="0" x="10" y="110" width="70" height="22" rx="3" fill="#eef1f7" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="24" y="125" text-anchor="middle" font-size="11" fill="#1d2433">5</text><rect data-step="0" x="58" y="113" width="16" height="16" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="66" y="144" text-anchor="middle" font-size="9" fill="#8a93a6">head</text><text data-step="0" x="24" y="144" text-anchor="middle" font-size="9" fill="#8a93a6">count</text><line data-step="0" x1="80" y1="121" x2="98" y2="121" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f3aa)"/><rect data-step="0" x="100" y="110" width="34" height="22" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="117" y="125" text-anchor="middle" font-size="11" fill="#1d2433">7</text><rect data-step="0" x="134" y="110" width="12" height="22" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><line data-step="0" x1="144" y1="121" x2="160" y2="121" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f3aa)"/><rect data-step="0" x="162" y="110" width="34" height="22" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="179" y="125" text-anchor="middle" font-size="11" fill="#1d2433">12</text><rect data-step="0" x="196" y="110" width="12" height="22" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><line data-step="0" x1="206" y1="121" x2="222" y2="121" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f3aa)"/><rect data-step="0" x="224" y="110" width="34" height="22" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="241" y="125" text-anchor="middle" font-size="11" fill="#1d2433">17</text><rect data-step="0" x="258" y="110" width="12" height="22" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><line data-step="0" x1="268" y1="121" x2="284" y2="121" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f3aa)"/><rect data-step="0" x="286" y="110" width="34" height="22" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="303" y="125" text-anchor="middle" font-size="11" fill="#1d2433">22</text><rect data-step="0" x="320" y="110" width="12" height="22" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><line data-step="0" x1="330" y1="121" x2="346" y2="121" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f3aa)"/><rect data-step="0" x="348" y="110" width="34" height="22" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="365" y="125" text-anchor="middle" font-size="11" fill="#1d2433">27</text><rect data-step="0" x="382" y="110" width="12" height="22" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><path data-step="0" d="M384,113 L392,129 M392,113 L384,129" stroke="#d64933" stroke-width="1.2"/><text data-step="1" x="365" y="18" text-anchor="middle" font-size="10" fill="#d64933">pLoc (last node)</text><rect data-step="2" x="382" y="30" width="12" height="22" rx="3" fill="#fde7c8" stroke="#d64933" stroke-width="1.4"/><path data-step="3" d="M388,52 V82 H117 V106" fill="none" stroke="#d64933" stroke-width="1.6" marker-end="url(#f3ar)"/><text data-step="3" x="250" y="76" text-anchor="start" font-size="10" fill="#d64933">pLoc->link = list2.head</text><text data-step="4" x="10" y="172" text-anchor="start" font-size="11" fill="#d64933">list1.count = 5 + 5 = 10</text></svg><figcaption class="cap">Figure 3-19: before append, list1 is 5 to 25 and list2 is 7 to 27; after append, the 25 node's link points to 7 and list1's count is 10. list2 still has its own head and count 5.<span class="zhn">圖 3-19：串接前 list1 是 5 到 25、list2 是 7 到 27；串接後 25 的 link 指向 7，list1 的 count 變 10。list2 仍保有自己的 head 和 count 5。</span></figcaption></figure>
+<pre><b>algorithm</b> appendTwoLists
+   Creates two linked lists and then appends the second to
+   the first.
+ 1 print (This program creates two lists and then appends them)
+ 2 print (Enter first file name)
+ 3 read  (fileName)
+ 4 open  (fileName)
+ 5 <mark>build     (list1, fileName)</mark>
+ 6 printList (list1)
+ 7 print (Enter second file name)
+ 8 read  (fileName)
+ 9 open  (fileName)
+10 <mark>build     (list2, fileName)</mark>
+11 printList (list2)
+12 <mark>append    (list1, list2)</mark>
+   <b>The lists are now appended. Print to prove success.</b>
+13 printList (list1)
+14 return
+<b>end</b> appendTwoLists
+<span class="c">Algorithm 3-16　Append two linked lists</span></pre>
+<p><b>Analysis</b>: <i>the main line just calls two algorithms</i>, <b>build</b> (Algorithm 3-17) and <b>append</b> (Algorithm 3-18).<span class="zhn">分析：主程式只呼叫兩個演算法：build（3-17）和 append（3-18）。</span></p>
+<pre><b>algorithm</b> build (ref list &lt;metadata&gt;,
+                val file &lt;data file&gt;)
+This algorithm builds a linked list from data in a file.
+   <b>Pre</b>    list is metadata structure for list to be built
+          File must exist
+   <b>Post</b>   List has been built
+1 createList (list)
+2 loop (<mark>not end of file</mark>)
+  1 read (file into dataIn)
+  2 <mark>searchList (list, pPre, pLoc, dataIn.key)</mark>
+  3 <mark>insertNode (list, pPre, dataIn)</mark>
+3 end loop
+4 return
+<b>end</b> build
+<span class="c">Algorithm 3-17　Build linked lists</span></pre>
+<pre><b>algorithm</b> append (ref list1 &lt;metadata&gt;,
+                 val list2 &lt;metadata&gt;)
+This algorithm appends the second list to the end of the first.
+   <b>Pre</b>    both lists are metadata structures to valid list
+   <b>Post</b>   Second list appended to the first list
+1 if (<mark>list1.count zero</mark>)
+  1 <mark>list1.head = list2.head</mark>
+2 else
+  1 <mark>pLoc = list1.head</mark>
+  2 loop (<mark>pLoc-&gt;link not null</mark>)
+    1 <mark>pLoc = pLoc-&gt;link</mark>
+  3 end loop
+  4 <mark>pLoc-&gt;link = list2.head</mark>
+3 end if
+4 <mark>list1.count = list1.count + list2.count</mark>
+5 return
+<b>end</b> append
+<span class="c">Algorithm 3-18　Append linked lists</span></pre>
+<p><b>Analysis (steps)</b>: 1. <i>if the first list is null, set its head pointer to the head pointer of the second list</i>; 2. <i>traverse the first list to find the last node</i>; 3. <i>change the last node's link pointer to point to the beginning of the second list</i>; 4. <i>add the counts for the two lists and place the sum in the count for the first list</i>.<span class="zhn">分析（步驟）：1. 第一個串列是空的，就把它的 head 設成第二個串列的 head；2. 走訪第一個串列找到最後一個節點；3. 把最後一個節點的 link 改指第二個串列的開頭；4. 兩個 count 相加，存到第一個串列的 count。</span></p>
+<div class="box warn"><span class="lbl">Loop condition</span>The loop tests <code>pLoc-&gt;link not null</code>, not <code>pLoc not null</code>: it must <b>stop on</b> the last node, not walk past it. With <code>pLoc not null</code>, pLoc ends as null and line 2.4 fails.<span class="zhn"><b>迴圈條件</b> 迴圈判斷的是 pLoc->link not null，不是 pLoc not null：要停在最後一個節點上，不能走過頭。用 pLoc not null 的話 pLoc 最後是 null，2.4 行就出錯。</span></div>
+<div class="lab" data-lab="append"></div>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="m35-2" data-menu="m35" hidden>
+<h4 class="alg"><span class="an">Algorithms 3-19 to 3-21</span>Array of lists<span class="sl">Slide 89 to 92</span><span class="zhn">串列陣列</span></h4>
+<ul>
+<li><i>The data for each linked list are read from a set of existing files and inserted into the list.</i> <i>After the program builds the lists, they are printed to verify that they are complete.</i><span class="zhn">每個串列的資料從一組現有檔案讀入、插入串列。建好之後印出來確認完整。</span></li>
+<li><mark>Linked list of a two-dimensional array</mark>: <i>each linked list represents one row in the array; the nodes in the linked list represent the columns</i>.<span class="zhn">用鏈結串列表示二維陣列：每個串列代表陣列的一列（row），串列裡的節點代表各行（column）。</span></li>
+</ul>
+<figure class="fig"><svg viewBox="0 0 500 166" width="480" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="13" role="img"><defs><marker id="f3ra" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#1d2433"/></marker><marker id="f3rr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#d64933"/></marker></defs><text data-step="0" x="10" y="16" text-anchor="start" font-size="11" fill="#1d2433" font-weight="700">listAry</text><rect data-step="0" x="10" y="26" width="60" height="24" rx="3" fill="#eef1f7" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="40" y="42" text-anchor="middle" font-size="10" fill="#8a93a6">[0]</text><line data-step="1" x1="70" y1="38" x2="96" y2="38" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f3ra)"/><rect data-step="2" x="98" y="27" width="34" height="22" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="2" x="115" y="42" text-anchor="middle" font-size="11" fill="#1d2433"></text><rect data-step="2" x="132" y="27" width="12" height="22" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><line data-step="3" x1="142" y1="38" x2="158" y2="38" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f3ra)"/><rect data-step="4" x="160" y="27" width="34" height="22" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="4" x="177" y="42" text-anchor="middle" font-size="11" fill="#1d2433"></text><rect data-step="4" x="194" y="27" width="12" height="22" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><line data-step="5" x1="204" y1="38" x2="220" y2="38" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f3ra)"/><rect data-step="6" x="222" y="27" width="34" height="22" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="6" x="239" y="42" text-anchor="middle" font-size="11" fill="#1d2433"></text><rect data-step="6" x="256" y="27" width="12" height="22" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><path data-step="6" d="M258,30 L266,46 M266,30 L258,46" stroke="#d64933" stroke-width="1.2"/><rect data-step="0" x="10" y="60" width="60" height="24" rx="3" fill="#eef1f7" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="40" y="76" text-anchor="middle" font-size="10" fill="#8a93a6">[1]</text><line data-step="1" x1="70" y1="72" x2="96" y2="72" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f3ra)"/><rect data-step="2" x="98" y="61" width="34" height="22" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="2" x="115" y="76" text-anchor="middle" font-size="11" fill="#1d2433"></text><rect data-step="2" x="132" y="61" width="12" height="22" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><line data-step="3" x1="142" y1="72" x2="158" y2="72" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f3ra)"/><rect data-step="4" x="160" y="61" width="34" height="22" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="4" x="177" y="76" text-anchor="middle" font-size="11" fill="#1d2433"></text><rect data-step="4" x="194" y="61" width="12" height="22" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><line data-step="5" x1="204" y1="72" x2="220" y2="72" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f3ra)"/><rect data-step="6" x="222" y="61" width="34" height="22" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="6" x="239" y="76" text-anchor="middle" font-size="11" fill="#1d2433"></text><rect data-step="6" x="256" y="61" width="12" height="22" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><path data-step="6" d="M258,64 L266,80 M266,64 L258,80" stroke="#d64933" stroke-width="1.2"/><rect data-step="0" x="10" y="94" width="60" height="24" rx="3" fill="#eef1f7" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="40" y="110" text-anchor="middle" font-size="10" fill="#8a93a6">[2]</text><line data-step="1" x1="70" y1="106" x2="96" y2="106" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f3ra)"/><rect data-step="2" x="98" y="95" width="34" height="22" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="2" x="115" y="110" text-anchor="middle" font-size="11" fill="#1d2433"></text><rect data-step="2" x="132" y="95" width="12" height="22" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><line data-step="3" x1="142" y1="106" x2="158" y2="106" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f3ra)"/><rect data-step="4" x="160" y="95" width="34" height="22" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="4" x="177" y="110" text-anchor="middle" font-size="11" fill="#1d2433"></text><rect data-step="4" x="194" y="95" width="12" height="22" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><line data-step="5" x1="204" y1="106" x2="220" y2="106" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f3ra)"/><rect data-step="6" x="222" y="95" width="34" height="22" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="6" x="239" y="110" text-anchor="middle" font-size="11" fill="#1d2433"></text><rect data-step="6" x="256" y="95" width="12" height="22" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><path data-step="6" d="M258,98 L266,114 M266,98 L258,114" stroke="#d64933" stroke-width="1.2"/><rect data-step="0" x="10" y="128" width="60" height="24" rx="3" fill="#eef1f7" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="40" y="144" text-anchor="middle" font-size="10" fill="#8a93a6">[3]</text><line data-step="1" x1="70" y1="140" x2="96" y2="140" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f3ra)"/><rect data-step="2" x="98" y="129" width="34" height="22" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="2" x="115" y="144" text-anchor="middle" font-size="11" fill="#1d2433"></text><rect data-step="2" x="132" y="129" width="12" height="22" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><line data-step="3" x1="142" y1="140" x2="158" y2="140" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f3ra)"/><rect data-step="4" x="160" y="129" width="34" height="22" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="4" x="177" y="144" text-anchor="middle" font-size="11" fill="#1d2433"></text><rect data-step="4" x="194" y="129" width="12" height="22" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><line data-step="5" x1="204" y1="140" x2="220" y2="140" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f3ra)"/><rect data-step="6" x="222" y="129" width="34" height="22" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="6" x="239" y="144" text-anchor="middle" font-size="11" fill="#1d2433"></text><rect data-step="6" x="256" y="129" width="12" height="22" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><path data-step="6" d="M258,132 L266,148 M266,132 L258,148" stroke="#d64933" stroke-width="1.2"/><text data-step="6" x="300" y="60" text-anchor="start" font-size="11" fill="#1d2433">each element of the array</text><text data-step="6" x="300" y="76" text-anchor="start" font-size="11" fill="#1d2433">is a list head (count, pos, head)</text><text data-step="6" x="300" y="104" text-anchor="start" font-size="11" fill="#8a93a6">row of a 2-D array = one list;</text><text data-step="6" x="300" y="120" text-anchor="start" font-size="11" fill="#8a93a6">its nodes are the columns</text></svg><figcaption class="cap">Figure 3-20: structure for an array of linked lists. Each element of listAry is a list head (count, pos, head) that starts its own list.<span class="zhn">圖 3-20：串列陣列的結構。listAry 的每個元素都是一個 list head（count、pos、head），各自開始一條串列。</span></figcaption></figure>
+<pre><b>algorithm</b> arrayOfLists
+Create an array of linked lists. Each list is read from
+a file. After the lists have been created, they are
+printed to verify that they were built properly.
+1 print (Begin array of linked lists)
+2 print (How many list do you want?)
+3 read  (numLists)
+4 <mark>buildArys (listArray, numLists)</mark>
+5 <mark>printArys (listArray, numLists)</mark>
+6 print (End of array of linked lists)
+<b>end</b> arrayOfLists
+<span class="c">Algorithm 3-19　Array of linked lists</span></pre>
+<pre><b>algorithm</b> buildArrays (ref listArray &lt;metadata&gt;,
+                      val numLists  &lt;integer&gt;)
+Read files and insert contents into linked lists pointed to by
+an array of head pointers.
+   <b>Pre</b>    listArray and the number of elements in the array
+   <b>Post</b>   Array of linked lists built
+1 row = 0
+2 loop (<mark>row &lt; numLists</mark>)
+  1 print (Enter file name)
+  2 read  (fileName)
+  3 open  (fileName)
+  4 <mark>build (listArray[row], fileName)</mark>
+  5 close (fileName)
+  6 row = row + 1
+3 end loop
+4 return
+<b>end</b> buildArrays
+<span class="c">Algorithm 3-20　Build array of linked lists</span></pre>
+<pre><b>algorithm</b> printArys (val listArray &lt;metadata&gt;,
+                    val numLists  &lt;integer&gt;)
+   This algorithm prints the contents of lists in listArray.
+   <b>Pre</b>    lists in listArray has been filled
+          numLists is the number of list pointers in array
+   <b>Post</b>   The lists have been printed, one after the other
+1 row = 0
+2 loop (row &lt; numLists)
+  1 <mark>printList (listArray [row])</mark>
+  2 row = row + 1
+3 end loop
+4 return
+<b>end</b> printAry
+<span class="c">Algorithm 3-21　Print array of linked lists</span></pre>
+<p>Both loops run row from 0 to numLists − 1 and reuse earlier algorithms: <b>build</b> (Algorithm 3-17) for each row, and <b>printList</b> (Algorithm 3-15) for each row.<span class="zhn">兩個迴圈的 row 都從 0 跑到 numLists − 1，並重複使用之前的演算法：每一列呼叫 build（3-17）和 printList（3-15）。</span></p>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<h3 id="s3-6" data-sec="3-6">3-6 Complex Linked List Structures <span class="star">★★★</span><span class="zhn">進階鏈結串列結構</span></h3>
+<div class="tbl"><table>
+<tr><th>Structure</th><th class="l">Key idea</th><th class="l">Head (metadata)</th></tr>
+<tr><td><b>Circularly linked</b><span class="zhn">環狀</span></td><td class="l"><mark>The last node's link points to the first node.</mark><span class="zhn">最後一個節點的 link 指向第一個節點。</span></td><td class="l">count, pos, <b>rear</b>, link</td></tr>
+<tr><td><b>Doubly linked</b><span class="zhn">雙向</span></td><td class="l">Each node has <mark>two pointers</mark>: to its successor (fore) and its predecessor (back).<span class="zhn">每個節點有兩個指標：指向後一個（fore）和前一個（back）。</span></td><td class="l">count, head, <b>rear</b></td></tr>
+<tr><td><b>Multilinked</b><span class="zhn">多重鏈結</span></td><td class="l">A list with <mark>two or more logical key sequences</mark>; the data exist once.<span class="zhn">有兩個以上邏輯鍵序列的串列；資料只存一份。</span></td><td class="l">count and one head (and rear) per sequence</td></tr>
+</table></div>
+<div class="algmenu" role="list" data-menu="m36"><button type="button" class="algcard" role="listitem" data-alg-open="m36-1"><span class="an">Structure 1</span><b>Circularly linked list</b><span class="zhn2">環狀鏈結串列</span><span class="sl">Slide 93 to 94</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m36-2"><span class="an">Structure 2</span><b>Doubly linked list</b><span class="zhn2">雙向鏈結串列</span><span class="sl">Slide 95 to 97</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m36-3"><span class="an">Algorithm 3-22</span><b>insertDbl</b><span class="zhn2">雙向串列插入</span><span class="sl">Slide 98 to 104</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m36-4"><span class="an">Algorithm 3-23</span><b>deleteDbl</b><span class="zhn2">雙向串列刪除</span><span class="sl">Slide 105 to 109</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m36-5"><span class="an">Structure 3</span><b>Multilinked list</b><span class="zhn2">多重鏈結串列</span><span class="sl">Slide 110 to 115</span></button></div>
+
+<div class="algp" data-alg="m36-1" data-menu="m36" hidden>
+<h4 class="alg"><span class="an">Structure 1</span>Circularly linked list<span class="sl">Slide 93 to 94</span><span class="zhn">環狀鏈結串列</span></h4>
+<ul>
+<li><mark><i>The last node's link points to the first node of the list.</i></mark><span class="zhn">最後一個節點的 link 指向串列的第一個節點。</span></li>
+<li><i>When inserting or deleting the last node</i>: <mark>update the rear pointer in the header</mark> and <mark>point the link field of the last node to the first node</mark>.<span class="zhn">插入或刪除最後一個節點時：要更新 header 裡的 rear 指標，並把最後一個節點的 link 指回第一個節點。</span></li>
+</ul>
+<figure class="fig"><svg viewBox="0 0 480 108" width="470" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="13" role="img"><defs><marker id="f3oa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#1d2433"/></marker><marker id="f3or" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#d64933"/></marker></defs><text data-step="0" x="10" y="46" text-anchor="start" font-size="12" fill="#1d2433" font-weight="700">list</text><rect data-step="0" x="40" y="30" width="130" height="28" rx="3" fill="#eef1f7" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="56" y="49" text-anchor="middle" font-size="11" fill="#1d2433">N</text><rect data-step="0" x="76" y="36" width="18" height="16" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="85" y="70" text-anchor="middle" font-size="9" fill="#8a93a6">pos</text><rect data-step="0" x="106" y="36" width="18" height="16" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="115" y="70" text-anchor="middle" font-size="9" fill="#8a93a6">rear</text><rect data-step="0" x="136" y="36" width="18" height="16" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="145" y="70" text-anchor="middle" font-size="9" fill="#8a93a6">link</text><text data-step="0" x="56" y="70" text-anchor="middle" font-size="9" fill="#8a93a6">count</text><line data-step="1" x1="150" y1="44" x2="208" y2="44" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f3oa)"/><rect data-step="2" x="210" y="33" width="34" height="22" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="2" x="227" y="48" text-anchor="middle" font-size="11" fill="#1d2433">5</text><rect data-step="2" x="244" y="33" width="12" height="22" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><line data-step="3" x1="256" y1="44" x2="288" y2="44" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f3oa)"/><rect data-step="4" x="290" y="33" width="34" height="22" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="4" x="307" y="48" text-anchor="middle" font-size="11" fill="#1d2433">10</text><rect data-step="4" x="324" y="33" width="12" height="22" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><line data-step="5" x1="336" y1="44" x2="362" y2="44" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f3oa)"/><text data-step="5" x="380" y="48" text-anchor="middle" font-size="12" fill="#1d2433">• • •</text><line data-step="5" x1="392" y1="44" x2="408" y2="44" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f3oa)"/><rect data-step="6" x="410" y="33" width="34" height="22" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="6" x="427" y="48" text-anchor="middle" font-size="11" fill="#1d2433">95</text><rect data-step="6" x="444" y="33" width="12" height="22" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><path data-step="7" d="M115,36 V14 H432 V30" fill="none" stroke="#1d2433" stroke-width="1.4" marker-end="url(#f3oa)"/><text data-step="7" x="270" y="10" text-anchor="middle" font-size="10" fill="#8a93a6">rear → last node</text><path data-step="8" d="M450,55 V82 H228 V58" fill="none" stroke="#d64933" stroke-width="1.8" marker-end="url(#f3or)"/><text data-step="8" x="330" y="98" text-anchor="middle" font-size="11" fill="#d64933">last node's link → first node</text></svg><figcaption class="cap">Figure 3-21: a circularly linked list. The head keeps count, pos, rear and link; the 95 node's link goes back to 5.<span class="zhn">圖 3-21：環狀鏈結串列。head 存 count、pos、rear、link；95 的 link 繞回 5。</span></figcaption></figure>
+<ul>
+<li>It <mark><i>allows searching from the middle of the list</i></mark>: <i>no difference between beginning and middle in probability</i>.<span class="zhn">可以從串列中間開始搜尋：從開頭或中間開始，找到的機率沒有差別。</span></li>
+<li>Two problems occur. <b>If the target lies before the current node</b>: <i>automatically continue the search from the beginning</i>. <b>If the target does not exist</b>: <i>save the starting node's address and <mark>stop when we have circled around to it</mark></i>.<span class="zhn">會有兩個問題。target 在目前節點之前：自動從開頭繼續找。target 不存在：先存起點的位址，繞一圈回到起點就停。</span></li>
+</ul>
+<pre>loop (target not equal to pLoc-&gt;data.key
+      AND <mark>pLoc-&gt;link not equal to startAddress</mark>)</pre>
+<div class="lab" data-lab="circ"></div>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="m36-2" data-menu="m36" hidden>
+<h4 class="alg"><span class="an">Structure 2</span>Doubly linked list<span class="sl">Slide 95 to 97</span><span class="zhn">雙向鏈結串列</span></h4>
+<ul>
+<li><i>One of the most powerful variations of linked lists.</i> <mark><i>Each node has two pointers</i></mark>: <i>one to its successor and the other to its predecessor</i>.<span class="zhn">鏈結串列最強大的變形之一。每個節點有兩個指標：一個指向後繼者，一個指向前一個。</span></li>
+<li>Each node contains a <mark><b>backward pointer</b> to its predecessor</mark> and a <mark><b>forward pointer</b> to its successor</mark>.<span class="zhn">每個節點有指向前一個的 backward 指標，和指向後一個的 forward 指標。</span></li>
+<li><b>Three metadata</b> in the head structure: <mark>a count, a head pointer for traversals, a rear pointer</mark>. The rear pointer <i>is not required in all doubly linked lists</i>, but <i>it makes some of the list algorithms more efficient</i>.<span class="zhn">head 結構有三個 metadata：count、走訪用的 head 指標、rear 指標。rear 不是每種雙向串列都要，但能讓某些演算法更有效率。</span></li>
+<li><b>Doubly linked circularly linked list</b>: <i>the last forward pointer points to the first node</i> and <i>the backward pointer of the first node points to the last node</i>.<span class="zhn">雙向環狀串列：最後一個節點的 forward 指向第一個節點，第一個節點的 backward 指向最後一個節點。</span></li>
+</ul>
+<figure class="fig"><svg viewBox="0 0 480 134" width="470" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="13" role="img"><defs><marker id="f3da" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#1d2433"/></marker><marker id="f3dr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#d64933"/></marker></defs><text data-step="0" x="10" y="44" text-anchor="start" font-size="12" fill="#1d2433" font-weight="700">list</text><rect data-step="0" x="40" y="28" width="100" height="26" rx="3" fill="#eef1f7" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="58" y="46" text-anchor="middle" font-size="11" fill="#1d2433">3</text><rect data-step="0" x="80" y="33" width="18" height="16" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><rect data-step="0" x="110" y="33" width="18" height="16" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="58" y="66" text-anchor="middle" font-size="9" fill="#8a93a6">count</text><text data-step="0" x="89" y="66" text-anchor="middle" font-size="9" fill="#8a93a6">head</text><text data-step="0" x="119" y="66" text-anchor="middle" font-size="9" fill="#8a93a6">rear</text><line data-step="1" x1="89" y1="49" x2="182" y2="72" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f3da)"/><rect data-step="2" x="180" y="70" width="14" height="22" rx="3" fill="#fff2c2" stroke="#1d2433" stroke-width="1.4"/><rect data-step="2" x="194" y="70" width="30" height="22" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="2" x="209" y="85" text-anchor="middle" font-size="11" fill="#1d2433">5</text><rect data-step="2" x="224" y="70" width="14" height="22" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><path data-step="2" d="M182,73 L192,89 M192,73 L182,89" stroke="#d64933" stroke-width="1.2"/><text data-step="2" x="187" y="104" text-anchor="middle" font-size="9" fill="#8a93a6">B</text><text data-step="2" x="231" y="104" text-anchor="middle" font-size="9" fill="#8a93a6">F</text><line data-step="3" x1="238" y1="77" x2="288" y2="77" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f3da)"/><line data-step="4" x1="294" y1="87" x2="238" y2="87" stroke="#d64933" stroke-width="1.6" marker-end="url(#f3dr)"/><rect data-step="5" x="290" y="70" width="14" height="22" rx="3" fill="#fff2c2" stroke="#1d2433" stroke-width="1.4"/><rect data-step="5" x="304" y="70" width="30" height="22" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="5" x="319" y="85" text-anchor="middle" font-size="11" fill="#1d2433">10</text><rect data-step="5" x="334" y="70" width="14" height="22" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><text data-step="5" x="297" y="104" text-anchor="middle" font-size="9" fill="#8a93a6">B</text><text data-step="5" x="341" y="104" text-anchor="middle" font-size="9" fill="#8a93a6">F</text><line data-step="6" x1="348" y1="77" x2="398" y2="77" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f3da)"/><line data-step="7" x1="404" y1="87" x2="348" y2="87" stroke="#d64933" stroke-width="1.6" marker-end="url(#f3dr)"/><rect data-step="8" x="400" y="70" width="14" height="22" rx="3" fill="#fff2c2" stroke="#1d2433" stroke-width="1.4"/><rect data-step="8" x="414" y="70" width="30" height="22" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="8" x="429" y="85" text-anchor="middle" font-size="11" fill="#1d2433">95</text><rect data-step="8" x="444" y="70" width="14" height="22" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><path data-step="8" d="M446,73 L456,89 M456,73 L446,89" stroke="#d64933" stroke-width="1.2"/><text data-step="8" x="407" y="104" text-anchor="middle" font-size="9" fill="#8a93a6">B</text><text data-step="8" x="451" y="104" text-anchor="middle" font-size="9" fill="#8a93a6">F</text><path data-step="9" d="M119,33 V14 H429 V68" fill="none" stroke="#1d2433" stroke-width="1.4" marker-end="url(#f3da)"/><text data-step="9" x="250" y="124" text-anchor="middle" font-size="11" fill="#8a93a6">F: forward pointer (successor) · B: backward pointer (predecessor)</text></svg><figcaption class="cap">Figure 3-22: a doubly linked list. head points to 5, rear points to 95; the first node's back and the last node's fore are null.<span class="zhn">圖 3-22：雙向鏈結串列。head 指向 5，rear 指向 95；第一個節點的 back 和最後一個節點的 fore 是 null。</span></figcaption></figure>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="m36-3" data-menu="m36" hidden>
+<h4 class="alg"><span class="an">Algorithm 3-22</span>insertDbl<span class="sl">Slide 98 to 104</span><span class="zhn">雙向串列插入</span></h4>
+<div class="tbl"><table>
+<tr><th>Case</th><th class="l">What changes</th></tr>
+<tr><td>Into a null list<span class="zhn">空串列</span></td><td class="l"><i>Set the head and rear pointers to point to the new node</i>; <i>set the forward and backward pointers of the new node to null</i> (Figure 3-23 a).<span class="zhn">head 和 rear 都指向新節點；新節點的 fore、back 都設成 null。</span></td></tr>
+<tr><td>Between two nodes<span class="zhn">兩個節點之間</span></td><td class="l"><i>The new node must point to its predecessor and successor</i>; <i>the predecessor and successor must point to the new node</i> (Figure 3-23 b). Four pointers change.<span class="zhn">新節點要指向前一個和後一個；前一個和後一個也要指向新節點。共改四個指標。</span></td></tr>
+<tr><td>At the end<span class="zhn">串列尾端</span></td><td class="l"><i>The new node's back pointer must point to its predecessor</i>; <i>its forward pointer is set to null because there is no successor</i>; <mark><i>the rear pointer in the head must point to the new rear node</i></mark>.<span class="zhn">新節點的 back 指向前一個；沒有後繼者，所以 fore 設成 null；head 的 rear 要指向新的尾端節點。</span></td></tr>
+</table></div>
+<pre><b>algorithm</b> insertDbl (ref list   &lt;metadata&gt;,
+                    val dataIn &lt;dataType&gt;)
+This algorithm inserts data into a doubly linked list.
+   <b>Pre</b>    list is metadata structure to a valid list
+          dataIn contains the data to be inserted
+   <b>Post</b>   The data have been inserted in sequence
+   <b>Return</b> &lt;integer&gt; 0: failed--dynamic memory overflow
+                    1: successful
+                    2: failed--duplicate key presented
+1 if (full list)
+  1 return 0
+2 end if
+   <b>Locate insertion point in list</b>
+3 <mark>found = searchList (list, pPre, pSucc, dataIn.key)</mark>
+4 if (not found)
+  1 allocate (pNew)
+  2 pNew-&gt;data = dataIn
+  3 if (<mark>pPre is null</mark>)
+       <b>Inserting before first node or into empty list</b>
+    1 <mark>pNew-&gt;back = null</mark>
+    2 <mark>pNew-&gt;fore = list.head</mark>
+    3 <mark>list.head  = pNew</mark>
+  4 else
+       <b>Inserting into middle or end of list</b>
+    1 <mark>pNew-&gt;fore = pPre-&gt;fore</mark>
+    2 <mark>pNew-&gt;back = pPre</mark>
+    3 <mark>pPre-&gt;fore = pNew</mark>          ← moved here from line 4.9
+  5 end if
+     <b>Test for insert into null list or at end of list</b>
+  6 if (<mark>pSucc null</mark>)                ← corrected from "pPre->fore null"
+       <b>Inserting at end of list--set rear pointer</b>
+    1 <mark>list.rear = pNew</mark>
+  7 else
+       <b>Inserting in middle of list--point successor to new</b>
+    1 <mark>pSucc-&gt;back = pNew</mark>
+  8 end if
+  9 list.count = list.count + 1
+ 10 return (1)
+5 end if
+   <b>Duplicate data. Key already exists.</b>
+6 return (2)
+<b>end</b> insertDbl
+<span class="c">Algorithm 3-22　Doubly linked list insert (with the slide 103 correction)</span></pre>
+<div class="box warn"><span class="lbl">Slide 103 correction</span>The professor corrected the textbook version: <b>line 4.9 (<code>pPre-&gt;fore = pNew</code>) moves to line 4.4.3</b>, and <b>line 4.6 becomes <code>if (pSucc null)</code></b>. In the original, line 4.9 runs even when pPre is null (crash), and line 4.6 tested pPre-&gt;fore after it had already been changed. The code above is the corrected version.<span class="zhn"><b>投影片 103 的修正</b> 老師修正了課本的版本：第 4.9 行（pPre->fore = pNew）移到 4.4.3 行，4.6 行改成 if (pSucc null)。原版在 pPre 是 null 時也會執行 4.9（會出錯），而 4.6 檢查的 pPre->fore 那時已經被改掉了。上面是修正後的版本。</span></div>
+<p><b>Analysis</b>: it <i>returns for three different conditions</i>: <mark>0 if dynamic memory is full, 1 if successful, 2 if the insert matches data already in the list</mark>. The search provides <i>the location of the target's logical predecessor (pPre)</i> and <b>pSucc</b>: <i>the node with a key that matches the target, or the first node with a key greater than the target, or null if the target is greater than the last node</i>.<span class="zhn">分析：有三種回傳值：記憶體滿回傳 0、成功回傳 1、資料已存在回傳 2。搜尋會給出 target 邏輯上的前一個節點 pPre，以及 pSucc：key 相同的節點，或第一個 key 比 target 大的節點，或 target 比最後一個節點還大時是 null。</span></p>
+<div class="lab" data-lab="dbl"></div>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="m36-4" data-menu="m36" hidden>
+<h4 class="alg"><span class="an">Algorithm 3-23</span>deleteDbl<span class="sl">Slide 105 to 109</span><span class="zhn">雙向串列刪除</span></h4>
+<p><i>Once we locate the node to be deleted, change its predecessor's and successor's pointers</i>: <mark><i>the predecessor, if any, is pointed to the deleted node's successor</i></mark>; <mark><i>the successor, if any, is set to point to the predecessor</i></mark>. Then <i>recycle the node</i>.<span class="zhn">找到要刪的節點後，改它前一個和後一個節點的指標：前一個（如果有）改指被刪節點的後一個；後一個（如果有）改指前一個。最後回收節點。</span></p>
+<figure class="fig"><svg viewBox="0 0 420 132" width="420" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="13" role="img"><defs><marker id="f3ea" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#1d2433"/></marker><marker id="f3er" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#d64933"/></marker></defs><rect data-step="0" x="40" y="40" width="14" height="22" rx="3" fill="#fff2c2" stroke="#1d2433" stroke-width="1.4"/><rect data-step="0" x="54" y="40" width="30" height="22" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="69" y="55" text-anchor="middle" font-size="11" fill="#1d2433">25</text><rect data-step="0" x="84" y="40" width="14" height="22" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><path data-step="0" d="M42,43 L52,59 M52,43 L42,59" stroke="#d64933" stroke-width="1.2"/><text data-step="0" x="47" y="74" text-anchor="middle" font-size="9" fill="#8a93a6">B</text><text data-step="0" x="91" y="74" text-anchor="middle" font-size="9" fill="#8a93a6">F</text><line data-step="0" x1="98" y1="47" x2="168" y2="47" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f3ea)"/><line data-step="0" x1="174" y1="57" x2="98" y2="57" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f3ea)"/><rect data-step="0" x="170" y="40" width="14" height="22" rx="3" fill="#fff2c2" stroke="#1d2433" stroke-width="1.4"/><rect data-step="0" x="184" y="40" width="30" height="22" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="199" y="55" text-anchor="middle" font-size="11" fill="#1d2433">50</text><rect data-step="0" x="214" y="40" width="14" height="22" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="177" y="74" text-anchor="middle" font-size="9" fill="#8a93a6">B</text><text data-step="0" x="221" y="74" text-anchor="middle" font-size="9" fill="#8a93a6">F</text><line data-step="0" x1="228" y1="47" x2="298" y2="47" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f3ea)"/><line data-step="0" x1="304" y1="57" x2="228" y2="57" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f3ea)"/><rect data-step="0" x="300" y="40" width="14" height="22" rx="3" fill="#fff2c2" stroke="#1d2433" stroke-width="1.4"/><rect data-step="0" x="314" y="40" width="30" height="22" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="329" y="55" text-anchor="middle" font-size="11" fill="#1d2433">75</text><rect data-step="0" x="344" y="40" width="14" height="22" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><path data-step="0" d="M346,43 L356,59 M356,43 L346,59" stroke="#d64933" stroke-width="1.2"/><text data-step="0" x="307" y="74" text-anchor="middle" font-size="9" fill="#8a93a6">B</text><text data-step="0" x="351" y="74" text-anchor="middle" font-size="9" fill="#8a93a6">F</text><text data-step="1" x="199" y="24" text-anchor="middle" font-size="11" fill="#d64933" font-weight="700">pDlt</text><rect data-step="1" x="166" y="36" width="66" height="30" rx="3" fill="none" stroke="#d64933" stroke-width="1.4" stroke-dasharray="4 3"/><path data-step="2" d="M91,40 V12 H322 V36" fill="none" stroke="#d64933" stroke-width="1.8" marker-end="url(#f3er)"/><text data-step="2" x="72" y="9" text-anchor="start" font-size="10" fill="#d64933">pPred->fore = pDlt->fore</text><path data-step="3" d="M307,62 V92 H91 V66" fill="none" stroke="#d64933" stroke-width="1.8" marker-end="url(#f3er)"/><text data-step="3" x="200" y="106" text-anchor="middle" font-size="10" fill="#d64933">pSucc->back = pDlt->back</text><text data-step="4" x="199" y="82" text-anchor="middle" font-size="10" fill="#d64933">recycle (pDlt)</text><text data-step="4" x="10" y="124" text-anchor="start" font-size="11" fill="#d64933">list.count = 3 − 1 = 2</text></svg><figcaption class="cap">Figure 3-24: deleting 50. 25's fore now points to 75, 75's back now points to 25, the 50 node is recycled and count becomes 2.<span class="zhn">圖 3-24：刪除 50。25 的 fore 改指 75，75 的 back 改指 25，回收 50，count 變 2。</span></figcaption></figure>
+<pre><b>algorithm</b> deleteDbl (ref list &lt;metadata&gt;,
+                    val pDlt &lt;node pointer&gt;)
+This algorithm deletes a node from a doubly linked list.
+   <b>Pre</b>    list is metadata structure to a valid list
+          pDlt is a pointer to the node to be deleted
+   <b>Post</b>   node deleted
+1 if (<mark>pDlt null</mark>)
+  1 abort (Impossible condition in delete double)
+2 end if
+3 list.count = list.count - 1
+4 if (<mark>pDlt-&gt;back not null</mark>)
+     <b>Point predecessor to successor</b>
+  1 <mark>pPred       = pDlt-&gt;back</mark>
+  2 <mark>pPred-&gt;fore = pDlt-&gt;fore</mark>
+5 else
+     <b>Update head pointer</b>
+  1 <mark>list.head = pDlt-&gt;fore</mark>
+6 end if
+7 if (<mark>pDlt-&gt;fore not null</mark>)
+     <b>Point successor to predecessor</b>
+  1 <mark>pSucc       = pDlt-&gt;fore</mark>
+  2 <mark>pSucc-&gt;back = pDlt-&gt;back</mark>
+8 else
+     <b>Point rear to predecessor</b>
+  1 <mark>list.rear = pDlt-&gt;back</mark>
+9 end if
+10 <mark>recycle (pDlt)</mark>
+11 return
+<b>end</b> deleteDbl
+<span class="c">Algorithm 3-23　Doubly linked list delete</span></pre>
+<p><b>Analysis</b>: <i>the search was done in the calling algorithm</i>, so we already know the location of the node to be deleted. <i>It should never be called with a null delete pointer, so we abort the program if we detect one.</i> The predecessor pointer is created in statement 4.1 and the successor pointer in statement 7.1.<span class="zhn">分析：搜尋在呼叫者那邊已經做完，所以已經知道要刪的節點在哪。不應該用 null 指標呼叫它，所以偵測到就中止程式。前一個節點的指標在 4.1 行建立，後一個的在 7.1 行。</span></p>
+<div class="box tip"><span class="lbl">Two checks, four cases</span>back null → it is the first node, so <b>head</b> changes; fore null → it is the last node, so <b>rear</b> changes. Deleting the only node makes both head and rear null.<span class="zhn"><b>兩個判斷、四種情況</b> back 是 null → 第一個節點，要改 head；fore 是 null → 最後一個節點，要改 rear。刪除唯一的節點時 head 和 rear 都會變成 null。</span></div>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="m36-5" data-menu="m36" hidden>
+<h4 class="alg"><span class="an">Structure 3</span>Multilinked list<span class="sl">Slide 110 to 115</span><span class="zhn">多重鏈結串列</span></h4>
+<p><mark><i>A list with two or more logical key sequences.</i></mark> Example (Table 3-2): the first ten US presidents, kept in order by <b>president</b> (year) and also by <b>first wife's name</b>.<span class="zhn">有兩個以上邏輯鍵序列的串列。例子（表 3-2）：美國前十位總統，同時依總統（就任年份）和第一任妻子的名字排序。</span></p>
+<ul>
+<li><i>The same set of data can be processed in multiple sequences.</i> <mark><i>The data are not replicated</i></mark>: <i>the data exist only once, but multiple paths connect the one set of data</i>.<span class="zhn">同一份資料可以依不同順序處理。資料不複製：只存一份，用多條路徑連起來。</span></li>
+<li><i>To process the data in multiple sequences, create a separate set of links for each sequence.</i> Each link structure can be <b>singly linked, doubly linked, or circularly linked</b>.<span class="zhn">要用多種順序處理，就為每種順序建一組獨立的 link。每組 link 可以是單向、雙向或環狀。</span></li>
+<li><b>Figure 3-25</b>, a singly linked multilinked list: <i>two logical lists in the one physical list</i>, with <i>two link fields, one for the president and one for the spouse</i>. The head has a count, a pres rear and a spouse rear.<span class="zhn">圖 3-25 單向的多重鏈結串列：一個實體串列裡有兩個邏輯串列，兩個 link 欄位，一個給總統、一個給配偶。head 有 count、總統的 rear 和配偶的 rear。</span></li>
+</ul>
+<h4>Insert in multilinked lists <span class="sl">Slide 113 to 115</span><span class="zhn">多重鏈結串列的插入</span></h4>
+<p>Figure 3-26 (data come from a file): <b>buildMultilinked</b> loops, calling <b>getData</b> and <b>insert</b>; insert calls <b>buildNode</b>, <b>insertPres</b> (with searchPres) and <b>insertSpouse</b> (with searchSpouse). <i>The module loops again until the entire file has been read and the list built.</i><span class="zhn">圖 3-26（資料來自檔案）：buildMultilinked 重複呼叫 getData 和 insert；insert 呼叫 buildNode、insertPres（搭配 searchPres）和 insertSpouse（搭配 searchSpouse）。一直重複到整個檔案讀完、串列建好。</span></p>
+<div class="tbl"><table>
+<tr><th>Step</th><th class="l">Three steps to insert a node</th></tr>
+<tr><td>1</td><td class="l"><mark>Allocating space for the data</mark> in <b>buildNode</b><span class="zhn">在 buildNode 配置資料的空間</span></td></tr>
+<tr><td>2</td><td class="l">Building the <b>president links</b> in the insert president module<span class="zhn">在 insertPres 建立總統的 link</span></td></tr>
+<tr><td>3</td><td class="l">Building the <b>spouse links</b> in the insert spouse module<span class="zhn">在 insertSpouse 建立配偶的 link</span></td></tr>
+</table></div>
+<div class="box warn"><span class="lbl">Only once</span><mark><i>Memory allocation is separate from searching and pointer connections, because the memory is allocated only once.</i></mark> <mark><i>The count is added only once, because we insert only one physical node.</i></mark><span class="zhn"><b>只做一次</b> 配置記憶體和搜尋、接指標是分開的，因為記憶體只配置一次。count 也只加一次，因為實際上只插入一個節點。</span></div>
+<div class="lab" data-lab="multi"></div>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="sum"><b class="t">Chapter summary</b><span class="zhn"><b>Summary 本章總結</b></span><ul>
+<li>A complete list program (Figure 3-18) is a main line plus a <b>menu</b>; <b>addNode = searchList + insertNode</b>, <b>removeNode = searchList + deleteNode</b>, <b>printList</b> loops on getNext.<span class="zhn">完整的串列程式（圖 3-18）是主程式加選單；addNode = searchList + insertNode，removeNode = searchList + deleteNode，printList 重複呼叫 getNext。</span></li>
+<li>addNode must decide on <b>duplicates</b> (same key) and <b>memory overflow</b>; printList's first getNext uses <b>fromWhere 0</b>.<span class="zhn">addNode 要決定怎麼處理重複（key 相同）和記憶體不足；printList 第一次呼叫 getNext 用 fromWhere 0。</span></li>
+<li>Test insert: null list, before the first node, between two nodes, after the last node. Test delete: to a null list, the first node, a middle node, the last node.<span class="zhn">測插入：空串列、第一個之前、兩個之間、最後一個之後。測刪除：刪到空、刪第一個、刪中間、刪最後一個。</span></li>
+<li><b>Append</b>: find list1's last node (<code>pLoc-&gt;link not null</code>), set its link to list2.head, add the counts; if list1 is empty, list1.head = list2.head.<span class="zhn">串接：找到 list1 的最後一個節點，把它的 link 設成 list2.head，count 相加；list1 是空的就 list1.head = list2.head。</span></li>
+<li><b>Array of lists</b>: each element is a list head; each list is one row of a 2-D array, its nodes are the columns.<span class="zhn">串列陣列：每個元素是一個 list head；每條串列是二維陣列的一列，節點是各行。</span></li>
+<li><b>Circular</b>: last link → first node; can search from the middle; stop when you circle back to the start address. <b>Doubly</b>: back and fore pointers, head has count, head and rear. <b>Multilinked</b>: one copy of the data, one set of links per key sequence.<span class="zhn">環狀：最後的 link 指回第一個；可以從中間找；繞回起點就停。雙向：back、fore 兩個指標，head 有 count、head、rear。多重鏈結：資料一份，每種鍵序列一組 link。</span></li>
+</ul></div>
+<div class="trap"><b class="t">Common trap</b><span class="zhn"><b>易錯點</b></span><ul>
+<li>append's loop is <code>pLoc-&gt;link not null</code> (stop <b>on</b> the last node), and the count is <b>list1.count + list2.count</b>.<span class="zhn">append 的迴圈是 pLoc->link not null（停在最後一個節點上），count 是兩者相加。</span></li>
+<li>The first call to getNext uses fromWhere <b>0</b>; later calls use 1.<span class="zhn">第一次呼叫 getNext 的 fromWhere 是 0，之後是 1。</span></li>
+<li>insertDbl returns <b>0 / 1 / 2</b> = memory full / success / duplicate key. Use the corrected version: <code>pPre-&gt;fore = pNew</code> is in the else part (4.4.3), and line 4.6 is <code>if (pSucc null)</code>.<span class="zhn">insertDbl 回傳 0／1／2 = 記憶體滿／成功／重複。用修正版：pPre->fore = pNew 在 else 裡（4.4.3），4.6 行是 if (pSucc null)。</span></li>
+<li>Inserting into a doubly list in the middle changes <b>four</b> pointers; at the end, update <b>rear</b>; before the first node, update <b>head</b>.<span class="zhn">雙向串列插在中間要改四個指標；插在尾端要改 rear；插在第一個之前要改 head。</span></li>
+<li>deleteDbl: back null → change <b>head</b>; fore null → change <b>rear</b>. It aborts on a null pDlt; the search is done by the caller.<span class="zhn">deleteDbl：back 是 null 改 head；fore 是 null 改 rear。pDlt 是 null 就中止；搜尋由呼叫者做。</span></li>
+<li>Circular search: when the target does not exist, stop when <code>pLoc-&gt;link</code> equals the saved <b>startAddress</b>, or the loop never ends.<span class="zhn">環狀搜尋：target 不存在時，pLoc->link 等於存下來的 startAddress 就要停，否則會無限迴圈。</span></li>
+<li>Multilinked lists do <b>not</b> copy the data; memory is allocated once and the count is added once.<span class="zhn">多重鏈結串列不複製資料；記憶體只配置一次，count 只加一次。</span></li>
+</ul></div>
+<div class="quiz" data-quiz="ch3"></div>
+<!--CHW3-->
+</section>

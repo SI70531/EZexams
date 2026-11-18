@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+:root{--lit-11212d:#11212d;--lit-1c2e3b:#1c2e3b;--lit-172835:#172835;--lit-ccd0cf:#ccd0cf;--lit-rgba-204-208-207-82:rgba(204,208,207,.82);--lit-rgba-204-208-207-8:rgba(204,208,207,.8);--lit-2f4352:#2f4352;--lit-4a5c6a:#4a5c6a;--lit-9ba8ab:#9ba8ab;--lit-rgba-155-168-171-1:rgba(155,168,171,.1);--lit-rgba-155-168-171-22:rgba(155,168,171,.22);--lit-ff7d5a:#ff7d5a;--lit-rgba-255-125-90-08:rgba(255,125,90,.08);--lit-rgba-255-125-90-34:rgba(255,125,90,.34);--lit-a9bccb:#a9bccb;--lit-rgba-169-188-203-08:rgba(169,188,203,.08);--lit-rgba-169-188-203-3:rgba(169,188,203,.3);--lit-73d48f:#73d48f;--lit-rgba-115-212-143-09:rgba(115,212,143,.09);--lit-rgba-115-212-143-32:rgba(115,212,143,.32);--lit-06141b:#06141b;--lit-f2bd5a:#f2bd5a;--lit-rgba-242-189-90-09:rgba(242,189,90,.09);--lit-rgba-242-189-90-32:rgba(242,189,90,.32);--lit-0d1b25:#0d1b25;--lit-rgba-0-0-0-4:rgba(0,0,0,.4)}
+[hidden]{display:none!important}body{margin:0}.fg svg tspan{fill:inherit}
+</style>
+<title>Economics final prep｜EZexams</title>
+<meta name="description" content="經濟學期末考衝刺：Mankiw Ch28 失業 詳細講義（含圖形解析）、互動圖與英文選擇題。範圍與日期未定，之後會再加章節。">
+<meta name="theme-color" content="#dde1e0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#11212d" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="EZexams">
+<meta property="og:title" content="Economics final prep｜EZexams">
+<meta property="og:description" content="經濟學期末考衝刺：Mankiw Ch28 失業 詳細講義（含圖形解析）、互動圖與英文選擇題。範圍與日期未定，之後會再加章節。">
+<meta property="og:url" content="https://si70531.github.io/EZexams/economics/final/">
+<meta property="og:image" content="https://si70531.github.io/EZexams/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="manifest" href="../../manifest.webmanifest">
+<script src="../../assets/ezdates.js?v=e0500c8e"></script>
+<script src="../../assets/ezcore.js?v=b2612a70"></script>
+<script src="../../assets/ezfx.js?v=9d2a1881" defer></script>
+<script src="../../assets/ezmotion.js?v=cfb21311" defer></script>
+<script src="../../assets/ezfig.js?v=4ca1c702" defer></script>
+<script src="../../assets/ezsidefig.js?v=07eafc18" defer></script>
+<script src="../../assets/ezfit.js?v=ac00bac4" defer></script>
+<script src="../../assets/ezinteract.js?v=836302cc" defer></script>
+<script src="../../assets/ezwow.js?v=089fce44" defer></script>
+<style>.plansep{border:0;border-top:1px dashed var(--line);margin:10px 0}/*EXTRA: notes rewrite (figures, exercises, homework parts) */
+.note h2.grp{font-size:calc(15px*var(--ts,1));margin:26px 0 4px;padding:6px 10px;border-left:4px solid var(--brass);background:var(--brass-soft);border-radius:4px}
+.note h4{margin:16px 0 6px;font-size:calc(15px*var(--ts,1))}
+.note figure.fg{margin:10px 0;min-width:0}
+.note figure.fg figcaption,.hwp figure.fg figcaption{font-size:calc(12.5px*var(--ts,1));color:var(--muted);margin-top:4px;line-height:1.5}
+.note .three,.hwp .three{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;align-items:start}
+.hwp .four,.note .four{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;align-items:start}
+.hwp .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;align-items:start}
+.note .three>*,.note .four>*,.hwp .two>*,.hwp .three>*,.hwp .four>*{min-width:0}
+.hwp svg{width:100%;max-width:420px;height:auto;display:block;background:var(--paper);border:1px solid var(--line);border-radius:8px}
+.hwp svg text{font-size:calc(13px*var(--ts,1));fill:var(--ink)}
+.note svg .tk,.hwp svg .tk{font-size:calc(11px*var(--ts,1));fill:var(--muted)}
+.note svg .tkm,.hwp svg .tkm{font-size:calc(11px*var(--ts,1));fill:var(--seal)}
+.note svg .axl,.hwp svg .axl{font-size:calc(11.5px*var(--ts,1));fill:var(--muted)}
+.note svg .lb,.hwp svg .lb{font-size:calc(12px*var(--ts,1));font-weight:600;fill:var(--ink)}
+.note svg .lb2,.hwp svg .lb2{font-size:calc(12px*var(--ts,1));font-weight:600;fill:var(--seal)}
+.note svg .lb3,.hwp svg .lb3{font-size:calc(12px*var(--ts,1));font-weight:600;fill:var(--ok)}
+.note svg .ar,.hwp svg .ar{font-size:calc(14px*var(--ts,1));font-weight:700;fill:var(--ink)}
+.hwp svg .ax{stroke:var(--ink);stroke-width:1.5;fill:none}
+.hwp svg .cv,.note svg .cv{stroke:var(--indigo);stroke-width:2.5;fill:none}
+.hwp svg .cv2,.note svg .cv2{stroke:var(--seal);stroke-width:2.5;fill:none}
+.note svg .cv3,.hwp svg .cv3{stroke:var(--ok);stroke-width:2.5;fill:none}
+.note svg .cv4,.hwp svg .cv4{stroke:var(--warn);stroke-width:2.5;fill:none}
+.note svg .dash,.hwp svg .dash{stroke-dasharray:6 4;opacity:.6}
+.hwp svg .gl,.note svg .gl{stroke:var(--muted);stroke-width:1;stroke-dasharray:4 3;fill:none}
+.note svg .gl2,.hwp svg .gl2{stroke:var(--seal);stroke-width:1;stroke-dasharray:4 3;fill:none;opacity:.8}
+.hwp svg .dot,.note svg .dot{fill:var(--ink)}
+.note svg .dot2,.hwp svg .dot2{fill:var(--seal)}
+.note svg .dot3,.hwp svg .dot3{fill:var(--ok)}
+.note svg .csf,.hwp svg .csf{fill:var(--indigo);fill-opacity:.28}
+.note svg .psf,.hwp svg .psf{fill:var(--seal);fill-opacity:.24}
+.note svg .revf,.hwp svg .revf{fill:var(--muted);fill-opacity:.3}
+.note svg .dwlf,.hwp svg .dwlf{fill:var(--warn);fill-opacity:.55}
+.note svg .gainf,.hwp svg .gainf{fill:var(--ok);fill-opacity:.32}
+.note svg .okf{fill:var(--ok);fill-opacity:.35;stroke:var(--ink);stroke-width:1}
+.note svg .warnb{fill:var(--warn);fill-opacity:.4;stroke:var(--ink);stroke-width:1}
+.note svg .sealb{fill:var(--seal);fill-opacity:.35;stroke:var(--ink);stroke-width:1}
+.note svg .boxf{fill:var(--paper2);stroke:var(--ink);stroke-width:1.3}
+.note svg .fl-g{stroke:var(--indigo);stroke-width:2;fill:none}
+.note svg .fl-m{stroke:var(--seal);stroke-width:2;fill:none;stroke-dasharray:6 3}
+.note svg .gapl,.hwp svg .gapl{stroke:var(--seal);stroke-width:5;opacity:.45}
+.note svg .arw,.hwp svg .arw{stroke:var(--ink);stroke-width:1.6}
+.note svg .ahd,.hwp svg .ahd,.ilab svg .ahd{fill:var(--ink)}
+.note .ex{border:1px solid var(--line);border-left:4px solid var(--indigo);border-radius:6px;padding:10px 14px;margin:14px 0;background:var(--paper2)}
+.note .ex>b.t,.note .sum>b.t{display:block;margin-bottom:4px;color:var(--indigo)}
+.note .ex details{margin-top:8px}
+.note .ex summary,.hwp summary{cursor:pointer;font-weight:600;color:var(--brass)}
+.note .ex details[open] summary{margin-bottom:6px}
+.note .sum{border:1px dashed var(--line-strong);border-radius:6px;padding:10px 14px;margin:16px 0}
+h2.part{margin:34px 0 8px;padding:10px 14px;border-radius:8px;background:var(--hard);color:var(--paper);font-size:calc(18px*var(--ts,1))}
+h2.part span{display:inline-block;margin-right:8px;padding:1px 8px;border-radius:4px;background:var(--seal);color:var(--accent-ink);font-size:calc(14px*var(--ts,1))}
+.hwp{border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin:14px 0;background:var(--paper)}
+.hwp h4{margin:0 0 8px;font-size:calc(16px*var(--ts,1))}
+.hwp .hwq p{margin:6px 0}
+.hwp details.hwa{margin-top:10px}
+.hwp .hwbody{margin-top:8px}
+.hwp .hwbody table{border-collapse:collapse;width:100%}
+.hwp .hwbody td,.hwp .hwbody th{border:1px solid var(--line);padding:4px 8px;font-size:calc(14px*var(--ts,1))}
+.hwp .tbl{overflow-x:auto}
+.quiz.hwquiz>h2{font-size:calc(16px*var(--ts,1))}
+.note .five,.hwp .five{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}.note .five>*,.hwp .five>*{min-width:0}
+
+.qfig{margin:4px 0 10px}.qfig svg{width:100%;max-width:400px;height:auto;display:block;background:var(--paper);border:1px solid var(--line);border-radius:8px}.qfig .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}.qfig .two>*{min-width:0}
+.qfig svg text{font-size:calc(13px*var(--ts,1));fill:var(--ink)}.qfig svg .tk,.qfig svg .axl{font-size:calc(11px*var(--ts,1));fill:var(--muted)}.qfig svg .lb{font-size:calc(12px*var(--ts,1));font-weight:600;fill:var(--ink)}.qfig svg .ar{font-size:calc(14px*var(--ts,1));font-weight:700;fill:var(--ink)}
+.qfig svg .ax{stroke:var(--ink);stroke-width:1.5;fill:none}.qfig svg .cv{stroke:var(--indigo);stroke-width:2.5;fill:none}.qfig svg .cv2{stroke:var(--seal);stroke-width:2.5;fill:none}.qfig svg .cv3{stroke:var(--ok);stroke-width:2.5;fill:none}.qfig svg .cv4{stroke:var(--warn);stroke-width:2.5;fill:none}.qfig svg .gl{stroke:var(--muted);stroke-width:1;stroke-dasharray:4 3;fill:none}.qfig svg .dot{fill:var(--ink)}.qfig svg .ahd{fill:var(--ink)}
+.qfig table.ft{border-collapse:collapse;margin:4px 0;background:var(--paper)}.qfig table.ft th,.qfig table.ft td{border:1px solid var(--line);padding:3px 12px;font-size:calc(13px*var(--ts,1));text-align:center}.qfig table.ft th{font-weight:600}
+.opt.sel{outline:2px solid var(--indigo);outline-offset:-2px}.opt.sel .ab{background:var(--indigo);border-color:var(--indigo);color:var(--paper)}.opt.right.sel .ab{background:var(--ok);border-color:var(--ok)}.opt.wrong.sel .ab{background:var(--seal);border-color:var(--seal)}.multihint{margin:6px 0 4px;color:var(--muted)}.msub{margin:6px 0}
+.qfig figure{margin:0}.qfig figcaption{font-size:calc(12px*var(--ts,1));color:var(--muted)}
+.zhbtn{display:none!important}
+</style>
+<link rel="stylesheet" href="../../assets/ui/ui.css?v=7df89fcc">
+<link rel="stylesheet" href="../../assets/ui/ui-theme.css?v=c98ae19c">
+<style>
+.scope{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin:12px 0 20px}
+.scope .c{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--paper)}
+.scope .c b{display:block;font-size:calc(16px*var(--ts,1));margin-bottom:4px}
+.ilab .lab-row input[type=number]{width:6.5em}
+.fg.wide,.fg.wide svg{max-width:none!important;width:100%!important;height:auto!important}
+</style>
+</head>
+<body>
+<link rel="stylesheet" href="../../assets/fonts/fonts.css?v=73cd630b">
+<link rel="stylesheet" href="../../assets/ezbase.css?v=6ab5e81f">
+<link rel="stylesheet" href="../../assets/ezglass.css?v=6a8c48c4">
+<style>
+/* Same design system as operating-systems/midterm: pill tabs, progress card on each cover, handwritten headings. */
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:var(--lit-11212d); --paper:var(--lit-1c2e3b); --paper2:var(--lit-172835);
+  --ink:var(--lit-ccd0cf); --ink70:var(--lit-rgba-204-208-207-82); --muted:var(--lit-rgba-204-208-207-8); --line:var(--lit-2f4352); --line-strong:var(--lit-4a5c6a);
+  --indigo:var(--lit-9ba8ab); --indigo-soft:var(--lit-rgba-155-168-171-1); --indigo-mid:var(--lit-rgba-155-168-171-22);
+  --seal:var(--lit-ff7d5a); --seal-soft:var(--lit-rgba-255-125-90-08); --seal-line:var(--lit-rgba-255-125-90-34);
+  --brass:var(--lit-a9bccb); --brass-soft:var(--lit-rgba-169-188-203-08); --brass-line:var(--lit-rgba-169-188-203-3);
+  --ok:var(--lit-73d48f); --ok-soft:var(--lit-rgba-115-212-143-09); --ok-line:var(--lit-rgba-115-212-143-32);
+  --accent:var(--lit-9ba8ab); --accent-ink:var(--lit-06141b); --accent-soft:var(--lit-rgba-155-168-171-1);
+  --bad:var(--lit-ff7d5a); --bad-soft:var(--lit-rgba-255-125-90-08); --warn:var(--lit-f2bd5a); --warn-soft:var(--lit-rgba-242-189-90-09); --warn-line:var(--lit-rgba-242-189-90-32);
+  --code:var(--lit-0d1b25); --fig:var(--lit-ccd0cf); --hard:var(--lit-06141b); --shadow:0 6px 18px var(--lit-rgba-0-0-0-4);
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:var(--lit-11212d); --paper:var(--lit-1c2e3b); --paper2:var(--lit-172835);
+  --ink:var(--lit-ccd0cf); --ink70:var(--lit-rgba-204-208-207-82); --muted:var(--lit-rgba-204-208-207-8); --line:var(--lit-2f4352); --line-strong:var(--lit-4a5c6a);
+  --indigo:var(--lit-9ba8ab); --indigo-soft:var(--lit-rgba-155-168-171-1); --indigo-mid:var(--lit-rgba-155-168-171-22);
+  --seal:var(--lit-ff7d5a); --seal-soft:var(--lit-rgba-255-125-90-08); --seal-line:var(--lit-rgba-255-125-90-34);
+  --brass:var(--lit-a9bccb); --brass-soft:var(--lit-rgba-169-188-203-08); --brass-line:var(--lit-rgba-169-188-203-3);
+  --ok:var(--lit-73d48f); --ok-soft:var(--lit-rgba-115-212-143-09); --ok-line:var(--lit-rgba-115-212-143-32);
+  --accent:var(--lit-9ba8ab); --accent-ink:var(--lit-06141b); --accent-soft:var(--lit-rgba-155-168-171-1);
+  --bad:var(--lit-ff7d5a); --bad-soft:var(--lit-rgba-255-125-90-08); --warn:var(--lit-f2bd5a); --warn-soft:var(--lit-rgba-242-189-90-09); --warn-line:var(--lit-rgba-242-189-90-32);
+  --code:var(--lit-0d1b25); --fig:var(--lit-ccd0cf); --hard:var(--lit-06141b); --shadow:0 6px 18px var(--lit-rgba-0-0-0-4);
+  color-scheme:dark}
+.zhtr{font-family:var(--f-body);font-size:calc(14.5px*var(--ts,1));line-height:1.75;color:var(--ink70);margin-top:10px;padding-top:9px;border-top:1px dashed var(--indigo-mid)}
+.zhtr span{display:inline-block;font-family:var(--f-mono);font-size:calc(11px*var(--ts,1));font-weight:600;color:var(--indigo);border:1px solid var(--indigo-mid);border-radius:4px;padding:0 6px;margin-right:8px;vertical-align:1px}
+.qitem .hard{display:inline-block;font-family:var(--f-mono);font-size:calc(11px*var(--ts,1));font-weight:600;color:var(--accent-ink);background:var(--seal);border-radius:4px;padding:1px 7px;margin-right:8px;vertical-align:2px}
+h4.cfq{font-family:var(--f-display);font-size:calc(19px*var(--ts,1));margin:30px 0 8px;padding-left:10px;border-left:4px solid var(--seal)}
+.box p:first-of-type{margin-top:0}
+.box p:last-child,.box ul:last-child{margin-bottom:0}
+table td{text-align:left}
+.ilab{position:relative;background:var(--paper);border:1.5px solid var(--ink);border-radius:8px;box-shadow:4px 4px 0 var(--hard);padding:14px 18px 16px;margin:22px 0}
+.ilab>.lbl{display:table;font-family:var(--f-mono);font-size:calc(11.5px*var(--ts,1));font-weight:600;margin:-14px 0 8px -18px;padding:3px 10px;border-radius:0 0 6px 0;background:var(--ink);color:var(--bg)}
+.lab-row{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center;margin:8px 0}
+.lab-row label{display:flex;align-items:center;gap:8px;font-size:calc(14px*var(--ts,1));color:var(--ink70);font-family:var(--f-mono)}
+.lab-row label b{min-width:3.2em;color:var(--ink);font-variant-numeric:tabular-nums}
+.ilab input[type=range]{accent-color:var(--indigo);width:160px}
+.ilab input[type=number],.ilab select,.ilab textarea{font:inherit;font-size:calc(14px*var(--ts,1));color:var(--ink);background:var(--paper2);border:1px solid var(--line);border-radius:6px;padding:4px 8px}
+.ilab input[type=number]{width:80px}
+.ilab textarea{width:100%;font-family:var(--f-mono);font-size:calc(13px*var(--ts,1));resize:vertical}
+.ilab svg{display:block;width:100%;height:auto;margin:8px 0}
+.ilab svg text{font-family:var(--f-mono);font-size:calc(11px*var(--ts,1));fill:var(--ink70)}
+.ilab svg .ax{stroke:var(--ink);stroke-width:1.2}
+.ilab svg .bar{fill:var(--indigo);fill-opacity:.75;stroke:var(--ink);stroke-width:1}
+.ilab svg .bar2{fill:var(--seal);fill-opacity:.7;stroke:var(--ink);stroke-width:1}
+.ilab svg .soft{fill:var(--indigo-mid)}
+.ilab svg .warnf{fill:var(--warn);fill-opacity:.35}
+.ilab svg .mk-mean{stroke:var(--seal);stroke-width:2.2}
+.ilab svg .mk-med{stroke:var(--brass);stroke-width:2.2;stroke-dasharray:5 3}
+.ilab svg .line{fill:none;stroke:var(--ink);stroke-width:1.6}
+.ilab svg .t-seal{fill:var(--seal)}
+.ilab svg .t-brass{fill:var(--brass)}
+.ilab svg .t-ink{fill:var(--ink)}
+.ilab .calc{margin:8px 0 0}
+.sc-list{display:grid;gap:6px}
+.sc-item{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:var(--paper2)}
+.sc-item .nm{flex:1 1 220px;font-size:calc(14.5px*var(--ts,1))}
+.sc-item.ok{border-color:var(--ok);background:var(--ok-soft)}
+.sc-item.no{border-color:var(--seal);background:var(--seal-soft)}
+.sc-item .why{flex-basis:100%;font-size:calc(13px*var(--ts,1));color:var(--ink70)}
+.sc-score{font-family:var(--f-display);font-weight:700}
+.p-sorted{display:flex;flex-wrap:wrap;gap:4px;margin:8px 0}
+.p-sorted span{font-family:var(--f-mono);font-size:calc(12px*var(--ts,1));padding:2px 6px;border:1px solid var(--line);border-radius:4px;background:var(--paper2);font-variant-numeric:tabular-nums}
+.p-sorted span i{font-style:normal;color:var(--muted);font-size:calc(10px*var(--ts,1));margin-right:3px}
+.p-sorted span.lo,.p-sorted span.hi{border-color:var(--seal);background:var(--seal-soft);color:var(--seal);font-weight:600}
+</style>
+<style>
+.note h3{margin-top:30px}
+.note .star{color:var(--seal);font-family:var(--f-mono);font-size:calc(13px*var(--ts,1))}
+.note b.en,.note .en{color:var(--indigo);font-weight:700}
+.note mark{background:var(--warn-soft);color:inherit;padding:0 .2em;border-radius:2px}
+.note .one{background:var(--indigo-soft);border:1px solid var(--indigo-mid);border-left:4px solid var(--indigo);border-radius:0 8px 8px 0;padding:12px 16px;margin:14px 0;font-family:var(--f-display);font-size:calc(17px*var(--ts,1))}
+.note .f{font-family:var(--f-mono);white-space:pre;font-size:calc(13.5px*var(--ts,1));line-height:1.8;background:var(--code);border:1px solid var(--line);border-radius:6px;padding:12px 16px;margin:12px 0;overflow-x:auto}
+.note .tbl{overflow-x:auto;margin:10px 0}
+.note table{border-collapse:collapse;width:100%;font-size:calc(14.5px*var(--ts,1))}
+.note th,.note td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.note th{background:var(--paper2)}
+.note .trap{border:1px solid var(--seal-line);border-left:4px solid var(--seal);background:var(--seal-soft);border-radius:0 8px 8px 0;padding:12px 16px;margin:16px 0}
+.note .trap b.t{color:var(--seal);font-family:var(--f-display)}
+.note .vocab{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:10px 16px;margin:14px 0}
+.note .vocab summary{cursor:pointer;font-weight:700;color:var(--indigo)}
+.note .terms{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.note .term{border:1px solid var(--line);border-radius:6px;padding:2px 8px;font-size:calc(13.5px*var(--ts,1));background:var(--paper2)}
+.note .term b{color:var(--indigo);font-family:var(--f-en)}
+.note .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;align-items:start}
+.note .two>*{min-width:0}
+.note svg{width:100%;max-width:420px;height:auto;display:block;background:var(--paper);border:1px solid var(--line);border-radius:8px}
+.note svg text{font-size:calc(13px*var(--ts,1));fill:var(--ink)}.note svg.cflow text{font-size:calc(11px*var(--ts,1))}.note svg.cflow .tk,.note svg.cflow .tkm{font-size:calc(9.5px*var(--ts,1))}
+.note svg .ax{stroke:var(--ink);stroke-width:1.5;fill:none}.note svg .cv{stroke:var(--indigo);stroke-width:2.5;fill:none}.note svg .cv2{stroke:var(--seal);stroke-width:2.5;fill:none}
+.note svg .gl{stroke:var(--muted);stroke-width:1;stroke-dasharray:4 3;fill:none}.note svg .rev{fill:var(--indigo-mid)}.note svg .dwl{fill:var(--warn);fill-opacity:.45}.note svg .dot{fill:var(--ink)}
+.qitem .zhq{color:var(--muted);font-size:calc(14.5px*var(--ts,1));line-height:1.6;margin:-4px 0 10px}
+.opt .ot{display:flex;flex-direction:column;gap:1px}
+.opt .zho,.ansline .zho{display:block;color:var(--muted);font-size:calc(13.5px*var(--ts,1))}
+.opt.pick{background:var(--indigo-soft);border-color:var(--indigo)}
+.ansline{margin:6px 0;padding:6px 10px;border-radius:6px;background:var(--paper);font-family:var(--f-en)}
+.qitem .hwtag{display:inline-block;font-family:var(--f-mono);font-size:calc(11px*var(--ts,1));color:var(--indigo);border:1px solid var(--indigo-mid);border-radius:4px;padding:0 6px;margin-right:8px;vertical-align:2px}
+body.nozh .zhq,body.nozh .opt .zho{display:none}
+.ilab svg .line2{fill:none;stroke:var(--seal);stroke-width:1.8}
+.ilab svg .dash{stroke-dasharray:5 4;opacity:.55}
+.ilab svg .gl{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 3}
+.ilab svg .ctrl{stroke:var(--brass);stroke-width:2}
+.ilab svg .gap{stroke:var(--seal);stroke-width:5;opacity:.5}
+.ilab svg .dotp{fill:var(--seal);stroke:var(--paper);stroke-width:1.5}
+.ilab svg .dot0{fill:var(--muted)}
+.ilab svg .cs{fill:var(--indigo);fill-opacity:.25}
+.ilab svg .ps{fill:var(--seal);fill-opacity:.22}
+.ilab svg .rev{fill:var(--muted);fill-opacity:.35}
+.ilab svg .dwl{fill:var(--warn);fill-opacity:.6}
+.ilab svg .gain{fill:var(--ok);fill-opacity:.3}
+.ilab .ca-t table{border-collapse:collapse;font-size:calc(14px*var(--ts,1));margin:8px 0}.ilab .ca-t td,.ilab .ca-t th{border:1px solid var(--line);padding:4px 10px}
+.ilab .lab-row .btn{font-size:calc(13px*var(--ts,1));padding:3px 10px}
+.examtools .gradeall[disabled]{opacity:.5;cursor:not-allowed;background:var(--paper-shade,var(--line));color:var(--muted)}
+.ilab .calc{white-space:pre-wrap}
+</style>
+<header class="top"><div class="bar"><a class="brand" href="../../" title="Back to all subjects"><span class="mk">EC</span><span class="nm">← All subjects</span></a><nav class="tabs" aria-label="Chapters"><div class="row" id="tabs" role="tablist"></div></nav><div class="theme"><button class="themebtn" id="themeBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="themeMenu" title="Appearance: follow device"><svg aria-hidden="true" class="i-system" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><svg aria-hidden="true" class="i-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2 12h2.2M19.8 12H22M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg><svg aria-hidden="true" class="i-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button><div class="thmenu" id="themeMenu" role="menu" hidden><button type="button" role="menuitemradio" data-t="system">System</button><button type="button" role="menuitemradio" data-t="light">Light</button><button type="button" role="menuitemradio" data-t="dark">Dark</button></div></div></div></header>
+<button class="totop" id="toTop" type="button" aria-label="Back to top">↑</button>
+<main>
+<section role="tabpanel" class="view" id="home"><div class="vhead"><div class="pcb" data-pcb="home" role="img"></div><p class="vmeta">Final: <span data-examdate>TBA</span></p><h1>Economics final prep</h1><p>Mankiw, Principles of Economics. For now the page covers Ch28 Unemployment; the exam scope and date are not set yet, and more chapters will be added when they are available. Each chapter follows the teacher's lecture PDF (technical terms in English, every figure explained, interactive figures where needed) and ends with 15 multiple-choice questions in English, with explanations in Chinese.</p></div>
+<div class="next" id="nextStep"></div>
+<h3>Chapters so far</h3>
+<div class="scope">
+<div class="c"><b>Ch28 Unemployment</b>Labor force statistics, the u-rate and its limits, duration, natural / frictional / structural / cyclical unemployment, job search, UI, minimum wages, unions, efficiency wages.<br><button class="btn" data-go="ch28">Ch28</button></div>
+</div>
+<h3>Progress</h3>
+<table class="prog" id="progTable"></table>
+<p class="small" id="storeNote">Scores are stored only in this device's browser. Switching devices or clearing browsing data resets them to zero.</p>
+<h3>How to use these notes</h3>
+<div class="box zh"><span class="lbl">How to read</span>Questions are in <b>English</b>; the small grey text is the <b>Chinese translation</b>, shown after you check answers together with the English answer and its Chinese meaning. To simulate the real exam, press “Hide Chinese translation”. <b>Black “Interactive” boxes</b> let you drag sliders to explore the graphs; <b>red boxes</b> mark common mistakes.</div>
+<p><button class="btn zhbtn" type="button"></button></p>
+</section>
+<section role="tabpanel" class="view" id="ch28" hidden><div class="vhead"><div class="pcb" data-pcb="ch28" role="img"></div><h1>CH28 Unemployment<span class="zhn">失業</span></h1><p>How the BLS measures unemployment, what the u-rate misses, how long unemployment lasts, the natural rate (frictional + structural) and cyclical unemployment, job search and unemployment insurance, and the three reasons wages stay above equilibrium: minimum wages, unions and efficiency wages. After reading, do the 15 multiple-choice questions at the bottom.<span class="zhn">勞工統計局怎麼衡量失業、失業率漏掉了什麼、失業會持續多久、自然失業率（摩擦性＋結構性）與週期性失業、找工作與失業保險，以及工資高於均衡的三個原因：最低工資、工會、效率工資。讀完後做最下面的 15 題選擇題。</span></p></div><div class="note"><details class="vocab" open><summary>Key Terms: English terminology of this chapter (24 terms)<span class="zhn">Key Terms 本章英文專有名詞（24 個）</span></summary><div class="terms"><span class="term"><b>Bureau of Labor Statistics (BLS)</b> 美國勞工統計局</span><span class="term"><b>adult population</b> 成年人口</span><span class="term"><b>employed</b> 就業者</span><span class="term"><b>unemployed</b> 失業者</span><span class="term"><b>not in the labor force</b> 非勞動力</span><span class="term"><b>labor force</b> 勞動力</span><span class="term"><b>unemployment rate (u-rate)</b> 失業率</span><span class="term"><b>labor-force participation rate</b> 勞動力參與率</span><span class="term"><b>discouraged workers</b> 怯志工作者</span><span class="term"><b>natural rate of unemployment</b> 自然失業率</span><span class="term"><b>cyclical unemployment</b> 週期性失業</span><span class="term"><b>frictional unemployment</b> 摩擦性失業</span><span class="term"><b>structural unemployment</b> 結構性失業</span><span class="term"><b>job search</b> 找工作</span><span class="term"><b>sectoral shifts</b> 部門移轉</span><span class="term"><b>unemployment insurance (UI)</b> 失業保險</span><span class="term"><b>minimum-wage laws</b> 最低工資法</span><span class="term"><b>union</b> 工會</span><span class="term"><b>collective bargaining</b> 集體議價</span><span class="term"><b>insiders / outsiders</b> 局內人／局外人</span><span class="term"><b>cartel</b> 卡特爾</span><span class="term"><b>efficiency wages</b> 效率工資</span><span class="term"><b>shirk</b> 偷懶</span><span class="term"><b>Z-Pop ratio</b> 充分利用人口比率</span></div></details>
+<p class="one">The u-rate = unemployed ÷ labor force. Even in good times there is always some unemployment: <b>frictional</b> (it takes time to find the right job) + <b>structural</b> (the wage is above equilibrium, so there are not enough jobs) = the <b>natural rate</b>. The gap between the actual rate and the natural rate is <b>cyclical</b> unemployment. Wages stay above equilibrium because of <b>minimum wages, unions and efficiency wages</b>.<span class="zhn">失業率 = 失業人數 ÷ 勞動力。就算景氣好也一定有失業：<b>摩擦性</b>（找到合適工作要時間）＋<b>結構性</b>（工資高於均衡，工作不夠分）= <b>自然失業率</b>。實際失業率和自然失業率的差距是<b>週期性</b>失業。工資會停在均衡之上，原因是<b>最低工資、工會、效率工資</b>。</span></p>
+
+<h3 data-sec="28-1"><span class="star">★★★</span> Labor force statistics: who counts as unemployed<span class="zhn">勞動力統計：誰算失業</span></h3>
+<ul>
+<li>Produced by the <b class="en">Bureau of Labor Statistics</b> (BLS) in the U.S. Department of Labor, from a regular survey of <b>60,000 households</b>, based on the <b>adult population</b> (16 years or older).<span class="zhn">由美國勞工部的<b class="en">Bureau of Labor Statistics</b>（勞工統計局，BLS）發布，資料來自定期調查 <b>6 萬戶家庭</b>，以<b>成年人口</b>（16 歲以上）為基礎。</span></li>
+<li>The BLS divides the adult population into 3 groups:<span class="zhn">BLS 把成年人口分成 3 組：</span>
+<ul>
+<li><b class="en">Employed</b>: paid employees, the self-employed, and <b>unpaid workers in a family business</b>.<span class="zhn"><b class="en">Employed</b>（就業者）：受薪員工、自營者，以及<b>在家族事業無薪幫忙的人</b>。</span></li>
+<li><b class="en">Unemployed</b>: people not working who have <b>looked for work in the past 4 weeks</b>.<span class="zhn"><b class="en">Unemployed</b>（失業者）：沒有工作、而且<b>過去 4 週內有找工作</b>的人。</span></li>
+<li><b class="en">Not in the labor force</b>: everyone else (students, homemakers, retirees, discouraged workers).<span class="zhn"><b class="en">Not in the labor force</b>（非勞動力）：其他所有人（學生、家管、退休者、怯志工作者）。</span></li>
+</ul></li>
+<li><b class="en">Labor force</b> = Employed + Unemployed: the total number of workers.<span class="zhn"><b class="en">Labor force</b>（勞動力）= 就業者 + 失業者：工作者的總數。</span></li>
+</ul>
+<div class="two" style="display:block"><figure class="fg wide"><svg viewBox="0 0 640 250" role="img"><defs><marker id="ahf_lf" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahd"/></marker></defs><rect data-step="0" x="220" y="8" width="200" height="52" rx="10" fill="var(--paper2)" stroke="var(--ink)" stroke-width="1.4"/><text data-step="0" x="320" y="32" text-anchor="middle" class="lb">Adult population (16+)</text><text data-step="0" x="320" y="49" text-anchor="middle" class="tk">253.4 million</text><line data-step="1" class="gl2" x1="280" y1="60" x2="165" y2="100" stroke="var(--ink)" stroke-width="1.6" marker-end="url(#ahf_lf)"/><line data-step="1" class="gl2" x1="360" y1="60" x2="475" y2="100" stroke="var(--ink)" stroke-width="1.6" marker-end="url(#ahf_lf)"/><rect data-step="2" x="60" y="102" width="200" height="52" rx="10" fill="var(--paper2)" stroke="var(--ink)" stroke-width="1.4"/><text data-step="2" x="160" y="126" text-anchor="middle" class="lb">Labor force</text><text data-step="2" x="160" y="143" text-anchor="middle" class="tk">158.9 million</text><rect data-step="2" x="380" y="102" width="200" height="52" rx="10" fill="var(--paper2)" stroke="var(--ink)" stroke-width="1.4"/><text data-step="2" x="480" y="126" text-anchor="middle" class="lb">Not in the labor force</text><text data-step="2" x="480" y="143" text-anchor="middle" class="tk">94.5 million</text><line data-step="3" class="gl2" x1="125" y1="154" x2="85" y2="190" stroke="var(--ink)" stroke-width="1.6" marker-end="url(#ahf_lf)"/><line data-step="3" class="gl2" x1="195" y1="154" x2="245" y2="190" stroke="var(--ink)" stroke-width="1.6" marker-end="url(#ahf_lf)"/><rect data-step="4" x="0" y="192" width="160" height="52" rx="10" fill="var(--paper2)" stroke="var(--ink)" stroke-width="1.4"/><text data-step="4" x="80" y="216" text-anchor="middle" class="lb">Employed</text><text data-step="4" x="80" y="233" text-anchor="middle" class="tk">151.1 million</text><rect data-step="4" x="180" y="192" width="160" height="52" rx="10" fill="var(--paper2)" stroke="var(--ink)" stroke-width="1.4"/><text data-step="4" x="260" y="216" text-anchor="middle" class="lb">Unemployed</text><text data-step="4" x="260" y="233" text-anchor="middle" class="tk">7.8 million</text><text data-step="5" x="500" y="205" text-anchor="middle" class="lb2">u-rate = 7.8 ÷ 158.9 = 4.9%</text><text data-step="5" x="500" y="230" text-anchor="middle" class="lb2">LF part. = 158.9 ÷ 253.4 = 62.7%</text></svg><figcaption>The three groups, with the June 2016 numbers of Active Learning 1. The u-rate uses the labor force; the participation rate uses the adult population.<span class="zhn">三組人口，用 Active Learning 1 的 2016 年 6 月數字。失業率的分母是勞動力，勞參率的分母是成年人口。</span></figcaption></figure></div>
+<div class="tbl"><table><tr><th>Statistic<span class="zhn">指標</span></th><th>Formula<span class="zhn">公式</span></th><th>Meaning<span class="zhn">意義</span></th></tr>
+<tr><td><b class="en">Unemployment rate</b> (u-rate)<span class="zhn">失業率</span></td><td>100 × # of unemployed ÷ <b>labor force</b><span class="zhn">100 × 失業人數 ÷ <b>勞動力</b></span></td><td>% of the labor force that is unemployed<span class="zhn">勞動力中失業者的比例</span></td></tr>
+<tr><td><b class="en">Labor-force participation rate</b><span class="zhn">勞動力參與率</span></td><td>100 × labor force ÷ <b>adult population</b><span class="zhn">100 × 勞動力 ÷ <b>成年人口</b></span></td><td>% of the adult population that is in the labor force<span class="zhn">成年人口中屬於勞動力的比例</span></td></tr></table></div>
+<div class="ex"><b class="t">Active Learning 1 (p6): calculate labor force statistics</b>Adult population of the U.S. by group, June 2016: employed 151.1 million, unemployed 7.8 million, not in labor force 94.5 million. Compute the labor force, the u-rate, the adult population and the labor-force participation rate.<span class="zhn"><b>Active Learning 1（p6）：計算勞動力統計</b> 2016 年 6 月美國成年人口：就業 1.511 億、失業 780 萬、非勞動力 9,450 萬。算出勞動力、失業率、成年人口、勞參率。</span>
+<details><summary>看解答</summary><p>Labor force = 151.1 + 7.8 = <b>158.9 million</b><br>U-rate = 100 × 7.8 ÷ 158.9 = <b>4.9%</b><br>Adult population = 158.9 + 94.5 = <b>253.4 million</b><br>LF participation rate = 100 × 158.9 ÷ 253.4 = <b>62.7%</b><span class="zhn">勞動力 = 151.1 + 7.8 = 158.9 百萬；失業率 = 7.8 ÷ 158.9 = 4.9%；成年人口 = 158.9 + 94.5 = 253.4 百萬；勞參率 = 158.9 ÷ 253.4 = 62.7%。注意失業率的分母是<b>勞動力</b>，勞參率的分母才是<b>成年人口</b>。</span></p></details></div>
+<div class="ex"><b class="t">Appendix Question 1 (p8): the trough of the Great Recession, June 2009</b>140,196,000 employed, 14,729,000 unemployed, 80,729,000 not in the labor force. Calculate a. the adult population b. the labor force c. the labor-force participation rate d. the unemployment rate.<span class="zhn"><b>Appendix Question 1（p8）：大衰退谷底，2009 年 6 月</b> 就業 140,196,000、失業 14,729,000、非勞動力 80,729,000。算 a. 成年人口 b. 勞動力 c. 勞參率 d. 失業率。</span>
+<details><summary>看解答</summary><p>a. Adult population = 140,196,000 + 14,729,000 + 80,729,000 = <b>235,654,000</b><br>b. Labor force = 140,196,000 + 14,729,000 = <b>154,925,000</b><br>c. LF participation rate = 154,925,000 ÷ 235,654,000 = <b>65.7%</b><br>d. U-rate = 14,729,000 ÷ 154,925,000 = <b>9.5%</b><span class="zhn">a. 三組加起來 = 235,654,000；b. 就業＋失業 = 154,925,000；c. 154,925,000 ÷ 235,654,000 ≈ 65.7%；d. 14,729,000 ÷ 154,925,000 ≈ 9.5%。</span></p></details></div>
+
+<h3 data-sec="28-2"><span class="star">★</span> Labor force statistics for different groups<span class="zhn">不同族群的勞動力統計</span></h3>
+<p>The BLS publishes these statistics for demographic groups. The data reveal <b>widely different labor-market experiences</b> for different groups (all June 2016).<span class="zhn">BLS 也公布各人口族群的數字，資料顯示不同族群的<b>勞動市場經驗差異很大</b>（都是 2016 年 6 月）。</span></p>
+<div class="three">
+<div class="tbl"><table><tr><th>Adults 20+<span class="zhn">20 歲以上</span></th><th>u-rate</th><th>LF part.</th></tr>
+<tr><td>White, male</td><td>4.0%</td><td>71.9%</td></tr>
+<tr><td>White, female</td><td>4.0%</td><td>57.6%</td></tr>
+<tr><td>Black, male</td><td>8.2%</td><td>67.8%</td></tr>
+<tr><td>Black, female</td><td>7.3%</td><td>60.9%</td></tr></table></div>
+<div class="tbl"><table><tr><th>Group<span class="zhn">族群</span></th><th>u-rate</th><th>LF part.</th></tr>
+<tr><td>Teens 16–19, White</td><td>14.1%</td><td>37.0%</td></tr>
+<tr><td>Teens 16–19, Black</td><td>31.2%</td><td>29.2%</td></tr>
+<tr><td>Asian (all ages)</td><td>3.5%</td><td>63.2%</td></tr>
+<tr><td>Hispanic (all ages)</td><td>5.8%</td><td>65.6%</td></tr></table></div>
+<div class="tbl"><table><tr><th>Adults 25+, education<span class="zhn">25 歲以上，學歷</span></th><th>u-rate</th><th>LF part.</th></tr>
+<tr><td>Less than high school</td><td>7.5%</td><td>45.2%</td></tr>
+<tr><td>High-school diploma</td><td>5.0%</td><td>57.2%</td></tr>
+<tr><td>Some college / associate</td><td>4.2%</td><td>66.0%</td></tr>
+<tr><td>Bachelor's or more</td><td>2.5%</td><td>74.4%</td></tr></table></div>
+</div>
+<ul>
+<li>Teens have much higher u-rates than adults; Blacks have higher u-rates than Whites.<span class="zhn">青少年的失業率比成年人高很多；黑人的失業率比白人高。</span></li>
+<li><b>The more education, the lower the u-rate and the higher the participation rate.</b><span class="zhn"><b>學歷越高，失業率越低、勞參率越高。</b></span></li>
+<li>LF participation rates by sex, 1948–2016: the <b>male</b> rate has drifted <b>down</b> (from about 87% to about 69%), the <b>female</b> rate rose a lot (from about 33% to about 57%), so the gap has narrowed.<span class="zhn">1948 到 2016 年的男女勞參率：<b>男性下降</b>（約 87% → 69%），<b>女性大幅上升</b>（約 33% → 57%），兩者差距縮小。</span></li>
+</ul>
+
+<h3 data-sec="28-3"><span class="star">★★★</span> Limitations of the u-rate (Active Learning 2)<span class="zhn">失業率的限制（Active Learning 2）</span></h3>
+<div class="tbl"><table><tr><th>Event<span class="zhn">事件</span></th><th>u-rate</th><th>Accurate picture?<span class="zhn">反映真實狀況嗎？</span></th></tr>
+<tr><td>A. Sue loses her job and begins looking for a new one.<span class="zhn">Sue 失業並開始找新工作。</span></td><td><b>rises ↑</b></td><td>Yes: the labor market is worsening, and it shows.<span class="zhn">是：勞動市場變差，失業率也顯示變差。</span></td></tr>
+<tr><td>B. John, out of work since his mill closed, becomes discouraged and gives up looking.<span class="zhn">John 工廠倒閉後一直失業，灰心後放棄找工作。</span></td><td><b>falls ↓</b></td><td>No: John is now "not in the labor force", so the u-rate falls and the market looks better, but it is not.<span class="zhn">否：John 變成「非勞動力」，失業率下降，看起來變好，其實沒有。</span></td></tr>
+<tr><td>C. Sam loses his $80,000 research job and takes a part-time job at McDonald's.<span class="zhn">Sam 丟了年薪 8 萬的研究工作，先去麥當勞打工。</span></td><td><b>unchanged</b></td><td>No: a person is "employed" whether full or part time; things are worse but the u-rate does not show it.<span class="zhn">否：全職或兼職都算「就業」，情況變差但失業率看不出來。</span></td></tr></table></div>
+<ul>
+<li><b class="en">Discouraged workers</b>: would like to work but have <b>given up looking</b> for jobs → classified as <b>not in the labor force</b>, not unemployed.<span class="zhn"><b class="en">Discouraged workers</b>（怯志工作者）：想工作但<b>已經放棄找工作</b> → 被歸為<b>非勞動力</b>，不算失業。</span></li>
+<li>So the u-rate is <b>not a perfect indicator</b> of joblessness or the health of the labor market:<span class="zhn">所以失業率<b>不是完美的指標</b>：</span>
+<ul>
+<li>It <b>excludes discouraged workers</b>.<span class="zhn">它<b>不包含怯志工作者</b>。</span></li>
+<li>It does <b>not distinguish full-time from part-time</b> work, or people working part time because full-time jobs are not available.<span class="zhn">它<b>不分全職和兼職</b>，也不分「因為找不到全職才做兼職」的人。</span></li>
+<li>Some people <b>misreport</b> their work status.<span class="zhn">有些人<b>謊報</b>自己的工作狀態。</span></li>
+</ul></li>
+<li>It is still a very useful <b>barometer</b> of the labor market and the economy.<span class="zhn">但它仍然是勞動市場和經濟非常有用的<b>晴雨表</b>。</span></li>
+</ul>
+<div class="ex"><b class="t">Appendix Question 2 (p21): effect on the u-rate and the LF participation rate</b>a. After a long search, Jon finds a job. b. Tyrion, a full-time college student, graduates and is immediately employed. c. After an unsuccessful job search, Arya gives up looking and retires. d. Daenerys quits her job to become a stay-at-home mom. e. Sansa has a birthday, becomes an adult, but has no interest in working. f. Jaime has a birthday, becomes an adult, and starts looking for a job. g. Cersei dies while enjoying retirement. h. Jorah dies working long hours at the office.<span class="zhn"><b>Appendix Question 2（p21）：對失業率與勞參率的影響</b> a. Jon 找了很久終於找到工作 b. 大學生 Tyrion 畢業馬上就業 c. Arya 找不到工作後放棄、退休（失業中放棄求職）d. Daenerys 辭職當全職媽媽（在職中放棄求職）e. Sansa 成年但不想工作 f. Jaime 成年並開始找工作 g. 退休的 Cersei 過世 h. Jorah 在辦公室加班過勞死</span>
+<details><summary>看解答</summary><div class="tbl"><table><tr><th></th><th>Moves from → to</th><th>u-rate</th><th>LF part. rate</th></tr>
+<tr><td>a</td><td>unemployed → employed</td><td>↓</td><td>unchanged</td></tr>
+<tr><td>b</td><td>not in LF → employed</td><td>↓</td><td>↑</td></tr>
+<tr><td>c</td><td>unemployed → not in LF</td><td>↓</td><td>↓</td></tr>
+<tr><td>d</td><td>employed → not in LF</td><td>↑</td><td>↓</td></tr>
+<tr><td>e</td><td>joins the population, not in LF</td><td>unchanged</td><td>↓</td></tr>
+<tr><td>f</td><td>joins the population, unemployed</td><td>↑</td><td>↑</td></tr>
+<tr><td>g</td><td>leaves the population from not in LF</td><td>unchanged</td><td>↑</td></tr>
+<tr><td>h</td><td>leaves the population from employed</td><td>↑</td><td>↓</td></tr></table></div><p>Method: write the u-rate as U ÷ (E + U) and the participation rate as (E + U) ÷ population, then see which numbers change. Because the u-rate and the participation rate are both below 100%, adding a person to the top and the bottom raises the ratio, and removing one lowers it (f, h).<span class="zhn">方法：失業率 = U ÷ (E + U)、勞參率 = (E + U) ÷ 成年人口，看哪幾個數字變了。因為兩個比率都小於 100%，分子分母同加 1 會讓比率上升，同減 1 會讓比率下降（f、h 就是這樣判斷）。b 的分母變大、分子不變所以失業率下降；d 的分母變小、分子不變所以失業率上升。</span></p></details></div>
+
+<h3 data-sec="28-4"><span class="star">★★</span> The duration of unemployment<span class="zhn">失業持續期間</span></h3>
+<ul>
+<li><b>Most spells of unemployment are short</b> (BLS employment situation survey): typically 1/3 of the unemployed have been unemployed under 5 weeks, 2/3 under 14 weeks; only 20% over 6 months.<span class="zhn"><b>大部分失業期間都很短</b>（BLS 就業狀況調查）：通常 1/3 的失業者失業不到 5 週，2/3 不到 14 週；只有 20% 超過 6 個月。</span></li>
+<li>Yet <b>most observed unemployment is long term</b>: the small group of long-term unemployed has little turnover, so it accounts for most of the unemployment observed over time.<span class="zhn">但<b>任何時刻觀察到的失業大多是長期失業</b>：少數長期失業者幾乎不流動，所以佔了長期以來觀察到的大部分失業。</span></li>
+<li>Knowing these facts helps policymakers design better policies to help the unemployed.<span class="zhn">知道這些事實，有助於政策制定者設計更好的失業協助政策。</span></li>
+</ul>
+<div class="ex"><b class="t">Example (p24): 55 unemployed people in a year</b>You meet 55 unemployed people over a year. 52 of them (52/55 = 95%) are unemployed for one week; 3 are unemployed for the whole year. Whenever you walk into the unemployment office you meet 4 people: the one-week person of that week plus the 3 long-term people, so 3 of the 4 (75%) are unemployed for the entire year.<span class="zhn"><b>例子（p24）：一年遇到 55 個失業者</b> 52 人（95%）只失業一週，3 人失業一整年。每次走進就業服務處，會看到 4 個人：當週那位一週失業者＋3 位長期失業者，所以 4 人中有 3 人（75%）失業一整年。</span>
+<p>Even though <b>95% of spells end in one week</b>, <b>75% of the unemployment observed at any moment</b> belongs to those unemployed for a full year.<span class="zhn">雖然 <b>95% 的失業期一週就結束</b>，任何時刻看到的失業有 <b>75%</b> 是失業一整年的人。「人次」大多短期，「某一時點的存量」大多長期。</span></p></div>
+
+<h3 data-sec="28-5"><span class="star">★★★</span> The natural rate, frictional, structural and cyclical unemployment<span class="zhn">自然失業率、摩擦性、結構性與週期性失業</span></h3>
+<p>Even when the economy is doing well, there is always some unemployment.<span class="zhn">就算經濟很好，也一定有一些失業。</span></p>
+<div class="tbl"><table><tr><th>Type<span class="zhn">類型</span></th><th>Cause<span class="zhn">原因</span></th><th>Length<span class="zhn">長短</span></th></tr>
+<tr><td><b class="en">Frictional unemployment</b><span class="zhn">摩擦性失業</span></td><td>Workers spend time <b>searching</b> for the jobs that best suit their skills and tastes<span class="zhn">工作者花時間<b>尋找</b>最適合自己技能與偏好的工作</span></td><td>Short-term for most workers<span class="zhn">大多數人是短期</span></td></tr>
+<tr><td><b class="en">Structural unemployment</b><span class="zhn">結構性失業</span></td><td>There are <b>fewer jobs than workers</b> (the wage is above equilibrium)<span class="zhn"><b>工作比工作者少</b>（工資高於均衡）</span></td><td>Usually longer-term<span class="zhn">通常較長期</span></td></tr>
+<tr><td><b class="en">Cyclical unemployment</b><span class="zhn">週期性失業</span></td><td>The <b>deviation</b> of unemployment from its natural rate, associated with <b>business cycles</b><span class="zhn">失業率偏離自然失業率的部分，和<b>景氣循環</b>有關</span></td><td>Short-run fluctuations (later chapters)<span class="zhn">短期波動（之後的章節）</span></td></tr></table></div>
+<ul>
+<li><b class="en">Natural rate of unemployment</b> u* (自然失業率, 充分就業下的失業率) = <b>frictional + structural</b>: the unemployment rate consistent with <b>full employment</b>; the normal rate around which the actual rate fluctuates.<span class="zhn"><b class="en">Natural rate of unemployment</b> u*（自然失業率，充分就業下的失業率）= <b>摩擦性 + 結構性</b>：和<b>充分就業</b>相容的失業率，也是實際失業率上下波動的中心。</span></li>
+<li><b class="en">Cyclical unemployment</b> = actual rate − natural rate = <b>u − u*</b>. In <b>recessions u − u* &gt; 0</b>; in <b>booms u − u* &lt; 0</b>.<span class="zhn"><b class="en">Cyclical unemployment</b> = 實際失業率 − 自然失業率 = <b>u − u*</b>。<b>衰退時 u − u* &gt; 0</b>；<b>繁榮時 u − u* &lt; 0</b>。</span></li>
+<li><b>Actual unemployment rate</b> (實際失業率) u = natural rate + cyclical rate = u* + (u − u*).<span class="zhn"><b>Actual unemployment rate</b>（實際失業率）u = 自然失業率 + 週期性失業率 = u* + (u − u*)。</span></li>
+</ul>
+<div class="two" style="display:block"><figure class="fg wide"><svg viewBox="0 0 640 250" role="img"><line class="ax" x1="50" y1="200" x2="616" y2="200"/><line class="ax" x1="50" y1="200" x2="50" y2="14"/><line class="gl" x1="50" y1="164.0" x2="610" y2="164.0"/><text class="tk" x="44" y="168.0" text-anchor="end">2%</text><line class="gl" x1="50" y1="128.0" x2="610" y2="128.0"/><text class="tk" x="44" y="132.0" text-anchor="end">4%</text><line class="gl" x1="50" y1="92.0" x2="610" y2="92.0"/><text class="tk" x="44" y="96.0" text-anchor="end">6%</text><line class="gl" x1="50" y1="56.0" x2="610" y2="56.0"/><text class="tk" x="44" y="60.0" text-anchor="end">8%</text><line class="gl" x1="50" y1="20.0" x2="610" y2="20.0"/><text class="tk" x="44" y="24.0" text-anchor="end">10%</text><text class="tk" x="50.0" y="216" text-anchor="middle">1960</text><text class="tk" x="150.0" y="216" text-anchor="middle">1970</text><text class="tk" x="250.0" y="216" text-anchor="middle">1980</text><text class="tk" x="350.0" y="216" text-anchor="middle">1990</text><text class="tk" x="450.0" y="216" text-anchor="middle">2000</text><text class="tk" x="550.0" y="216" text-anchor="middle">2010</text><polyline class="cv2" fill="none" points="50.0,101.0 60.0,100.3 70.0,99.6 80.0,98.8 90.0,98.1 100.0,97.4 110.0,96.7 120.0,96.0 130.0,95.2 140.0,94.5 150.0,93.8 160.0,93.1 170.0,92.4 180.0,91.8 190.0,91.1 200.0,90.4 210.0,89.8 220.0,89.1 230.0,88.4 240.0,89.0 250.0,89.6 260.0,90.2 270.0,90.8 280.0,91.4 290.0,92.0 300.0,92.6 310.0,93.2 320.0,93.8 330.0,94.4 340.0,95.0 350.0,95.6 360.0,96.9 370.0,98.1 380.0,99.4 390.0,100.6 400.0,101.9 410.0,103.2 420.0,104.4 430.0,105.7 440.0,106.9 450.0,108.2 460.0,108.4 470.0,108.7 480.0,108.9 490.0,109.1 500.0,109.3 510.0,109.5 520.0,109.8 530.0,110.0 540.0,110.5 550.0,110.9 560.0,111.4 570.0,111.8 580.0,112.2 590.0,112.7 600.0,113.1 610.0,113.6"/><polyline class="cv" fill="none" points="50.0,101.0 60.0,79.4 70.0,101.0 80.0,97.4 90.0,106.4 100.0,119.0 110.0,131.6 120.0,131.6 130.0,135.2 140.0,137.0 150.0,111.8 160.0,93.8 170.0,99.2 180.0,111.8 190.0,99.2 200.0,47.0 210.0,61.4 220.0,72.2 230.0,90.2 240.0,95.6 250.0,72.2 260.0,63.2 270.0,25.4 280.0,27.2 290.0,65.0 300.0,70.4 310.0,74.0 320.0,88.4 330.0,101.0 340.0,104.6 350.0,99.2 360.0,77.6 370.0,65.0 380.0,75.8 390.0,90.2 400.0,99.2 410.0,102.8 420.0,111.8 430.0,119.0 440.0,124.4 450.0,128.0 460.0,115.4 470.0,95.6 480.0,92.0 490.0,101.0 500.0,108.2 510.0,117.2 520.0,117.2 530.0,95.6 540.0,32.6 550.0,27.2 560.0,39.8 570.0,54.2 580.0,66.8 590.0,88.4 600.0,104.6 610.0,111.8"/><text class="lb" x="276.0" y="23.4">Actual u-rate</text><text class="lb" x="440.0" y="142.2" text-anchor="middle">Natural rate u*</text><text class="lb2" x="550.0" y="9.2" text-anchor="middle">recession: u − u* &gt; 0</text><text class="lb2" x="130.0" y="156.8" text-anchor="middle">boom: u − u* &lt; 0</text><text class="axl" x="616" y="240" text-anchor="end">year</text><text class="axl" x="56" y="12">% of labor force</text></svg><figcaption>U.S. unemployment, 1960–2016 (annual averages, approximate). The actual rate moves above the natural rate in recessions and below it in booms; the gap is cyclical unemployment.<span class="zhn">美國失業率 1960–2016（年平均，約略值）。衰退時實際失業率高於自然失業率，繁榮時低於；兩者的差距就是週期性失業。</span></figcaption></figure></div>
+<div class="ex"><b class="t">Appendix Question 9 (p27–30): auto vs. aircraft workers</b>Structural unemployment is sometimes said to come from a mismatch between the skills employers want and the skills workers have. An economy has two industries, auto and aircraft manufacturing, needing similar training; new workers can choose which to train for. a. What happens to the wages in the two industries? b. The economy opens to trade, importing autos and exporting aircraft: what happens to labor demand in each? c. Workers cannot be quickly retrained: how do wages change in the short run and the long run? d. If wages fail to adjust, what occurs?<span class="zhn"><b>Appendix Question 9（p27–30）：汽車業 vs 飛機業工人</b> 結構性失業有時被說成是「雇主要的技能」和「工人有的技能」不配合。兩個產業訓練相近，新進工人可以選。a. 兩業工資會怎樣？b. 開放貿易後進口汽車、出口飛機，各自的勞動需求？c. 工人無法快速轉行時，短期與長期工資？d. 若工資不調整會怎樣？</span>
+<details><summary>看解答</summary><p>a. The wages should be <b>about equal</b>: if one paid more, new workers would train for that industry until the wages were the same.<br>b. Labor demand <b>falls in auto</b> manufacturing and <b>rises in aircraft</b> manufacturing.<br>c. Short run: the auto wage <b>falls</b> and the aircraft wage <b>rises</b>. Long run: new workers choose aircraft training, labor supply moves from auto to aircraft, and the two wages become <b>equal again</b>.<br>d. If wages do not adjust, there is a <b>surplus of auto workers (unemployment)</b> and a <b>shortage of aircraft workers</b>: the skill mismatch shows up as structural unemployment.<span class="zhn">a. 工資應該<b>差不多</b>：哪一業比較高，新人就去學那一業，直到工資相同。b. 汽車業勞動需求<b>下降</b>、飛機業<b>上升</b>。c. 短期汽車業工資<b>下跌</b>、飛機業<b>上漲</b>；長期新人改學飛機，勞動供給從汽車移到飛機，兩業工資<b>再度相等</b>。d. 工資不調整的話，汽車業會<b>工人過剩（失業）</b>、飛機業<b>工人短缺</b>，技能不配合就變成結構性失業。</span></p></details></div>
+
+<h3 data-sec="28-6"><span class="star">★★★</span> Job search and sectoral shifts (the main cause of frictional unemployment)<span class="zhn">找工作與部門移轉（摩擦性失業的主要原因）</span></h3>
+<ul>
+<li>Workers have different tastes and skills, and jobs have different requirements. <b class="en">Job search</b>: the process of <b>matching workers with appropriate jobs</b>.<span class="zhn">工作者的偏好和技能不同，工作的要求也不同。<b class="en">Job search</b>（找工作）：<b>把工作者和合適的工作配對</b>的過程。</span></li>
+<li><b class="en">Sectoral shifts</b>: changes in the <b>composition of demand</b> across industries or regions. They displace some workers, who must search for new jobs suited to their skills and tastes.<span class="zhn"><b class="en">Sectoral shifts</b>（部門移轉）：各產業或地區之間<b>需求組成的改變</b>，會讓部分工人失業，他們必須重新找適合的工作。</span></li>
+<li>Examples: technological change raises demand for computer repair persons and lowers demand for typewriter repair persons; a new trade agreement raises demand for workers in export sectors and lowers it in import-competing sectors.<span class="zhn">例子：技術改變讓電腦維修人員需求增加、打字機維修人員需求減少；新的貿易協定讓出口部門的工人需求增加、和進口競爭的部門需求減少。</span></li>
+<li>It takes time for workers to change sectors, so <b>sectoral shifts cause frictional unemployment</b>. In a dynamic economy smaller shifts happen frequently.<span class="zhn">工人轉換部門需要時間，所以<b>部門移轉造成摩擦性失業</b>。動態經濟中小規模的移轉經常發生。</span></li>
+</ul>
+<div class="tbl"><table><tr><th>Public policy and job search<span class="zhn">公共政策與找工作</span></th><th>What it does<span class="zhn">做什麼</span></th></tr>
+<tr><td><b>Government employment agencies</b><span class="zhn">政府就業服務機構</span></td><td>Provide information about job vacancies to <b>speed up the matching</b> of workers with jobs<span class="zhn">提供職缺資訊，<b>加快</b>工人與工作的<b>配對</b></span></td></tr>
+<tr><td><b>Public training programs</b><span class="zhn">公共職業訓練</span></td><td>Equip workers displaced from <b>declining</b> industries with the skills needed in <b>growing</b> industries<span class="zhn">讓從<b>衰退</b>產業被裁的工人學到<b>成長</b>產業需要的技能</span></td></tr></table></div>
+<div class="ex"><b class="t">Appendix Question 6 (p39): short-term or long-term unemployment?</b>a. a construction worker laid off because of bad weather b. a manufacturing worker who loses his job at a plant in an isolated area c. a stagecoach-industry worker laid off because of competition from railroads d. a short-order cook who loses his job when a new restaurant opens across the street e. an expert welder with little formal education who loses his job when the company installs automatic welding machinery<span class="zhn"><b>Appendix Question 6（p39）：短期還是長期失業？</b> a. 營建工人因天氣差被暫時解僱 b. 偏遠地區工廠的製造業工人失業 c. 驛馬車業工人因鐵路競爭被裁 d. 快餐廚師因對街開新餐廳而失業 e. 學歷不高的熟練焊工因公司裝了自動焊接機而失業</span>
+<details><summary>看解答</summary><p>a. <b>Short-term</b>: bad weather is temporary; he goes back to work when it clears.<br>b. <b>Long-term</b>: few other jobs nearby, so finding a new one may take long or require moving.<br>c. <b>Long-term</b>: the whole industry is declining for good; his skills are no longer wanted.<br>d. <b>Short-term</b>: his skills transfer easily, and the new restaurant may well hire him.<br>e. <b>Long-term</b>: his skill has been replaced by machines and he lacks the education to retrain quickly.<span class="zhn">a. <b>短期</b>：天氣是暫時的。b. <b>長期</b>：附近沒什麼別的工作。c. <b>長期</b>：整個產業永久衰退，技能沒人要。d. <b>短期</b>：技能可直接移轉，新餐廳也可能雇他。e. <b>長期</b>：技能被機器取代，學歷又不足以很快轉行。</span></p></details></div>
+
+<h3 data-sec="28-7"><span class="star">★★</span> Unemployment insurance<span class="zhn">失業保險</span></h3>
+<ul>
+<li><b class="en">Unemployment insurance</b> (UI): a government program that <b>partially protects workers' incomes</b> when they become unemployed.<span class="zhn"><b class="en">Unemployment insurance</b>（失業保險，UI）：失業時<b>部分保障工人所得</b>的政府計畫。</span></li>
+<li>UI <b>increases frictional unemployment</b>: people respond to incentives. Benefits end when a worker takes a job, so workers have <b>less incentive to search or to take jobs</b> while eligible for benefits.<span class="zhn">UI 會<b>增加摩擦性失業</b>：人會對誘因做出反應。一找到工作給付就停止，所以領給付期間工人<b>比較沒有誘因去找工作或接受工作</b>。</span></li>
+<li>Benefits of UI: it <b>reduces uncertainty</b> over incomes, and gives the unemployed <b>more time to search</b>, resulting in <b>better job matches</b> and thus higher productivity (「人盡其才，地盡其利，物盡其用，貨暢其流」).<span class="zhn">UI 的好處：<b>降低所得的不確定性</b>，讓失業者<b>有更多時間找</b>，<b>配對更好</b>，生產力因此更高（人盡其才）。</span></li>
+</ul>
+
+<h3 data-sec="28-8"><span class="star">★★★</span> Structural unemployment: the wage is kept above equilibrium (1. minimum-wage laws)<span class="zhn">結構性失業：工資被維持在均衡之上（1. 最低工資法）</span></h3>
+<p>Structural unemployment occurs when <b>there are not enough jobs to go around</b>, because the wage is kept <b>above equilibrium</b>: at the actual wage W₁ the quantity of labor supplied exceeds the quantity demanded. There are three reasons for this: minimum-wage laws, unions and efficiency wages.<span class="zhn">結構性失業發生在<b>工作不夠分</b>的時候，原因是工資被維持在<b>均衡之上</b>：在實際工資 W₁，勞動供給量大於勞動需求量。原因有三個：最低工資、工會、效率工資。</span></p>
+<div class="two"><figure class="fg"><svg viewBox="-22 0 362 268" role="img"><defs><marker id="ahf_1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahd"/></marker></defs><line class="ax" x1="44" y1="214" x2="328" y2="214"/><line class="ax" x1="44" y1="214" x2="44" y2="10"/><text class="axl" x="328" y="253" text-anchor="end">L labor</text><text class="axl" x="50" y="14">W wage</text><line class="cv" x1="44.0" y1="16.0" x2="322.0" y2="214.0"/><text class="lb" x="324.8" y="214.0" text-anchor="start">D</text><line class="cv2" x1="44.0" y1="214.0" x2="322.0" y2="16.0"/><text class="lb" x="324.8" y="16.0" text-anchor="start">S</text><line class="gl" x1="44.0" y1="115.0" x2="183.0" y2="115.0"/><line class="gl" x1="183.0" y1="214.0" x2="183.0" y2="115.0"/><text class="tk" x="40" y="119.0" text-anchor="end">W<tspan baseline-shift='sub' font-size='10'>E</tspan></text><text class="tk" x="183.0" y="229" text-anchor="middle">L<tspan baseline-shift='sub' font-size='10'>E</tspan></text><circle class="dot" cx="183.0" cy="115.0" r="3.5"/><line class="cv4" x1="44.0" y1="75.4" x2="322.0" y2="75.4"/><text class="tk" x="40" y="79.4" text-anchor="end">W₁</text><line class="gl" x1="44.0" y1="75.4" x2="127.4" y2="75.4"/><line class="gl" x1="127.4" y1="214.0" x2="127.4" y2="75.4"/><text class="tk" x="127.4" y="229" text-anchor="middle">L<tspan baseline-shift='sub' font-size='10'>D</tspan></text><line class="gl" x1="44.0" y1="75.4" x2="238.6" y2="75.4"/><line class="gl" x1="238.6" y1="214.0" x2="238.6" y2="75.4"/><text class="tk" x="238.6" y="229" text-anchor="middle">L<tspan baseline-shift='sub' font-size='10'>S</tspan></text><line class="gapl" x1="127.4" y1="75.4" x2="238.6" y2="75.4"/><text class="lb2" x="183.0" y="67.4" text-anchor="middle">unemployment</text></svg><figcaption>At the actual wage W₁ above the equilibrium WE, labor supplied LS exceeds labor demanded LD: the gap is structural unemployment.<span class="zhn">實際工資 W₁ 高於均衡工資 WE 時，勞動供給量 LS 大於勞動需求量 LD，差距就是結構性失業。</span></figcaption></figure><div class="box zh"><span class="lbl">Why the wage stays above WE</span><b>1. Minimum-wage laws</b>: the law sets the floor.<br><b>2. Unions</b>: collective bargaining pushes the wage up.<br><b>3. Efficiency wages</b>: the firm itself chooses to pay more.<br>In all three the wage cannot fall to clear the market, so the surplus of labor stays.<span class="zhn">1. 最低工資法：法律訂下限。2. 工會：集體議價把工資推高。3. 效率工資：廠商自己選擇多付。三種情況工資都降不下來讓市場結清，勞動過剩就一直存在。</span></div></div>
+<ul>
+<li><b class="en">Minimum wage</b>: may exceed the equilibrium wage for the <b>least skilled or experienced</b> workers, causing structural unemployment.<span class="zhn"><b class="en">Minimum wage</b>（最低工資）：可能高於<b>技能或經驗最少</b>的工人的均衡工資，造成結構性失業。</span></li>
+<li>But this group is a <b>small part</b> of the labor force, so the minimum wage <b>can't explain most unemployment</b>.<span class="zhn">但這群人只佔勞動力的<b>一小部分</b>，所以最低工資<b>無法解釋大部分的失業</b>。</span></li>
+</ul>
+
+<h3 data-sec="28-9"><span class="star">★★★</span> 2. Unions<span class="zhn">2. 工會</span></h3>
+<ul>
+<li><b class="en">Union</b>: a worker association that <b>bargains with employers</b> over wages, benefits and working conditions, using its <b>market power</b> to negotiate higher wages. The typical union worker earns about <b>10%–20% higher wages</b> and more benefits than a nonunion worker doing the same type of work.<span class="zhn"><b class="en">Union</b>（工會）：和雇主就工資、福利、工作條件<b>議價</b>的工人組織，用<b>市場力量</b>爭取較高工資。一般工會工人的工資比做同樣工作的非工會工人<b>高約 10%–20%</b>，福利也較多。</span></li>
+<li>Unions raise the wage above equilibrium → the quantity of labor demanded falls → <b>unemployment</b> results.<span class="zhn">工會把工資提高到均衡之上 → 勞動需求量下降 → 產生<b>失業</b>。</span></li>
+<li><b class="en">Insiders</b>: workers who remain employed, <b>better off</b>. <b class="en">Outsiders</b>: workers who lose their jobs, <b>worse off</b>. Some outsiders go to <b>non-unionized</b> labor markets, which <b>increases labor supply and reduces wages</b> there.<span class="zhn"><b class="en">Insiders</b>（局內人）：保住工作的人，<b>變好</b>。<b class="en">Outsiders</b>（局外人）：丟了工作的人，<b>變差</b>。有些局外人轉去<b>沒有工會</b>的勞動市場，讓那裡的<b>勞動供給增加、工資下降</b>。</span></li>
+</ul>
+<div class="two"><figure class="fg"><svg viewBox="-22 -22 362 290" role="img"><defs><marker id="ahf_2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahd"/></marker></defs><line class="ax" x1="44" y1="214" x2="328" y2="214"/><line class="ax" x1="44" y1="214" x2="44" y2="10"/><text class="axl" x="328" y="253" text-anchor="end">L manufacturing</text><text class="axl" x="50" y="14">W</text><text class="lb" x="322.0" y="-6" text-anchor="end">Manufacturing: union</text><line class="cv" x1="44.0" y1="16.0" x2="322.0" y2="214.0"/><text class="lb" x="324.8" y="214.0" text-anchor="start">D</text><line class="cv2" x1="44.0" y1="214.0" x2="322.0" y2="16.0"/><text class="lb" x="324.8" y="16.0" text-anchor="start">S</text><line class="gl" x1="44.0" y1="115.0" x2="183.0" y2="115.0"/><line class="gl" x1="183.0" y1="214.0" x2="183.0" y2="115.0"/><text class="tk" x="40" y="119.0" text-anchor="end">W₀</text><text class="tk" x="183.0" y="229" text-anchor="middle">L₀</text><circle class="dot" cx="183.0" cy="115.0" r="3.5"/><line class="cv4" x1="44.0" y1="75.4" x2="322.0" y2="75.4"/><text class="tk" x="40" y="79.4" text-anchor="end">W<tspan baseline-shift='sub' font-size='10'>union</tspan></text><line class="gl" x1="44.0" y1="75.4" x2="127.4" y2="75.4"/><line class="gl" x1="127.4" y1="214.0" x2="127.4" y2="75.4"/><text class="tk" x="127.4" y="229" text-anchor="middle">L₁</text><line class="gapl" x1="127.4" y1="75.4" x2="238.6" y2="75.4"/><text class="lb2" x="183.0" y="67.4" text-anchor="middle">outsiders</text></svg><figcaption>The union raises the manufacturing wage to W<sub>union</sub>: employment falls from L₀ to L₁. Insiders gain; outsiders lose their jobs.<span class="zhn">工會把製造業工資拉到 W<sub>union</sub>：就業從 L₀ 降到 L₁。局內人得利，局外人失業。</span></figcaption></figure><figure class="fg"><svg viewBox="-22 -22 362 290" role="img"><defs><marker id="ahf_3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahd"/></marker></defs><line class="ax" x1="44" y1="214" x2="328" y2="214"/><line class="ax" x1="44" y1="214" x2="44" y2="10"/><text class="axl" x="328" y="253" text-anchor="end">L services</text><text class="axl" x="50" y="14">W</text><text class="lb" x="322.0" y="-6" text-anchor="end">Services: outsiders arrive</text><line class="cv" x1="44.0" y1="16.0" x2="322.0" y2="214.0"/><text class="lb" x="324.8" y="214.0" text-anchor="start">D</text><line class="cv2" x1="44.0" y1="214.0" x2="322.0" y2="16.0"/><text class="lb" x="324.8" y="16.0" text-anchor="start">S₁</text><line class="gl" x1="44.0" y1="115.0" x2="183.0" y2="115.0"/><line class="gl" x1="183.0" y1="214.0" x2="183.0" y2="115.0"/><text class="tk" x="40" y="119.0" text-anchor="end">W₀</text><text class="tk" x="183.0" y="229" text-anchor="middle">L₀</text><circle class="dot" cx="183.0" cy="115.0" r="3.5"/><line class="gl2" x1="216.4" y1="91.2" x2="255.3" y2="103.1" marker-end="url(#ahf_3)"/><line class="cv3 dash" x1="99.6" y1="214.0" x2="322.0" y2="55.6"/><text class="lb" x="324.8" y="55.6" text-anchor="start">S₂</text><line class="gl2" x1="44.0" y1="134.8" x2="210.8" y2="134.8"/><line class="gl2" x1="210.8" y1="214.0" x2="210.8" y2="134.8"/><text class="tk" x="40" y="138.8" text-anchor="end">W₁</text><text class="tk" x="210.8" y="229" text-anchor="middle">L₁</text><circle class="dot" cx="210.8" cy="134.8" r="3.5"/></svg><figcaption>Outsiders move to the non-union service market: supply shifts right from S₁ to S₂, the service wage falls and service employment rises.<span class="zhn">局外人移到沒有工會的服務業：供給從 S₁ 右移到 S₂，服務業工資下降、就業增加。</span></figcaption></figure></div>
+<div class="ex"><b class="t">Appendix Question 8 (p47): a manufacturing union and the service market</b>Two labor markets, manufacturing and services, neither unionized at first. A. If manufacturing workers form a union, what happens to wages and employment in manufacturing? B. How does this affect the supply of labor in the service market, and the equilibrium wage and employment there?<span class="zhn"><b>Appendix Question 8（p47）：製造業工會與服務業市場</b> 兩個勞動市場：製造業和服務業，一開始都沒工會。A. 製造業組工會後，製造業的工資與就業？B. 這會怎麼影響服務業的勞動供給、均衡工資與就業？</span>
+<details><summary>看解答</summary><p>A. The union raises the manufacturing wage <b>above equilibrium</b>, so manufacturing <b>employment falls</b> (the left figure above).<br>B. The workers who lose manufacturing jobs move to the service market, so <b>labor supply in services rises</b> (shifts right): the service <b>wage falls</b> and service <b>employment rises</b> (the right figure above).<span class="zhn">A. 工會把製造業工資拉到<b>均衡之上</b>，製造業<b>就業下降</b>（上面左圖）。B. 被擠出來的工人跑去服務業，<b>服務業勞動供給增加</b>（右移）：服務業<b>工資下降</b>、<b>就業增加</b>（上面右圖）。</span></p></details></div>
+<div class="tbl"><table><tr><th colspan="2">Are unions good or bad? Economists disagree.<span class="zhn">工會是好是壞？經濟學家意見不一。</span></th></tr>
+<tr><td><b>Critics</b><span class="zhn">批評者</span></td><td>Unions are <b>cartels</b>. They raise wages above equilibrium, which causes unemployment and/or depresses wages in non-union labor markets.<span class="zhn">工會是<b>卡特爾</b>。把工資拉到均衡之上，造成失業，或壓低非工會市場的工資。</span></td></tr>
+<tr><td><b>Advocates</b><span class="zhn">支持者</span></td><td>Unions <b>counter the market power of large firms</b> and make firms more responsive to workers' concerns.<span class="zhn">工會能<b>對抗大企業的市場力量</b>，讓企業更重視工人的需求。</span></td></tr></table></div>
+
+<h3 data-sec="28-10"><span class="star">★★★</span> 3. Efficiency wages<span class="zhn">3. 效率工資</span></h3>
+<p>The theory of <b class="en">efficiency wages</b>: firms <b>voluntarily</b> pay above-equilibrium wages to <b>boost worker productivity</b>. Different versions give different reasons:<span class="zhn"><b class="en">Efficiency wages</b>（效率工資）理論：廠商<b>自願</b>付高於均衡的工資來<b>提高工人生產力</b>。不同版本有不同理由：</span></p>
+<div class="tbl"><table><tr><th>Reason<span class="zhn">理由</span></th><th>How a higher wage helps the firm<span class="zhn">高工資怎麼幫到廠商</span></th></tr>
+<tr><td><b>1. Worker health</b><span class="zhn">工人健康</span></td><td>In less developed countries poor nutrition is common; higher wages let workers eat better, so they are healthier and more productive.<span class="zhn">在開發中國家營養不良很常見；高工資讓工人吃得好、更健康、生產力更高。</span></td></tr>
+<tr><td><b>2. Worker turnover</b><span class="zhn">工人流動</span></td><td>Hiring and training new workers is costly; high wages give workers more incentive to stay, so turnover falls.<span class="zhn">雇用與訓練新人很花錢；高工資讓工人更想留下，降低離職率。</span></td></tr>
+<tr><td><b>3. Worker quality</b><span class="zhn">工人品質</span></td><td>Higher wages attract better job applicants, raising the quality of the workforce.<span class="zhn">高工資吸引較好的應徵者，提高員工素質。</span></td></tr>
+<tr><td><b>4. Worker effort</b><span class="zhn">工人努力</span></td><td>Workers can work hard or <b>shirk</b>; shirkers are fired if caught. Being fired is a good deterrent only if another job is hard to find; with the wage above equilibrium there aren't enough jobs to go around, so workers have more incentive to work, not shirk.<span class="zhn">工人可以努力也可以<b>偷懶</b>，被抓到就開除。開除有沒有嚇阻力，要看找新工作難不難；工資高於均衡時工作不夠分，工人就比較不敢偷懶。</span></td></tr></table></div>
+<div class="ex"><b class="t">Active Learning 3 (p54): which would most likely reduce frictional unemployment?</b>A. The government eliminates the minimum wage. B. The government increases unemployment insurance benefits. C. A new law bans labor unions. D. More workers post their resumes at LinkedIn.com, and more employers use LinkedIn.com to find suitable workers. E. Sectoral shifts become more frequent.<span class="zhn"><b>Active Learning 3（p54）：哪一個最可能降低摩擦性失業？</b> A. 取消最低工資 B. 提高失業保險給付 C. 立法禁止工會 D. 更多求職者把履歷放上 LinkedIn，更多雇主用 LinkedIn 找人 E. 部門移轉更頻繁</span>
+<details><summary>看解答</summary><p>Answer: <b>D</b>, it speeds up the matching of workers and jobs.<br>A and C would reduce <b>structural</b> unemployment, not frictional.<br>B and E would <b>increase</b> frictional unemployment.<span class="zhn">答案 <b>D</b>：加快工人與工作的配對。A、C 降低的是<b>結構性</b>失業；B、E 反而<b>增加</b>摩擦性失業。</span></p></details></div>
+
+<h3 data-sec="28-11"><span class="star">★★</span> The natural rate: a summary, and are we back at full employment?<span class="zhn">自然失業率總整理，以及回到充分就業了嗎？</span></h3>
+<div class="two">
+<div class="box zh"><span class="lbl">Frictional</span>It takes time to search for the right jobs, <b>even if there are enough jobs</b> to go around. Raised by sectoral shifts and UI; lowered by employment agencies, training and better matching.<span class="zhn">找到對的工作要時間，<b>就算工作夠分</b>也會有。部門移轉、失業保險會提高它；就業服務、職訓、更好的配對會降低它。</span></div>
+<div class="box zh"><span class="lbl">Structural</span>The wage is <b>above equilibrium</b>, so there are <b>not enough jobs</b>. Three reasons: <b>minimum wages, labor unions, efficiency wages</b>.<span class="zhn">工資<b>高於均衡</b>，<b>工作不夠分</b>。三個原因：<b>最低工資、工會、效率工資</b>。</span></div>
+</div>
+<ul>
+<li>Cyclical unemployment, the short-term fluctuations associated with business cycles, comes in later chapters.<span class="zhn">週期性失業（和景氣循環有關的短期波動）在之後的章節。</span></li>
+<li><b>Eye on Full Employment</b>: the Atlanta Fed suggests the <b class="en">Z-Pop ratio</b>, the percentage of the <b>working-age population</b> that is <b>fully utilized</b>: people working full time, working part time for a <b>noneconomic</b> reason, and people who say they <b>don't want a job</b>.<span class="zhn"><b>Eye on Full Employment</b>：亞特蘭大聯邦準備銀行建議用 <b class="en">Z-Pop ratio</b>：<b>工作年齡人口</b>中被<b>充分利用</b>的比例，包括全職工作者、因<b>非經濟</b>原因做兼職的人、以及說自己<b>不想要工作</b>的人。</span></li>
+<li>Before the 2008–2009 recession 95.2% was fully utilized; it fell, then slowly climbed to 94.5%. The Z-Pop ratio gives <b>almost the same answer</b> as comparing the u-rate with the natural rate, but it shows a small amount of <b>underused labor remaining in 2016</b>.<span class="zhn">2008–2009 衰退前是 95.2%，之後下降，再慢慢回升到 94.5%。Z-Pop 和「比較失業率與自然失業率」的答案<b>幾乎一樣</b>，但它顯示 2016 年仍有少量<b>未被充分利用的勞動力</b>。</span></li>
+</ul>
+
+<h3 data-sec="28-12"><span class="star">★★★</span> Exam practice: sectoral shifts and the employer mandate<span class="zhn">考題練習：部門移轉與雇主強制福利</span></h3>
+<div class="ex"><b class="t">Final mock question (p66): Moscow's anti-smoking campaign</b>Muscovites smoke less and chew gum more. Tobacco companies lay off workers, while chewing-gum manufacturers employ more workers. This is an example of a. frictional unemployment created by efficiency wages. b. frictional unemployment created by sectoral shifts. c. structural unemployment created by efficiency wages. d. structural unemployment created by sectoral shifts.<span class="zhn"><b>期末考模擬試題（p66）：莫斯科戒菸運動</b> 莫斯科人少抽菸、多嚼口香糖；菸草公司裁員、口香糖廠多雇人。這是 a. 效率工資造成的摩擦性失業 b. 部門移轉造成的摩擦性失業 c. 效率工資造成的結構性失業 d. 部門移轉造成的結構性失業</span>
+<details><summary>看解答</summary><p>Answer: <b>b</b>. Demand moved from one industry to another (a <b>sectoral shift</b>), and laid-off workers need time to find new jobs: that is <b>frictional</b> unemployment. Sectoral shifts are a cause of frictional, not structural, unemployment.<span class="zhn">答案 <b>b</b>。需求從一個產業移到另一個產業（<b>部門移轉</b>），被裁的工人要花時間找新工作，這是<b>摩擦性</b>失業。部門移轉造成的是摩擦性失業，不是結構性失業。</span></p></details></div>
+<div class="ex"><b class="t">Appendix Question 10 (p67–71): an employer mandate of $4 per hour</b>Congress requires employers to provide a benefit (such as healthcare) that raises the cost of an employee by $4 per hour. (a) Effect on the demand for labor? (b) If employees value the benefit exactly at its cost, effect on the supply of labor? (c) If the wage adjusts freely, how does the law affect the wage and employment? Are employers and employees better or worse off? (d) If, before the mandate, the wage was $3 above the minimum wage, how does the mandate affect the wage, employment and unemployment? (e) If workers do not value the benefit at all, how do the answers to (b) and (c) change?<span class="zhn"><b>Appendix Question 10（p67–71）：每小時 $4 的雇主強制福利</b> 國會要求雇主提供某項福利（例如健保），讓每位員工每小時成本多 $4。(a) 對勞動需求？(b) 員工對福利的評價剛好等於成本時，對勞動供給？(c) 工資可自由調整時，工資與就業？雇主、員工變好或變差？(d) 原本工資比最低工資高 $3，對工資、就業、失業？(e) 員工完全不重視這項福利時，(b)(c) 怎麼改？</span>
+<details><summary>看解答</summary><p>(a) Each worker now costs $4 more, so the <b>demand curve shifts down by $4</b> (firms will pay a wage $4 lower for each quantity).<br>(b) Workers value the benefit at $4, so they will work the same hours for a wage $4 lower: the <b>supply curve shifts down by $4</b>.<br>(c) Both curves shift down by $4 → the <b>wage falls by exactly $4</b> and <b>employment is unchanged</b>. Employers pay $4 less in wages plus $4 of benefit, the same cost; workers get $4 less in wages plus a benefit worth $4. Both are <b>no better and no worse off</b>.<br>(d) The wage can fall only $3 before it hits the minimum wage. The wage stays at the minimum wage, <b>$1 above</b> the new equilibrium → employment <b>falls</b> and unemployment <b>rises</b> (labor surplus).<br>(e) (b) The supply curve <b>does not shift</b>. (c) Only demand shifts down: the wage falls by <b>less than $4</b>, employment <b>falls</b>, and both employers and employees are <b>worse off</b> (a deadweight loss, like a tax).<span class="zhn">(a) 每位員工多花 $4，<b>需求線往下移 $4</b>。(b) 員工覺得福利值 $4，願意少拿 $4 工資做一樣多，<b>供給線往下移 $4</b>。(c) 兩條線都下移 $4 → <b>工資剛好降 $4、就業不變</b>；雇主總成本一樣，員工工資少 $4 但多了值 $4 的福利，雙方<b>不變好也不變差</b>。(d) 工資只能降 $3 就碰到最低工資，停在比新均衡<b>高 $1</b> 的地方 → 就業<b>下降</b>、失業<b>上升</b>。(e) (b) 供給線<b>不動</b>；(c) 只有需求下移，工資降<b>不到 $4</b>、就業<b>下降</b>，雇主和員工都<b>變差</b>（像課稅一樣有無謂損失）。</span></p></details></div>
+<div class="two"><figure class="fg"><svg viewBox="-22 -22 362 290" role="img"><defs><marker id="ahf_4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahd"/></marker></defs><line class="ax" x1="44" y1="214" x2="328" y2="214"/><line class="ax" x1="44" y1="214" x2="44" y2="10"/><text class="axl" x="328" y="253" text-anchor="end">L labor</text><text class="axl" x="50" y="14">W</text><text class="lb" x="322.0" y="-6" text-anchor="end">(c) workers value the benefit at $4</text><line class="cv" x1="44.0" y1="16.0" x2="322.0" y2="214.0"/><text class="lb" x="324.8" y="214.0" text-anchor="start">D₁</text><line class="cv2" x1="44.0" y1="214.0" x2="322.0" y2="16.0"/><text class="lb" x="324.8" y="16.0" text-anchor="start">S₁</text><line class="gl" x1="44.0" y1="115.0" x2="183.0" y2="115.0"/><line class="gl" x1="183.0" y1="214.0" x2="183.0" y2="115.0"/><text class="tk" x="40" y="119.0" text-anchor="end">W₁</text><text class="tk" x="183.0" y="229" text-anchor="middle">L₁ = L₂</text><circle class="dot" cx="183.0" cy="115.0" r="3.5"/><line class="gl2" x1="113.5" y1="65.5" x2="113.5" y2="101.1" marker-end="url(#ahf_4)"/><line class="gl2" x1="266.4" y1="55.6" x2="266.4" y2="91.2" marker-end="url(#ahf_4)"/><line class="cv3 dash" x1="44.0" y1="55.6" x2="266.4" y2="214.0"/><text class="lb" x="269.2" y="214.0" text-anchor="start">D₂</text><line class="cv3 dash" x1="99.6" y1="214.0" x2="322.0" y2="55.6"/><text class="lb" x="324.8" y="55.6" text-anchor="start">S₂</text><line class="gl2" x1="44.0" y1="154.6" x2="183.0" y2="154.6"/><line class="gl2" x1="183.0" y1="214.0" x2="183.0" y2="154.6"/><text class="tk" x="40" y="158.6" text-anchor="end">W₁ − 4</text><circle class="dot" cx="183.0" cy="154.6" r="3.5"/></svg><figcaption>Both curves shift down by $4: the wage falls by $4 and employment stays the same.<span class="zhn">兩條線都下移 $4：工資降 $4，就業不變。</span></figcaption></figure><figure class="fg"><svg viewBox="-22 -22 362 290" role="img"><defs><marker id="ahf_5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahd"/></marker></defs><line class="ax" x1="44" y1="214" x2="328" y2="214"/><line class="ax" x1="44" y1="214" x2="44" y2="10"/><text class="axl" x="328" y="253" text-anchor="end">L labor</text><text class="axl" x="50" y="14">W</text><text class="lb" x="322.0" y="-6" text-anchor="end">(e) workers do not value it</text><line class="cv" x1="44.0" y1="16.0" x2="322.0" y2="214.0"/><text class="lb" x="324.8" y="214.0" text-anchor="start">D₁</text><line class="cv2" x1="44.0" y1="214.0" x2="322.0" y2="16.0"/><text class="lb" x="324.8" y="16.0" text-anchor="start">S</text><line class="gl" x1="44.0" y1="115.0" x2="183.0" y2="115.0"/><line class="gl" x1="183.0" y1="214.0" x2="183.0" y2="115.0"/><text class="tk" x="40" y="119.0" text-anchor="end">W₁</text><text class="tk" x="183.0" y="229" text-anchor="middle">L₁</text><circle class="dot" cx="183.0" cy="115.0" r="3.5"/><line class="gl2" x1="113.5" y1="65.5" x2="113.5" y2="101.1" marker-end="url(#ahf_5)"/><line class="cv3 dash" x1="44.0" y1="55.6" x2="266.4" y2="214.0"/><text class="lb" x="269.2" y="214.0" text-anchor="start">D₂</text><line class="gl2" x1="44.0" y1="134.8" x2="155.2" y2="134.8"/><line class="gl2" x1="155.2" y1="214.0" x2="155.2" y2="134.8"/><text class="tk" x="40" y="138.8" text-anchor="end">W₂</text><text class="tk" x="155.2" y="229" text-anchor="middle">L₂</text><circle class="dot" cx="155.2" cy="134.8" r="3.5"/></svg><figcaption>Only demand shifts down: the wage falls by less than $4 and employment falls.<span class="zhn">只有需求下移：工資降不到 $4，就業下降。</span></figcaption></figure></div>
+
+<div class="sum"><b class="t">Chapter summary</b><span class="zhn"><b>Summary 本章總結</b></span><ul>
+<li>The unemployment rate is the percentage of those who would like to work who do not have jobs.<span class="zhn">失業率是想工作的人當中沒有工作的比例。</span></li>
+<li>Unemployment and labor-force participation vary widely across demographic groups.<span class="zhn">失業率和勞參率在不同人口族群之間差異很大。</span></li>
+<li>The natural rate of unemployment is the normal rate around which the actual rate fluctuates. Cyclical unemployment is the deviation from the natural rate and is connected to short-term economic fluctuations.<span class="zhn">自然失業率是實際失業率上下波動的正常水準。週期性失業是偏離自然失業率的部分，和短期經濟波動有關。</span></li>
+<li>The natural rate includes frictional and structural unemployment. Frictional unemployment occurs when workers take time to search for the right jobs.<span class="zhn">自然失業率包含摩擦性和結構性失業。摩擦性失業是工人花時間找對的工作而產生。</span></li>
+<li>Structural unemployment occurs when above-equilibrium wages result in a surplus of labor; three reasons: minimum-wage laws, unions and efficiency wages.<span class="zhn">結構性失業是工資高於均衡造成勞動過剩；三個原因：最低工資、工會、效率工資。</span></li>
+</ul></div>
+<div class="trap"><b class="t">Common trap</b><span class="zhn"><b>易錯點</b></span>
+<ul>
+<li>The u-rate divides by the <b>labor force</b>; the participation rate divides by the <b>adult population</b>. Don't swap them.<span class="zhn">失業率除以<b>勞動力</b>，勞參率除以<b>成年人口</b>，不要搞反。</span></li>
+<li>A discouraged worker is <b>not in the labor force</b>, so when someone gives up looking the u-rate <b>falls</b> (and the participation rate falls too).<span class="zhn">怯志工作者是<b>非勞動力</b>，所以有人放棄找工作時失業率<b>下降</b>（勞參率也下降）。</span></li>
+<li>A part-time worker counts as <b>employed</b>, even if he wants a full-time job.<span class="zhn">兼職工作者算<b>就業</b>，就算他想要全職。</span></li>
+<li>Sectoral shifts and unemployment insurance → <b>frictional</b>; minimum wage, unions, efficiency wages → <b>structural</b>.<span class="zhn">部門移轉、失業保險 → <b>摩擦性</b>；最低工資、工會、效率工資 → <b>結構性</b>。</span></li>
+<li>Natural rate = frictional + structural (<b>not</b> cyclical). In a recession cyclical unemployment is <b>positive</b>; in a boom it is <b>negative</b>.<span class="zhn">自然失業率 = 摩擦性 + 結構性（<b>不含</b>週期性）。衰退時週期性失業<b>為正</b>，繁榮時<b>為負</b>。</span></li>
+<li>Efficiency wages are paid <b>voluntarily</b> by firms; minimum wages and union wages are not the firm's choice.<span class="zhn">效率工資是廠商<b>自願</b>付的；最低工資和工會工資不是廠商自己選的。</span></li>
+<li>Most <b>spells</b> of unemployment are short, but most unemployment <b>observed at a moment</b> is long term.<span class="zhn">大部分<b>失業期</b>很短，但<b>某一時點</b>看到的失業大多是長期的。</span></li>
+</ul></div>
+</div><h3>Interactive: labor force statistics<span class="zhn">互動：勞動力統計</span></h3><div class="ilab" id="w-lf"><span class="lbl">Interactive · who counts as unemployed</span>
+<div class="lab-row"><label>Employed (millions) <input type="number" class="lf-e" value="151.1" step="0.1" min="0"></label><label>Unemployed <input type="number" class="lf-u" value="7.8" step="0.1" min="0"></label><label>Not in labor force <input type="number" class="lf-n" value="94.5" step="0.1" min="0"></label></div>
+<div class="lab-row"><button class="btn lf-ev" type="button" data-e="lose">Lose job, start looking</button><button class="btn lf-ev" type="button" data-e="disc">Discouraged, stop looking</button><button class="btn lf-ev" type="button" data-e="part">Full time → part time</button><button class="btn lf-ev" type="button" data-e="find">Find a job</button><button class="btn lf-ev" type="button" data-e="quit">Quit to stay home</button><button class="btn lf-ev" type="button" data-e="adult">New adult starts looking</button><button class="btn lf-ev" type="button" data-e="reset">Reset</button></div>
+<div class="lf-svg"></div><div class="calc lf-out"></div></div>
+<h3>Interactive: a wage above equilibrium<span class="zhn">互動：工資高於均衡</span></h3><div class="ilab" id="w-wage"><span class="lbl">Interactive · structural unemployment</span>
+<div class="lab-row"><label>Wage <input type="range" class="wg-w" min="30" max="85" value="65" data-pre="$"><b></b></label><label><input type="radio" name="wgwhy" value="min" checked> Minimum wage</label><label><input type="radio" name="wgwhy" value="union"> Union</label><label><input type="radio" name="wgwhy" value="eff"> Efficiency wage</label></div>
+<div class="wg-svg"></div><div class="calc wg-out"></div></div>
+<h2 class="part" id="ch28-mc"><span>Part 1</span> Multiple choice (15 questions)</h2><div class="quiz" data-quiz="ch28"></div></section>
+
+<section role="tabpanel" class="view" id="traps" hidden><div class="vhead"><h1>Summary &amp; Common Traps<span class="zhn">各章總結與易錯點</span></h1><p>Every chapter's summary and common traps on one page, in chapter order. Read this the night before.<span class="zhn">把每一章的總結和易錯點集中在同一頁，照章節順序排列，考前一晚看這頁。</span></p></div><div id="trapsBody"></div></section>
+</main>
+<script src="../../assets/ezsync.js?v=b1cd0392" data-key="econ-final-v1"></script>
+<script src="../../assets/ezgate.js?v=d6286859"></script>
+<script src="quiz.js?v=de36395f"></script>
+<script src="../../assets/ezpage.js?v=0a66e0a0"></script>
+<script src="../../assets/ezgen.js?v=95a7abfe"></script>
+<script src="app.js?v=4462bd4a"></script>
+<script src="../../assets/eztraps.js?v=d779a370" defer></script>
+<script>window.EZ_MC_PTS=100; /* economics chapters are multiple choice only */</script>
+<script src="../../assets/ezquiz.js?v=5dee9f01"></script>
+<script src="../../assets/ezwrong.js?v=adde2f3a"></script>
+<script src="../../assets/ezsearch.js?v=191a5d27"></script>
+<script src="../../assets/ezai.js?v=e0174e3d"></script>
+<script src="../../assets/ezexplain.js?v=2b75200f"></script>
+<script defer src="../../assets/ui/ui.js?v=5eb646bc"></script>
+<script defer src="../../assets/ezjump.js?v=42ac94f1"></script>
+<script src="../../assets/eztimer.js?v=3beb5773" defer></script>
+<script src="../../assets/eznext.js?v=1da78986" defer></script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<section role="tabpanel" class="view" id="ch6" hidden><div class="vhead"><div class="pcb" data-pcb="ch6" role="img"></div><h1>Ch6 Continuous Probability Distributions<span class="zhn">連續機率分配</span></h1><p>Probability as area under a density curve, the uniform distribution, the normal and the standard normal distribution (z-scores, table look-ups in both directions), the exponential distribution and its link to the Poisson.<span class="zhn">機率＝密度曲線下的面積、均勻分配、常態與標準常態分配（z 分數、正查和反查表）、指數分配以及它和卜瓦松的關係。</span></p></div>
+
+<h3 data-sec="6.0">Continuous Probability Distributions<span class="zhn">連續機率分配</span></h3>
+<ul>
+<li>A continuous random variable can take <b>any value in an interval</b>. It makes no sense to ask for the probability of one particular value: <b>P(x = a) = 0</b>.<span class="zhn">連續隨機變數可以是<b>區間內任何值</b>，問「剛好等於某個值」的機率沒有意義：<b>P(x = a) = 0</b>。</span></li>
+<li>Instead we ask for the probability of a value <b>in an interval</b>: P(x₁ ≤ x ≤ x₂) = the <b>area under the graph of the probability density function f(x)</b> between x₁ and x₂.<span class="zhn">改問落在<b>某個區間</b>的機率：P(x₁ ≤ x ≤ x₂) = x₁ 到 x₂ 之間<b>機率密度函數 f(x) 曲線下的面積</b>。</span></li>
+<li>Consequences: the total area under f(x) is 1, and P(x ≤ a) = P(x &lt; a) (the endpoint adds no area).<span class="zhn">因此：f(x) 底下總面積 = 1；P(x ≤ a) = P(x &lt; a)（端點沒有面積）。</span></li>
+<li>f(x) is a <b>height, not a probability</b>; only areas are probabilities.<span class="zhn">f(x) 是<b>高度，不是機率</b>；只有面積才是機率。</span></li>
+</ul>
+
+<h3 data-sec="6.1">6.1 Uniform Probability Distribution<span class="zhn">均勻機率分配</span></h3>
+<ul>
+<li>A random variable is <b>uniformly distributed</b> when the probability is <b>proportional to the interval's length</b>.<span class="zhn">機率和<b>區間長度成正比</b>時，就是<b>均勻分配</b>。</span></li>
+</ul>
+<div class="box en"><span class="lbl">Uniform density</span>f(x) = 1/(b − a) for a ≤ x ≤ b, and 0 elsewhere　(a = smallest value, b = largest value)<br>E(x) = (a + b)/2　　Var(x) = (b − a)²/12<span class="zhn">高度 1/(b − a) 讓長方形面積 = (b − a) × 1/(b − a) = 1。區間越寬（b − a 越大），變異數越大。</span></div>
+<p><b>Slater's Buffet</b>: the amount of salad taken is uniform between 5 and 15 ounces, so f(x) = 1/10 = 0.1 for 5 ≤ x ≤ 15 (total area 10 × 0.1 = 1). P(12 ≤ x ≤ 15) = width × height = 3 × 0.1 = <b>0.30</b>. E(x) = (5 + 15)/2 = <b>10</b> ounces; Var(x) = (15 − 5)²/12 = <b>8.33</b>, σ = 2.89 ounces.<span class="zhn"><b>Slater 自助餐</b>：沙拉份量在 5 到 15 盎司之間均勻分配，f(x) = 0.1（總面積 10 × 0.1 = 1）。P(12 ≤ x ≤ 15) = 寬 × 高 = 3 × 0.1 = <b>0.30</b>。E(x) = <b>10</b> 盎司；Var(x) = <b>8.33</b>，σ = 2.89。</span></p>
+{{FIG_UNIF}}
+<div class="ilab" id="w-unif"><span class="lbl">Interactive · uniform distribution</span>
+<div class="lab-row"><label>a <input type="number" class="un-a" step="any" value="5"></label><label>b <input type="number" class="un-b" step="any" value="15"></label><label>x₁ <input type="number" class="un-x1" step="any" value="12"></label><label>x₂ <input type="number" class="un-x2" step="any" value="15"></label></div>
+<div class="lab-row"><button class="btn un-ex" type="button" data-a="5" data-b="15" data-x1="12" data-x2="15">Slater: 12 to 15 oz</button><button class="btn un-ex" type="button" data-a="120" data-b="140" data-x1="128" data-x2="136">120 to 140, 128 ≤ x ≤ 136</button></div>
+<div class="un-svg"></div>
+<div class="calc un-out"></div>
+</div>
+
+<h3 data-sec="6.2">6.2 Normal Probability Distribution<span class="zhn">常態機率分配</span></h3>
+<ul>
+<li>The <b>most important</b> distribution for a continuous random variable and the basis of statistical inference. Examples: heights of people, measurement errors, test scores.<span class="zhn">描述連續隨機變數<b>最重要</b>的分配，也是統計推論的基礎。例：身高、測量誤差、考試成績。</span></li>
+<li>Density: f(x) = [1/(σ√(2π))] e<sup>−(x − μ)²/(2σ²)</sup>, with μ = mean, σ = standard deviation, π = 3.14159, e = 2.71828.<span class="zhn">密度函數如左，μ = 平均數、σ = 標準差。</span></li>
+</ul>
+<p><b>Characteristics</b><span class="zhn"><b>特性</b></span></p>
+<ul>
+<li>The whole family is defined by <b>μ and σ</b>.<span class="zhn">整個家族由 <b>μ 和 σ</b> 決定。</span></li>
+<li>The highest point is at the mean, which is also the <b>median and the mode</b>; the curve is <b>symmetric</b> (skewness 0) and its tails extend to infinity without touching the axis.<span class="zhn">最高點在平均數，平均數＝<b>中位數＝眾數</b>；曲線<b>左右對稱</b>（偏態 0），兩尾無限延伸、不碰到橫軸。</span></li>
+<li>μ can be any number (negative, zero or positive): it moves the curve left or right.<span class="zhn">μ 可以是任何數（負、零、正）：決定曲線的左右位置。</span></li>
+<li>σ sets the width: a <b>larger σ gives a wider, flatter curve</b>.<span class="zhn">σ 決定寬度：<b>σ 越大，曲線越寬越扁</b>。</span></li>
+<li>Total area = 1, with <b>0.5 to the left of the mean and 0.5 to the right</b>. If μ = 70, P(x &gt; 70) = 0.5.<span class="zhn">總面積 = 1，<b>平均數左右各 0.5</b>。μ = 70 時 P(x &gt; 70) = 0.5。</span></li>
+</ul>
+<p><b>Empirical rule</b> for a normal random variable:<span class="zhn"><b>經驗法則</b>：</span></p>
+{{FIG_ER}}
+<ul>
+<li>68.26% of the values are within ±1σ of the mean, 95.44% within ±2σ, 99.72% within ±3σ.<span class="zhn">約 68.26% 落在 μ ± 1σ，95.44% 在 μ ± 2σ，99.72% 在 μ ± 3σ。</span></li>
+</ul>
+
+<h3 data-sec="6.2b">Standard Normal Distribution and z<span class="zhn">標準常態分配與 z</span></h3>
+<ul>
+<li>A normal random variable with <b>mean 0 and standard deviation 1</b> has the <b>standard normal distribution</b>; it is written z.<span class="zhn"><b>平均數 0、標準差 1</b> 的常態變數服從<b>標準常態分配</b>，用 z 表示。</span></li>
+<li>Convert any normal x: <b>z = (x − μ)/σ</b>, the number of standard deviations x is from μ. Then read the area from the <b>cumulative table</b>, which gives the area to the <b>left</b> of z.<span class="zhn">任何常態 x 都能轉換：<b>z = (x − μ)/σ</b>，表示 x 離 μ 幾個標準差。再查<b>累積機率表</b>，表上給的是 z <b>左邊</b>的面積。</span></li>
+</ul>
+<table>
+<thead><tr><th>Asked<span class="zhn">題目問</span></th><th>Area from the table<span class="zhn">查表算法</span></th></tr></thead>
+<tbody>
+<tr><td>P(z ≤ z₀)</td><td>Read the table directly<span class="zhn">直接查表</span></td></tr>
+<tr><td>P(z ≥ z₀)</td><td>1 − table(z₀)</td></tr>
+<tr><td>P(z₁ ≤ z ≤ z₂)</td><td>table(z₂) − table(z₁)</td></tr>
+<tr><td>Area given, find z<span class="zhn">給面積求 z</span></td><td>Use the table in reverse: find the cumulative area inside the table, read z from its row and column<span class="zhn">反查：在表格內部找到累積面積，讀出它的列和欄得到 z</span></td></tr>
+</tbody>
+</table>
+<p><b>Pep Zone</b> (motor oil): an order is placed when stock drops to 20 liters. Demand during the lead time is normal with μ = 15 liters and σ = 6 liters. P(stockout) = P(x &gt; 20)?<span class="zhn"><b>Pep Zone</b>（機油）：庫存降到 20 公升時下訂單。補貨期間需求為常態，μ = 15、σ = 6 公升。缺貨機率 P(x &gt; 20)？</span></p>
+<ol>
+<li>Step 1: z = (20 − 15)/6 = <b>0.83</b>.<span class="zhn">步驟 1：z = (20 − 15)/6 = <b>0.83</b>。</span></li>
+<li>Step 2: area to the left of z = 0.83: row .8, column .03 → <b>0.7967</b>.<span class="zhn">步驟 2：查 z = 0.83 左邊面積：.8 那列、.03 那欄 → <b>0.7967</b>。</span></li>
+<li>Step 3: area to the right = 1 − 0.7967 = <b>0.2033</b>. About a 20% chance of a stockout.<span class="zhn">步驟 3：右邊面積 = 1 − 0.7967 = <b>0.2033</b>，大約 20% 會缺貨。</span></li>
+</ol>
+{{FIG_PEP}}
+<p><b>Reorder point</b>: the manager wants P(stockout) ≤ 0.05. Use the table in reverse.<span class="zhn"><b>再訂購點</b>：經理要缺貨機率不超過 0.05，反查表。</span></p>
+<ol>
+<li>Step 1: right-tail area 0.05 → look up 1 − 0.05 = <b>0.95</b> inside the table: between .9495 (1.64) and .9505 (1.65), so <b>z.05 = 1.645</b>.<span class="zhn">步驟 1：右尾面積 0.05 → 在表格內找 1 − 0.05 = <b>0.95</b>：介於 .9495（1.64）和 .9505（1.65）之間，所以 <b>z.05 = 1.645</b>。</span></li>
+<li>Step 2: x = μ + zσ = 15 + 1.645 × 6 = <b>24.87</b> liters, <b>rounded up to 25</b> so the stockout probability does not exceed 5%.<span class="zhn">步驟 2：x = μ + zσ = 15 + 1.645 × 6 = <b>24.87</b> 公升，<b>無條件進位到 25</b>，確保缺貨機率不超過 5%。</span></li>
+</ol>
+{{FIG_REORDER}}
+<p>Raising the reorder point from 20 to 25 liters cuts the stockout probability from about 0.20 to 0.05.<span class="zhn">再訂購點從 20 提高到 25 公升，缺貨機率從約 0.20 降到 0.05。</span></p>
+<div class="box warn"><span class="lbl">Typos in the slide table</span>The table excerpt on the slides prints .7795 at z = .84 and .8129 at z = .90; the correct values are <b>.7995</b> and <b>.8159</b>. The value used in the example, .7967 at z = .83, is correct.<span class="zhn">講義的表格節錄把 z = .84 印成 .7795、z = .90 印成 .8129，正確是 <b>.7995</b> 和 <b>.8159</b>。例題用的 z = .83 → .7967 是對的。</span></div>
+<div class="ilab" id="w-norm"><span class="lbl">Interactive · normal areas and the inverse look-up</span>
+<div class="lab-row"><label>μ <input type="number" class="no-mu" step="any" value="15"></label><label>σ <input type="number" class="no-sd" step="any" value="6"></label><label>Find <select class="no-m"><option value="ge">P(x ≥ a)</option><option value="le">P(x ≤ a)</option><option value="bt">P(a ≤ x ≤ b)</option></select></label></div>
+<div class="lab-row"><label>a <input type="number" class="no-a" step="any" value="20"></label><label class="no-bl">b <input type="number" class="no-b" step="any" value="25"></label><label>Right-tail area (inverse) <input type="number" class="no-t" min="0.001" max="0.999" step="0.005" value="0.05"></label></div>
+<div class="lab-row"><button class="btn no-ex" type="button" data-mu="15" data-sd="6" data-m="ge" data-a="20" data-t="0.05">Pep Zone: P(x &gt; 20), 5% reorder point</button><button class="btn no-ex" type="button" data-mu="0" data-sd="1" data-m="bt" data-a="-2" data-b="2" data-t="0.025">Standard normal ±2</button><button class="btn no-ex" type="button" data-mu="70" data-sd="8" data-m="bt" data-a="62" data-b="82" data-t="0.10">μ = 70, σ = 8: 62 to 82, top 10%</button></div>
+<div class="no-svg"></div>
+<div class="calc no-out"></div>
+</div>
+
+<h3 data-sec="6.3">6.3 Exponential Probability Distribution<span class="zhn">指數機率分配</span></h3>
+<ul>
+<li>Describes the <b>time until an event occurs</b> or the <b>time between events</b>: time between arrivals at a car wash, time to load a truck, distance between defects on a road. In waiting-line applications it is often used for <b>service time</b>.<span class="zhn">描述<b>事件發生前的等待時間</b>或<b>兩事件之間的時間</b>：洗車場兩車抵達間隔、裝一台貨車的時間、路面兩個缺陷之間的距離。排隊問題常用它描述<b>服務時間</b>。</span></li>
+<li>The <b>mean and the standard deviation are equal</b> (both μ). The distribution is <b>skewed to the right</b>, and its skewness is always 2.<span class="zhn"><b>平均數＝標準差</b>（都是 μ）。分配<b>右偏</b>，偏態永遠是 2。</span></li>
+</ul>
+<div class="box en"><span class="lbl">Exponential density and cumulative probability</span>f(x) = (1/μ) e<sup>−x/μ</sup> for x ≥ 0,　μ = expected value (mean), e = 2.71828<br>P(x ≤ x₀) = 1 − e<sup>−x₀/μ</sup>　　P(x &gt; x₀) = e<sup>−x₀/μ</sup><span class="zhn">「下一位顧客 5 分鐘內到的機率」「收銀員 3 分鐘內服務完的機率」都是 P(x ≤ x₀)。</span></div>
+<p><b>Alan's Full-Service Pump</b>: the time between car arrivals is exponential with a mean of 3 minutes. P(time between two arrivals ≤ 2 minutes) = 1 − e<sup>−2/3</sup> = 1 − 0.5134 = <b>0.4866</b>.<span class="zhn"><b>Alan 加油站</b>：兩車抵達間隔服從指數分配，平均 3 分鐘。兩車間隔不超過 2 分鐘的機率 = 1 − e<sup>−2/3</sup> = <b>0.4866</b>。</span></p>
+{{FIG_EXP}}
+<div class="ilab" id="w-expo"><span class="lbl">Interactive · exponential distribution</span>
+<div class="lab-row"><label>Mean μ (min) <input type="range" class="ex-mu" min="0.5" max="20" step="0.5" value="3"><b class="ex-muv"></b></label><label>x₀ (min) <input type="range" class="ex-x" min="0" max="30" step="0.5" value="2"><b class="ex-xv"></b></label></div>
+<div class="lab-row"><button class="btn ex-ex" type="button" data-mu="3" data-x="2">Alan: μ = 3, x₀ = 2</button><button class="btn ex-ex" type="button" data-mu="4" data-x="6">μ = 4, x₀ = 6</button></div>
+<div class="ex-svg"></div>
+<div class="calc ex-out"></div>
+</div>
+
+<h3 data-sec="6.4">Relationship between the Poisson and Exponential Distributions<span class="zhn">卜瓦松與指數分配的關係</span></h3>
+<ul>
+<li>Same process, two questions. The <b>Poisson</b> (discrete) counts <b>how many events</b> occur in a fixed period; the <b>exponential</b> (continuous) measures <b>how much time passes between</b> two events.<span class="zhn">同一個過程問兩種問題：<b>卜瓦松</b>（離散）數一段時間內<b>發生幾次</b>；<b>指數</b>（連續）量兩次事件<b>之間隔多久</b>。</span></li>
+<li>If arrivals are Poisson with a mean of λ per unit of time, the time between arrivals is exponential with mean <b>1/λ</b>. Cars at a gas station arriving 20 per hour on average ↔ a mean of 60/20 = 3 minutes between cars (Alan's pump).<span class="zhn">若每單位時間平均 λ 次（卜瓦松），兩次之間的時間就是平均 <b>1/λ</b> 的指數分配。加油站平均每小時 20 輛車 ↔ 平均每 60/20 = 3 分鐘一輛（Alan 的例子）。</span></li>
+</ul>
+{{FIG_PE}}
+
+<div class="sum"><b class="t">Chapter summary</b><span class="zhn"><b>Summary 本章總結</b></span><ul>
+<li>For a continuous variable, probability = <b>area under f(x)</b>; P(x = a) = 0 and the total area is 1.<span class="zhn">連續變數的機率＝<b>f(x) 底下的面積</b>；P(x = a) = 0，總面積 = 1。</span></li>
+<li><b>Uniform</b>: f(x) = 1/(b − a); probability = width × height; E = (a + b)/2, Var = (b − a)²/12.<span class="zhn"><b>均勻</b>：f(x) = 1/(b − a)；機率＝寬 × 高；E = (a + b)/2，Var = (b − a)²/12。</span></li>
+<li><b>Normal</b>: bell-shaped, symmetric, set by μ and σ; mean = median = mode; empirical rule 68.26 / 95.44 / 99.72%.<span class="zhn"><b>常態</b>：鐘形、對稱、由 μ 和 σ 決定；平均數＝中位數＝眾數；經驗法則 68.26 / 95.44 / 99.72%。</span></li>
+<li><b>Standard normal</b>: z = (x − μ)/σ; the table gives the area to the <b>left</b>; right tail = 1 − table; reverse look-up gives z, then x = μ + zσ.<span class="zhn"><b>標準常態</b>：z = (x − μ)/σ；表給<b>左邊</b>面積；右尾 = 1 − 查表值；反查得到 z 後 x = μ + zσ。</span></li>
+<li><b>Exponential</b>: time between events; P(x ≤ x₀) = 1 − e<sup>−x₀/μ</sup>; mean = σ = μ; right-skewed.<span class="zhn"><b>指數</b>：事件之間的時間；P(x ≤ x₀) = 1 − e<sup>−x₀/μ</sup>；平均數＝標準差＝μ；右偏。</span></li>
+<li>Poisson λ per unit time ↔ exponential mean 1/λ between events.<span class="zhn">卜瓦松每單位時間 λ 次 ↔ 指數分配平均間隔 1/λ。</span></li>
+</ul></div>
+<div class="trap"><b class="t">Common trap</b><span class="zhn"><b>易錯點</b></span><ul>
+<li>The z-table gives the area to the <b>left</b>. For "more than" use 1 − table value (Pep Zone: 1 − 0.7967 = 0.2033, not 0.7967).<span class="zhn">z 表是<b>左邊</b>面積。「大於」要用 1 − 查表值（Pep Zone：1 − 0.7967 = 0.2033，不是 0.7967）。</span></li>
+<li>Reverse look-up: a right tail of 0.05 means finding <b>0.95</b> inside the table, giving z = 1.645, not 0.05.<span class="zhn">反查：右尾 0.05 要在表格內找 <b>0.95</b>，得 z = 1.645。</span></li>
+<li>Round a reorder point <b>up</b> (24.87 → 25); rounding down would let the stockout probability go above 5%.<span class="zhn">再訂購點要<b>無條件進位</b>（24.87 → 25），捨去會讓缺貨機率超過 5%。</span></li>
+<li>For a continuous variable, P(x = a) = 0, and f(x) is a height, not a probability; ≤ and &lt; give the same area.<span class="zhn">連續變數 P(x = a) = 0；f(x) 是高度不是機率；≤ 和 &lt; 面積一樣。</span></li>
+<li>Uniform variance divides by <b>12</b>: (b − a)²/12, not (b − a)/12 or (b − a)²/2.<span class="zhn">均勻分配變異數除以 <b>12</b>：(b − a)²/12。</span></li>
+<li>Exponential: P(x ≤ x₀) = 1 − e<sup>−x₀/μ</sup> uses the <b>mean</b> μ; if you are given a rate λ, the mean is 1/λ. Poisson counts (discrete), exponential measures time (continuous).<span class="zhn">指數：公式裡是<b>平均數</b> μ；如果給的是發生率 λ，平均數是 1/λ。卜瓦松數次數（離散），指數量時間（連續）。</span></li>
+</ul></div>
+<div class="quiz" data-quiz="ch6"></div>
+<!--CHW-->
+</section>

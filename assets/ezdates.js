@@ -14,6 +14,8 @@
     "economics/midterm":"2026-11-09",
     "operating-systems/final":"TBA",
     "data-structures/final":"TBA",
+    "economics/final":"TBA",
+    "statistics/final":"TBA",
   };
   /* "TBA" = the date is not set yet: shown as TBA, sorted after every dated exam, never counted as over */
   const TBA=k=>DATES[k]==="TBA";

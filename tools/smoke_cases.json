@@ -230,5 +230,152 @@
    "pts": 10,
    "answer": "(a) 8 = 2³ pages → 3 bits of page number; 1,024 = 2¹⁰ bytes → 10 bits of offset; logical address = 3 + 10 = 13 bits. (b) 32 = 2⁵ frames → 5 bits of frame number + 10 bits of offset = 15 bits.\n(a) 8 = 2³ 頁 → 頁號 3 位；1,024 = 2¹⁰ → offset 10 位；邏輯位址 = 13 位。(b) 32 = 2⁵ 個 frame → 5 位 + offset 10 位 = 15 位。"
   }
+ ],
+ "statistics/final": [
+  {
+   "id": "ch5w-1-1",
+   "pts": 2,
+   "answer": "f(4) = 1 − (0.2 + 0.3 + 0.4) = 0.1, because the probabilities must sum to 1 (and each f(x) ≥ 0).\n機率總和必須為 1：f(4) = 1 − 0.9 = 0.1。"
+  },
+  {
+   "id": "ch5w-1-2",
+   "pts": 3,
+   "answer": "E(x) = Σx f(x) = 1(0.2) + 2(0.3) + 3(0.4) + 4(0.1) = 0.2 + 0.6 + 1.2 + 0.4 = 2.4.\nE(x) = 0.2 + 0.6 + 1.2 + 0.4 = 2.4。"
+  },
+  {
+   "id": "ch5w-1-3",
+   "pts": 4,
+   "answer": "Var(x) = Σ(x − μ)² f(x) = (1.96)(0.2) + (0.16)(0.3) + (0.36)(0.4) + (2.56)(0.1) = 0.392 + 0.048 + 0.144 + 0.256 = 0.84; σ = √0.84 = 0.9165.\nVar(x) = 0.84（或 E(x²) − μ² = 6.6 − 5.76）；σ = 0.9165。"
+  },
+  {
+   "id": "ch5w-1-4",
+   "pts": 3,
+   "answer": "Yes. f(1) = .1, f(2) = .2, f(3) = .3, f(4) = .4: every value is ≥ 0 and they sum to 1.\n是：每個 f(x) ≥ 0，且 .1 + .2 + .3 + .4 = 1。"
+  },
+  {
+   "id": "ch5w-2-1",
+   "pts": 3,
+   "answer": "There are n = 10 identical trials, each with two outcomes (buy or not), the probability of success p = 0.3 is the same on every trial, and the trials are independent.\nn = 10 次相同試驗、每次兩種結果、p = 0.3 不變、彼此獨立，所以是二項分配。"
+  },
+  {
+   "id": "ch5w-2-2",
+   "pts": 4,
+   "answer": "f(2) = C(10, 2)(0.3)²(0.7)⁸ = 45 × 0.09 × 0.05765 = 0.2335.\nf(2) = 45 × 0.09 × 0.05765 = 0.2335。"
+  },
+  {
+   "id": "ch5w-2-3",
+   "pts": 3,
+   "answer": "P(x ≥ 1) = 1 − P(x = 0) = 1 − (0.7)¹⁰ = 1 − 0.0282 = 0.9718.\n至少一人：1 − 0.7¹⁰ = 1 − 0.0282 = 0.9718。"
+  },
+  {
+   "id": "ch5w-2-4",
+   "pts": 4,
+   "answer": "E(x) = np = 10(0.3) = 3; Var(x) = np(1 − p) = 10(0.3)(0.7) = 2.1; σ = √2.1 = 1.449.\nE(x) = 3、Var(x) = 2.1、σ = 1.449。"
+  },
+  {
+   "id": "ch5w-3-1",
+   "pts": 4,
+   "answer": "μ = 4: f(2) = 4² e⁻⁴ / 2! = 16(0.0183)/2 = 0.1465.\nμ = 4：f(2) = 16 × 0.0183 / 2 = 0.1465。"
+  },
+  {
+   "id": "ch5w-3-2",
+   "pts": 4,
+   "answer": "Rescale: μ = 4/2 = 2 per 30 minutes. f(0) = 2⁰ e⁻² / 0! = e⁻² = 0.1353.\n先換區間：30 分鐘 μ = 2。f(0) = e⁻² = 0.1353。"
+  },
+  {
+   "id": "ch5w-3-3",
+   "pts": 4,
+   "answer": "For a Poisson distribution the mean equals the variance: mean = 2, variance = 2, σ = √2 = 1.414.\n卜瓦松平均數＝變異數＝2，σ = 1.414。"
+  },
+  {
+   "id": "ch5w-4-1",
+   "pts": 4,
+   "answer": "N = 10, r = 3, n = 4: f(1) = C(3, 1)C(7, 3)/C(10, 4) = 3 × 35 / 210 = 0.5.\nf(1) = 3 × 35 / 210 = 0.5。"
+  },
+  {
+   "id": "ch5w-4-2",
+   "pts": 3,
+   "answer": "f(0) = C(3, 0)C(7, 4)/C(10, 4) = 1 × 35 / 210 = 0.1667.\nf(0) = 35 / 210 = 0.1667。"
+  },
+  {
+   "id": "ch5w-4-3",
+   "pts": 5,
+   "answer": "E(x) = n(r/N) = 4(0.3) = 1.2; Var(x) = n(r/N)(1 − r/N)(N − n)/(N − 1) = 4(0.3)(0.7)(6/9) = 0.56. Sampling is without replacement from a small population, so the trials are not independent and p changes from trial to trial.\nE(x) = 1.2；Var(x) = 4(0.3)(0.7)(6/9) = 0.56。抽出不放回、母體小，試驗不獨立、p 會改變，所以不是二項。"
+  },
+  {
+   "id": "ch6w-1-1",
+   "pts": 3,
+   "answer": "f(x) = 1/(140 − 120) = 1/20 = 0.05 for 120 ≤ x ≤ 140, and 0 elsewhere.\nf(x) = 1/20 = 0.05（120 ≤ x ≤ 140），其他為 0。"
+  },
+  {
+   "id": "ch6w-1-2",
+   "pts": 3,
+   "answer": "P(x ≤ 125) = (125 − 120)(0.05) = 0.25.\nP(x ≤ 125) = 5 × 0.05 = 0.25。"
+  },
+  {
+   "id": "ch6w-1-3",
+   "pts": 3,
+   "answer": "P(128 ≤ x ≤ 136) = (136 − 128)(0.05) = 8 × 0.05 = 0.40.\nP = 8 × 0.05 = 0.40。"
+  },
+  {
+   "id": "ch6w-1-4",
+   "pts": 3,
+   "answer": "E(x) = (120 + 140)/2 = 130 minutes; Var(x) = (140 − 120)²/12 = 400/12 = 33.33.\nE(x) = 130 分鐘；Var(x) = 400/12 = 33.33。"
+  },
+  {
+   "id": "ch6w-2-1",
+   "pts": 2,
+   "answer": "0.5, because the normal curve is symmetric and half of the area lies to the right of the mean.\n0.5：常態曲線對稱，平均數右邊占一半面積。"
+  },
+  {
+   "id": "ch6w-2-2",
+   "pts": 4,
+   "answer": "z = (82 − 70)/8 = 1.5; P(x < 82) = P(z < 1.5) = 0.9332.\nz = 1.5，查表 0.9332。"
+  },
+  {
+   "id": "ch6w-2-3",
+   "pts": 4,
+   "answer": "z = (62 − 70)/8 = −1 and z = 1.5: P = 0.9332 − 0.1587 = 0.7745.\nz = −1 與 1.5：0.9332 − 0.1587 = 0.7745。"
+  },
+  {
+   "id": "ch6w-2-4",
+   "pts": 4,
+   "answer": "54 and 86 are μ ± 2σ (70 ± 16), so about 95.44% of the scores.\n54 到 86 是 μ ± 2σ，所以約 95.44%（約 95%）。"
+  },
+  {
+   "id": "ch6w-2-5",
+   "pts": 6,
+   "answer": "The right tail is 0.10, so find 0.90 inside the table: z ≈ 1.28. x = μ + zσ = 70 + 1.28 × 8 = 80.24, so a score of about 80.24 or more.\n右尾 0.10 → 表內找 0.90，z ≈ 1.28；x = 70 + 1.28 × 8 = 80.24。"
+  },
+  {
+   "id": "ch6w-3-1",
+   "pts": 3,
+   "answer": "f(x) = (1/4) e^(−x/4) for x ≥ 0.\nf(x) = (1/4)e^(−x/4)，x ≥ 0。"
+  },
+  {
+   "id": "ch6w-3-2",
+   "pts": 3,
+   "answer": "P(x ≤ 2) = 1 − e^(−2/4) = 1 − 0.6065 = 0.3935.\nP(x ≤ 2) = 1 − e^(−0.5) = 0.3935。"
+  },
+  {
+   "id": "ch6w-3-3",
+   "pts": 3,
+   "answer": "P(x > 6) = e^(−6/4) = e^(−1.5) = 0.2231.\nP(x > 6) = e^(−1.5) = 0.2231。"
+  },
+  {
+   "id": "ch6w-3-4",
+   "pts": 3,
+   "answer": "σ = μ = 4 minutes. On average 60/4 = 15 customers per hour; the number served per hour follows a Poisson distribution.\nσ = μ = 4 分鐘；平均每小時 60/4 = 15 人，人數服從卜瓦松分配。"
+  },
+  {
+   "id": "ch6w-4-1",
+   "pts": 3,
+   "answer": "P(z ≥ −0.5) = 1 − P(z < −0.5) = 1 − 0.3085 = 0.6915 (or, by symmetry, P(z ≤ 0.5) = 0.6915).\n1 − 0.3085 = 0.6915（或用對稱 P(z ≤ 0.5)）。"
+  },
+  {
+   "id": "ch6w-4-2",
+   "pts": 3,
+   "answer": "Look up 1 − 0.025 = 0.975 inside the table: z = 1.96.\n表內找 0.975：z = 1.96。"
+  }
  ]
 }

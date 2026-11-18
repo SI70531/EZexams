@@ -1,0 +1,163 @@
+<section role="tabpanel" class="view" id="ch5" hidden><div class="vhead"><div class="pcb" data-pcb="ch5" role="img"></div><h1>Ch5 Discrete Probability Distributions<span class="zhn">離散機率分配</span></h1><p>Random variables, probability functions, expected value and variance, bivariate distributions and covariance, and the three named distributions: binomial, Poisson and hypergeometric.<span class="zhn">隨機變數、機率函數、期望值與變異數、二元分配與共變異數，以及三個有名字的分配：二項、卜瓦松、超幾何。</span></p></div>
+
+<h3 data-sec="5.1">5.1 Random Variables<span class="zhn">隨機變數</span></h3>
+<ul>
+<li>A <b>random variable</b> is a <b>numerical description</b> of the outcome of an experiment.<span class="zhn"><b>隨機變數</b>是實驗結果的<b>數值描述</b>。</span></li>
+<li><b>Discrete random variable</b>: takes a <b>finite</b> number of values, or an <b>infinite sequence</b> of values (0, 1, 2, …). You can count it.<span class="zhn"><b>離散隨機變數</b>：值的個數<b>有限</b>，或是<b>無限但可一個個數</b>（0, 1, 2, …）。可以「數」出來。</span></li>
+<li><b>Continuous random variable</b>: can take <b>any value in an interval</b> (or a collection of intervals). You measure it.<span class="zhn"><b>連續隨機變數</b>：可以是某個<b>區間內的任何值</b>。要用「量」的。</span></li>
+<li>Test: picture the possible values as points on a line. If every point between two possible values is also possible, the variable is continuous.<span class="zhn">判斷法：把可能的值畫成數線上的點；如果任兩個可能值之間的每一點也都可能，就是連續。</span></li>
+</ul>
+<table>
+<thead><tr><th>JSL Appliances variable<span class="zhn">JSL 家電的變數</span></th><th>Possible values<span class="zhn">可能值</span></th><th>Type<span class="zhn">類型</span></th></tr></thead>
+<tbody>
+<tr><td>x = number of TVs sold in one day<span class="zhn">一天賣出的電視台數</span></td><td>0, 1, 2, 3, 4</td><td>Discrete, finite (limited by the TVs in stock)<span class="zhn">離散、有限（上限是庫存台數）</span></td></tr>
+<tr><td>y = number of customers arriving in one day<span class="zhn">一天到店的顧客數</span></td><td>0, 1, 2, …</td><td>Discrete, infinite sequence (no upper limit)<span class="zhn">離散、無限數列（沒有上限）</span></td></tr>
+<tr><td>z = time a customer spends in the store<span class="zhn">顧客在店內停留的時間</span></td><td>5, 5.25, 5.257, …</td><td>Continuous<span class="zhn">連續</span></td></tr>
+</tbody>
+</table>
+
+<h3 data-sec="5.2">5.2 Developing Discrete Probability Distributions<span class="zhn">建立離散機率分配</span></h3>
+<ul>
+<li>The <b>probability distribution</b> of a random variable describes how probabilities are distributed over its values. For a discrete variable it is given by a <b>probability function f(x)</b>, as a table, a graph or a formula.<span class="zhn"><b>機率分配</b>描述機率如何分布在隨機變數的各個值上。離散變數用<b>機率函數 f(x)</b> 表示，可以是表格、圖或公式。</span></li>
+<li>Required conditions: <b>f(x) ≥ 0</b> for every x, and <b>Σf(x) = 1</b>.<span class="zhn">必要條件：每個 <b>f(x) ≥ 0</b>，且 <b>Σf(x) = 1</b>。</span></li>
+<li><b>Empirical</b> distribution from past data (relative frequency): JSL sold 0 TVs on 80 of 200 days, so f(0) = 80/200 = 0.40.<span class="zhn">用歷史資料（相對次數）得到的<b>經驗分配</b>：JSL 200 天中有 80 天賣 0 台，所以 f(0) = 80/200 = 0.40。</span></li>
+</ul>
+<table>
+<thead><tr><th>Units sold x<span class="zhn">賣出台數 x</span></th><th>Number of days<span class="zhn">天數</span></th><th>f(x)</th></tr></thead>
+<tbody>
+<tr><td>0</td><td>80</td><td>0.40</td></tr>
+<tr><td>1</td><td>50</td><td>0.25</td></tr>
+<tr><td>2</td><td>40</td><td>0.20</td></tr>
+<tr><td>3</td><td>10</td><td>0.05</td></tr>
+<tr><td>4</td><td>20</td><td>0.10</td></tr>
+<tr><td>Total<span class="zhn">合計</span></td><td>200</td><td>1.00</td></tr>
+</tbody>
+</table>
+{{FIG_JSL}}
+<ul>
+<li><b>Discrete uniform</b> distribution: f(x) = <b>1/n</b>, where n is the number of values; every value is equally likely. A die: f(x) = 1/6 for x = 1, …, 6.<span class="zhn"><b>離散均勻</b>分配：f(x) = <b>1/n</b>，n 是可能值的個數，每個值機率相同。擲骰子：x = 1…6，f(x) = 1/6。</span></li>
+<li>Other distributions given by a formula: binomial, Poisson, hypergeometric (5.5 to 5.7).<span class="zhn">其他用公式表示的分配：二項、卜瓦松、超幾何（5.5 到 5.7）。</span></li>
+</ul>
+
+<h3 data-sec="5.3">5.3 Expected Value and Variance<span class="zhn">期望值與變異數</span></h3>
+<ul>
+<li><b>Expected value</b> (mean) E(x) = μ = <b>Σx f(x)</b>: a weighted average of the values, with the probabilities as weights. It is a measure of central location.<span class="zhn"><b>期望值</b>（平均數）E(x) = μ = <b>Σx f(x)</b>：以機率為權數的加權平均，是集中趨勢的量數。</span></li>
+<li>E(x) <b>does not have to be a possible value</b>: a game paying $0 or $2 with equal chance has E(x) = $1. In one play you never get $1; over many plays the average payoff approaches $1.<span class="zhn">E(x) <b>不一定是可能出現的值</b>：各半機率拿 $0 或 $2，E(x) = $1。玩一次永遠拿不到 $1，玩很多次平均會趨近 $1。</span></li>
+<li><b>Variance</b> Var(x) = σ² = <b>Σ(x − μ)² f(x)</b>: a weighted average of the squared deviations. <b>Standard deviation</b> σ = √σ², in the same units as x.<span class="zhn"><b>變異數</b> Var(x) = σ² = <b>Σ(x − μ)² f(x)</b>：離差平方的加權平均。<b>標準差</b> σ = √σ²，單位和 x 相同。</span></li>
+</ul>
+<table>
+<thead><tr><th>x</th><th>f(x)</th><th>x f(x)</th><th>x − μ</th><th>(x − μ)²</th><th>(x − μ)² f(x)</th></tr></thead>
+<tbody>
+<tr><td>0</td><td>0.40</td><td>0.00</td><td>−1.2</td><td>1.44</td><td>0.576</td></tr>
+<tr><td>1</td><td>0.25</td><td>0.25</td><td>−0.2</td><td>0.04</td><td>0.010</td></tr>
+<tr><td>2</td><td>0.20</td><td>0.40</td><td>0.8</td><td>0.64</td><td>0.128</td></tr>
+<tr><td>3</td><td>0.05</td><td>0.15</td><td>1.8</td><td>3.24</td><td>0.162</td></tr>
+<tr><td>4</td><td>0.10</td><td>0.40</td><td>2.8</td><td>7.84</td><td>0.784</td></tr>
+<tr><td>Total<span class="zhn">合計</span></td><td>1.00</td><td><b>E(x) = 1.20</b></td><td></td><td></td><td><b>σ² = 1.660</b></td></tr>
+</tbody>
+</table>
+<p>JSL sells 1.2 TVs per day on average; σ = √1.660 = <b>1.2884 TVs</b>. Over 30 days the expected sales are 30 × 1.2 = 36 TVs.<span class="zhn">JSL 平均一天賣 1.2 台；σ = √1.660 = <b>1.2884 台</b>。30 天的期望銷售量是 30 × 1.2 = 36 台。</span></p>
+<div class="box tip"><span class="lbl">Shortcut</span>Var(x) = E(x²) − μ² gives the same answer: E(x²) = 0 + 0.25 + 0.80 + 0.45 + 1.60 = 3.10, and 3.10 − 1.2² = 1.66.<span class="zhn">捷徑：Var(x) = E(x²) − μ²。E(x²) = 3.10，3.10 − 1.44 = 1.66，答案相同。</span></div>
+
+<h3 data-sec="5.4">5.4 Bivariate Distributions, Covariance, and Financial Portfolios<span class="zhn">二元分配、共變異數與投資組合</span></h3>
+<ul>
+<li>A <b>bivariate probability distribution</b> involves <b>two</b> random variables. DiCarlo Motors: daily cars sold at the Saratoga and the Geneva dealership over 300 days. Divide every count by 300 to get the bivariate empirical distribution (all entries ≥ 0, sum = 1).<span class="zhn"><b>二元機率分配</b>牽涉<b>兩個</b>隨機變數。DiCarlo 汽車：Saratoga 和 Geneva 兩家分店 300 天的每日銷售量。每格次數除以 300 就得到二元經驗分配（每格 ≥ 0、總和 = 1）。</span></li>
+</ul>
+<table>
+<thead><tr><th>Saratoga \ Geneva</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>Total</th></tr></thead>
+<tbody>
+<tr><td>0</td><td>.0700</td><td>.1000</td><td>.0800</td><td>.0300</td><td>.0067</td><td>.0000</td><td>.2867</td></tr>
+<tr><td>1</td><td>.0700</td><td>.1200</td><td>.1100</td><td>.0600</td><td>.0067</td><td>.0033</td><td>.3700</td></tr>
+<tr><td>2</td><td>.0300</td><td>.1400</td><td>.0300</td><td>.0400</td><td>.0100</td><td>.0067</td><td>.2567</td></tr>
+<tr><td>3</td><td>.0100</td><td>.0300</td><td>.0200</td><td>.0100</td><td>.0167</td><td>.0000</td><td>.0867</td></tr>
+<tr><td>Total</td><td>.18</td><td>.39</td><td>.24</td><td>.14</td><td>.04</td><td>.01</td><td>1.0000</td></tr>
+</tbody>
+</table>
+<ul>
+<li>Let x = Geneva sales, y = Saratoga sales and s = x + y the total. Collect f(s) from the table (for example f(1) = .1000 + .0700 = .1700), then compute as in 5.3: <b>E(s) = 2.6433</b>, <b>Var(s) = 2.3895</b>.<span class="zhn">令 x = Geneva、y = Saratoga、s = x + y 為總銷售量。從表中把同一個 s 的格子加起來得到 f(s)（例如 f(1) = .1000 + .0700 = .1700），再照 5.3 的方法算：<b>E(s) = 2.6433</b>、<b>Var(s) = 2.3895</b>。</span></li>
+<li>From the margins: E(x) = 1.50, Var(x) = 1.25 (Geneva); E(y) = 1.1433, Var(y) = 0.8696 (Saratoga). Check: E(s) = 1.50 + 1.1433 = 2.6433.<span class="zhn">由邊際分配：Geneva E(x) = 1.50、Var(x) = 1.25；Saratoga E(y) = 1.1433、Var(y) = 0.8696。驗算：E(s) = 1.50 + 1.1433 = 2.6433。</span></li>
+<li><b>Covariance</b> σ<sub>xy</sub> = [Var(x + y) − Var(x) − Var(y)] / 2 = (2.3895 − 1.25 − 0.8696) / 2 = <b>0.1350</b> &gt; 0: a <b>positive</b> relationship.<span class="zhn"><b>共變異數</b> σ<sub>xy</sub> = [Var(x + y) − Var(x) − Var(y)] / 2 = <b>0.1350</b> &gt; 0：<b>正向</b>關係。</span></li>
+<li><b>Correlation</b> ρ<sub>xy</sub> = σ<sub>xy</sub> / (σ<sub>x</sub>σ<sub>y</sub>) = 0.1350 / (√1.25 × √0.8696) = 0.1350 / (1.1180 × 0.9325) = <b>0.1295</b>: a <b>weak positive</b> relationship. If ρ were 0, the two dealerships' sales would be uncorrelated.<span class="zhn"><b>相關係數</b> ρ<sub>xy</sub> = σ<sub>xy</sub> / (σ<sub>x</sub>σ<sub>y</sub>) = <b>0.1295</b>：<b>弱的正相關</b>。若 ρ = 0，兩家銷售量就沒有線性關係。</span></li>
+<li>Covariance has units and its size depends on the scale; the correlation is always between −1 and +1, so it shows the <b>strength</b>.<span class="zhn">共變異數有單位、大小受尺度影響；相關係數一定介於 −1 到 +1，所以能看出關係的<b>強弱</b>。</span></li>
+<li>Portfolios (textbook): for a portfolio ax + by, E(ax + by) = aE(x) + bE(y) and Var(ax + by) = a²Var(x) + b²Var(y) + 2abσ<sub>xy</sub>.<span class="zhn">投資組合（課本）：E(ax + by) = aE(x) + bE(y)；Var(ax + by) = a²Var(x) + b²Var(y) + 2abσ<sub>xy</sub>。</span></li>
+</ul>
+<div class="box warn"><span class="lbl">Typo in the slides</span>One slide prints Var(x) = .0896; the value used in the covariance is 0.8696 (Saratoga's variance). With 1.25 and 0.8696 every number above checks out.<span class="zhn">講義有一頁印成 Var(x) = .0896，共變異數公式裡用的是 0.8696（Saratoga 的變異數）。用 1.25 和 0.8696 上面的數字才對得起來。</span></div>
+
+<h3 data-sec="5.5">5.5 Binomial Probability Distribution<span class="zhn">二項機率分配</span></h3>
+<p>The probability of a given number of successes in a fixed number of independent trials. Four properties of a <b>binomial experiment</b>:<span class="zhn">在固定次數的獨立試驗中，得到某個成功次數的機率。<b>二項實驗</b>的四個性質：</span></p>
+<ol>
+<li>A sequence of <b>n identical trials</b>.<span class="zhn"><b>n 次相同的試驗</b>。</span></li>
+<li><b>Two outcomes</b> on each trial: success and failure.<span class="zhn">每次只有<b>兩種結果</b>：成功、失敗。</span></li>
+<li>The probability of success <b>p does not change</b> from trial to trial (the <b>stationarity assumption</b>).<span class="zhn">成功機率 <b>p 每次都不變</b>（<b>穩定性假設</b>）。</span></li>
+<li>The trials are <b>independent</b>.<span class="zhn">試驗之間<b>互相獨立</b>。</span></li>
+</ol>
+<p>Properties 2 to 4 describe one <b>Bernoulli trial</b>; repeating it n times gives the binomial experiment. x = the number of successes in the n trials.<span class="zhn">性質 2 到 4 描述的是一次<b>伯努利試驗</b>；重複 n 次就是二項實驗。x = n 次中成功的次數。</span></p>
+<div class="box en"><span class="lbl">Binomial probability function</span>f(x) = C(n, x) p<sup>x</sup> (1 − p)<sup>n − x</sup> = n! / [x!(n − x)!] · p<sup>x</sup>(1 − p)<sup>n − x</sup><br>E(x) = μ = np　　Var(x) = σ² = np(1 − p)　　σ = √[np(1 − p)]<span class="zhn">C(n, x) 是「n 次中哪 x 次成功」的排法數；p<sup>x</sup>(1 − p)<sup>n − x</sup> 是其中一種排法的機率。</span></div>
+<p><b>Evans Electronics</b>: each hourly employee leaves within the year with p = 0.10. Choose n = 3 employees; what is P(exactly 1 leaves)? Each path of the tree with one S and two F has probability (0.1)(0.9)² = 0.081, and there are C(3, 1) = 3 such paths.<span class="zhn"><b>Evans 電子</b>：每位時薪員工一年內離職機率 p = 0.10。隨機挑 n = 3 人，恰 1 人離職的機率？樹狀圖上一條「1 個 S、2 個 F」的路徑機率是 (0.1)(0.9)² = 0.081，這樣的路徑有 C(3, 1) = 3 條。</span></p>
+{{FIG_TREE}}
+<p>f(1) = 3!/(1!2!) × (0.1)¹(0.9)² = 3 × 0.081 = <b>0.243</b>. The whole distribution: f(0) = .729, f(1) = .243, f(2) = .027, f(3) = .001. E(x) = 3(0.1) = <b>0.3</b> employees, Var(x) = 3(0.1)(0.9) = <b>0.27</b>, σ = <b>0.52</b>.<span class="zhn">f(1) = 3 × 0.081 = <b>0.243</b>。整個分配：f(0) = .729、f(1) = .243、f(2) = .027、f(3) = .001。E(x) = <b>0.3</b> 人、Var(x) = <b>0.27</b>、σ = <b>0.52</b>。</span></p>
+<ul>
+<li><b>Binomial tables</b> list f(x) for given n and p (row n = 3, x = 1, column p = .10 → .2430). With calculators and software the tables are rarely needed. <b>Cumulative</b> probabilities add f(x): P(x ≤ 1) = .729 + .243 = .972.<span class="zhn"><b>二項機率表</b>直接查 f(x)（n = 3、x = 1、p = .10 那格是 .2430）。<b>累積</b>機率就是把 f(x) 加起來：P(x ≤ 1) = .972。</span></li>
+<li>Why E(x) = np: one trial gives 1 with probability p and 0 with 1 − p, so its mean is 1·p + 0·(1 − p) = p; n independent trials add to np.<span class="zhn">為什麼 E(x) = np：一次試驗成功記 1、失敗記 0，期望值 = 1·p + 0·(1 − p) = p；做 n 次加起來就是 np。</span></li>
+</ul>
+<div class="ilab" id="w-binom"><span class="lbl">Interactive · binomial distribution</span>
+<div class="lab-row"><label>n <input type="range" class="bi-n" min="1" max="30" step="1" value="3"><b class="bi-nv"></b></label><label>p <input type="range" class="bi-p" min="0.01" max="0.99" step="0.01" value="0.1"><b class="bi-pv"></b></label></div>
+<div class="lab-row"><label>x <input type="range" class="bi-x" min="0" max="3" step="1" value="1"><b class="bi-xv"></b></label><label>Find <select class="bi-m"><option value="eq">P(x = …)</option><option value="le">P(x ≤ …)</option><option value="ge">P(x ≥ …)</option></select></label></div>
+<div class="lab-row"><button class="btn bi-ex" type="button" data-n="3" data-p="0.1" data-x="1">Evans: n = 3, p = .1, x = 1</button><button class="btn bi-ex" type="button" data-n="10" data-p="0.3" data-x="2">n = 10, p = .3, x = 2</button><button class="btn bi-ex" type="button" data-n="10" data-p="0.3" data-x="1" data-m="ge">P(x ≥ 1), n = 10</button></div>
+<div class="bi-svg"></div>
+<div class="calc bi-out"></div>
+</div>
+
+<h3 data-sec="5.6">5.6 Poisson Probability Distribution<span class="zhn">卜瓦松機率分配</span></h3>
+<ul>
+<li>The number of <b>occurrences in a specified interval of time or space</b>: arrivals at a car wash in one hour, repairs needed on 10 km of highway, leaks in 100 km of pipeline. x = 0, 1, 2, … with <b>no upper limit</b>.<span class="zhn">某段<b>時間或空間區間內發生的次數</b>：一小時內到洗車場的車數、10 公里公路需要修補的地方、100 公里管線的漏洞數。x = 0, 1, 2, …，<b>沒有上限</b>。</span></li>
+<li>Two properties of a <b>Poisson experiment</b>: (1) the probability of an occurrence is the <b>same for any two intervals of equal length</b>; (2) occurrence in one interval is <b>independent</b> of occurrence in any other interval.<span class="zhn"><b>卜瓦松實驗</b>兩個性質：(1) <b>等長的區間</b>發生機率相同；(2) 不同區間是否發生彼此<b>獨立</b>。</span></li>
+</ul>
+<div class="box en"><span class="lbl">Poisson probability function</span>f(x) = μ<sup>x</sup> e<sup>−μ</sup> / x!　　μ = mean number of occurrences in the interval, e = 2.71828<br>Mean = variance = μ<span class="zhn">μ 是「這個區間」的平均次數；卜瓦松分配的平均數和變異數相等。</span></div>
+<p><b>Mercy Hospital</b>: patients arrive at the emergency room at 6 per hour on weekend evenings. P(4 arrivals in 30 minutes)? First <b>rescale μ to the interval asked</b>: μ = 6/hour = <b>3 per half-hour</b>. f(4) = 3⁴ e<sup>−3</sup> / 4! = 81(0.0498)/24 = <b>0.1680</b>. Variance for 30-minute periods = μ = 3.<span class="zhn"><b>Mercy 醫院</b>：週末晚上急診平均每小時 6 位病人。30 分鐘內恰好 4 位的機率？先<b>把 μ 換成題目問的區間</b>：μ = 每小時 6 = <b>每半小時 3</b>。f(4) = 81(0.0498)/24 = <b>0.1680</b>。30 分鐘的變異數 = μ = 3。</span></p>
+{{FIG_POIS}}
+<p>f(x) never becomes exactly 0, but for large x it is so small that larger values can be ignored.<span class="zhn">f(x) 不會真的等於 0，但 x 很大時小到可以忽略。</span></p>
+<div class="ilab" id="w-pois"><span class="lbl">Interactive · Poisson distribution</span>
+<div class="lab-row"><label>Rate per hour <input type="range" class="po-r" min="0.5" max="20" step="0.5" value="6"><b class="po-rv"></b></label><label>Interval <input type="range" class="po-t" min="5" max="120" step="5" value="30"><b class="po-tv"></b></label></div>
+<div class="lab-row"><label>x <input type="range" class="po-x" min="0" max="15" step="1" value="4"><b class="po-xv"></b></label><label>Find <select class="po-m"><option value="eq">P(x = …)</option><option value="le">P(x ≤ …)</option><option value="ge">P(x ≥ …)</option></select></label></div>
+<div class="lab-row"><button class="btn po-ex" type="button" data-r="6" data-t="30" data-x="4">Mercy: 6/hour, 30 min, x = 4</button><button class="btn po-ex" type="button" data-r="4" data-t="60" data-x="2">4/hour, 1 hour, x = 2</button></div>
+<div class="po-svg"></div>
+<div class="calc po-out"></div>
+</div>
+
+<h3 data-sec="5.7">5.7 Hypergeometric Probability Distribution<span class="zhn">超幾何機率分配</span></h3>
+<ul>
+<li>Closely related to the binomial, but sampling is <b>without replacement</b> from a finite population, so the trials are <b>not independent</b> and the probability of success <b>changes</b> from trial to trial.<span class="zhn">和二項很像，但是從有限母體<b>抽出不放回</b>，所以試驗<b>不獨立</b>，成功機率每次都會<b>改變</b>。</span></li>
+</ul>
+<div class="box en"><span class="lbl">Hypergeometric probability function</span>f(x) = C(r, x) · C(N − r, n − x) / C(N, n),　for 0 ≤ x ≤ r and 0 ≤ n − x ≤ N − r (otherwise f(x) = 0)<br>N = population size, r = successes in the population, n = number of trials (sample size), x = successes in the sample<br>E(x) = n(r/N)　　Var(x) = n(r/N)(1 − r/N)[(N − n)/(N − 1)]<span class="zhn">分子：從 r 個成功裡選 x 個 × 從 N − r 個失敗裡選 n − x 個；分母：從 N 個裡選 n 個的所有方法。</span></div>
+<p><b>Neveready's batteries</b>: 2 dead batteries got mixed with 2 good ones (N = 4, r = 2 good). Bob picks n = 2. P(both good) = C(2, 2)C(2, 0)/C(4, 2) = 1 × 1 / 6 = <b>0.1667</b>. E(x) = 2(2/4) = <b>1</b>; Var(x) = 2(0.5)(0.5)(2/3) = <b>0.333</b>.<span class="zhn"><b>Neveready 電池</b>：2 顆沒電的和 2 顆好的混在一起（N = 4、r = 2 顆好的），Bob 拿 n = 2 顆。兩顆都好的機率 = 1/6 = <b>0.1667</b>。E(x) = <b>1</b>；Var(x) = <b>0.333</b>。</span></p>
+<ul>
+<li>Let p = r/N. Then E(x) = np exactly like the binomial, and Var(x) = np(1 − p) times the factor (N − n)/(N − 1). When the population is <b>large</b>, that factor is close to 1, so the hypergeometric can be <b>approximated by a binomial</b> with n trials and p = r/N.<span class="zhn">令 p = r/N，E(x) = np 和二項一樣；Var(x) 是 np(1 − p) 再乘上 (N − n)/(N − 1)。母體<b>很大</b>時這個因子接近 1，所以可以<b>用二項分配近似</b>（n 次、p = r/N）。</span></li>
+</ul>
+<div class="ilab" id="w-hyp"><span class="lbl">Interactive · hypergeometric vs binomial</span>
+<div class="lab-row"><label>N <input type="number" class="hy-N" min="2" max="500" step="1" value="4"></label><label>r <input type="number" class="hy-r" min="0" max="500" step="1" value="2"></label><label>n <input type="number" class="hy-n" min="1" max="60" step="1" value="2"></label><label>x <input type="number" class="hy-x" min="0" max="60" step="1" value="2"></label></div>
+<div class="lab-row"><button class="btn hy-ex" type="button" data-N="4" data-r="2" data-n="2" data-x="2">Neveready</button><button class="btn hy-ex" type="button" data-N="10" data-r="3" data-n="4" data-x="1">N = 10, r = 3, n = 4</button><button class="btn hy-ex" type="button" data-N="400" data-r="120" data-n="10" data-x="3">Large N: close to binomial</button></div>
+<div class="hy-svg"></div>
+<div class="calc hy-out"></div>
+</div>
+
+<div class="sum"><b class="t">Chapter summary</b><span class="zhn"><b>Summary 本章總結</b></span><ul>
+<li>A <b>random variable</b> gives a number to each outcome; <b>discrete</b> = countable values, <b>continuous</b> = any value in an interval.<span class="zhn"><b>隨機變數</b>把每個結果變成數字；<b>離散</b>＝可數的值，<b>連續</b>＝區間內任何值。</span></li>
+<li>A discrete probability function needs f(x) ≥ 0 and Σf(x) = 1. Discrete uniform: f(x) = 1/n.<span class="zhn">離散機率函數要 f(x) ≥ 0 且 Σf(x) = 1。離散均勻：f(x) = 1/n。</span></li>
+<li>E(x) = Σx f(x); Var(x) = Σ(x − μ)² f(x); σ = √Var(x). JSL: E = 1.2, σ² = 1.66, σ = 1.2884.<span class="zhn">E(x) = Σx f(x)；Var(x) = Σ(x − μ)² f(x)；σ = √Var(x)。JSL：E = 1.2、σ² = 1.66、σ = 1.2884。</span></li>
+<li>Bivariate: σ<sub>xy</sub> = [Var(x + y) − Var(x) − Var(y)]/2 and ρ = σ<sub>xy</sub>/(σ<sub>x</sub>σ<sub>y</sub>). DiCarlo: 0.1350 and 0.1295 (weak positive).<span class="zhn">二元：σ<sub>xy</sub> = [Var(x + y) − Var(x) − Var(y)]/2，ρ = σ<sub>xy</sub>/(σ<sub>x</sub>σ<sub>y</sub>)。DiCarlo：0.1350、0.1295（弱正相關）。</span></li>
+<li><b>Binomial</b>: n identical independent trials, two outcomes, constant p. f(x) = C(n, x)p<sup>x</sup>(1 − p)<sup>n − x</sup>, E = np, Var = np(1 − p).<span class="zhn"><b>二項</b>：n 次相同獨立試驗、兩種結果、p 不變。E = np、Var = np(1 − p)。</span></li>
+<li><b>Poisson</b>: occurrences in an interval. f(x) = μ<sup>x</sup>e<sup>−μ</sup>/x!, mean = variance = μ. Rescale μ to the interval first.<span class="zhn"><b>卜瓦松</b>：區間內發生次數。平均數＝變異數＝μ。先把 μ 換成題目的區間。</span></li>
+<li><b>Hypergeometric</b>: sampling without replacement. f(x) = C(r, x)C(N − r, n − x)/C(N, n), E = n(r/N), Var = n(r/N)(1 − r/N)(N − n)/(N − 1).<span class="zhn"><b>超幾何</b>：抽出不放回。E = n(r/N)、Var 多乘 (N − n)/(N − 1)。</span></li>
+</ul></div>
+<div class="trap"><b class="t">Common trap</b><span class="zhn"><b>易錯點</b></span><ul>
+<li>Poisson: <b>rescale μ</b> to the interval in the question (6 per hour → 3 per 30 minutes) before using the formula.<span class="zhn">卜瓦松：先把 <b>μ 換成題目問的區間</b>（每小時 6 → 每 30 分鐘 3），再代公式。</span></li>
+<li>Binomial: do not forget the C(n, x) factor. (0.1)(0.9)² = 0.081 is <b>one</b> path; f(1) = 3 × 0.081 = 0.243.<span class="zhn">二項：別忘了 C(n, x)。(0.1)(0.9)² = 0.081 只是<b>一條</b>路徑；f(1) = 3 × 0.081 = 0.243。</span></li>
+<li>"At least one" = 1 − P(x = 0); "more than 2" = P(x ≥ 3), not P(x ≥ 2).<span class="zhn">「至少一個」＝ 1 − P(x = 0)；「多於 2」＝ P(x ≥ 3)，不是 P(x ≥ 2)。</span></li>
+<li>Without replacement from a small population → <b>hypergeometric</b>, not binomial. Its variance has the extra factor (N − n)/(N − 1).<span class="zhn">從小母體抽出不放回 → <b>超幾何</b>，不是二項。變異數多一個 (N − n)/(N − 1)。</span></li>
+<li>Variance is in squared units; report σ in the units of x. E(x) need not be a possible value of x.<span class="zhn">變異數是平方單位，σ 才和 x 同單位。E(x) 不一定是 x 能出現的值。</span></li>
+<li>Correlation, not covariance, tells the strength: DiCarlo's σ<sub>xy</sub> = 0.135 looks small but only ρ = 0.1295 says "weak".<span class="zhn">看強弱要用相關係數，不是共變異數：DiCarlo 的 ρ = 0.1295 才說明是「弱」相關。</span></li>
+</ul></div>
+<div class="quiz" data-quiz="ch5"></div>
+<!--CHW-->
+</section>

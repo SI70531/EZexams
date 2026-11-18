@@ -19,6 +19,8 @@ EZexams is a study site with notes, practice questions, and mock exams for each 
 | --- | --- | --- | --- |
 | Operating Systems | TBA | Silberschatz 9th ed., Chapters 6–8 so far | https://si70531.github.io/EZexams/operating-systems/final/ |
 | Data & File Structures | TBA | Gilberg & Forouzan, Chapter 3 (3-4 to 3-6) and Chapter 4 so far | https://si70531.github.io/EZexams/data-structures/final/ |
+| Economics | TBA | Mankiw, Chapter 28 so far | https://si70531.github.io/EZexams/economics/final/ |
+| Statistics | TBA | Anderson 14e, Chapters 5–6 so far | https://si70531.github.io/EZexams/statistics/final/ |
 
 ## How the Project Is Organized
 
@@ -70,6 +72,10 @@ The home page sorts subjects by date automatically. Keep the table sorted by dat
 ## Data & File Structures Final Page
 
 `data-structures/final/` is generated from the midterm page as a template: edit the notes in `tools/src/ds-final/ch3.html` and `ch4.html` (one file per chapter) or the interactive figures in `tools/src/ds_labs.js`, then run `python3 tools/src/ds_final_build.py`. To add a chapter, write `tools/src/ds-final/chN.html` and add it to `CHAPTERS` in the build script. Do not edit the generated files by hand.
+
+## Statistics Final Page
+
+`statistics/final/` is generated from the midterm page as a template: edit the notes in `tools/src/stats-final/ch5.html` and `ch6.html`, the figures and the Problems in `tools/src/stats_final_build.py`, or the interactive figures in `tools/src/stats_final_widgets.js`, then run `python3 tools/src/stats_final_build.py`. To add a chapter, write `tools/src/stats-final/chN.html` and add it to `CHAPTERS` (and its Problems to `W`) in the build script. Do not edit the generated files by hand.
 
 ## Editing Questions
 

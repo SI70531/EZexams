@@ -81,3 +81,73 @@ function postfix(el){
   sel.onchange=()=>{inp.value=sel.value;reset();};
   reset();
 }
+
+/* ---------- Ch5 queues ---------- */
+function queueops(el){
+  frame(el,"Queue lab: enqueue, dequeue, queue front and queue rear","Type a value and press a button. Enqueue adds at the rear, dequeue removes from the front. Try Figure 5-6: enqueue green, enqueue blue, dequeue, enqueue red, queue front, queue rear, dequeue, dequeue.");
+  const ctl=$("div","labrow");
+  const inp=$("input");inp.type="text";inp.value="green";inp.className="labin";inp.style.width="7em";inp.setAttribute("aria-label","value");
+  const bE=$("button","btn primary","Enqueue"),bD=$("button","btn","Dequeue"),bF=$("button","btn","Queue front"),bR=$("button","btn","Queue rear"),bX=$("button","btn","Reset");
+  [bE,bD,bF,bR,bX].forEach(b=>b.type="button");ctl.append($("label","small","value"),inp,bE,bD,bF,bR,bX);el.appendChild(ctl);
+  const meta=$("div","lablog");meta.style.fontFamily="var(--f-mono)";el.appendChild(meta);
+  const view=$("div","cells");el.appendChild(view);
+  const log=$("div","lablog");el.appendChild(log);
+  const SAMPLE=["green","blue","red","yellow","purple","white"];let Q=[],hi=-1,n=0;
+  function draw(){view.innerHTML="";
+    if(!Q.length){const c=$("div","cell out","<b>(empty)</b>");c.style.minWidth="110px";view.appendChild(c);}
+    Q.forEach((v,i)=>{const c=$("div","cell"+(i===hi?" mid":""));c.style.minWidth="90px";c.innerHTML='<span class="ci">'+(i===0&&i===Q.length-1?"front · rear":i===0?"front":i===Q.length-1?"rear":"")+'</span><b>'+esc(v)+'</b>';view.appendChild(c);});
+    meta.innerHTML="head: front → <b>"+(Q.length?esc(Q[0]):"null")+"</b>　count = <b>"+Q.length+"</b>　rear → <b>"+(Q.length?esc(Q[Q.length-1]):"null")+"</b>";}
+  const say=(s,bad)=>{log.innerHTML=bad?'<span class="bad">'+s+'</span>':s;};
+  bE.onclick=()=>{const v=inp.value.trim()||"x";const was=Q.length;Q.push(v);hi=Q.length-1;n++;inp.value=SAMPLE[n%SAMPLE.length];
+    say(was?"rear->next = newPtr; rear = newPtr; count = "+Q.length+". front does not change.":"Empty queue (count 0): front = newPtr and rear = newPtr; count = 1.");draw();};
+  bD.onclick=()=>{if(!Q.length){say("Underflow: count is 0, so dequeue returns false.",1);return;}const v=Q.shift();hi=-1;
+    say("item = <b>"+esc(v)+"</b>; front = front->next; count = "+Q.length+"; recycle(deleteLoc)."+(Q.length?"":" It was the only item, so rear = null too."));draw();};
+  bF.onclick=()=>{if(!Q.length){say("Underflow: the queue is empty.",1);return;}hi=0;say("queueFront returns a copy of <b>"+esc(Q[0])+"</b>; nothing is deleted.");draw();};
+  bR.onclick=()=>{if(!Q.length){say("Underflow: the queue is empty.",1);return;}hi=Q.length-1;say("queueRear returns a copy of <b>"+esc(Q[Q.length-1])+"</b>; nothing is deleted.");draw();};
+  bX.onclick=()=>{Q=[];hi=-1;n=0;inp.value="green";say("createQueue: front = null, rear = null, count = 0.");draw();};
+  say("createQueue: front = null, rear = null, count = 0.");draw();
+}
+
+function qsim(el){
+  frame(el,"Taffy store simulation (Algorithms 5-9 to 5-13)","Each minute: a customer arrives when (random mod 4) + 1 = 4, the free server starts the next customer with a random 1 to 10 minute service, and a customer finishes at start + service − 1. Change the seed or the length to get another day.");
+  const ctl=$("div","labrow");
+  const sd=$("input");sd.type="number";sd.value="7";sd.className="labin";sd.style.width="5em";sd.setAttribute("aria-label","seed");
+  const ln=$("input");ln.type="number";ln.value="60";ln.min="10";ln.max="480";ln.className="labin";ln.style.width="5em";ln.setAttribute("aria-label","minutes");
+  const bG=$("button","btn primary","Run");bG.type="button";
+  ctl.append($("label","small","seed"),sd,$("label","small","endTime (minutes)"),ln,bG);el.appendChild(ctl);
+  const tb=$("div","labtbl");el.appendChild(tb);const log=$("div","lablog");el.appendChild(log);
+  function run(){
+    let s=(+sd.value|0)||1;const rnd=()=>{s=(Math.imul(s,1103515245)+12345)>>>0;return s>>>16;};
+    const end=Math.max(10,Math.min(480,+ln.value|0||60));
+    const q=[];let st={num:0,arr:0,start:0,svc:0},more=false,num=0,stats={n:0,svc:0,wait:0,max:0};const rows=[];
+    for(let clock=1;clock<=end||more;clock++){
+      if(clock<=end&&(rnd()%4)+1===4){num++;q.push({n:num,a:clock});}
+      if(clock>st.start+st.svc-1&&q.length){const c=q.shift();st={num:c.n,arr:c.a,start:clock,svc:(rnd()%10)+1};more=true;}
+      if(clock===st.start+st.svc-1&&st.num){const wt=st.start-st.arr;stats.n++;stats.svc+=st.svc;stats.wait+=wt;stats.max=Math.max(stats.max,q.length);
+        rows.push([st.num,st.arr,st.start,st.svc,wt,q.length]);more=false;}
+      if(q.length)more=true;
+      if(clock>end+2000)break;}
+    let h='<table style="width:100%"><tr><th>Customer</th><th>Arrive</th><th>Start</th><th>Service</th><th>Wait</th><th>Queue size at end</th></tr>';
+    rows.forEach(r=>{h+='<tr>'+r.map(x=>'<td>'+x+'</td>').join("")+'</tr>';});tb.innerHTML=h+'</table>';
+    const av=(a,b)=>b?Math.round(a/b*100)/100:0;
+    log.innerHTML="<b>printStats</b>: total customers "+stats.n+"; total service time "+stats.svc+"; average service time "+av(stats.svc,stats.n)+"; average wait time "+av(stats.wait,stats.n)+"; maximum queue size "+stats.max+".";
+  }
+  bG.onclick=run;sd.onchange=run;ln.onchange=run;run();
+}
+
+function qcat(el){
+  frame(el,"Categorizing data with four queues (Algorithm 5-15)","Edit the numbers and watch each one go to its queue with the elseif chain. Inside a queue the numbers keep their input order, so the result is categorized, not sorted.");
+  const ctl=$("div","labrow");const inp=txt("3 22 12 6 10 34 65 29 9 30 81 4 5 19 20 57 44 99","100%");inp.setAttribute("aria-label","numbers");
+  const lw=$("label","small","numbers (space-separated)");lw.style.display="block";lw.style.flex="1";lw.appendChild(inp);
+  const bN=$("button","btn primary","Next"),bA=$("button","btn","Run all"),bR=$("button","btn","Reset");[bN,bA,bR].forEach(b=>b.type="button");
+  ctl.append(lw,bN,bA,bR);el.appendChild(ctl);
+  const grid=$("div","labgrid");el.appendChild(grid);const log=$("div","lablog");el.appendChild(log);
+  const names=["q0to9 (< 10)","q10to19 (< 20)","q20to29 (< 30)","qOver29 (else)"];let nums=[],k=0;
+  function draw(){const Qs=[[],[],[],[]];const g=x=>x<10?0:x<20?1:x<30?2:3;nums.slice(0,k).forEach(x=>Qs[g(x)].push(x));
+    grid.innerHTML="";Qs.forEach((q,i)=>{const b=$("div","lablog");b.style.marginTop="0";b.innerHTML="<b>"+names[i]+"</b><br><span class=\"mono\">"+(q.join(" ")||"(empty)")+"</span>";grid.appendChild(b);});
+    if(k===0)log.textContent="Press Next to read the first number.";
+    else if(k<nums.length){const x=nums[k-1];log.textContent="read "+x+" → "+(x<10?"number < 10 → enqueue (q0to9)":x<20?"not < 10, but < 20 → enqueue (q10to19)":x<30?"not < 20, but < 30 → enqueue (q20to29)":"else → enqueue (qOver29)");}
+    else log.innerHTML="printQueues: <span class=\"mono\">| "+Qs.map(q=>q.join(" ")).join(" | ")+" |</span>";}
+  function reset(){nums=inp.value.trim().split(/[\s,]+/).map(Number).filter(x=>!isNaN(x));k=0;draw();}
+  bN.onclick=()=>{if(k<nums.length){k++;draw();}};bA.onclick=()=>{k=nums.length;draw();};bR.onclick=reset;inp.addEventListener("change",reset);reset();
+}

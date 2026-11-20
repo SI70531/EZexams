@@ -5,5 +5,6 @@
 const EZSTUB=n=>Array.from({length:n},()=>({}));
 const QUIZ = {
  "ch3":EZSTUB(20),
- "ch4":EZSTUB(20)
+ "ch4":EZSTUB(20),
+ "ch5":EZSTUB(20)
 };

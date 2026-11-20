@@ -1,0 +1,487 @@
+<section role="tabpanel" class="view" id="ch5" hidden><div class="vhead"><div class="pcb" data-pcb="ch5" role="img"></div><h1>Ch5 Queues<span class="zhn">佇列</span></h1><p>Queue operations (enqueue, dequeue, queue front, queue rear), the linked-list queue and its eight algorithms, queuing theory, and two applications: the taffy-store queue simulation and categorizing data. After reading, do the multiple choice and the written part at the bottom.<span class="zhn">佇列的運算（enqueue、dequeue、queue front、queue rear）、用鏈結串列實作的八個演算法、等候理論，以及兩個應用：太妃糖店的佇列模擬和資料分類。讀完做最下面的選擇題和手寫題。</span></p></div>
+<div class="box slmap"><span class="lbl">Slide map</span>Preface (3) → <a class="slk" href="#s5-1" data-sec-link="s5-1">5-1 Queue Operations</a> (4 to 12) → <a class="slk" href="#s5-2" data-sec-link="s5-2">5-2 Queue Linked List Design</a> (13 to 37) → <a class="slk" href="#s5-3" data-sec-link="s5-3">5-3 Queuing Theory</a> (38 to 44) → <a class="slk" href="#s5-4" data-sec-link="s5-4">5-4 Queue Applications</a> (45 to 80).</div>
+
+<h4>What a queue is <span class="sl">Slide 3</span><span class="zhn">什麼是佇列</span></h4>
+<p><i>A queue is a linear list in which data can only be <mark>inserted at one end, called the rear</mark>, and <mark>deleted from the other end, called the front</mark>.</i> It is a <mark><b>first in, first out (FIFO)</b></mark> structure.<span class="zhn">佇列是一種線性串列，資料只能從一端（rear，尾端）插入、從另一端（front，前端）刪除。它是先進先出（FIFO）的結構。</span></p>
+<figure class="fig"><svg viewBox="0 0 620 134" width="600" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="13" role="img"><defs><marker id="f5ca" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#1d2433"/></marker><marker id="f5cr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#d64933"/></marker></defs><path data-step="0" d="M150,40 H470 M150,96 H470" stroke="#1d2433" stroke-width="2" fill="none"/><rect data-step="1" x="170" y="55" width="62" height="26" rx="3" fill="#cfe9d4" stroke="#1d2433" stroke-width="1.4"/><text data-step="1" x="201" y="72.5" text-anchor="middle" font-size="11" fill="#1d2433">green</text><rect data-step="1" x="242" y="55" width="62" height="26" rx="3" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.4"/><text data-step="1" x="273" y="72.5" text-anchor="middle" font-size="11" fill="#1d2433">blue</text><rect data-step="1" x="314" y="55" width="62" height="26" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><text data-step="1" x="345" y="72.5" text-anchor="middle" font-size="11" fill="#1d2433">red</text><rect data-step="1" x="386" y="55" width="62" height="26" rx="3" fill="#fff2c2" stroke="#1d2433" stroke-width="1.4"/><text data-step="1" x="417" y="72.5" text-anchor="middle" font-size="11" fill="#1d2433">yellow</text><text data-step="1" x="201" y="30" text-anchor="middle" font-size="11" fill="#1f5fbf" font-weight="700">front</text><text data-step="1" x="417" y="30" text-anchor="middle" font-size="11" fill="#d64933" font-weight="700">rear</text><line data-step="2" x1="160" y1="68" x2="70" y2="68" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f5ca)"/><text data-step="2" x="70" y="58" text-anchor="start" font-size="11" fill="#1f5fbf">dequeue</text><text data-step="2" x="70" y="90" text-anchor="start" font-size="10" fill="#8a93a6">remove at front</text><line data-step="3" x1="560" y1="68" x2="480" y2="68" stroke="#d64933" stroke-width="1.6" marker-end="url(#f5cr)"/><text data-step="3" x="500" y="58" text-anchor="start" font-size="11" fill="#d64933">enqueue</text><text data-step="3" x="490" y="90" text-anchor="start" font-size="10" fill="#8a93a6">insert at rear</text><text data-step="3" x="320" y="124" text-anchor="middle" font-size="11" fill="#8a93a6">FIFO: green came first, so green leaves first</text></svg><figcaption class="cap">Figure 5-1: the queue concept. Data enter at the rear and leave from the front.<span class="zhn">圖 5-1：佇列的概念。資料從 rear 進、從 front 出。</span></figcaption></figure>
+<div class="box zh"><span class="lbl">In plain words</span>A queue is a line at a ticket window: newcomers join at the back, and the person at the front is served first. Compare with Ch4: a stack has one end (top, LIFO); a queue has two ends (front and rear, FIFO).<span class="zhn"><b>白話</b> 佇列就是排隊買票：新來的排在最後面，最前面的人先被服務。和 Ch4 比：stack 只有一端（top，後進先出）；queue 有兩端（front 和 rear，先進先出）。</span></div>
+
+<h3 id="s5-1" data-sec="5-1">5-1 Queue Operations <span class="star">★★★</span><span class="zhn">佇列的運算</span></h3>
+<p><b>Four basic operations</b>: data can be <i>inserted at the rear, deleted from the front, retrieved from the front, retrieved from the rear</i>. <mark><i>The queue needs to keep track of the front and the rear; the stack only needs to worry about one end, the top.</i></mark><span class="zhn">四個基本運算：從 rear 插入、從 front 刪除、取 front 的資料、取 rear 的資料。佇列要同時記住 front 和 rear；stack 只要管一端（top）。</span></p>
+<div class="tbl"><table>
+<tr><th>Operation</th><th class="l">What it does</th><th class="l">Error condition</th></tr>
+<tr><td><b>Enqueue</b><span class="zhn">入列</span></td><td class="l"><i>The queue insert.</i> After the data are inserted, <mark>the new element becomes the rear</mark>.<span class="zhn">佇列的插入；插入後新元素成為 rear。</span></td><td class="l"><mark><b>Overflow</b></mark>: <i>not enough room for another element</i>.<span class="zhn">溢位：沒有空間再放一個元素。</span></td></tr>
+<tr><td><b>Dequeue</b><span class="zhn">出列</span></td><td class="l"><i>The queue delete.</i> <mark>The data at the front are returned to the user and removed</mark> from the queue.<span class="zhn">佇列的刪除；front 的資料回傳給使用者並從佇列移除。</span></td><td class="l"><mark><b>Underflow</b></mark>: <i>no data in the queue when a dequeue is attempted</i>.<span class="zhn">下溢：佇列沒資料還做 dequeue。</span></td></tr>
+<tr><td><b>Queue front</b><span class="zhn">取前端</span></td><td class="l"><i>Returns the data at the front <mark>without changing the contents</mark> of the queue.</i><span class="zhn">回傳 front 的資料，不改變佇列內容。</span></td><td class="l">Underflow if empty<span class="zhn">空的會 underflow</span></td></tr>
+<tr><td><b>Queue rear</b><span class="zhn">取尾端</span></td><td class="l"><i>A parallel operation to queue front</i> that <i>examines the data at the rear</i>.<span class="zhn">和 queue front 對應，查看 rear 的資料。</span></td><td class="l">Underflow if empty<span class="zhn">空的會 underflow</span></td></tr>
+</table></div>
+<h4>Queue example <span class="sl">Slide 11 to 12</span><span class="zhn">佇列範例（圖 5-6）</span></h4>
+<div class="tbl"><table>
+<tr><th>Step</th><th>Operation</th><th class="l">Queue after (front → rear)</th><th class="l">Returned</th></tr>
+<tr><td>1</td><td>Enqueue green</td><td class="l">green</td><td class="l">—</td></tr>
+<tr><td>2</td><td>Enqueue blue</td><td class="l">green, blue</td><td class="l">—</td></tr>
+<tr><td>3</td><td>Dequeue</td><td class="l">blue</td><td class="l">green</td></tr>
+<tr><td>4</td><td>Enqueue red</td><td class="l">blue, red</td><td class="l">—</td></tr>
+<tr><td>5</td><td>Queue front</td><td class="l">blue, red <span class="zhn">不變</span></td><td class="l">blue (copy)</td></tr>
+<tr><td>6</td><td>Queue rear</td><td class="l">blue, red <span class="zhn">不變</span></td><td class="l">red (copy)</td></tr>
+<tr><td>7</td><td>Dequeue</td><td class="l">red</td><td class="l">blue</td></tr>
+<tr><td>8</td><td>Dequeue</td><td class="l">(empty)</td><td class="l">red</td></tr>
+</table></div>
+<div class="lab" data-lab="queueops"></div>
+
+<h3 id="s5-2" data-sec="5-2">5-2 Queue Linked List Design <span class="star">★★★</span><span class="zhn">用鏈結串列設計佇列</span></h3>
+<ul>
+<li><i>We can implement two different queue ADTs: one for the linked list, one for an array structure.</i> The slides implement the queue <i>as a linked list in dynamic memory</i>.<span class="zhn">可以實作兩種佇列 ADT：鏈結串列版和陣列版。投影片用動態記憶體的鏈結串列實作。</span></li>
+<li><mark>Two structures</mark>: a <b>queue head</b> and a <b>data node</b>. <i>After it is created, the queue will have <mark>one head node and zero or more data nodes</mark>.</i><span class="zhn">兩種結構：佇列 head 和資料節點。建立後佇列有一個 head 節點和零個以上的資料節點。</span></li>
+<li><b>Queue head</b>: <mark>two pointers (front, rear) and a count</mark>. <i>Other attributes could be stored in the head</i>, such as <i>the maximum number of items ever present</i> or <i>the total number processed</i>.<span class="zhn">佇列 head：兩個指標（front、rear）和一個 count。head 也可以存其他屬性，例如曾經出現過的最多元素數、處理過的總數。</span></li>
+<li><b>Data node</b>: a <b>data</b> field and a <b>link</b> field pointing to the next node.<span class="zhn">資料節點：data 欄位和指向下一個節點的 link 欄位。</span></li>
+</ul>
+<figure class="fig"><svg viewBox="0 0 500 140" width="480" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="13" role="img"><defs><marker id="f5pa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#1d2433"/></marker><marker id="f5pr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#d64933"/></marker></defs><rect data-step="0" x="20" y="20" width="110" height="30" rx="3" fill="#eef1f7" stroke="#1d2433" stroke-width="1.4"/><rect data-step="0" x="28" y="27" width="18" height="16" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><rect data-step="0" x="60" y="27" width="30" height="16" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="75" y="39" text-anchor="middle" font-size="11" fill="#1d2433">3</text><rect data-step="0" x="104" y="27" width="18" height="16" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="37" y="62" text-anchor="middle" font-size="9" fill="#8a93a6">front</text><text data-step="0" x="75" y="62" text-anchor="middle" font-size="9" fill="#8a93a6">count</text><text data-step="0" x="113" y="62" text-anchor="middle" font-size="9" fill="#8a93a6">rear</text><line data-step="1" x1="37" y1="52" x2="160" y2="92" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f5pa)"/><rect data-step="2" x="160" y="82" width="62" height="30" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="2" x="191" y="102" text-anchor="middle" font-size="12" fill="#1d2433">plum</text><rect data-step="2" x="222" y="82" width="26" height="30" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><text data-step="2" x="191" y="126" text-anchor="middle" font-size="10" fill="#8a93a6">data</text><text data-step="2" x="235" y="126" text-anchor="middle" font-size="10" fill="#8a93a6">next</text><line data-step="3" x1="235" y1="97" x2="270" y2="97" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f5pa)"/><rect data-step="4" x="272" y="82" width="62" height="30" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="4" x="303" y="102" text-anchor="middle" font-size="12" fill="#1d2433">kiwi</text><rect data-step="4" x="334" y="82" width="26" height="30" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><text data-step="4" x="303" y="126" text-anchor="middle" font-size="10" fill="#8a93a6">data</text><text data-step="4" x="347" y="126" text-anchor="middle" font-size="10" fill="#8a93a6">next</text><line data-step="5" x1="347" y1="97" x2="382" y2="97" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f5pa)"/><rect data-step="6" x="384" y="82" width="62" height="30" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="6" x="415" y="102" text-anchor="middle" font-size="12" fill="#1d2433">fig</text><rect data-step="6" x="446" y="82" width="26" height="30" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><path data-step="6" d="M450,86 L468,108 M468,86 L450,108" stroke="#d64933" stroke-width="1.4"/><text data-step="6" x="415" y="126" text-anchor="middle" font-size="10" fill="#8a93a6">data</text><text data-step="6" x="459" y="126" text-anchor="middle" font-size="10" fill="#8a93a6">next</text><path data-step="7" d="M113,27 V10 H428 V78" fill="none" stroke="#1d2433" stroke-width="1.4" marker-end="url(#f5pa)"/><text data-step="7" x="270" y="6" text-anchor="middle" font-size="10" fill="#8a93a6">rear → last node</text></svg><figcaption class="cap">Figure 5-7: the physical queue. front points to the first node (plum), rear points to the last node (fig), count is 3.<span class="zhn">圖 5-7：實體佇列。front 指向第一個節點（plum），rear 指向最後一個節點（fig），count 是 3。</span></figcaption></figure>
+<pre><b>queueHead</b>
+   front  &lt;node pointer&gt;
+   count  &lt;integer&gt;
+   rear   &lt;node pointer&gt;
+<b>end</b> queueHead
+
+<b>node</b>
+   data   &lt;dataType&gt;
+   next   &lt;node pointer&gt;
+<b>end</b> node
+<span class="c">Figure 5-8　Queue data structure</span></pre>
+<p><b>Four basic queue operations</b> (Figure 5-9): <b>create queue, enqueue, dequeue, destroy queue</b>. With queue front, queue rear, empty, full and count there are eight algorithms in all. Each is a card below.<span class="zhn">四個基本運算（圖 5-9）：create、enqueue、dequeue、destroy。加上 queue front、queue rear、empty、full、count 共八個演算法，下面每個是一張卡片。</span></p>
+<div class="algmenu" role="list" data-menu="m52"><button type="button" class="algcard" role="listitem" data-alg-open="m52-1"><span class="an">Algorithm 5-1</span><b>createQueue</b><span class="zhn2">建立佇列</span><span class="sl">Slide 22</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m52-2"><span class="an">Algorithm 5-2</span><b>enqueue</b><span class="zhn2">入列</span><span class="sl">Slide 23 to 28</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m52-3"><span class="an">Algorithm 5-3</span><b>dequeue</b><span class="zhn2">出列</span><span class="sl">Slide 29 to 31</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m52-4"><span class="an">Algorithm 5-4</span><b>queueFront / queueRear</b><span class="zhn2">取前端／尾端</span><span class="sl">Slide 32 to 33</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m52-5"><span class="an">Algorithm 5-5</span><b>emptyQueue</b><span class="zhn2">是否為空</span><span class="sl">Slide 34</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m52-6"><span class="an">Algorithm 5-6</span><b>fullQueue</b><span class="zhn2">是否已滿</span><span class="sl">Slide 35</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m52-7"><span class="an">Algorithm 5-7</span><b>queueCount</b><span class="zhn2">元素個數</span><span class="sl">Slide 36</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m52-8"><span class="an">Algorithm 5-8</span><b>destroyQueue</b><span class="zhn2">刪除佇列</span><span class="sl">Slide 37</span></button></div>
+
+<div class="algp" data-alg="m52-1" data-menu="m52" hidden>
+<h4 class="alg"><span class="an">Algorithm 5-1</span>createQueue<span class="sl">Slide 22</span><span class="zhn">建立佇列</span></h4>
+<p><i>All we have to do is <mark>set the metadata pointers to null and the count to 0</mark>.</i><span class="zhn">只要把 metadata 的指標設成 null、count 設成 0。</span></p>
+<pre><b>algorithm</b> createQueue (ref queue &lt;metadata&gt;)
+   Initializes the metadata elements of a queue structure.
+   <b>Pre</b>    queue is a metadata structure
+   <b>Post</b>   metadata elements have been initialized
+1 <mark>queue.front = null</mark>
+2 <mark>queue.rear  = null</mark>
+3 <mark>queue.count = 0</mark>
+<b>end</b> createQueue
+<span class="c">Algorithm 5-1　Create queue</span></pre>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="m52-2" data-menu="m52" hidden>
+<h4 class="alg"><span class="an">Algorithm 5-2</span>enqueue<span class="sl">Slide 23 to 28</span><span class="zhn">入列</span></h4>
+<p><i>A little more complex than inserting data into a stack</i>: we analyze <mark>three conditions</mark>: insertion into an <b>empty queue</b>, into a queue <b>with data</b>, and when there is <b>no memory</b>.<span class="zhn">比 stack 的插入複雜一點，要分析三種情況：插入空佇列、插入有資料的佇列、沒有記憶體時插入。</span></p>
+<ul>
+<li><b>Empty queue</b>: <mark>front and rear pointers must point to the new node</mark>.<span class="zhn">空佇列：front 和 rear 都要指向新節點。</span></li>
+<li><b>Queue with data</b>: <mark>two pointers must point to the new node: the next pointer in the last node and the rear pointer in the head node</mark>.<span class="zhn">有資料的佇列：兩個指標要指向新節點：最後一個節點的 next 和 head 的 rear。</span></li>
+<li><b>No memory</b>: <i>return a Boolean false</i>.<span class="zhn">沒有記憶體：回傳 false。</span></li>
+</ul>
+<figure class="fig"><svg viewBox="0 0 460 150" width="440" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="13" role="img"><defs><marker id="f5ea" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#1d2433"/></marker><marker id="f5er" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#d64933"/></marker></defs><text data-step="0" x="20" y="14" text-anchor="start" font-size="12" fill="#1d2433" font-weight="700">queue</text><rect data-step="0" x="20" y="20" width="110" height="30" rx="3" fill="#eef1f7" stroke="#1d2433" stroke-width="1.4"/><rect data-step="0" x="28" y="27" width="18" height="16" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><rect data-step="0" x="60" y="27" width="30" height="16" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="75" y="39" text-anchor="middle" font-size="11" fill="#1d2433">1</text><rect data-step="0" x="104" y="27" width="18" height="16" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="37" y="62" text-anchor="middle" font-size="9" fill="#8a93a6">front</text><text data-step="0" x="75" y="62" text-anchor="middle" font-size="9" fill="#8a93a6">count</text><text data-step="0" x="113" y="62" text-anchor="middle" font-size="9" fill="#8a93a6">rear</text><line data-step="0" x1="37" y1="52" x2="60" y2="88" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f5ea)"/><rect data-step="0" x="40" y="90" width="62" height="30" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="71" y="110" text-anchor="middle" font-size="12" fill="#1d2433">plum</text><rect data-step="0" x="102" y="90" width="26" height="30" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><path data-step="0" d="M106,94 L124,116 M124,94 L106,116" stroke="#d64933" stroke-width="1.4"/><text data-step="0" x="71" y="134" text-anchor="middle" font-size="10" fill="#8a93a6">data</text><text data-step="0" x="115" y="134" text-anchor="middle" font-size="10" fill="#8a93a6">next</text><line data-step="0" x1="113" y1="52" x2="90" y2="86" stroke="#8a93a6" stroke-width="1.4" stroke-dasharray="5 4"/><text data-step="0" x="122" y="80" text-anchor="start" font-size="10" fill="#8a93a6">old rear</text><text data-step="1" x="250" y="74" text-anchor="start" font-size="11" fill="#d64933" font-weight="700">newPtr</text><rect data-step="1" x="250" y="90" width="62" height="30" rx="3" fill="#fde7c8" stroke="#1d2433" stroke-width="1.4"/><text data-step="1" x="281" y="110" text-anchor="middle" font-size="12" fill="#1d2433">kiwi</text><rect data-step="1" x="312" y="90" width="26" height="30" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><path data-step="1" d="M316,94 L334,116 M334,94 L316,116" stroke="#d64933" stroke-width="1.4"/><text data-step="1" x="281" y="134" text-anchor="middle" font-size="10" fill="#8a93a6">data</text><text data-step="1" x="325" y="134" text-anchor="middle" font-size="10" fill="#8a93a6">next</text><line data-step="2" x1="115" y1="105" x2="248" y2="105" stroke="#d64933" stroke-width="1.6" marker-end="url(#f5er)"/><text data-step="2" x="126" y="99" text-anchor="start" font-size="10" fill="#d64933">① rear->next = newPtr</text><path data-step="3" d="M113,27 V8 H300 V86" fill="none" stroke="#d64933" stroke-width="1.6" marker-end="url(#f5er)"/><text data-step="3" x="310" y="30" text-anchor="start" font-size="10" fill="#d64933">② queue.rear = newPtr</text><text data-step="4" x="310" y="48" text-anchor="start" font-size="10" fill="#d64933">③ count = 1 + 1 = 2</text></svg><figcaption class="cap">Figure 5-10 (b): enqueue kiwi into a queue holding plum. The old rear node's next and the head's rear both point to kiwi; count becomes 2. front does not change.<span class="zhn">圖 5-10 (b)：把 kiwi enqueue 到只有 plum 的佇列。舊 rear 節點的 next 和 head 的 rear 都指向 kiwi；count 變 2。front 不變。</span></figcaption></figure>
+<pre><b>algorithm</b> enqueue (ref queue  &lt;metadata&gt;,
+                  val dataIn &lt;dataType&gt;)
+This algorithm inserts data into a queue.
+   <b>Pre</b>    queue is a metadata structure
+   <b>Post</b>   dataIn has been inserted
+   <b>Return</b> true if successful, false if overflow
+ 1 if (queue full)
+   1 return false
+ 2 end if
+ 3 allocate (newPtr)
+ 4 <mark>newPtr-&gt;data = dataIn</mark>
+ 5 <mark>newPtr-&gt;next = null pointer</mark>
+ 6 if (<mark>queue.count zero</mark>)
+      <b>Inserting into null queue</b>
+   1 <mark>queue.front = newPtr</mark>
+ 7 else
+      <b>Insert data and adjust metadata</b>
+   1 <mark>queue.rear-&gt;next = newPtr</mark>
+ 8 end if
+ 9 <mark>queue.rear  = newPtr</mark>
+10 <mark>queue.count = queue.count + 1</mark>
+11 return true
+<b>end</b> enqueue
+<span class="c">Algorithm 5-2　Insert data into queue</span></pre>
+<p><b>Analysis</b>: there are <mark>three ways to test for an insertion into an empty queue</mark>: <i>the front is a null value, the rear pointer is a null value, or the count is 0</i>. <i>We chose to check the count for 0</i> (statement 6). Line 9 (<code>queue.rear = newPtr</code>) runs in both cases.<span class="zhn">分析：判斷是否插入空佇列有三種方法：front 是 null、rear 是 null、count 是 0。這裡選擇檢查 count 是不是 0（第 6 行）。第 9 行 queue.rear = newPtr 兩種情況都會執行。</span></p>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="m52-3" data-menu="m52" hidden>
+<h4 class="alg"><span class="an">Algorithm 5-3</span>dequeue<span class="sl">Slide 29 to 31</span><span class="zhn">出列</span></h4>
+<ul>
+<li>If the queue is empty: <mark><b>underflow</b> and return false</mark>.<span class="zhn">佇列是空的：underflow，回傳 false。</span></li>
+<li>If there are data: <i>pass the data back through the parameter list</i>, <i>set the front pointer to the next item</i>, and <mark><i>if the queue is now empty, set the rear pointer to null</i></mark>.<span class="zhn">有資料：用參數把資料傳回去，front 移到下一個；如果佇列變空了，rear 也要設成 null。</span></li>
+</ul>
+<figure class="fig"><svg viewBox="0 0 470 146" width="450" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="13" role="img"><defs><marker id="f5da" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#1d2433"/></marker><marker id="f5dr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#d64933"/></marker></defs><text data-step="0" x="20" y="14" text-anchor="start" font-size="12" fill="#1d2433" font-weight="700">queue</text><rect data-step="0" x="20" y="20" width="110" height="30" rx="3" fill="#eef1f7" stroke="#1d2433" stroke-width="1.4"/><rect data-step="0" x="28" y="27" width="18" height="16" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><rect data-step="0" x="60" y="27" width="30" height="16" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="75" y="39" text-anchor="middle" font-size="11" fill="#1d2433">2</text><rect data-step="0" x="104" y="27" width="18" height="16" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="37" y="62" text-anchor="middle" font-size="9" fill="#8a93a6">front</text><text data-step="0" x="75" y="62" text-anchor="middle" font-size="9" fill="#8a93a6">count</text><text data-step="0" x="113" y="62" text-anchor="middle" font-size="9" fill="#8a93a6">rear</text><rect data-step="0" x="40" y="90" width="62" height="30" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="71" y="110" text-anchor="middle" font-size="12" fill="#1d2433">plum</text><rect data-step="0" x="102" y="90" width="26" height="30" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="71" y="134" text-anchor="middle" font-size="10" fill="#8a93a6">data</text><text data-step="0" x="115" y="134" text-anchor="middle" font-size="10" fill="#8a93a6">next</text><line data-step="0" x1="115" y1="105" x2="148" y2="105" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f5da)"/><rect data-step="0" x="150" y="90" width="62" height="30" rx="3" fill="#ffffff" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="181" y="110" text-anchor="middle" font-size="12" fill="#1d2433">kiwi</text><rect data-step="0" x="212" y="90" width="26" height="30" rx="3" fill="#fbe3df" stroke="#1d2433" stroke-width="1.4"/><path data-step="0" d="M216,94 L234,116 M234,94 L216,116" stroke="#d64933" stroke-width="1.4"/><text data-step="0" x="181" y="134" text-anchor="middle" font-size="10" fill="#8a93a6">data</text><text data-step="0" x="225" y="134" text-anchor="middle" font-size="10" fill="#8a93a6">next</text><line data-step="0" x1="113" y1="52" x2="190" y2="86" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f5da)"/><text data-step="1" x="40" y="83" text-anchor="start" font-size="10" fill="#d64933" font-weight="700">deleteLoc</text><rect data-step="1" x="36" y="86" width="92" height="34" rx="3" fill="none" stroke="#d64933" stroke-width="1.4" stroke-dasharray="4 3"/><text data-step="2" x="250" y="96" text-anchor="start" font-size="10" fill="#d64933">① item = plum (copied out)</text><path data-step="3" d="M37,52 V74 H175 V86" fill="none" stroke="#d64933" stroke-width="1.6" marker-end="url(#f5dr)"/><text data-step="3" x="250" y="66" text-anchor="start" font-size="10" fill="#d64933">② queue.front = queue.front->next</text><text data-step="4" x="250" y="116" text-anchor="start" font-size="10" fill="#d64933">③ count = 2 − 1 = 1</text><text data-step="4" x="250" y="136" text-anchor="start" font-size="10" fill="#d64933">④ recycle (deleteLoc)</text></svg><figcaption class="cap">Figure 5-11 (b): dequeue from a queue holding plum and kiwi. plum is copied out, front moves to kiwi, count becomes 1 and the plum node is recycled. rear does not change.<span class="zhn">圖 5-11 (b)：從有 plum、kiwi 的佇列 dequeue。plum 複製出去，front 移到 kiwi，count 變 1，回收 plum 節點。rear 不變。</span></figcaption></figure>
+<pre><b>algorithm</b> dequeue (ref queue &lt;metadata&gt;,
+                  ref item  &lt;dataType&gt;)
+This algorithm deletes a node from a queue.
+   <b>Pre</b>    queue is a metadata structure
+   <b>Post</b>   data at front of queue returned to user through item
+          and front element deleted and recycled
+   <b>Return</b> true if successful, false if underflow
+ 1 if (<mark>queue.count is 0</mark>)
+   1 return false
+ 2 end if
+ 3 <mark>item        = queue.front-&gt;data</mark>
+ 4 <mark>deleteLoc   = queue.front</mark>
+ 5 if (<mark>queue.count 1</mark>)
+      <b>Deleting only item in queue</b>
+   1 <mark>queue.rear = null pointer</mark>
+ 6 end if
+ 7 <mark>queue.front = queue.front-&gt;next</mark>
+ 8 <mark>queue.count = queue.count - 1</mark>
+ 9 <mark>recycle (deleteLoc)</mark>
+10 return true
+<b>end</b> dequeue
+<span class="c">Algorithm 5-3　Delete data from queue</span></pre>
+<div class="box warn"><span class="lbl">The rear pointer</span>When the <b>only</b> item is dequeued (Figure 5-11 a), rear must become null too; front becomes null by itself through line 7, because the last node's next is null. Forgetting line 5 leaves rear pointing to a recycled node.<span class="zhn"><b>rear 指標</b> dequeue 掉唯一的元素時（圖 5-11 a），rear 也要設成 null；front 會在第 7 行自然變成 null，因為最後一個節點的 next 是 null。忘了第 5 行，rear 會指向已經回收的節點。</span></div>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="m52-4" data-menu="m52" hidden>
+<h4 class="alg"><span class="an">Algorithm 5-4</span>queueFront / queueRear<span class="sl">Slide 32 to 33</span><span class="zhn">取前端／尾端</span></h4>
+<p><i>The difference between the two retrieve operations is which pointer is used, <mark>front or rear</mark>.</i> <b>Queue front</b>: <i>its logic is identical to that of dequeue, <mark>except that the data are not deleted</mark></i>. <b>Queue rear</b>: <i>copy Algorithm 5-4 but change queue front to queue rear</i>.<span class="zhn">兩個取資料的運算差別只在用 front 還是 rear。queue front 的邏輯和 dequeue 一樣，只是不刪除資料；queue rear 就是把 5-4 的 front 換成 rear。</span></p>
+<pre><b>algorithm</b> queueFront (val queue   &lt;metadata&gt;,
+                     ref dataOut &lt;dataType&gt;)
+This algorithm retrieves the data at the front of the queue
+without changing the queue contents.
+   <b>Pre</b>    queue is a metadata structure
+   <b>Post</b>   data passed back to caller
+   <b>Return</b> true if successful, false if underflow
+1 if (queue.count is 0)
+  1 return false
+2 end if
+3 <mark>dataOut = queue.front-&gt;data</mark>       (queueRear: queue.rear-&gt;data)
+4 return true
+<b>end</b> queueFront
+<span class="c">Algorithm 5-4　Retrieve data at front of queue</span></pre>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="m52-5" data-menu="m52" hidden>
+<h4 class="alg"><span class="an">Algorithm 5-5</span>emptyQueue<span class="sl">Slide 34</span><span class="zhn">是否為空</span></h4>
+<p><i>Return true if the queue is empty, false if the queue contains data.</i><span class="zhn">佇列是空的回傳 true，有資料回傳 false。</span></p>
+<pre><b>algorithm</b> emptyQueue (val queue &lt;metadata&gt;)
+This algorithm checks to see if a queue is empty.
+   <b>Pre</b>    queue is a metadata structure
+   <b>Return</b> true if empty, false if queue has data
+1 <mark>return (queue.count equal 0)</mark>
+<b>end</b> emptyQueue
+<span class="c">Algorithm 5-5　Queue empty</span></pre>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="m52-6" data-menu="m52" hidden>
+<h4 class="alg"><span class="an">Algorithm 5-6</span>fullQueue<span class="sl">Slide 35</span><span class="zhn">是否已滿</span></h4>
+<p><mark><i>By allocating a node and then releasing the memory</i></mark>, we <i>determine whether there is room for at least one more node</i>.<span class="zhn">先試著配置一個節點再釋放，藉此判斷還有沒有空間再放一個節點。</span></p>
+<pre><b>algorithm</b> fullQueue (val queue &lt;metadata&gt;)
+This algorithm checks to see if a queue is full. The queue
+is full if memory cannot be allocated for another node.
+   <b>Pre</b>    queue is a metadata structure
+   <b>Return</b> true if full, false if room for another node
+1 <mark>allocate (tempPtr)</mark>
+2 if (allocation successful)
+  1 <mark>recycle (tempPtr)</mark>
+  2 return false
+3 else
+  1 return true
+4 end if
+<b>end</b> fullQueue
+<span class="c">Algorithm 5-6　Full queue</span></pre>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="m52-7" data-menu="m52" hidden>
+<h4 class="alg"><span class="an">Algorithm 5-7</span>queueCount<span class="sl">Slide 36</span><span class="zhn">元素個數</span></h4>
+<p><i>Return the number of elements in the queue by returning the count in the queue head node.</i><span class="zhn">回傳 head 節點裡的 count，就是佇列的元素個數。</span></p>
+<pre><b>algorithm</b> queueCount (val queue &lt;metadata&gt;)
+This algorithm returns the number of elements in the queue.
+   <b>Pre</b>    queue is a metadata structure
+   <b>Return</b> queue count
+1 <mark>return queue.count</mark>
+<b>end</b> queueCount
+<span class="c">Algorithm 5-7　Queue count</span></pre>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="m52-8" data-menu="m52" hidden>
+<h4 class="alg"><span class="an">Algorithm 5-8</span>destroyQueue<span class="sl">Slide 37</span><span class="zhn">刪除佇列</span></h4>
+<p><i>Delete all data in the queue and recycle their memory.</i><span class="zhn">刪除佇列中所有資料並回收記憶體。</span></p>
+<pre><b>algorithm</b> destroyQueue (ref queue &lt;metadata&gt;)
+This algorithm deletes all data from a queue.
+   <b>Pre</b>    queue is a metadata structure
+   <b>Post</b>   all data have been deleted and recycled
+1 <mark>pWalker = queue.front</mark>
+2 loop (<mark>pWalker not null</mark>)
+  1 <mark>deletePtr = pWalker</mark>
+  2 <mark>pWalker   = pWalker-&gt;next</mark>
+  3 <mark>recycle (deletePtr)</mark>
+3 end loop
+4 <mark>queue.front = null</mark>
+5 <mark>queue.rear  = null</mark>
+6 <mark>queue.count = 0</mark>
+7 return
+<b>end</b> destroyQueue
+<span class="c">Algorithm 5-8　Destroy queue</span></pre>
+<p>Same pattern as destroyStack: remember the node, move on, then recycle. After the loop all three metadata fields are reset.<span class="zhn">和 destroyStack 一樣：先記住節點、往下走、再回收。迴圈結束後三個 metadata 都重設。</span></p>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<h3 id="s5-3" data-sec="5-3">5-3 Queuing Theory <span class="star">★★</span><span class="zhn">等候理論</span></h3>
+<ul>
+<li><mark><i>Queuing theory is a field of applied mathematics that is used to predict the performance of queues.</i></mark><span class="zhn">等候理論是應用數學的一個領域，用來預測佇列的效能。</span></li>
+<li>Queues are divided into <b>single-server</b> (<i>service to only one customer at a time</i>) and <b>multiserver</b> (<i>service to many customers at a time</i>).<span class="zhn">佇列分成單一服務者（一次只服務一位顧客）和多服務者（一次服務多位）。</span></li>
+<li>A <b>customer</b> is <i>any person or thing needing service</i>; a <b>service</b> is <i>any activity needed to accomplish the required result</i>.<span class="zhn">顧客是任何需要服務的人或東西；服務是完成需求所需的任何活動。</span></li>
+<li><mark>Two factors that most affect the queue</mark>: the <b>arrival rate</b> (<i>the rate at which customers arrive; it may be random or regular</i>) and the <b>service time</b> (<i>the average time required to complete the processing of a customer request</i>).<span class="zhn">影響佇列最大的兩個因素：到達率（顧客進入佇列的速率，可能隨機或規律）和服務時間（處理一位顧客平均需要的時間）。</span></li>
+<li><b>Queue length</b>: the queue is longer when customers arrive faster and the service time is higher. Ideally customers arrive at a rate that matches the service time; in reality the server is sometimes idle and sometimes many customers wait.<span class="zhn">佇列長度：顧客來得越快、服務時間越長，佇列越長。理想狀況是到達速率剛好配合服務時間；實際上伺服器有時閒置、有時很多人在等。</span></li>
+<li>Queuing theory tries to <i>minimize idle servers and waiting customers</i>. It predicts <mark>queue time, the average size of the queue and the maximum queue size</mark>, and to do so it <mark>needs two factors: the arrival rate and the average service time</mark>.<span class="zhn">等候理論想讓閒置的伺服器和等待的顧客都最少。它能預測排隊時間、平均佇列長度和最大佇列長度，需要兩個因素：到達率和平均服務時間。</span></li>
+<li><b>Response time</b>: <i>the average time from when customers enter the queue until they leave the server</i>. <mark>Response time = queue time + service time.</mark> A model can then study proposed changes (e.g. <i>if we reduce the average service time by 15%, how many fewer tellers would we need?</i>).<span class="zhn">回應時間：從顧客進入佇列到離開服務者的平均時間。回應時間 = 排隊時間 + 服務時間。建好模型後可以拿來研究改變（例如服務時間減少 15%，可以少幾個櫃員？）。</span></li>
+</ul>
+<figure class="fig"><svg viewBox="0 0 570 170" width="560" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="13" role="img"><defs><marker id="f5ma" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#1d2433"/></marker><marker id="f5mr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#d64933"/></marker></defs><text data-step="0" x="50" y="72" text-anchor="middle" font-size="11" fill="#1d2433">customers</text><text data-step="0" x="50" y="88" text-anchor="middle" font-size="11" fill="#1d2433">arrive</text><circle data-step="0" cx="30" cy="44" r="8" fill="#dbe8fb" stroke="#1d2433"/><circle data-step="0" cx="50" cy="44" r="8" fill="#dbe8fb" stroke="#1d2433"/><circle data-step="0" cx="70" cy="44" r="8" fill="#dbe8fb" stroke="#1d2433"/><line data-step="1" x1="95" y1="60" x2="140" y2="60" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f5ma)"/><text data-step="1" x="118" y="50" text-anchor="middle" font-size="10" fill="#8a93a6">arrival rate</text><path data-step="2" d="M142,40 H322 M142,80 H322" stroke="#1d2433" stroke-width="2" fill="none"/><rect data-step="2" x="150" y="48" width="34" height="24" rx="3" fill="#fff2c2" stroke="#1d2433" stroke-width="1.4"/><rect data-step="2" x="192" y="48" width="34" height="24" rx="3" fill="#fff2c2" stroke="#1d2433" stroke-width="1.4"/><rect data-step="2" x="234" y="48" width="34" height="24" rx="3" fill="#fff2c2" stroke="#1d2433" stroke-width="1.4"/><rect data-step="2" x="276" y="48" width="34" height="24" rx="3" fill="#fff2c2" stroke="#1d2433" stroke-width="1.4"/><text data-step="2" x="232" y="30" text-anchor="middle" font-size="12" fill="#1d2433" font-weight="700">queue</text><line data-step="3" x1="325" y1="60" x2="370" y2="60" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f5ma)"/><circle data-step="4" cx="410" cy="60" r="32" fill="#cfe9d4" stroke="#1d2433" stroke-width="1.4"/><text data-step="4" x="410" y="64" text-anchor="middle" font-size="12" fill="#1d2433" font-weight="700">server</text><line data-step="5" x1="444" y1="60" x2="500" y2="60" stroke="#1d2433" stroke-width="1.6" marker-end="url(#f5ma)"/><text data-step="5" x="530" y="64" text-anchor="middle" font-size="11" fill="#1d2433">leave</text><path data-step="6" d="M142,100 V108 H322 V100" stroke="#1f5fbf" fill="none"/><text data-step="6" x="232" y="124" text-anchor="middle" font-size="11" fill="#1f5fbf">queue time</text><path data-step="6" d="M378,100 V108 H442 V100" stroke="#1f5fbf" fill="none"/><text data-step="6" x="410" y="124" text-anchor="middle" font-size="11" fill="#1f5fbf">service time</text><path data-step="7" d="M142,136 V144 H442 V136" stroke="#d64933" fill="none"/><text data-step="7" x="292" y="160" text-anchor="middle" font-size="11" fill="#d64933" font-weight="700">response time = queue time + service time</text></svg><figcaption class="cap">Figure 5-12: a queuing theory model. Customers arrive, wait in the queue (queue time), are served (service time) and leave; the two together are the response time.<span class="zhn">圖 5-12：等候理論模型。顧客到達、在佇列裡等（排隊時間）、被服務（服務時間）後離開；兩者加起來是回應時間。</span></figcaption></figure>
+
+<h3 id="s5-4" data-sec="5-4">5-4 Queue Applications <span class="star">★★★</span><span class="zhn">佇列的應用</span></h3>
+<p><i>Queues are one of the most common data structures</i>, used in <i>operating systems, networks and countless other areas</i>. Two simple applications: <b>queue simulation</b> (<i>can be used to study the performance of any queue application</i>) and <b>categorizing data</b>.<span class="zhn">佇列是最常見的資料結構之一，用在作業系統、網路等許多領域。兩個簡單的應用：佇列模擬（可研究任何佇列應用的效能）和資料分類。</span></p>
+<div class="algmenu" role="list" data-menu="m54"><button type="button" class="algcard" role="listitem" data-alg-open="m54-1"><span class="an">Simulation</span><b>Taffy store model</b><span class="zhn2">模擬的設定與資料結構</span><span class="sl">Slide 46 to 59</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m54-2"><span class="an">Algorithm 5-9</span><b>taffySimulation</b><span class="zhn2">模擬主程式</span><span class="sl">Slide 60 to 64</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m54-3"><span class="an">Algorithm 5-10</span><b>newCustomer</b><span class="zhn2">新顧客</span><span class="sl">Slide 65 to 66</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m54-4"><span class="an">Algorithm 5-11</span><b>serverFree</b><span class="zhn2">服務者空閒</span><span class="sl">Slide 67 to 69</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m54-5"><span class="an">Algorithm 5-12</span><b>svcComplete</b><span class="zhn2">服務完成</span><span class="sl">Slide 70 to 72</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m54-6"><span class="an">Algorithm 5-13</span><b>printStats</b><span class="zhn2">印出統計</span><span class="sl">Slide 73</span></button><button type="button" class="algcard" role="listitem" data-alg-open="m54-7"><span class="an">Algorithms 5-14, 5-15</span><b>Categorizing data</b><span class="zhn2">資料分類</span><span class="sl">Slide 74 to 80</span></button></div>
+
+<div class="algp" data-alg="m54-1" data-menu="m54" hidden>
+<h4 class="alg"><span class="an">Simulation</span>Taffy store model<span class="sl">Slide 46 to 59</span><span class="zhn">模擬的設定與資料結構</span></h4>
+<p><i>A modeling activity to generate statistics about the performance of queues.</i> Example: <mark>a taffy store with one window and one clerk</mark> who <i>can service only one customer at a time</i> (a single-server queue). Mailing boxes takes longer, so <mark>service time varies between 1 and 10 minutes</mark>. The store is open 8 hours a day, so <mark>one simulated day is 480 minutes</mark> (8 × 60).<span class="zhn">模擬是一種建模活動，用來產生佇列效能的統計。例子：一家只有一個窗口、一位店員的太妃糖店，一次只能服務一位顧客（單一服務者佇列）。郵寄比較花時間，所以服務時間在 1 到 10 分鐘之間。店一天開 8 小時，所以模擬一天是 480 分鐘。</span></p>
+<ul>
+<li>The simulation uses a <b>digital clock</b>: <i>events start and stop in 1-minute intervals</i>; customers arrive on the minute and wait and are served an integral number of minutes.<span class="zhn">模擬用數位時鐘：事件以 1 分鐘為單位開始和結束；顧客整分鐘到達，等待和服務時間也都是整數分鐘。</span></li>
+<li>Each minute it checks <mark>three events</mark>: <b>the arrival of customers</b> (new customer), <b>server free</b> (start customer processing), <b>complete customer processing</b> (service complete).<span class="zhn">每分鐘檢查三個事件：顧客到達（new customer）、服務者空閒（開始服務）、服務完成。</span></li>
+<li><b>New customer</b>: a random number generator returns 1 to 4; <mark>if it is 4 a customer has arrived</mark>; 1, 2, 3 mean no arrival.<span class="zhn">新顧客：亂數產生 1 到 4；是 4 就代表有顧客到達，1、2、3 代表沒有。</span></li>
+<li><b>Server free</b>: if the clerk is idle, the next waiting customer is served; if busy, the waiting customers stay in the queue.<span class="zhn">服務者空閒：店員閒著就服務下一位排隊的顧客；忙的話大家繼續排隊。</span></li>
+<li><b>Completed processing</b>: at the end of each minute, check whether the current customer is done (service time from a random number); if so, gather statistics and set the server to idle.<span class="zhn">服務完成：每分鐘結束時檢查目前顧客是否完成（服務時間由亂數決定）；完成就收集統計並把服務者設成閒置。</span></li>
+</ul>
+<div class="tbl"><table>
+<tr><th>Structure (Figure 5-13)</th><th class="l">Contents</th></tr>
+<tr><td><b>Queue head</b></td><td class="l">front, rear (node pointers) and count<span class="zhn">front、rear 和 count</span></td></tr>
+<tr><td><b>Queue node</b></td><td class="l">customer data (<mark>a sequential customer number and the arrival time</mark>) and a next pointer<span class="zhn">顧客資料（序號、到達時間）和 next 指標</span></td></tr>
+<tr><td><b>Customer status</b> (custStatus)</td><td class="l"><mark>customer number, arrival time, start time, service time</mark> (service time from a random number generator)<span class="zhn">顧客編號、到達時間、開始時間、服務時間</span></td></tr>
+<tr><td><b>Simulation statistics</b> (simStats)</td><td class="l">numCust (total customers), totSvcTime, totWaitTime, <mark>maxQueueSize</mark> (the maximum number in the queue at one time); averages are computed from the totals<span class="zhn">顧客總數、總服務時間、總等待時間、最大佇列長度；平均由總數算出</span></td></tr>
+</table></div>
+<p><b>Output</b>: at the end, the <i>average queue wait time and average service time</i>; for each customer, the <i>arrival time, wait time, start time, service time, and the number of elements in the queue when the customer was completely served</i>.<span class="zhn">輸出：結束時印出平均等待時間和平均服務時間；每位顧客印出到達時間、等待時間、開始時間、服務時間，以及服務完成時佇列中的元素個數。</span></p>
+<figure class="fig"><svg viewBox="0 0 600 130" width="580" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Liberation Sans, sans-serif" font-size="13" role="img"><defs><marker id="f5sa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#1d2433"/></marker><marker id="f5sr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#d64933"/></marker></defs><rect data-step="0" x="250" y="6" width="100" height="26" rx="3" fill="#fde7c8" stroke="#1d2433" stroke-width="1.4"/><text data-step="0" x="300" y="23.5" text-anchor="middle" font-size="11" fill="#1d2433">Simulator</text><path data-step="1" d="M300,32 V54 H60 V76" fill="none" stroke="#1d2433" stroke-width="1.4"/><rect data-step="2" x="10" y="76" width="100" height="26" rx="3" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.4"/><text data-step="2" x="60" y="93.5" text-anchor="middle" font-size="11" fill="#1d2433">createQueue</text><path data-step="1" d="M300,32 V54 H178 V76" fill="none" stroke="#1d2433" stroke-width="1.4"/><rect data-step="2" x="128" y="76" width="100" height="26" rx="3" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.4"/><text data-step="2" x="178" y="93.5" text-anchor="middle" font-size="11" fill="#1d2433">newCustomer</text><path data-step="1" d="M300,32 V54 H296 V76" fill="none" stroke="#1d2433" stroke-width="1.4"/><rect data-step="2" x="246" y="76" width="100" height="26" rx="3" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.4"/><text data-step="2" x="296" y="93.5" text-anchor="middle" font-size="11" fill="#1d2433">serverFree</text><path data-step="1" d="M300,32 V54 H414 V76" fill="none" stroke="#1d2433" stroke-width="1.4"/><rect data-step="2" x="364" y="76" width="100" height="26" rx="3" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.4"/><text data-step="2" x="414" y="93.5" text-anchor="middle" font-size="11" fill="#1d2433">svcComplete</text><path data-step="1" d="M300,32 V54 H532 V76" fill="none" stroke="#1d2433" stroke-width="1.4"/><rect data-step="2" x="482" y="76" width="100" height="26" rx="3" fill="#dbe8fb" stroke="#1d2433" stroke-width="1.4"/><text data-step="2" x="532" y="93.5" text-anchor="middle" font-size="11" fill="#1d2433">printStats</text><text data-step="2" x="300" y="122" text-anchor="middle" font-size="11" fill="#8a93a6">newCustomer → serverFree → svcComplete repeat once per clock minute</text></svg><figcaption class="cap">Figure 5-14: design for queue simulation. A driver (simulator) calls createQueue, then three processing modules every minute, then printStats.<span class="zhn">圖 5-14：佇列模擬的設計。主程式先呼叫 createQueue，每分鐘呼叫三個處理模組，最後呼叫 printStats。</span></figcaption></figure>
+<div class="lab" data-lab="qsim"></div>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="m54-2" data-menu="m54" hidden>
+<h4 class="alg"><span class="an">Algorithm 5-9</span>taffySimulation<span class="sl">Slide 60 to 64</span><span class="zhn">模擬主程式</span></h4>
+<pre><b>algorithm</b> taffySimulation
+This program simulates a queue for a saltwater taffy store.
+   <b>Data Structures</b>
+   data:       number, arrivalTime
+   head:       front, count, rear
+   node:       custData, next
+   custStatus: custNum, arriveTime, startTime, svcTime
+   simStats:   numCust, totSvcTime, totWaitTime, maxQueueSize
+   <b>Statements</b>
+1 <mark>createQueue (queue)</mark>
+2 clock   = 1
+3 <mark>endTime = 8 * 60</mark>
+4 custNum = 0
+5 loop (<mark>clock &lt;= endTime OR moreCusts</mark>)
+  1 <mark>newCustomer (queue, clock, custNum)</mark>
+  2 <mark>serverFree  (queue, clock, custStatus, moreCusts)</mark>
+  3 <mark>svcComplete (queue, clock, custStatus,
+                  runStats, moreCusts)</mark>
+  4 if (not emptyQueue (queue))
+    1 moreCusts = true
+  5 end if
+  6 clock = clock + 1
+6 end loop
+7 printStats (runStats)
+8 return
+<b>end</b> taffySimulation
+<span class="c">Algorithm 5-9　Queue simulation: driver</span></pre>
+<p><b>Analysis</b>: the driver creates the queue and loops until the simulation is complete; each loop checks <b>newCustomer, serverFree, svcComplete</b>. The simulation is complete only when <mark>both</mark> <i>we have run for the allocated time</i> <b>and</b> <i>there are no more customers</i>. The flag <b>moreCusts</b> tracks this: <mark>serverFree sets it true when it starts a call (5.2), svcComplete sets it false when it completes a call (5.3), and the driver sets it true if calls are waiting in the queue (5.4)</mark>. At the end a print algorithm calculates the averages and prints all the statistics.<span class="zhn">分析：主程式建立佇列後一直迴圈，每圈檢查 newCustomer、serverFree、svcComplete。要「時間跑完」而且「沒有顧客了」才算結束。旗標 moreCusts 負責記錄：serverFree 開始服務時設 true（5.2），svcComplete 完成時設 false（5.3），佇列還有人在等時主程式再設 true（5.4）。最後印出統計。</span></p>
+<div class="box warn"><span class="lbl">Why OR</span>The loop condition is <code>clock &lt;= endTime OR moreCusts</code>: after the store "closes" at minute 480, the loop keeps running until the customers already in line or being served are finished.<span class="zhn"><b>為什麼用 OR</b> 迴圈條件是 clock <= endTime OR moreCusts：480 分鐘「打烊」後，迴圈還會繼續，直到已經在排隊或正在服務的顧客都處理完。</span></div>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="m54-3" data-menu="m54" hidden>
+<h4 class="alg"><span class="an">Algorithm 5-10</span>newCustomer<span class="sl">Slide 65 to 66</span><span class="zhn">新顧客</span></h4>
+<pre><b>algorithm</b> newCustomer (ref queue   &lt;metadata&gt;,
+                      val clock   &lt;integer&gt;,
+                      ref custNum &lt;integer&gt;)
+This algorithm determines if a new customer has arrived.
+   <b>Pre</b>    queue is a structure to a valid queue
+          clock is the current clock minute
+          custNum is the number of the last customer in line
+   <b>Post</b>   if new customer has arrived, placed in queue
+1 <mark>arrival = (random number modulo 4) + 1</mark>
+2 if (<mark>arrival equal 4</mark>)
+     <b>New customer has arrived</b>
+  1 custNum = custNum + 1
+  2 custData.number     = custNum
+  3 custData.arriveTime = clock
+  4 <mark>enqueue (queue, custData)</mark>
+3 end if
+4 return
+<b>end</b> newCustomer
+<span class="c">Algorithm 5-10　Queue simulation: new customer</span></pre>
+<p><b>Analysis</b>: <mark>customers arrive at a rate of one every 4 minutes</mark>. <i>A random number modulo 4 is 0 to 3; adding 1 gives 1 to 4</i>; a customer is added when the value equals 4. Because the number is random, <i>we may go several minutes without any customers and then have several arrive in succession</i>.<span class="zhn">分析：顧客平均每 4 分鐘來一位。亂數 mod 4 得到 0 到 3，加 1 得到 1 到 4；等於 4 就新增一位顧客。因為是亂數，可能好幾分鐘都沒人來，然後一下來好幾位。</span></p>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="m54-4" data-menu="m54" hidden>
+<h4 class="alg"><span class="an">Algorithm 5-11</span>serverFree<span class="sl">Slide 67 to 69</span><span class="zhn">服務者空閒</span></h4>
+<pre><b>algorithm</b> serverFree (ref queue     &lt;metadata&gt;,
+                     val clock     &lt;integer&gt;,
+                     ref status    &lt;custStatus&gt;,
+                     ref moreCusts &lt;Boolean&gt;)
+This algorithm determines if the server is idle and if so starts
+serving a new customer.
+   <b>Pre</b>    queue is a structure for a valid queue
+          clock is the current clock minute
+          status holds data about current/previous customer
+   <b>Post</b>   moreCusts is set true if a call is started
+1 if (<mark>clock &gt; status.startTime + status.svcTime - 1</mark>)
+     <b>Server is idle.</b>
+  1 if (not emptyQueue (queue))
+    1 <mark>dequeue (queue, custData)</mark>
+    2 status.custNum    = custData.number
+    3 status.arriveTime = custData.arriveTime
+    4 <mark>status.startTime  = clock</mark>
+    5 <mark>status.svcTime    = random service time</mark>
+    6 <mark>moreCusts         = true</mark>
+  2 end if
+2 end if
+3 return
+<b>end</b> serverFree
+<span class="c">Algorithm 5-11　Queue simulation: server free</span></pre>
+<p><b>Analysis</b>: the status record holds <i>either the current customer, or the previous customer if there is no current one</i>. We know the server is idle by <mark>comparing the clock with the customer's end time = start time + service time − 1</mark>. <b>The first call</b>: <i>a 0 start time plus a 0 service time minus 1 (= −1) must be less than the clock time</i>, so statement 1 is true at clock 1.<span class="zhn">分析：status 記錄的是目前的顧客，沒有目前顧客時就是上一位。比較時鐘和這位顧客的結束時間（開始時間 + 服務時間 − 1）就知道服務者是否空閒。第一位顧客：開始時間 0 加服務時間 0 減 1 等於 −1，一定小於時鐘，所以第 1 行在 clock 1 就成立。</span></p>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="m54-5" data-menu="m54" hidden>
+<h4 class="alg"><span class="an">Algorithm 5-12</span>svcComplete<span class="sl">Slide 70 to 72</span><span class="zhn">服務完成</span></h4>
+<pre><b>algorithm</b> svcComplete (ref queue     &lt;metadata&gt;,
+                      val clock     &lt;integer&gt;,
+                      ref status    &lt;custStatus&gt;,
+                      ref stats     &lt;simStats&gt;,
+                      ref moreCusts &lt;Boolean&gt;)
+This algorithm determines if the current customer's processing
+is complete.
+   <b>Pre</b>    queue is a structure for a valid queue
+          clock is the current clock minute
+          status holds data about current/previous customer
+   <b>Post</b>   if service complete, data for current customer printed
+          and simulation statistics updated
+          moreCusts set to false if call completed
+1 if (<mark>clock equal status.startTime + status.svcTime - 1</mark>)
+     <b>Current call complete</b>
+  1 <mark>waitTime          = status.startTime - status.arriveTime</mark>
+  2 stats.numCust     = stats.numCust + 1
+  3 stats.totSvcTime  = stats.totSvcTime + status.svcTime
+  4 stats.totWaitTime = stats.totWaitTime + waitTime
+  5 queueSize         = queueCount (queue)
+  6 if (<mark>stats.maxQueueSize &lt; queueSize</mark>)
+    1 stats.maxQueueSize = queueSize
+  7 end if
+  8 print (status.custNum   status.arriveTime
+           status.startTime status.svcTime
+           waitTime         queueCount (queue))
+  9 <mark>moreCusts = false</mark>
+2 end if
+3 return
+<b>end</b> svcComplete
+<span class="c">Algorithm 5-12　Queue simulation: service complete</span></pre>
+<p><b>Analysis</b>: a few hypothetical services show that <mark>the correct end of service is start time + service time − 1</mark>: a customer who starts in minute 1 with a 2-minute service is served in minutes 1 and 2, so the call completes in minute 2.<span class="zhn">分析：用幾個假設的例子可以看出，服務結束的正確算法是 開始時間 + 服務時間 − 1：第 1 分鐘開始、服務 2 分鐘的顧客，在第 1、2 分鐘被服務，所以第 2 分鐘完成。</span></p>
+<div class="tbl"><table>
+<tr><th>Start time</th><th>Service time</th><th>Complete time</th><th class="l">Minutes served</th></tr>
+<tr><td>1</td><td>2</td><td>2</td><td class="l">1 and 2</td></tr>
+<tr><td>3</td><td>1</td><td>3</td><td class="l">3</td></tr>
+<tr><td>4</td><td>3</td><td>6</td><td class="l">4, 5 and 6</td></tr>
+<tr><td>7</td><td>2</td><td>8</td><td class="l">7 and 8</td></tr>
+</table></div>
+<p><b>Wait time</b> = start time − arrival time (the minutes spent in the queue, not counting service).<span class="zhn">等待時間 = 開始時間 − 到達時間（在佇列裡等的分鐘數，不含服務）。</span></p>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="m54-6" data-menu="m54" hidden>
+<h4 class="alg"><span class="an">Algorithm 5-13</span>printStats<span class="sl">Slide 73</span><span class="zhn">印出統計</span></h4>
+<pre><b>algorithm</b> printStats (stats &lt;simStats&gt;)
+This algorithm prints the statistics for the simulation.
+   <b>Pre</b>    stats contains the run statistics
+   <b>Post</b>   statistics printed
+1 print (Simulation Statistics:)
+2 print (Total customers:    stats.numCust)
+3 print (Total service time: stats.totSvcTime)
+4 <mark>avrgSvcTime  = stats.totSvcTime  / stats.numCust</mark>
+5 print (Average service time: avrgSvcTime)
+6 <mark>avrgWaitTime = stats.totWaitTime / stats.numCust</mark>
+7 print (Average wait time: avrgWaitTime)
+8 print (Maximum queue size: stats.maxQueueSize)
+9 return
+<b>end</b> printStats
+<span class="c">Algorithm 5-13　Queue simulation: print statistics</span></pre>
+<p>Only totals are kept during the run; the two averages are computed once here by dividing by the number of customers.<span class="zhn">模擬過程只累計總數，兩個平均值最後在這裡除以顧客數一次算出。</span></p>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="algp" data-alg="m54-7" data-menu="m54" hidden>
+<h4 class="alg"><span class="an">Algorithms 5-14, 5-15</span>Categorizing data<span class="sl">Slide 74 to 80</span><span class="zhn">資料分類</span></h4>
+<p><i>It is often necessary to <mark>rearrange data without destroying their basic sequence</mark>.</i> Categorize the list into four groups: <b>less than 10, 10 to 19, 20 to 29, 30 and greater</b>.<span class="zhn">常常需要重新排列資料，但不破壞原本的順序。把下列數字分成四組：小於 10、10 到 19、20 到 29、30 以上。</span></p>
+<div class="calc">Input:   3 22 12 6 10 34 65 29 9 30 81 4 5 19 20 57 44 99
+Output:  | 3 6 9 4 5 | 12 10 19 | 22 29 20 | 34 65 30 81 57 44 99 |</div>
+<p><mark><i>The result is not a sorted list</i></mark>, but a list categorized by the rules: inside each group the numbers keep their original order (FIFO). <i>We build a queue for each of the four categories, store the numbers in the appropriate queue, and after all the data are processed, print each queue.</i><span class="zhn">結果不是排序過的串列，而是依規則分類的串列：每組裡的數字維持原本的順序（先進先出）。做法是每一類建一個佇列，把數字放進對應的佇列，全部處理完再把每個佇列印出來。</span></p>
+<pre><b>algorithm</b> categorize
+   Group a list of numbers into four groups using four queues.
+1 createQueue (q0to9)
+2 createQueue (q10to19)
+3 createQueue (q20to29)
+4 createQueue (qOver29)
+5 <mark>fillQueues  (q0to9, q10to19, q20to29, qOver29)</mark>
+6 <mark>printQueues (q0to9, q10to19, q20to29, qOver29)</mark>
+7 return
+<b>end</b> categorize
+<span class="c">Algorithm 5-14　Category queues</span></pre>
+<p><b>Analysis</b>: the main line <i>simply creates the queues, then calls algorithms to fill and print them</i>. <mark><i>We do not destroy the queues; we leave this to the operating system</i></mark>. If there were more work to do, we would have to delete them to release their memory.<span class="zhn">分析：主程式只建立佇列，再呼叫填入和印出的演算法。這裡不刪除佇列，交給作業系統處理；如果後面還有其他工作，就要刪掉以釋放記憶體。</span></p>
+<pre><b>algorithm</b> fillQueues (ref q0to9   &lt;metadata&gt;,
+                     ref q10to19 &lt;metadata&gt;,
+                     ref q20to29 &lt;metadata&gt;,
+                     ref qOver29 &lt;metadata&gt;)
+This algorithm reads data from the keyboard and places them in
+one of four queues.
+   <b>Pre</b>    all four queues have been created
+   <b>Post</b>   queues filled with data
+1 loop (not EOF)
+  1 read (number)
+  2 if (<mark>number &lt; 10</mark>)
+    1 enqueue (q0to9, number)
+  3 elseif (<mark>number &lt; 20</mark>)
+    1 enqueue (q10to19, number)
+  4 elseif (<mark>number &lt; 30</mark>)
+    1 enqueue (q20to29, number)
+  5 else
+    1 enqueue (qOver29, number)
+  6 end if
+2 end loop
+3 return
+<b>end</b> fillQueues
+<span class="c">Algorithm 5-15　Fill category queues</span></pre>
+<p><b>Analysis</b>: <i>thanks to <mark>code reusability</mark>, what sounded like a long and difficult program is really a short and simple algorithm</i>. The hardest decision is how to write the categorizing code: <mark>a multiway selection implemented with an elseif construct</mark>. Because the tests run in order, <code>number &lt; 20</code> only needs to check the upper bound.<span class="zhn">分析：多虧程式碼重複使用，聽起來又長又難的程式其實很短很簡單。最難的是決定怎麼寫分類：用 elseif 寫成多路選擇。因為判斷依序進行，number < 20 只要檢查上限就好。</span></p>
+<div class="lab" data-lab="qcat"></div>
+<div class="algback"><button class="btn" type="button" data-alg-back>↑ Back to menu</button></div>
+</div>
+
+<div class="sum"><b class="t">Chapter summary</b><span class="zhn"><b>Summary 本章總結</b></span><ul>
+<li>A <b>queue</b> inserts at the <b>rear</b> and deletes at the <b>front</b>: <b>FIFO</b>. Operations: enqueue (overflow), dequeue (underflow), queue front, queue rear.<span class="zhn">佇列從 rear 插入、從 front 刪除：先進先出。運算：enqueue（overflow）、dequeue（underflow）、queue front、queue rear。</span></li>
+<li>Linked-list queue: a head with <b>front, count, rear</b> and nodes with data and next. Eight algorithms: create, enqueue, dequeue, queue front/rear, empty, full, count, destroy.<span class="zhn">鏈結串列佇列：head 有 front、count、rear，節點有 data 和 next。八個演算法：create、enqueue、dequeue、queue front／rear、empty、full、count、destroy。</span></li>
+<li>Enqueue into an empty queue sets <b>front and rear</b>; into a queue with data sets <b>rear-&gt;next and rear</b>. Dequeuing the only item also sets <b>rear to null</b>.<span class="zhn">enqueue 到空佇列要設 front 和 rear；有資料時設 rear->next 和 rear。dequeue 唯一元素時 rear 也要設成 null。</span></li>
+<li>Queuing theory predicts queue time, average and maximum queue size from the <b>arrival rate</b> and the <b>service time</b>; <b>response time = queue time + service time</b>.<span class="zhn">等候理論用到達率和服務時間預測排隊時間、平均與最大佇列長度；回應時間 = 排隊時間 + 服務時間。</span></li>
+<li>Taffy simulation: 480 minutes, one arrival when (random mod 4) + 1 = 4, service 1 to 10 minutes, end of service = start + service − 1, wait = start − arrival.<span class="zhn">太妃糖模擬：480 分鐘，(亂數 mod 4) + 1 = 4 時有人到，服務 1 到 10 分鐘，結束時間 = 開始 + 服務 − 1，等待 = 開始 − 到達。</span></li>
+<li>Categorizing: one queue per category keeps each group in its original order; the result is not sorted.<span class="zhn">資料分類：每類一個佇列，各組維持原本順序；結果不是排序。</span></li>
+</ul></div>
+<div class="trap"><b class="t">Common trap</b><span class="zhn"><b>易錯點</b></span><ul>
+<li>Enqueue at the <b>rear</b>, dequeue at the <b>front</b>, not the other way round. A stack needs one end; a queue needs <b>two</b> pointers.<span class="zhn">從 rear enqueue、從 front dequeue，不要弄反。stack 只要一端；queue 要兩個指標。</span></li>
+<li>enqueue tests an empty queue with <b>queue.count zero</b> (front null or rear null would also work); line 9 <code>queue.rear = newPtr</code> runs in both cases.<span class="zhn">enqueue 用 queue.count zero 判斷空佇列（用 front 或 rear 是 null 也可以）；第 9 行 queue.rear = newPtr 兩種情況都會跑。</span></li>
+<li>dequeue of the last item: forgetting <b>queue.rear = null</b> leaves rear pointing to a recycled node.<span class="zhn">dequeue 最後一個元素時忘了 queue.rear = null，rear 會指向已回收的節點。</span></li>
+<li>fullQueue works by <b>allocating and then recycling</b> a node, not by comparing the count to a maximum.<span class="zhn">fullQueue 是靠「配置再回收」一個節點判斷，不是拿 count 跟最大值比。</span></li>
+<li>End of service is <b>start + service − 1</b>, not start + service. The simulation loop is <b>clock &lt;= endTime OR moreCusts</b>.<span class="zhn">服務結束是開始 + 服務 − 1，不是開始 + 服務。模擬迴圈是 clock <= endTime OR moreCusts。</span></li>
+<li>Response time = queue time + service time; queuing theory needs the <b>arrival rate</b> and the <b>average service time</b>.<span class="zhn">回應時間 = 排隊時間 + 服務時間；等候理論需要到達率和平均服務時間。</span></li>
+<li>Categorizing does <b>not</b> sort: 3 6 9 4 5 stays in input order inside its group.<span class="zhn">分類不會排序：3 6 9 4 5 在組內維持輸入的順序。</span></li>
+</ul></div>
+<div class="quiz" data-quiz="ch5"></div>
+<!--CHW5-->
+</section>

@@ -14,6 +14,7 @@ os.makedirs(OUT, exist_ok=True)
 CHAPTERS = [
     ("ch3", "Ch3 Lists (3-4+)", "Ch3 Linked Lists, 3-4 to 3-6", "From slide 68: the build-list program (menu, addNode, removeNode, printList), testing, append lists, array of lists, circularly, doubly and multilinked lists."),
     ("ch4", "Ch4 Stacks", "Ch4 Stacks", "Push, pop and stack top; the linked-list stack and its eight algorithms; reversing, parsing, infix to postfix, postfix evaluation, backtracking; array implementation."),
+    ("ch5", "Ch5 Queues", "Ch5 Queues", "Enqueue, dequeue, queue front and rear; the linked-list queue and its eight algorithms; queuing theory; the taffy-store simulation and categorizing data."),
 ]
 IDS = [c[0] for c in CHAPTERS]
 src = open(MID + "/index.html", encoding="utf-8").read()
@@ -114,7 +115,7 @@ rep("return {state:\"running\",done:c,n:3};", "return {state:\"running\",done:c,
 sub(r'if\(window\.EZGEN\)EZGEN\.attach\(\{course:"Data Structures",s:"ds",ai:\[.*?\],fixed:\[.*?\],scope:\{.*?\},mock:\[.*?\],batch:\[.*?\],',
     'if(window.EZGEN)EZGEN.attach({course:"Data Structures",s:"dsf",ai:[' + Q(IDS) + '],')
 rep("Data and File Structures midterm exam (Gilberg & Forouzan, Data Structures: A Pseudocode Approach; chapters: introduction/pseudocode/ADT/Big-O, searching and hashing, linked lists).",
-    "Data and File Structures final exam (Gilberg & Forouzan, Data Structures: A Pseudocode Approach; chapters: linked lists (processing a list, append, array of lists, circular, doubly and multilinked lists) and stacks).")
+    "Data and File Structures final exam (Gilberg & Forouzan, Data Structures: A Pseudocode Approach; chapters: linked lists (processing a list, append, array of lists, circular, doubly and multilinked lists) stacks and queues (queue algorithms, queuing theory, queue simulation, categorizing data)).")
 rep("const days=Math.round((EXAM_DAY-today)/86400000);", "if(!EXAM_DAY){cd.innerHTML=EXAM_TAG+'<b>TBA</b><span>Exam date not announced yet</span>';}\n  const days=EXAM_DAY?Math.round((EXAM_DAY-today)/86400000):null;")
 rep("cd.innerHTML=days>0?", "if(EXAM_DAY)cd.innerHTML=days>0?")
 sub(r'\[\["ch1","Ch1 chapter exercises"\],\["ch2","Ch2 chapter exercises"\],\["ch3","Ch3 chapter exercises"\]\]',
@@ -128,6 +129,6 @@ sub(r'EZgenw\.attach\(\{course:"Data and File Structures",subject:"data-structur
 rep('["ch1w","ch2w","ch3w"].forEach(key=>{', "[" + Q([c + "w" for c in IDS]) + "].forEach(key=>{")
 # interactive figures
 labs = open(os.path.join(HERE, "ds_labs.js"), encoding="utf-8").read()
-rep("const LABS={", labs + "\nconst LABS={stackops,postfix,")
+rep("const LABS={", labs + "\nconst LABS={stackops,postfix,queueops,qsim,qcat,")
 open(OUT + "/app.js", "w", encoding="utf-8").write(a)
 print("ok", len(page), len(a))

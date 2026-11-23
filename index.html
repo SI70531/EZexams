@@ -26,6 +26,12 @@
 <link rel="stylesheet" href="assets/ezhome.css?v=39177b41">
 <link rel="stylesheet" href="assets/ui/ui.css?v=7df89fcc">
 <link rel="stylesheet" href="assets/ui/ui-theme.css?v=c98ae19c">
+<style>
+.menu{display:flex;gap:4px;margin:0 0 28px;border-bottom:2px solid var(--ink)}
+.menu button{font:inherit;font-weight:600;font-size:16px;padding:10px 18px;background:none;border:0;border-bottom:3px solid transparent;margin-bottom:-2px;color:var(--muted);cursor:pointer}
+.menu button:hover{color:var(--ink)}
+.menu button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--seal)}
+</style>
 <link rel="stylesheet" href="assets/ezglass.css?v=6a8c48c4">
 </head>
 <body>
@@ -39,7 +45,31 @@
   </div>
 </header>
 <main class="wrap">
-  <div id="terms">
+  <div class="menu" role="tablist" aria-label="Sections">
+    <button type="button" role="tab" data-menu="exams" aria-selected="true">University exams</button>
+    <button type="button" role="tab" data-menu="self" aria-selected="false">Self-study</button>
+  </div>
+  <section class="term" id="selfStudy" data-menu-panel="self" hidden>
+  <h2 class="termh">Self-study</h2>
+  <div class="subjgrid">
+  <section class="exam-subj">
+    <div class="subj"><span class="en">toeic/</span></div>
+    <div class="tickets">
+      <a class="ticket" href="toeic/">
+        <div class="main">
+          <span class="kind">Course</span>
+          <h3>TOEIC: road to gold</h3>
+          <p id="toeicNext">550 → 860+, one lesson a day, about an hour</p>
+          <dl><dt>Daily</dt><dd>Handout, 12 words with spaced review, practice with spoken listening items</dd><dt>Mocks</dt><dd>Mini mock tests; the number keeps growing (built in + AI-made on demand)</dd><dt>Review</dt><dd>Mistake notebook sorted by Part, redo until fixed</dd></dl>
+          <span class="go">Start →</span>
+        </div>
+        <div class="stub"><span class="k">DAY</span><span class="v" id="toeicDay">1</span><span class="s" id="toeicOf">/ 140</span></div>
+      </a>
+    </div>
+  </section>
+  </div>
+  </section>
+  <div id="terms" data-menu-panel="exams">
   <section class="term" data-term="mid">
   <h2 class="termh">Midterm prep</h2>
   <div id="subjects" class="subjgrid">
@@ -217,7 +247,31 @@
   done.forEach(t=>terms.appendChild(t));
 })();
 </script>
-<script src="assets/ezsync.js?v=b1cd0392"></script>
+<script src="toeic/data/course.js?v=b19a1d66"></script>
+<script>
+/* ---------- home menu: university exams / self-study courses such as TOEIC (the choice is remembered) ---------- */
+(function(){
+  const btns=[...document.querySelectorAll("[data-menu]")],panels=[...document.querySelectorAll("[data-menu-panel]")];
+  function pick(m){btns.forEach(b=>b.setAttribute("aria-selected",String(b.dataset.menu===m)));panels.forEach(p=>p.hidden=p.dataset.menuPanel!==m);try{localStorage.setItem("ezhome-menu",m);}catch(e){}}
+  btns.forEach(b=>b.addEventListener("click",()=>pick(b.dataset.menu)));
+  let m="exams";try{m=localStorage.getItem("ezhome-menu")||"exams";}catch(e){}
+  if(m==="toeic")m="self";   /* the menu was called TOEIC before it became Self-study */
+  if(location.hash==="#self"||location.hash==="#toeic")m="self";
+  pick(btns.some(b=>b.dataset.menu===m)?m:"exams");
+  /* today's TOEIC lesson on the ticket */
+  const C=window.TOEIC_COURSE;if(!C)return;
+  let S={};try{S=JSON.parse(localStorage.getItem("toeic-v1")||"{}")||{};}catch(e){}
+  const days=S.days||{},total=C.weeks.length*7;let n=1;while(n<=total&&days[n]&&days[n].done)n++;
+  const d=new Date(),today=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  const doneToday=Object.values(days).some(x=>x.done&&x.at===today);
+  document.getElementById("toeicDay").textContent=Math.min(n,total);
+  document.getElementById("toeicOf").textContent="/ "+total;
+  if(n>total){document.getElementById("toeicNext").textContent="Course complete. Keep taking mock tests.";return;}
+  const w=Math.ceil(n/7),k=(n-1)%7,t=k===6?"Week "+w+" review":C.weeks[w-1].days[k][0];
+  document.getElementById("toeicNext").textContent=(doneToday?"Today is done ✓ Tomorrow: ":"Today: ")+t;
+})();
+</script>
+<script src="assets/ezsync.js?v=aa9f0659"></script>
 <script src="assets/ezgate.js?v=d6286859"></script>
 <script>
 (function(){

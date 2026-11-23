@@ -28,7 +28,7 @@
   /* forget this browser's answers (another person is signing in) */
   function dropLocal(){
     Object.values(subjects).forEach(s=>{clearTimeout(s.timer);s.timer=null;});
-    const drop=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(/-midterm-v\d+$|^ezsync-at:|^ezopt:|^eznum:|^ezgen:/.test(k))drop.push(k);}
+    const drop=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(/-midterm-v\d+$|^toeic-|^ezsync-at:|^ezopt:|^eznum:|^ezgen:/.test(k))drop.push(k);}
     drop.forEach(k=>set(k,null));[LS.last,"ezsync-lastpush"].forEach(k=>set(k,null));
   }
   /* an account owns this browser's answers once it has signed in here; progress from before accounts (made under an old

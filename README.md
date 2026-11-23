@@ -22,6 +22,10 @@ EZexams is a study site with notes, practice questions, and mock exams for each 
 | Economics | TBA | Mankiw, Chapter 28 so far | https://si70531.github.io/EZexams/economics/final/ |
 | Statistics | TBA | Anderson 14e, Chapters 5–6 so far | https://si70531.github.io/EZexams/statistics/final/ |
 
+## TOEIC Course
+
+`toeic/` is a separate daily course (550 → 860+ gold certificate), reached from the **Self-study** menu on the home page: one lesson a day (handout, 12 words with spaced review, practice with spoken listening items), a weekly review, mini mock tests whose number keeps growing (built in, plus AI-made on demand) and a mistake notebook. See `toeic/README.md` for adding days and mocks. To add another self-study subject, put a new `<section class="exam-subj">` ticket inside `#selfStudy` in the root `index.html`.
+
 ## How the Project Is Organized
 
 ```

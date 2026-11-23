@@ -222,8 +222,18 @@ function wrongItem(w){
 }
 
 /* ---------------- views ---------------- */
-const app=$("#app");
-function setTab(name){$$(".tabs a").forEach(a=>a.classList.toggle("on",a.dataset.tab===name));}
+/* the page has the same skeleton as every subject page (top bar with #tabs, one section.view per tab), so the shared
+   scripts (tab glide, page turn, theme, effects, jump, keyboard) work here too. VIEWS / show are the same globals they use. */
+const TABS=[["home","Home"],["today","Today"],["course","Course"],["vocab","Words"],["mocks","Mock tests"],["wrong","Mistakes"]];
+window.VIEWS=TABS;
+let app=$("#home");
+const tabOf=h=>{const v=h.split("/")[0];return v==="day"?"course":v==="mock"?"mocks":TABS.some(t=>t[0]===v)?v:"home";};
+function renderTabs(cur){
+  $("#tabs").innerHTML=TABS.map(([id,l])=>'<button type="button" role="tab" data-go="'+id+'" aria-controls="'+id+'" aria-selected="'+(id===cur)+'"'+(id===cur?' aria-current="true"':"")+">"+l+"</button>").join("");
+}
+function go(id){if(location.hash==="#"+id)route();else location.hash="#"+id;}
+window.show=id=>go(String(id||"home"));
+$("#tabs").addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b)go(b.dataset.go);});
 /* ---------------- scrolling helpers (same behaviour as the other EZexams subjects) ---------------- */
 let afterRoute=null;
 function nav(hash,fn){afterRoute=fn;if(location.hash===hash)route();else location.hash=hash;}
@@ -235,7 +245,7 @@ function glow(el){el.classList.remove("wflash");void el.offsetWidth;el.classList
 /* a floating "go back" pill at the bottom of the screen; it stays while you read, and goes away when you use the tabs */
 const backPill=document.createElement("button");backPill.type="button";backPill.className="ezback";backPill.hidden=true;document.body.appendChild(backPill);
 function offerBack(label,fn){backPill.textContent=label;backPill.onclick=()=>{backPill.hidden=true;fn();};backPill.hidden=false;}
-document.addEventListener("click",e=>{if(e.target.closest(".tabs a"))backPill.hidden=true;},true);
+document.addEventListener("click",e=>{if(e.target.closest("#tabs [data-go]"))backPill.hidden=true;},true);
 function toHandout(){const s=$("#s-l");if(!s)return;const d=s.querySelector("details");if(d)d.open=true;scrollToEl(s,false);glow(s);}
 /* a mistake card -> its question (or the handout of its lesson), with a pill that comes back to the same card */
 function goWrong(id,what){
@@ -256,18 +266,22 @@ document.addEventListener("click",e=>{const b=e.target.closest("[data-wgo]");if(
 const toTop=$("#toTop");
 if(toTop){addEventListener("scroll",()=>toTop.classList.toggle("show",scrollY>500),{passive:true});toTop.addEventListener("click",()=>scrollTo({top:0,behavior:"smooth"}));}
 function route(){
-  /* hiding and showing the view tells ezfx.js new content arrived (it slides the view in and arms the scroll reveal) */
-  app.hidden=true;routeView();app.hidden=false;
+  const h=location.hash.replace(/^#/,"")||"home",tab=tabOf(h);
+  /* only the open tab holds content (the views reuse element ids); hiding and showing it tells the shared scripts
+     new content arrived (they slide the view in and arm the scroll reveal and figure motion) */
+  app=$("#"+tab);
+  TABS.forEach(([id])=>{if(id!==tab){const s=$("#"+id);s.hidden=true;s.innerHTML="";}});
+  app.hidden=true;routeView(h);app.hidden=false;renderTabs(tab);
   if(afterRoute){const f=afterRoute;afterRoute=null;setTimeout(f,120);}
   dispatchEvent(new Event("scroll"));
 }
-function routeView(){
+function routeView(h){
   stopSpeak();clearInterval(timerId);
-  const h=location.hash.replace(/^#/,"")||"home";const[v,arg]=h.split("/");
-  if(v==="day")return setTab("course"),viewLesson(+arg,false);
-  if(v==="mock")return setTab("mocks"),viewMock(arg);
+  const[v,arg]=h.split("/");
+  if(v==="day")return viewLesson(+arg,false);
+  if(v==="mock")return viewMock(arg);
   const map={home:viewHome,today:viewToday,course:viewCourse,vocab:viewVocab,mocks:viewMocks,wrong:viewWrong};
-  (map[v]||viewHome)();setTab(map[v]?v:"home");
+  (map[v]||viewHome)();
   window.scrollTo(0,0);
 }
 addEventListener("hashchange",route);
@@ -292,15 +306,16 @@ function viewHome(){
   Object.values(S.mocks).forEach(m=>[...(m.hist||[]),m.res].filter(Boolean).forEach(r=>Object.entries(r.parts||{}).forEach(([p,x])=>add(p,x[0],x[1]))));
   const parts=Object.keys(acc).filter(p=>+p>0).sort();
   let next;
-  if(n>TOTAL)next='<b>Course complete.</b> Keep taking mock tests and redoing mistakes until test day.<div class="row"><a class="btn primary" href="#mocks">Mock tests</a></div>';
+  const extra=(due?'<a class="btn" href="#vocab">Review words ('+due+')</a>':"")+(open?'<a class="btn" href="#wrong">Redo mistakes ('+open+')</a>':"");
+  if(n>TOTAL)next='<b>Course complete</b><span>Keep taking mock tests and redoing mistakes until test day.</span><a class="btn primary" href="#mocks">Mock tests</a>';
   else{const I=info(n),lock=lockedToday(n);
-    next=(lock?'<span class="kicker">Done for today ✓</span><p>Tomorrow: <b>Day '+n+'</b> '+esc(I.t)+'</p>':'<span class="kicker">Next step</span><p><b>Day '+n+'</b> '+esc(I.t)+' <span class="small">'+(I.review?"Weekly review":PN[I.p])+' · about 30 min</span></p>')+
-      '<div class="row">'+(lock?"":'<a class="btn primary" href="#today">Start today\'s lesson</a>')+(due?'<a class="btn" href="#vocab">Review words ('+due+')</a>':"")+(open?'<a class="btn" href="#wrong">Redo mistakes ('+open+')</a>':"")+"</div>";}
-  let h='<section class="card hhead"><span class="kicker">TOEIC Listening &amp; Reading · Goal '+C.target+'</span><h2>Road to '+C.target+'</h2><p>From about 550 to '+C.target+' in 40 weeks, about 30 minutes a day. Each day: a few new words with spaced review, a short handout, practice questions with explanations, and a few old mistakes to redo. Mini mock tests track your estimated score.</p></section>';
-  h+='<section class="card next">'+next+'</section>';
+    next=lock?'<b>Done for today ✓</b><span>Tomorrow: Day '+n+' '+esc(I.t)+'</span>'+extra
+      :'<b>Day '+n+'</b><span>'+esc(I.t)+' <span class="small">'+(I.review?"Weekly review":PN[I.p])+' · about 30 min</span></span>'+extra+'<a class="btn primary" href="#today">Start today\'s lesson</a>';}
+  let h='<div class="vhead"><p class="vmeta">TOEIC Listening &amp; Reading · Goal '+C.target+'</p><h1>TOEIC: road to '+C.target+'</h1><p>From about 550 to '+C.target+' in 40 weeks, about 30 minutes a day. Each day: a few new words with spaced review, a short handout, practice questions with explanations, and a few old mistakes to redo. Mini mock tests track your estimated score.</p></div>';
+  h+='<div class="next">'+next+'</div>';
   h+='<section class="card"><h3>Course plan</h3><div class="phases">'+C.phases.map(p=>{const a=(p.weeks[0]-1)*7+1,b=p.weeks[1]*7;let d=0;for(let k=a;k<=b;k++)if(S.days[k]&&S.days[k].done)d++;const t=b-a+1;
     return '<div><b>'+esc(p.name)+'</b><span class="small">Weeks '+p.weeks[0]+"–"+p.weeks[1]+" · Goal "+p.goal+'</span><span class="small">'+esc(p.desc)+'</span><span class="bar"><i style="width:'+(d/t*100).toFixed(1)+'%"></i></span><span class="small">'+d+" / "+t+" days</span></div>";}).join("")+'</div><div class="row"><a class="btn" href="#course">Full course map</a></div></section>';
-  h+='<section class="card"><h3>Progress</h3><table class="ptable prog"><tr><th>Item</th><th>Now</th><th></th></tr>'+
+  h+='<section class="card"><h3>Progress</h3><table class="ptable hprog"><tr><th>Item</th><th>Now</th><th></th></tr>'+
     '<tr><td>Lessons</td><td>'+done+" / "+TOTAL+'</td><td><span class="bar"><i style="width:'+(done/TOTAL*100).toFixed(1)+'%"></i></span></td></tr>'+
     '<tr><td>Streak</td><td>'+streak()+(streak()===1?' day':' days')+'</td><td></td></tr>'+
     '<tr><td>Words learned</td><td>'+Object.keys(S.vocab).length+'</td><td class="small">'+(due?due+" due for review":"none due")+'</td></tr>'+
@@ -405,7 +420,7 @@ function viewLesson(n,isToday){
 
 function wordRow(w){
   const v=S.vocab[w[0]];
-  return '<div class="wrow"><button class="say" type="button" data-say="'+esc(w[0])+'" aria-label="Pronounce">🔊</button><b>'+esc(w[0])+'</b><span class="pos">'+esc(w[1])+"</span><span>"+esc(w[2])+'</span><span class="lv" title="Level">'+(v?"●".repeat(v.b)+"○".repeat(5-v.b):"")+'</span><span class="ex">'+esc(w[3])+"</span></div>";
+  return '<div class="vrow"><button class="say" type="button" data-say="'+esc(w[0])+'" aria-label="Pronounce">🔊</button><b>'+esc(w[0])+'</b><span class="pos">'+esc(w[1])+"</span><span>"+esc(w[2])+'</span><span class="lv" title="Level">'+(v?"●".repeat(v.b)+"○".repeat(5-v.b):"")+'</span><span class="ex">'+esc(w[3])+"</span></div>";
 }
 document.addEventListener("click",e=>{const b=e.target.closest("[data-say]");if(b)sayWord(b.dataset.say);});
 

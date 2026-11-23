@@ -1,19 +1,34 @@
+/* dark mode tokens (ezbase.css has the light ones; every subject page adds these itself) */
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11212d; --paper:#1c2e3b; --paper2:#172835;
+  --ink:#ccd0cf; --ink70:rgba(204,208,207,.82); --muted:rgba(204,208,207,.8); --line:#2f4352; --line-strong:#4a5c6a;
+  --indigo:#9ba8ab; --indigo-soft:rgba(155,168,171,.1); --indigo-mid:rgba(155,168,171,.22);
+  --seal:#ff7d5a; --seal-soft:rgba(255,125,90,.08); --seal-line:rgba(255,125,90,.34);
+  --brass:#a9bccb; --brass-soft:rgba(169,188,203,.08); --brass-line:rgba(169,188,203,.3);
+  --ok:#73d48f; --ok-soft:rgba(115,212,143,.09); --ok-line:rgba(115,212,143,.32);
+  --accent:#9ba8ab; --accent-ink:#06141b; --accent-soft:rgba(155,168,171,.1);
+  --bad:#ff7d5a; --bad-soft:rgba(255,125,90,.08); --warn:#f2bd5a; --warn-soft:rgba(242,189,90,.09); --warn-line:rgba(242,189,90,.32);
+  --code:#0d1b25; --fig:#ccd0cf; --hard:#06141b; --shadow:0 6px 18px rgba(0,0,0,.4);
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11212d; --paper:#1c2e3b; --paper2:#172835;
+  --ink:#ccd0cf; --ink70:rgba(204,208,207,.82); --muted:rgba(204,208,207,.8); --line:#2f4352; --line-strong:#4a5c6a;
+  --indigo:#9ba8ab; --indigo-soft:rgba(155,168,171,.1); --indigo-mid:rgba(155,168,171,.22);
+  --seal:#ff7d5a; --seal-soft:rgba(255,125,90,.08); --seal-line:rgba(255,125,90,.34);
+  --brass:#a9bccb; --brass-soft:rgba(169,188,203,.08); --brass-line:rgba(169,188,203,.3);
+  --ok:#73d48f; --ok-soft:rgba(115,212,143,.09); --ok-line:rgba(115,212,143,.32);
+  --accent:#9ba8ab; --accent-ink:#06141b; --accent-soft:rgba(155,168,171,.1);
+  --bad:#ff7d5a; --bad-soft:rgba(255,125,90,.08); --warn:#f2bd5a; --warn-soft:rgba(242,189,90,.09); --warn-line:rgba(242,189,90,.32);
+  --code:#0d1b25; --fig:#ccd0cf; --hard:#06141b; --shadow:0 6px 18px rgba(0,0,0,.4);
+  color-scheme:dark}
 /* TOEIC course page. Same EZexams tokens as the home page (ezhome.css + ezglass.css): frosted cards with a hairline edge,
    seal-vermilion for wrong / attention, pass-green for right, mono labels for metadata. */
-.topline .tops{display:flex;align-items:center;gap:8px}
 .syncchip{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 12px;border:1.5px solid var(--ink);border-radius:8px;background:var(--paper);color:var(--muted);font-family:var(--f-mono);font-size:12px;text-decoration:none;white-space:nowrap}
 .syncchip::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--muted)}
 .syncchip[data-state="ok"]{color:var(--ok)}.syncchip[data-state="ok"]::before{background:var(--ok)}
 .syncchip[data-state="sync"]::before,.syncchip[data-state="dirty"]::before{background:var(--warn)}
 .syncchip[data-state="err"]{color:var(--seal)}.syncchip[data-state="err"]::before{background:var(--seal)}
-.thead{padding:16px 0 4px}
-.thead h1{font-family:var(--f-display);font-weight:700;font-size:clamp(34px,6vw,50px);line-height:1.15;margin:6px 0 0;text-wrap:balance}
 .kicker{font-family:var(--f-mono);font-size:12.5px;font-weight:600;color:var(--brass);letter-spacing:.02em}
-.tabs{display:flex;gap:4px;overflow-x:auto;margin:20px 0 0;border-bottom:2px solid var(--ink);scrollbar-width:none}
-.tabs a{flex:0 0 auto;padding:10px 16px;color:var(--muted);text-decoration:none;font-weight:600;border-bottom:3px solid transparent;margin-bottom:-2px}
-.tabs a:hover{color:var(--ink)}
-.tabs a.on{color:var(--ink);border-bottom-color:var(--seal)}
-main#app{padding-top:24px;padding-bottom:40px;min-height:50vh}
 
 .card,.lhead{background:var(--glass-bg,var(--paper));border:1px solid var(--line-strong);border-radius:12px;padding:20px 24px;margin:0 0 16px}
 .lhead{background:transparent;border:0;padding:4px 0 8px}
@@ -48,14 +63,14 @@ main#app{padding-top:24px;padding-bottom:40px;min-height:50vh}
 
 /* words */
 .words{display:flex;flex-direction:column;border-top:1px solid var(--line)}
-.wrow{display:grid;grid-template-columns:32px minmax(110px,auto) 52px 1fr 64px;align-items:center;gap:4px 10px;padding:8px 0;border-bottom:1px solid var(--line)}
-.wrow b{font-family:var(--f-en);font-size:17px}
-.wrow .pos{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
-.wrow .lv{font-size:10px;letter-spacing:1px;color:var(--ok);text-align:right}
-.wrow .ex{grid-column:2/-1;font-family:var(--f-en);font-size:14.5px;color:var(--ink70)}
+.vrow{display:grid;grid-template-columns:32px minmax(110px,auto) 52px 1fr 64px;align-items:center;gap:4px 10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.vrow b{font-family:var(--f-en);font-size:17px}
+.vrow .pos{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.vrow .lv{font-size:10px;letter-spacing:1px;color:var(--ok);text-align:right}
+.vrow .ex{grid-column:2/-1;font-family:var(--f-en);font-size:14.5px;color:var(--ink70)}
 .say{font:inherit;font-size:15px;line-height:1;border:1px solid var(--line);background:var(--paper);border-radius:6px;padding:4px 5px;cursor:pointer}
 .say:hover{border-color:var(--ink)}
-@media (max-width:560px){.wrow{grid-template-columns:32px 1fr auto}.wrow>span:nth-of-type(2){grid-column:2/-1}.wrow .lv{display:none}}
+@media (max-width:560px){.vrow{grid-template-columns:32px 1fr auto}.vrow>span:nth-of-type(2){grid-column:2/-1}.vrow .lv{display:none}}
 .fcard{margin-top:16px;padding:24px;border:1.5px solid var(--ink);border-radius:12px;background:var(--paper);text-align:center}
 .fmeta{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:12px;color:var(--muted)}
 .fw{font-family:var(--f-en);font-size:clamp(30px,6vw,42px);font-weight:600;margin:12px 0 0}
@@ -186,12 +201,16 @@ main#app{padding-top:24px;padding-bottom:40px;min-height:50vh}
 .finish{bottom:calc(72px + env(safe-area-inset-bottom,0px))}
 @media (prefers-reduced-motion:reduce){.wflash{animation:none;outline:3px solid var(--seal)}}
 /* home tab */
-.hhead h2{margin-top:6px}
-.card.next{border-color:var(--seal-line)}
-.card.next p{margin:6px 0 0}
 .phases .bar{margin-top:8px}
-.ptable.prog{max-width:none}
-.ptable.prog td:nth-child(2){font-family:var(--f-mono);white-space:nowrap}
-.ptable.prog td:last-child{width:40%}
+.ptable.hprog{max-width:none}
+.ptable.hprog td:nth-child(2){font-family:var(--f-mono);white-space:nowrap}
+.ptable.hprog td:last-child{width:40%}
 .howto{margin:0;padding-left:22px}
 .howto li{margin:6px 0}
+
+/* the subject skeleton around the course */
+.bar .syncchip{margin-left:auto}
+.next{margin:0 0 16px}
+.next>span{flex:1 1 220px}
+.view>.card:first-child,.view>.lhead:first-child,.view>p:first-child,.view>.stats:first-child{margin-top:24px}
+.tfoot{max-width:860px;margin:0 auto;padding:16px max(16px,env(safe-area-inset-left,0px)) 40px}

@@ -228,5 +228,198 @@ window.TOEIC_DAYS={
    {q:"Why is the woman calling?",o:["To confirm a meeting","To report a delivery delay","To request a payment","To advertise a product"],a:1,e:"開頭：it won't arrive tomorrow as planned → 通知延遲送達。"},
    {q:"What does the man say he needs the paper for?",o:["A presentation","A training session","A newsletter","A job fair"],a:0,e:"We need the paper for a big presentation on Thursday."},
    {q:"What does the woman offer to do?",o:["Give a discount","Send a different brand","Speed up a shipment for free","Call back later"],a:2,e:"expedite the shipment at no extra charge = 免費加快出貨（換句話說）。"}]}
+ ]},
+/* ================= Week 2 ================= */
+8:{
+ words:[["inquiry","n.","詢問；查詢","We received over 200 inquiries about the sale."],["complaint","n.","投訴；抱怨","Every complaint is logged and reviewed."],["resolve","v.","解決","The issue was resolved within an hour."],["refund","n./v.","退款","You can request a full refund within 30 days."],["warranty","n.","保固","The laptop comes with a two-year warranty."],["representative","n.","代表；（客服）專員","A customer service representative will call you."],["courteous","adj.","有禮貌的","Our staff are trained to be courteous."],["respond","v.","回覆；回應","Please respond to the e-mail by Friday."],["replacement","n.","替換品；接替者","We will ship a replacement at no charge."],["satisfaction","n.","滿意","Customer satisfaction is our top priority."],["policy","n.","政策；規定","Please read our return policy."],["assistance","n.","協助","Thank you for your assistance."]],
+ lesson:`<h3>不定詞 to V：多益最常考的四個位置</h3>
+<table><tr><th>位置</th><th>常考字</th><th>例句</th></tr>
+<tr><td>動詞 + to V</td><td>agree, aim, decide, expect, fail, hesitate, intend, manage, offer, plan, refuse, strive</td><td>We strive <b>to respond</b> within 24 hours.</td></tr>
+<tr><td>動詞 + 受詞 + to V</td><td>advise, allow, ask, enable, encourage, invite, permit, remind, require, urge</td><td>The system allows customers <b>to check</b> their refunds.</td></tr>
+<tr><td>be + 形容詞 / p.p. + to V</td><td>be able, be eager, be likely, be pleased, be reluctant, be required, be scheduled, be encouraged</td><td>Staff are encouraged <b>to be</b> courteous.</td></tr>
+<tr><td>名詞 + to V</td><td>ability, attempt, decision, effort, opportunity, plan, right, way</td><td>We made every effort <b>to resolve</b> it.</td></tr></table>
+<h3>句首 To V = 為了</h3>
+<p><b>To obtain</b> a replacement, customers must present the receipt.（= In order to obtain…）句首空格後面接逗號和完整主句，就選 To V。</p>
+<h3>990 必殺陷阱：to 是介系詞，後面接 V-ing</h3>
+<ul><li>look forward to <b>seeing</b> / be committed to <b>providing</b> / be dedicated to <b>improving</b></li>
+<li>contribute to, object to, be used to（習慣於）, in addition to, with a view to, the key to</li></ul>
+<p>判斷方法：to 後面能不能直接放名詞？能（look forward to <i>the meeting</i>）→ 介系詞 → V-ing。</p>
+<h3>使役動詞：不加 to</h3>
+<p>make / let / have + 受詞 + <b>原形 V</b>：The manager had the technician <b>replace</b> the printer。help + 受詞 + (to) V 兩種都對。</p>
+<div class="tip">解題：選項有 V / to V / V-ing / V-ed 時，① 看空格前的字屬於哪一類（上表）② 檢查 to 是不是介系詞 ③ 前面是 make / let / have 就選原形。</div>`,
+ qs:[
+  {p:5,q:"Our customer service team strives ____ all inquiries within 24 hours.",o:["respond","responding","to respond","responded"],a:2,e:"strive to V（努力去做）。strive 屬於「動詞 + to V」。"},
+  {p:5,q:"The new online system allows customers ____ the status of their refunds at any time.",o:["to check","check","checking","checked"],a:0,e:"allow + 受詞 + to V。allow customers to check。"},
+  {p:5,q:"____ a replacement, customers must present the original receipt.",o:["Obtain","Obtained","Obtains","To obtain"],a:3,e:"句首空格、逗號後是完整主句 → 表目的的 To V（為了取得替換品）。"},
+  {p:5,q:"We look forward to ____ you at the grand reopening of our flagship store.",o:["see","seeing","be seen","to see"],a:1,e:"look forward to 的 to 是介系詞 → V-ing。選 to see 是最常見的失分。"},
+  {p:5,q:"The representative made every effort ____ the complaint before the end of the day.",o:["resolving","resolved","to resolve","resolve"],a:2,e:"名詞 effort + to V（努力去…）。"},
+  {p:2,say:"Would you like me to process the refund now?",o:["It was a long process.","Only after the manager signs off on it.","In the refund section."],a:1,e:"提議句，正解用條件回應：等經理批准之後再辦。(A) process 重複字陷阱；(C) refund 重複字。"},
+  {p:5,q:"The manager had the technician ____ the faulty printer in the lobby.",o:["replace","to replace","replacing","replaced"],a:0,e:"使役動詞 have + 人 + 原形 V。had the technician replace。（have + 物 + p.p. 才用 replaced：had the printer replaced。）"},
+  {p:5,q:"Customers who wish ____ a warranty claim should call extension 300.",o:["filing","to file","file","filed"],a:1,e:"wish to V（希望去做）。"},
+  {p:5,q:"The company is dedicated to ____ customer satisfaction across all of its branches.",o:["improve","improved","improving","improvement"],a:2,e:"be dedicated to 的 to 是介系詞，後面接 V-ing；而且後面有受詞 customer satisfaction，所以不能用名詞 improvement。"},
+  {p:5,q:"Staff are encouraged ____ courteous at all times, even with difficult callers.",o:["being","been","be","to be"],a:3,e:"be encouraged to V（被鼓勵去做）。encourage 屬於「動詞 + 受詞 + to V」，被動後變成 be encouraged to V。"},
+  {p:5,q:"Please do not hesitate ____ our support team if you require further assistance.",o:["contacting","to contact","contact","contacted"],a:1,e:"don't hesitate to V 是商業書信固定句（請隨時…）。"},
+  {p:2,say:"Why did that customer call this morning?",o:["I'll call her back.","At about nine thirty.","She wanted to change her delivery address."],a:2,e:"Why → 原因。(A) call 重複字，且沒說原因；(B) 回答 When。"}
+ ]},
+9:{
+ words:[["cater","v.","承辦餐飲；迎合","The lunch will be catered by a local bakery."],["banquet","n.","宴會","The awards banquet starts at 7 P.M."],["beverage","n.","飲料","Hot and cold beverages will be served."],["refreshments","n.","茶點","Light refreshments are available in the lobby."],["host","v./n.","主辦；主持人","The firm will host a charity dinner."],["occasion","n.","場合；時機","The anniversary is a special occasion."],["patron","n.","顧客；贊助者","Patrons may park in the rear lot."],["complimentary","adj.","免費贈送的","Guests receive a complimentary drink."],["dietary","adj.","飲食的","Please note any dietary restrictions."],["anniversary","n.","週年","We are celebrating our 20th anniversary."],["reception","n.","招待會；接待處","A reception follows the ceremony."],["attendance","n.","出席；出席人數","Attendance was higher than expected."]],
+ lesson:`<h3>動名詞 V-ing：當名詞用的動詞</h3>
+<p>V-ing 可以當主詞、受詞、介系詞的受詞，<b>而且後面還能接自己的受詞</b>。這是它和一般名詞最大的差別。</p>
+<ul><li>Thank you for <b>attending</b> our celebration.（attending 後面接了受詞 → 不能換成 attendance）</li>
+<li><b>Organizing</b> a large event requires careful planning.（當主詞，視為單數）</li></ul>
+<h3>只接 V-ing 的動詞</h3>
+<p>avoid, consider, delay, postpone, discontinue, finish, include, involve, keep, mind, recommend, suggest, risk, enjoy</p>
+<p>We recommend <b>reserving</b> a table.（recommend 後面不接 to V）</p>
+<h3>to V 和 V-ing 意思不同</h3>
+<table><tr><th>動詞</th><th>+ to V</th><th>+ V-ing</th></tr>
+<tr><td>remember / forget</td><td>記得 / 忘了「要去」做（還沒做）</td><td>記得 / 忘了「做過」</td></tr>
+<tr><td>stop</td><td>停下來去做另一件事</td><td>停止正在做的事</td></tr>
+<tr><td>try</td><td>努力嘗試</td><td>試試看（做做看）</td></tr></table>
+<h3>常考固定用法</h3>
+<ul><li>be worth <b>V-ing</b>（值得）、spend time <b>V-ing</b>、have difficulty (in) <b>V-ing</b></li>
+<li>介系詞 + V-ing：by, before, after, without, upon, instead of, in addition to, be responsible for</li></ul>
+<div class="tip">990 關鍵：選項同時有 V-ing 和名詞（attending / attendance、providing / provision）時，看空格後面有沒有受詞。有受詞 → V-ing；沒有、或後面是 of → 名詞。</div>`,
+ qs:[
+  {p:5,q:"We recommend ____ a table in advance, as the restaurant is often fully booked on weekends.",o:["reserve","to reserve","reserving","reservation"],a:2,e:"recommend + V-ing。reservation 是名詞，但後面還有受詞 a table，所以要 V-ing。"},
+  {p:5,q:"Thank you for ____ our tenth anniversary celebration last Saturday.",o:["attendance","attending","attend","to attend"],a:1,e:"介系詞 for + V-ing，且後面有受詞 our … celebration → attending。attendance 要寫成 your attendance at。"},
+  {p:5,q:"The caterer finished ____ the banquet hall just minutes before the guests arrived.",o:["decorating","decorate","to decorate","decoration"],a:0,e:"finish + V-ing。"},
+  {p:5,q:"____ a large corporate event requires careful planning and a reliable team.",o:["Organize","Organized","Organizer","Organizing"],a:3,e:"空格是主詞，又要接受詞 a large corporate event → 動名詞 Organizing。"},
+  {p:5,q:"Guests with dietary restrictions should consider ____ the vegetarian set menu.",o:["to choose","choosing","chosen","choose"],a:1,e:"consider + V-ing。"},
+  {p:2,say:"Have you finished preparing the guest list?",o:["A list of guests.","Yes, it's finishing.","I'm still waiting for two departments to reply."],a:2,e:"間接回答：還在等兩個部門回覆（= 還沒完成）。(A) 重複 list；(B) Yes 之後的內容不合邏輯。"},
+  {p:5,q:"Instead of ____ a live band, the committee decided to play recorded music.",o:["hiring","hire","to hire","hired"],a:0,e:"介系詞片語 instead of + V-ing。"},
+  {p:5,q:"The hotel is responsible for ____ complimentary beverages throughout the reception.",o:["provision","provide","providing","provided"],a:2,e:"for + V-ing，且後面有受詞 beverages → providing。provision 後面要接 of。"},
+  {p:5,q:"Please remember ____ the RSVP card by Friday so that we can confirm attendance.",o:["returning","to return","return","returned"],a:1,e:"remember to V = 記得「要去」做（還沒做）。remember V-ing 是記得做過，語意不合。"},
+  {p:5,q:"The restaurant discontinued ____ breakfast on weekdays last month due to low demand.",o:["serve","to serve","served","serving"],a:3,e:"discontinue + V-ing（停止做某事）。"},
+  {p:5,q:"The new seasonal menu is well worth ____, especially the seafood dishes.",o:["trying","try","to try","tried"],a:0,e:"be worth + V-ing（值得…）。"},
+  {p:2,say:"Should we serve dinner before or after the awards?",o:["Yes, we should.","Let's see what the venue suggests.","It was an award-winning dinner."],a:1,e:"選擇疑問句可以間接回答：看場地方怎麼建議。(A) 選擇問句不能答 Yes；(C) award 重複字。"}
+ ]},
+10:{
+ words:[["tenant","n.","房客；租戶","All tenants must register their vehicles."],["landlord","n.","房東","The landlord agreed to fix the roof."],["lease","n./v.","租約；租用","We signed a three-year lease."],["property","n.","房產；財產","The property overlooks the river."],["renovate","v.","翻修","The lobby will be renovated in June."],["spacious","adj.","寬敞的","The apartment has a spacious kitchen."],["utilities","n.","水電瓦斯（費）","Rent includes all utilities."],["maintenance","n.","維修保養","Report any problems to maintenance."],["facility","n.","設施；場所","The facility is open 24 hours."],["occupancy","n.","入住率；使用","Office occupancy rose to 92%."],["vacant","adj.","空著的；未被佔用的","Two units on the fifth floor are vacant."],["amenities","n.","便利設施","Amenities include a gym and a rooftop garden."]],
+ lesson:`<h3>-ing 還是 -ed？先問「主動還是被動」</h3>
+<p>分詞當形容詞用時，看<b>被修飾的名詞和這個動詞的關係</b>：名詞自己做這個動作 → -ing；名詞被做 → -ed（p.p.）。</p>
+<table><tr><th>-ing（主動 / 進行）</th><th>-ed（被動 / 完成）</th></tr>
+<tr><td>rising costs（成本在上升）</td><td>a renovated building（大樓被翻修）</td></tr>
+<tr><td>existing tenants（現有房客）</td><td>the enclosed form（被附上的表格）</td></tr>
+<tr><td>remaining units（剩下的房間）</td><td>qualified technicians（合格的技師）</td></tr>
+<tr><td>a leading company、upcoming events</td><td>limited space、a detailed report、the revised schedule</td></tr></table>
+<h3>情緒動詞：人用 -ed，事物用 -ing</h3>
+<ul><li>The results were <b>disappointing</b>.（結果令人失望）</li>
+<li>Residents were <b>impressed</b>.（住戶感到印象深刻）</li>
+<li>同類：interesting / interested、satisfying / satisfied、confusing / confused、encouraging / encouraged</li></ul>
+<h3>名詞後面的分詞（後位修飾）</h3>
+<ul><li>Anyone <b>interested</b> in renting…（= who is interested）</li>
+<li>Tenants <b>wishing</b> to move out…（= who wish）</li>
+<li>The documents <b>attached</b> to this e-mail…（= which are attached）</li></ul>
+<div class="tip">990 陷阱：rising（自己上升，不及物）vs raised（被提高）。看主詞是「自己變化」還是「有人去做」。另外 interested 後面接 in，impressed 後面接 with / by。</div>`,
+ qs:[
+  {p:5,q:"The ____ tenants were notified in writing about the planned water outage.",o:["exist","existed","existing","existence"],a:2,e:"現有的房客 → existing（主動 / 持續存在）。"},
+  {p:5,q:"Please review the ____ lease agreement and return a signed copy by Friday.",o:["enclosed","enclosing","enclose","enclosure"],a:0,e:"租約是「被附上」的 → enclosed。書信常考：the enclosed form / the attached file。"},
+  {p:5,q:"Residents were ____ with how quickly the maintenance team responded to their requests.",o:["impress","impressing","impressive","impressed"],a:3,e:"主詞是人，表示「感到」印象深刻 → impressed（be impressed with）。"},
+  {p:5,q:"The recently ____ office tower now includes a fitness center and a rooftop garden.",o:["renovating","renovated","renovate","renovation"],a:1,e:"大樓是被翻修的，recently 也暗示已完成 → renovated。"},
+  {p:5,q:"Anyone ____ in renting the vacant unit should contact the property manager directly.",o:["interests","interesting","interested","interest"],a:2,e:"後位修飾：Anyone (who is) interested in…。人感到有興趣 → interested。"},
+  {p:2,say:"Is the conference room on the third floor available tomorrow?",o:["It's being repainted all week.","Third time this month.","Yes, it's very spacious."],a:0,e:"間接回答：整週都在重新粉刷（= 不能用）。(C) Yes 之後答非所問；(B) third 重複字。"},
+  {p:5,q:"Due to ____ utility costs, the landlord will increase the rent next year.",o:["rise","rising","risen","raises"],a:1,e:"成本「自己在上升」→ rising（rise 是不及物動詞，沒有被動）。"},
+  {p:5,q:"The results of the occupancy survey were ____; only 60 percent of the units are currently leased.",o:["disappointed","disappoint","disappointing","disappointment"],a:2,e:"主詞是事物（調查結果），表示「令人失望」→ disappointing。"},
+  {p:5,q:"Tenants ____ to move out before the end of their lease must give 60 days' notice.",o:["wished","to wish","wish","wishing"],a:3,e:"句子動詞是 must give，空格是修飾 Tenants 的分詞；房客「自己想」搬走 → wishing（= who wish）。"},
+  {p:5,q:"Only ____ technicians are permitted to carry out repairs on the building's elevators.",o:["qualified","qualifying","qualify","qualification"],a:0,e:"合格的技師 → qualified（固定用法）。qualifying 是「資格賽的；使合格的」。"},
+  {p:5,q:"The ____ units on the top floor offer stunning views of the harbor.",o:["remain","remaining","remained","remainder"],a:1,e:"剩下的單位 → remaining（主動：自己留下來）。"},
+  {p:2,say:"Who should I call about the broken heater?",o:["Sometime this afternoon.","It's broken into pieces.","The maintenance office, extension 210."],a:2,e:"Who → 部門 / 人。(A) 回答 When；(B) broken 重複字。"}
+ ]},
+11:{
+ words:[["appointment","n.","預約；約會","I have a dental appointment at four."],["confirm","v.","確認","Please confirm your attendance by e-mail."],["available","adj.","有空的；可取得的","Is Mr. Ito available this afternoon?"],["voicemail","n.","語音信箱","I left a message on her voicemail."],["return a call","phr.","回電","She returned my call within an hour."],["transfer","v./n.","轉接；轉調","Let me transfer you to billing."],["receptionist","n.","接待員；總機","Ask the receptionist for a visitor badge."],["time slot","n.","時段","The 10 A.M. time slot is already taken."],["cancellation","n.","取消","Cancellations require 24 hours' notice."],["on hold","phr.","（電話）等候中；暫緩","Sorry to keep you on hold."],["directory","n.","通訊錄；名錄","Her number is in the staff directory."],["convenient","adj.","方便的","What time is convenient for you?"]],
+ lesson:`<h3>Yes / No 問句的四種長相</h3>
+<table><tr><th>類型</th><th>例子</th><th>處理方式</th></tr>
+<tr><td>一般問句</td><td>Did you confirm the appointment?</td><td>答案可以沒有 Yes / No</td></tr>
+<tr><td>否定問句</td><td>Isn't the clinic closed on Saturdays?</td><td>把 not 拿掉，當一般問句</td></tr>
+<tr><td>附加問句</td><td>You've called the client, haven't you?</td><td>只看前半句在問什麼</td></tr>
+<tr><td>直述句</td><td>I can't find her extension.</td><td>正解是反應或建議</td></tr></table>
+<h3>正確答案常常「不說 Yes / No」</h3>
+<ul><li><b>給新資訊：</b>Will Ms. Chen be in tomorrow? → She's at a trade show all week.</li>
+<li><b>條件：</b>Is there an earlier slot? → Only if someone cancels.</li>
+<li><b>推給別人 / 去查：</b>Let me check. / Ask the receptionist.</li>
+<li><b>反問：</b>Didn't you get my e-mail?</li></ul>
+<h3>有 Yes / No 的選項，一定要聽完後半句</h3>
+<p>「Yes, + 跟問題無關的內容」是最常見的陷阱。例如問 Has the fee been <b>refunded</b>? 答 Yes, I <b>paid</b> in cash → 前後矛盾。</p>
+<h3>Do you mind…? 的回答</h3>
+<p>Do you mind if I…? 的「可以」是 <b>Not at all / Of course not / Go ahead</b>，不是 Yes。</p>
+<div class="tip">990 解法：Part 2 很難一聽就確定答案，改用<b>刪去法</b>：聽每個選項時心裡標 ✗ / ? / ○。重複字、近音字、答非所問先 ✗，剩下的就是答案。</div>`,
+ qs:[
+  {p:2,say:"Did you confirm the appointment with Dr. Lee?",o:["I'm firmly convinced.","Yes, she can see you at four.","An appointment book."],a:1,e:"Yes＋具體時間，前後一致。(A) firmly 和 confirm 近音陷阱；(C) appointment 重複字。"},
+  {p:2,say:"Isn't the clinic closed on Saturdays?",o:["Close the window, please.","Saturday at ten.","Not anymore. It's open until noon now."],a:2,e:"否定問句當一般問句處理：診所週六有開嗎？→ 現在有了，開到中午。(A) close 近音；(B) 重複 Saturday。"},
+  {p:2,say:"Can you transfer me to the billing department?",o:["Certainly, please hold.","A bank transfer fee.","They're in the department store."],a:0,e:"請求 → Certainly＋請稍候。(B)(C) 分別重複 transfer、department。"},
+  {p:2,say:"You've already called the client back, haven't you?",o:["Please call me Ken.","I've left two voicemails so far.","On the back of the card."],a:1,e:"附加問句 → 只看「你回電了嗎」。留了兩次語音（= 打了但還沒聯絡上），是自然的間接回答。"},
+  {p:2,say:"Is there an earlier time slot available?",o:["It took a long time.","Yes, it was late.","Only if someone cancels."],a:2,e:"條件式的間接回答。(B) Yes 後面內容不合；(A) time 重複字。"},
+  {p:2,say:"Will Ms. Chen be in the office tomorrow?",o:["She's at a trade show all week.","Yes, in the office supply store.","Tomorrow morning at nine."],a:0,e:"給新資訊（整週參展 = 不會在）。(B) Yes 後面答非所問；(C) 回答 When。"},
+  {p:2,say:"I can't find the receptionist's phone extension.",o:["She received it yesterday.","It's listed in the staff directory.","The extension cord is too short."],a:1,e:"直述句 → 給解決方法。(A) received 和 receptionist 近音；(C) extension 的另一個意思（延長線），是一字多義陷阱。"},
+  {p:2,say:"Do you mind if I reschedule our call?",o:["I don't mind the music.","The call lasted an hour.","Not at all. When works for you?"],a:2,e:"Do you mind…? 的「可以」是 Not at all。(A)(B) 重複 mind、call。"},
+  {p:2,say:"Has the cancellation fee been refunded yet?",o:["Accounting says it'll take three to five days.","Yes, I paid in cash.","A small cancellation fee."],a:0,e:"間接回答：會計說要 3–5 天（= 還沒）。(B) Yes 之後講「付款」，和「退款」矛盾。"},
+  {p:2,say:"Aren't you going to leave a message?",o:["The message was clear.","I'll just try again later.","She left at five."],a:1,e:"否定問句：你要留言嗎？→ 我晚點再打就好（= 不留）。(C) left 是 leave 的過去式，重複字陷阱。"},
+  {p:2,say:"Would it be convenient for you to meet at the airport?",o:["It's a very convenient store.","The airport shuttle.","My flight lands too late, unfortunately."],a:2,e:"說明為什麼不方便 = 婉拒。(A) convenient 重複；(B) airport 重複。"},
+  {p:2,say:"Did anyone answer the phone at the front desk?",o:["It went straight to voicemail.","The answer is on page two.","A new desk phone."],a:0,e:"直接轉語音信箱（= 沒人接）。(B) answer 一字多義；(C) desk、phone 重複。"}
+ ]},
+12:{
+ words:[["compatible","adj.","相容的","The app is compatible with most phones."],["malfunction","n./v.","故障","A malfunction shut down the system."],["troubleshoot","v.","排除故障","IT is troubleshooting the problem."],["upgrade","v./n.","升級","We will upgrade all laptops next month."],["backup","n.","備份","Always keep a backup of your files."],["device","n.","裝置","Turn off all electronic devices."],["access","n./v.","存取；進入","Only managers can access the database."],["technician","n.","技術人員","A technician will arrive at ten."],["outage","n.","（電力、網路）中斷","The power outage lasted three hours."],["configure","v.","設定；配置","The router has been configured."],["secure","adj./v.","安全的；確保","Keep your password secure."],["network","n.","網路","The office network is down."]],
+ lesson:`<h3>助動詞後面一律接原形</h3>
+<p>must / should / can / may / will / would / could + <b>原形 V</b>；被動是 + <b>be p.p.</b>；完成是 + <b>have p.p.</b>。看到選項有 change / changes / changing / to change，前面是助動詞就選 change。</p>
+<h3>語氣與意思</h3>
+<table><tr><th>助動詞</th><th>意思</th><th>例子</th></tr>
+<tr><td>must / have to</td><td>必須</td><td>Employees <b>must</b> change their passwords.</td></tr>
+<tr><td>should / ought to</td><td>應該；預期會</td><td>It <b>should</b> be fixed within the hour.</td></tr>
+<tr><td>may / might / could</td><td>可能；may 也表允許</td><td>Visitors <b>may not</b> enter.（不准）</td></tr>
+<tr><td>need not</td><td>不必</td><td>You <b>need not</b> reply.</td></tr></table>
+<h3>助動詞 + have p.p.（對過去的判斷）</h3>
+<ul><li><b>should have p.p.</b>：當初應該做（但沒做）→ 後悔</li>
+<li><b>must have p.p.</b>：一定已經 → 有把握的推測</li>
+<li><b>may / might / could have p.p.</b>：可能已經</li></ul>
+<h3>990 必考：要求、建議後面用原形</h3>
+<p>suggest / recommend / request / require / insist / ask / propose + that + 主詞 + <b>(should) 原形</b></p>
+<p>It is essential / important / necessary / imperative + that + 主詞 + <b>原形</b></p>
+<p>The manager insisted that the system <b>be</b> tested again.（不是 is、was）</p>
+<div class="tip">解題：① 空格前有助動詞 → 原形 ② 看到 recommend / insist / essential that → 原形（第三人稱也不加 s）③ 選項都是助動詞 → 用句意判斷（後悔 should have、推測 must have、預期 should）。</div>`,
+ qs:[
+  {p:5,q:"All employees must ____ their network passwords every 90 days.",o:["changes","change","changing","to change"],a:1,e:"助動詞 must + 原形 change。"},
+  {p:5,q:"The IT department recommends that each user ____ important files to the shared drive.",o:["backs up","backed up","back up","backing up"],a:2,e:"recommend that + 主詞 + (should) 原形。即使主詞 each user 是單數也不加 s。"},
+  {p:5,q:"The printer ____ have been damaged during the move, since it was working perfectly before.",o:["should","must","would","need"],a:1,e:"must have p.p. = 一定已經（有把握的推測：搬家前好好的，現在壞了）。"},
+  {p:5,q:"It is essential that the new software ____ compatible with all existing devices.",o:["be","is","being","will be"],a:0,e:"It is essential that + 主詞 + 原形 → be。"},
+  {p:5,q:"We ____ upgraded the network last year; this week's outage cost us a full day of work.",o:["must have","can have","will have","should have"],a:3,e:"should have p.p. = 當初應該（但沒做），表示後悔。"},
+  {p:2,say:"Can you access the shared drive from home?",o:["A secure parking space.","Only through the company VPN.","It drives me crazy."],a:1,e:"有條件的肯定：只能透過公司 VPN。(C) drives 和 drive 一字多義陷阱；(A) 用 secure 做聯想陷阱。"},
+  {p:5,q:"Visitors ____ not access the server room unless they are accompanied by a technician.",o:["need","would","may","ought"],a:2,e:"may not = 不准（禁止）。need not 是「不必」，語意不合；ought 後面要接 to。"},
+  {p:5,q:"The technician is troubleshooting the malfunction and ____ be finished within the hour.",o:["should","should have","must have","had better"],a:0,e:"should + 原形 = 預期應該會。後面是 be 原形，排除 should have / must have（後面要接 been）。"},
+  {p:5,q:"All new laptops will ____ configured by the IT team before they are distributed.",o:["being","been","to be","be"],a:3,e:"助動詞 will + be p.p.（被動）。"},
+  {p:5,q:"The director insisted that the backup system ____ tested again before the launch.",o:["is","be","was","being"],a:1,e:"insist that + 主詞 + (should) 原形 → be tested。"},
+  {p:5,q:"Users who forget their passwords ____ contact the help desk rather than create a new account.",o:["would have","might have","should","had"],a:2,e:"should + 原形 = 應該（建議）。would have / might have 後面要接 p.p.。"},
+  {p:2,say:"Who's responsible for the network upgrade?",o:["The network was down.","It hasn't been assigned yet.","Next weekend, probably."],a:1,e:"間接回答：還沒指派。(A) network 重複字；(C) 回答 When。"}
+ ]},
+13:{
+ words:[["stack","v./n.","堆疊；一疊","Chairs are stacked in the corner."],["arrange","v.","排列；安排","Flowers have been arranged on the tables."],["lean against","phr.","倚靠在…","A bicycle is leaning against the fence."],["unload","v.","卸貨","Workers are unloading a truck."],["mount","v.","安裝；固定（在牆上）","A clock is mounted on the wall."],["examine","v.","檢查；細看","She's examining a document."],["adjust","v.","調整","He's adjusting the height of the chair."],["pile","n./v.","一堆；堆放","Papers have been piled on the desk."],["reach for","phr.","伸手去拿","A man is reaching for a file."],["face","v.","面向","The desks face the window."],["sweep","v.","掃（地）","A worker is sweeping the sidewalk."],["ladder","n.","梯子","A ladder has been set up by the door."]],
+ lesson:`<h3>Part 1 在考什麼</h3>
+<p>6 題。看一張照片，聽四個描述 (A)–(D)，選最符合照片的一句。這裡沒有照片，所以用中文描述情境，你要想像畫面再聽。</p>
+<h3>時態就是答案的關鍵</h3>
+<table><tr><th>句型</th><th>意思</th><th>照片裡要有</th></tr>
+<tr><td>is / are V-ing</td><td>人正在做</td><td>人在做這個動作</td></tr>
+<tr><td>is / are <b>being</b> p.p.</td><td>東西正在被（人）處理</td><td><b>一定要有人正在做</b></td></tr>
+<tr><td>has / have been p.p.、is p.p.</td><td>東西處於某種狀態</td><td>可以沒有人</td></tr></table>
+<p>例：會議室空無一人、椅子排好 → Chairs <b>have been arranged</b>（✓）；Chairs <b>are being arranged</b>（✗，沒人在排）。</p>
+<h3>四大陷阱</h3>
+<ul><li><b>沒人卻用 is being p.p.</b>（最常考）</li>
+<li><b>動作 vs 狀態：</b>wearing（穿著，狀態）vs putting on（正在穿，動作）；holding vs picking up</li>
+<li><b>照片裡沒有的東西：</b>描述得很合理，但照片沒出現</li>
+<li><b>近音字：</b>walk / work、copy / coffee、file / pile</li></ul>
+<h3>常考動詞</h3>
+<p>stack, pile, arrange, lean against, hang, mount, line up, unload, load, examine, adjust, reach for, point at, face, sweep, mop, wipe, water (plants)</p>
+<div class="tip">解題：聽每句時先抓<b>主詞</b>（人還是東西）和<b>時態</b>，再對照情境：有沒有人？動作還是狀態？東西真的在照片裡嗎？</div>`,
+ qs:[
+  {p:1,scene:"一名男子正把紙箱從貨車上搬下來。",o:["A man is loading a truck.","A man is unloading boxes from a vehicle.","Some boxes are being opened.","A truck is parked in a garage."],a:1,e:"從車上搬下 = unload。(A) load 是「裝上」，方向相反；(C) 沒有人在拆箱。"},
+  {p:1,scene:"會議室裡沒有人，椅子整齊地排在長桌周圍。",o:["Chairs are being arranged around a table.","Some people are seated at a table.","A table is being cleaned.","Chairs have been arranged around a table."],a:3,e:"沒有人 → 用狀態 have been arranged。(A)(C) 的 is being p.p. 需要有人正在做。"},
+  {p:1,scene:"一名女子戴著安全帽，正在看手上的文件。",o:["She's putting on a helmet.","She's wearing a helmet.","She's writing on a document.","She's removing her glasses."],a:1,e:"已經戴著 = wearing（狀態）。putting on 是「正在戴上」的動作。"},
+  {p:1,scene:"一架梯子靠在建築物牆邊，旁邊沒有人。",o:["A ladder is leaning against a wall.","A man is climbing a ladder.","A ladder is being carried.","A wall is being painted."],a:0,e:"lean against 是狀態，沒人也能用。(C)(D) is being p.p. 需要有人。"},
+  {p:1,scene:"一名技術人員彎著腰，正在檢查影印機內部。",o:["A copier is being delivered.","A man is making copies at a desk.","Some papers are scattered on the floor.","A technician is examining a machine."],a:3,e:"examine = 檢查。(B) 有影印機但動作不對；(C) 照片裡沒提到紙。"},
+  {p:1,scene:"倉庫裡，紙箱一層層堆到接近天花板，沒有人。",o:["Workers are stacking boxes.","A forklift is being driven.","Boxes have been piled up high.","Shelves are being installed."],a:2,e:"沒有人 → 狀態 have been piled up。(A) 沒有工人；(B)(D) is being p.p. 需要有人。"},
+  {p:1,scene:"一名男子站在書架前，伸手去拿最上層的一本書。",o:["He's reading a book at a table.","He's putting books into a box.","He's reaching for a book on a shelf.","The shelves are being emptied."],a:2,e:"伸手去拿 = reach for。"},
+  {p:1,scene:"辦公室牆上掛著一幅畫，一名女子正在調整它的角度。",o:["A painting is being adjusted.","A woman is painting a wall.","A picture is lying on the floor.","A woman is taking a photograph."],a:0,e:"有人正在調整 → is being adjusted 可以用。(B) painting 一字多義（畫 / 油漆），是陷阱。"},
+  {p:1,scene:"兩名同事面對面坐著，中間的桌上有一台筆電。",o:["They're shaking hands.","They're facing each other.","One of them is typing on a phone.","A laptop is being repaired."],a:1,e:"face each other = 面對面。"},
+  {p:1,scene:"一名清潔人員在大廳用掃把掃地。",o:["A worker is mopping the floor.","A worker is sweeping the floor.","The floor is being polished by a machine.","The lobby is crowded with visitors."],a:1,e:"用掃把 = sweep；mop 是用拖把拖地，990 必分清楚。"},
+  {p:1,scene:"牆上固定著一台電視，下方的矮櫃上空空的，沒有人。",o:["A television is being installed.","Some items are displayed on a cabinet.","A man is watching TV.","A television has been mounted on a wall."],a:3,e:"固定在牆上 = mounted（狀態，沒人也能用）。(A) 沒人在安裝；(B) 櫃子上是空的。"},
+  {p:1,scene:"港口邊，幾艘小船停靠在碼頭旁，沒有人。",o:["Passengers are boarding a ship.","A boat is being towed.","Some boats are docked at a pier.","Some people are fishing from a pier."],a:2,e:"停靠 = docked（狀態）。(A)(D) 沒有人；(B) is being towed 需要有人或船在拖。"}
  ]}
 };

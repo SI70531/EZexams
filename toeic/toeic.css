@@ -171,3 +171,27 @@ main#app{padding-top:24px;padding-bottom:40px;min-height:50vh}
 :root .lesson table :is(th,td),:root .ptable :is(th,td){border-right:0;border-bottom:1px solid var(--line);color:var(--ink)}
 :root .lesson table th,:root .ptable th{background:var(--paper2);color:var(--muted)}
 :root .lesson table{width:100%}
+/* scrolling, as on the other subject pages: back-to-top (ezfx.js draws the progress ring), the "go back" pill, the flash on arrival */
+.totop{position:fixed;right:calc(20px + env(safe-area-inset-right,0px));bottom:calc(22px + env(safe-area-inset-bottom,0px));height:38px;padding:0 12px;border-radius:8px;border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);box-shadow:3px 3px 0 var(--hard);cursor:pointer;font-family:var(--f-mono);font-size:12.5px;display:grid;place-items:center;opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s,transform .2s,background .2s;z-index:7}
+.totop.show{opacity:1;visibility:visible}
+.totop:hover{transform:translate(1px,1px);box-shadow:2px 2px 0 var(--hard)}
+.ezback{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 18px);z-index:40;font:inherit;font-weight:700;font-size:15px;padding:11px 20px;border-radius:999px;border:1.5px solid var(--bad);background:var(--paper);color:var(--bad);box-shadow:0 6px 18px rgba(0,0,0,.18);cursor:pointer;max-width:calc(100vw - 32px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ezback:hover{background:var(--bad);color:var(--paper)}
+@keyframes wflash{0%,60%{box-shadow:0 0 0 4px var(--seal)}100%{box-shadow:0 0 0 0 transparent}}
+.wflash{animation:wflash 2.2s ease-out;border-radius:10px}
+.btn.sm{font-size:13px;padding:4px 12px}
+.tonotes{margin-top:8px}
+.wnav{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+/* the finish bar floats above the round buttons at the bottom corners */
+.finish{bottom:calc(72px + env(safe-area-inset-bottom,0px))}
+@media (prefers-reduced-motion:reduce){.wflash{animation:none;outline:3px solid var(--seal)}}
+/* home tab */
+.hhead h2{margin-top:6px}
+.card.next{border-color:var(--seal-line)}
+.card.next p{margin:6px 0 0}
+.phases .bar{margin-top:8px}
+.ptable.prog{max-width:none}
+.ptable.prog td:nth-child(2){font-family:var(--f-mono);white-space:nowrap}
+.ptable.prog td:last-child{width:40%}
+.howto{margin:0;padding-left:22px}
+.howto li{margin:6px 0}

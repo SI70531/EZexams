@@ -160,14 +160,15 @@ function Quiz(el,items,opts){
     const hideText=(q.p===2||q.p===1)&&!sh;
     let stem=q.p===2?"Listen to the question and three responses, then pick the best response.":q.p===1?"Scene: "+esc(q.scene)+" Listen to four statements and pick the one that fits.":esc(q.q).replace(/_{3,}/g,'<span class="blank">____</span>');
     if((q.p===2)&&sh)stem='<span class="tr">'+esc(q.say)+"</span>";
-    let h='<div class="qq'+(sh?(k===q.a?" right":" wrong"):"")+'" data-i="'+i+'"><div class="qh"><span class="num">'+num+'</span><span class="ptag">'+PN[q.p]+"</span>";
+    let h='<div class="qq qitem'+(sh?(k===q.a?" right":" wrong"):"")+'" data-i="'+i+'"><div class="qh"><span class="num">'+num+'</span><span class="ptag">'+PN[q.p]+"</span>";
     h+=(opts.mock&&!sh&&k!=null?'<span class="picked">Answered</span>':"")+'</div><div class="stem">'+stem+'</div><div class="opts">';
     q.o.forEach((o,j)=>{
-      let c="opt";if(k===j)c+=" sel";if(sh){if(j===q.a)c+=" ok";else if(j===k)c+=" bad";}
+      let c="opt";if(k===j)c+=" sel";if(sh){if(j===q.a)c+=" ok right";else if(j===k)c+=" bad wrong";}
       h+='<button type="button" class="'+c+'" data-i="'+i+'" data-k="'+j+'"'+(sh&&!opts.retry?" disabled":"")+'><b>'+LET[j]+"</b>"+(hideText?"":"<span>"+esc(o)+"</span>")+"</button>";
     });
     h+="</div>";
     if(sh&&q.e)h+='<div class="exp">'+(k===q.a?'<b class="okc">Correct</b> ':k==null?"":'<b class="badc">Wrong</b> You chose '+LET[k]+"; the answer is "+LET[q.a]+". ")+esc(q.e)+"</div>";
+    if(sh&&opts.notes&&k!=null&&k!==q.a)h+='<button type="button" class="btn sm tonotes" data-notes="'+i+'">↑ Review this in the handout</button>';
     return h+"</div>";
   }
   function gHTML(g){
@@ -184,9 +185,13 @@ function Quiz(el,items,opts){
     return h+idx.map(qHTML).join("")+"</div>";
   }
   function draw(){el.innerHTML=G.map((_,g)=>gHTML(g)).join("");}
-  function redraw(g){const n=el.querySelector('.grp[data-g="'+g+'"]');if(!n)return draw();const t=document.createElement("div");t.innerHTML=gHTML(g);n.replaceWith(t.firstChild);}
+  /* update a group in place: question blocks keep their element (the shared answer effects in ezfx.js follow it) */
+  function redraw(g){const n=el.querySelector('.grp[data-g="'+g+'"]');if(!n)return draw();const t=document.createElement("div");t.innerHTML=gHTML(g);
+    [...t.firstChild.children].forEach((c,k)=>{const o=n.children[k];
+      if(!o)n.appendChild(c);else if(o.classList.contains("qq")&&c.classList.contains("qq")){o.className=c.className;o.innerHTML=c.innerHTML;}else if(!o.isEqualNode(c))o.replaceWith(c);});}
   el.onclick=e=>{
     const b=e.target.closest("button");if(!b||!el.contains(b))return;
+    if(b.dataset.notes!=null){opts.notes(+b.dataset.notes);return;}
     if(b.dataset.play!=null){
       const g=+b.dataset.play,it=F[G[g][0]].ctx||F[G[g][0]];
       b.textContent="■ Playing…";b.classList.add("on");
@@ -219,13 +224,50 @@ function wrongItem(w){
 /* ---------------- views ---------------- */
 const app=$("#app");
 function setTab(name){$$(".tabs a").forEach(a=>a.classList.toggle("on",a.dataset.tab===name));}
+/* ---------------- scrolling helpers (same behaviour as the other EZexams subjects) ---------------- */
+let afterRoute=null;
+function nav(hash,fn){afterRoute=fn;if(location.hash===hash)route();else location.hash=hash;}
+function scrollToEl(el,center){
+  const top=el.getBoundingClientRect().top+scrollY-(center?Math.max(16,(innerHeight-el.offsetHeight)/2):16);
+  window.scrollTo({top:Math.max(0,top),behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
+}
+function glow(el){el.classList.remove("wflash");void el.offsetWidth;el.classList.add("wflash");setTimeout(()=>el.classList.remove("wflash"),2300);}
+/* a floating "go back" pill at the bottom of the screen; it stays while you read, and goes away when you use the tabs */
+const backPill=document.createElement("button");backPill.type="button";backPill.className="ezback";backPill.hidden=true;document.body.appendChild(backPill);
+function offerBack(label,fn){backPill.textContent=label;backPill.onclick=()=>{backPill.hidden=true;fn();};backPill.hidden=false;}
+document.addEventListener("click",e=>{if(e.target.closest(".tabs a"))backPill.hidden=true;},true);
+function toHandout(){const s=$("#s-l");if(!s)return;const d=s.querySelector("details");if(d)d.open=true;scrollToEl(s,false);glow(s);}
+/* a mistake card -> its question (or the handout of its lesson), with a pill that comes back to the same card */
+function goWrong(id,what){
+  const back=location.hash||"#today",m=id.match(/^d(\d+):(\d+)$/),mm=id.match(/^m:(.+):([LR])(\d+)$/);
+  const ret=()=>nav(back,()=>{const c=[...document.querySelectorAll(".wbox")].find(x=>x.dataset.id===id);if(c){scrollToEl(c,true);glow(c);}});
+  const showQ=sel=>{const el=$(sel);if(el){scrollToEl(el,true);glow(el);}};
+  if(m)nav("#day/"+m[1],()=>{if(what==="notes")toHandout();else showQ('#pq .qq[data-i="'+m[2]+'"]');offerBack("↩ Back to the mistake",ret);});
+  else if(mm)nav("#mock/"+mm[1],()=>{showQ((mm[2]==="L"?"#ml":"#mr")+' .qq[data-i="'+mm[3]+'"]');offerBack("↩ Back to the mistake",ret);});
+}
+function wrongNav(id){
+  const m=id.match(/^d(\d+):\d+$/),mm=id.match(/^m:(.+):[LR]\d+$/);
+  if(m&&+m[1]<=cur())return '<div class="wnav"><button type="button" class="btn sm" data-wgo="q">Go to the question</button><button type="button" class="btn sm" data-wgo="notes">Go to the handout</button></div>';
+  if(mm&&mockById(mm[1]))return '<div class="wnav"><button type="button" class="btn sm" data-wgo="q">Go to the question</button></div>';
+  return "";
+}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-wgo]");if(!b)return;const box=b.closest(".wbox");if(box)goWrong(box.dataset.id,b.dataset.wgo);});
+/* back to top: shows after scrolling down; ezfx.js draws the progress ring around it */
+const toTop=$("#toTop");
+if(toTop){addEventListener("scroll",()=>toTop.classList.toggle("show",scrollY>500),{passive:true});toTop.addEventListener("click",()=>scrollTo({top:0,behavior:"smooth"}));}
 function route(){
+  /* hiding and showing the view tells ezfx.js new content arrived (it slides the view in and arms the scroll reveal) */
+  app.hidden=true;routeView();app.hidden=false;
+  if(afterRoute){const f=afterRoute;afterRoute=null;setTimeout(f,120);}
+  dispatchEvent(new Event("scroll"));
+}
+function routeView(){
   stopSpeak();clearInterval(timerId);
-  const h=location.hash.replace(/^#/,"")||"today";const[v,arg]=h.split("/");
+  const h=location.hash.replace(/^#/,"")||"home";const[v,arg]=h.split("/");
   if(v==="day")return setTab("course"),viewLesson(+arg,false);
   if(v==="mock")return setTab("mocks"),viewMock(arg);
-  const map={today:viewToday,course:viewCourse,vocab:viewVocab,mocks:viewMocks,wrong:viewWrong};
-  (map[v]||viewToday)();setTab(map[v]?v:"today");
+  const map={home:viewHome,today:viewToday,course:viewCourse,vocab:viewVocab,mocks:viewMocks,wrong:viewWrong};
+  (map[v]||viewHome)();setTab(map[v]?v:"home");
   window.scrollTo(0,0);
 }
 addEventListener("hashchange",route);
@@ -239,6 +281,41 @@ function headStats(){
     '<div><span class="k">Words</span><b>'+Object.keys(S.vocab).length+'</b>'+(due?'<a href="#vocab" class="small">'+due+" due</a>":"")+"</div>"+
     '<div><span class="k">Open mistakes</span><b>'+wr+"</b>"+(wr?'<a href="#wrong" class="small">Redo</a>':"")+"</div>"+
     '<div><span class="k">Latest mock</span><b>'+(lm?lm.tot:"—")+'</b><span class="small">Goal '+C.target+"</span></div></div>";
+}
+
+/* ---------------- home: the overview every EZexams subject opens on ---------------- */
+function viewHome(){
+  const n=cur(),done=Math.min(n-1,TOTAL),lm=lastMock(),due=dueWords().length,open=Object.values(S.wrong).filter(w=>!w.fixed).length;
+  /* accuracy by Part: lesson practice (answers still matching their content) plus every finished mock */
+  const acc={};const add=(p,c,t)=>{const a=acc[p]=acc[p]||[0,0];a[0]+=c;a[1]+=t;};
+  Object.entries(S.days).forEach(([k,r])=>{const c=content(+k);if(!c||!r||!r.ans||r.cid!==c.cid)return;flat(c.qs).forEach((q,i)=>{if(r.ans[i]!=null)add(q.p,r.ans[i]===q.a?1:0,1);});});
+  Object.values(S.mocks).forEach(m=>[...(m.hist||[]),m.res].filter(Boolean).forEach(r=>Object.entries(r.parts||{}).forEach(([p,x])=>add(p,x[0],x[1]))));
+  const parts=Object.keys(acc).filter(p=>+p>0).sort();
+  let next;
+  if(n>TOTAL)next='<b>Course complete.</b> Keep taking mock tests and redoing mistakes until test day.<div class="row"><a class="btn primary" href="#mocks">Mock tests</a></div>';
+  else{const I=info(n),lock=lockedToday(n);
+    next=(lock?'<span class="kicker">Done for today ✓</span><p>Tomorrow: <b>Day '+n+'</b> '+esc(I.t)+'</p>':'<span class="kicker">Next step</span><p><b>Day '+n+'</b> '+esc(I.t)+' <span class="small">'+(I.review?"Weekly review":PN[I.p])+' · about 30 min</span></p>')+
+      '<div class="row">'+(lock?"":'<a class="btn primary" href="#today">Start today\'s lesson</a>')+(due?'<a class="btn" href="#vocab">Review words ('+due+')</a>':"")+(open?'<a class="btn" href="#wrong">Redo mistakes ('+open+')</a>':"")+"</div>";}
+  let h='<section class="card hhead"><span class="kicker">TOEIC Listening &amp; Reading · Goal '+C.target+'</span><h2>Road to '+C.target+'</h2><p>From about 550 to '+C.target+' in 40 weeks, about 30 minutes a day. Each day: a few new words with spaced review, a short handout, practice questions with explanations, and a few old mistakes to redo. Mini mock tests track your estimated score.</p></section>';
+  h+='<section class="card next">'+next+'</section>';
+  h+='<section class="card"><h3>Course plan</h3><div class="phases">'+C.phases.map(p=>{const a=(p.weeks[0]-1)*7+1,b=p.weeks[1]*7;let d=0;for(let k=a;k<=b;k++)if(S.days[k]&&S.days[k].done)d++;const t=b-a+1;
+    return '<div><b>'+esc(p.name)+'</b><span class="small">Weeks '+p.weeks[0]+"–"+p.weeks[1]+" · Goal "+p.goal+'</span><span class="small">'+esc(p.desc)+'</span><span class="bar"><i style="width:'+(d/t*100).toFixed(1)+'%"></i></span><span class="small">'+d+" / "+t+" days</span></div>";}).join("")+'</div><div class="row"><a class="btn" href="#course">Full course map</a></div></section>';
+  h+='<section class="card"><h3>Progress</h3><table class="ptable prog"><tr><th>Item</th><th>Now</th><th></th></tr>'+
+    '<tr><td>Lessons</td><td>'+done+" / "+TOTAL+'</td><td><span class="bar"><i style="width:'+(done/TOTAL*100).toFixed(1)+'%"></i></span></td></tr>'+
+    '<tr><td>Streak</td><td>'+streak()+(streak()===1?' day':' days')+'</td><td></td></tr>'+
+    '<tr><td>Words learned</td><td>'+Object.keys(S.vocab).length+'</td><td class="small">'+(due?due+" due for review":"none due")+'</td></tr>'+
+    '<tr><td>Open mistakes</td><td>'+open+'</td><td class="small">'+Object.values(S.wrong).filter(w=>w.fixed).length+' fixed</td></tr>'+
+    '<tr><td>Latest mock</td><td>'+(lm?lm.tot:"—")+'</td><td class="small">'+(lm?"L "+lm.L+" · R "+lm.R+" · "+esc(lm.at):"no mock taken yet")+'</td></tr>'+
+    parts.map(p=>{const[c,t]=acc[p];return '<tr><td>'+PN[p]+' accuracy</td><td>'+Math.round(c/t*100)+'%</td><td><span class="bar"><i style="width:'+(c/t*100).toFixed(0)+'%"></i></span><span class="small">'+c+" / "+t+"</span></td></tr>";}).join("")+
+    '</table>'+(parts.length?'<p class="small">Accuracy counts lesson practice and every mock. For 990 each Part needs to stay near 100%.</p>':'')+'</section>';
+  h+='<section class="card"><h3>How to use this course</h3><ol class="howto">'+
+    '<li><b>Every day, open Today</b> and do the four steps in order: words, handout, practice, redo mistakes. About 30 minutes.</li>'+
+    '<li><b>One lesson opens per day.</b> Each topic takes two days: the handout and the first half on day one, the second half on day two. Day 7 of each week is a review.</li>'+
+    '<li><b>Listening:</b> press ▶ Play and answer by ear first; open the transcript only after answering. Set the speed at the bottom of the page.</li>'+
+    '<li><b>Mistakes</b> collect every wrong answer, sorted by Part. Use “Go to the question” or “Go to the handout” to see where it came from; the ↩ button brings you back.</li>'+
+    '<li><b>Mock tests</b> fit in one 30-minute day. Take one in place of a weekly review; AI can write new ones whenever you want.</li>'+
+    '<li><b>Sign in</b> (top right) to keep progress on every device.</li></ol></section>';
+  app.innerHTML=h;
 }
 
 function viewToday(){
@@ -300,6 +377,7 @@ function viewLesson(n,isToday){
   /* 3 practice */
   const ans=()=>(rec(n)&&rec(n).cid===ct.cid&&rec(n).ans)||{};
   const pq=Quiz($("#pq"),ct.qs,{seed:n*7,pick:i=>ans()[i],shown:i=>ans()[i]!=null,
+    notes:i=>{toHandout();offerBack("↩ Back to question "+(i+1),()=>{const el=$('#pq .qq[data-i="'+i+'"]');if(el){scrollToEl(el,true);glow(el);}});},
     set:(i,k,q)=>{const x=R();x.ans[i]=k;if(k!==q.a)addWrong("d"+n+":"+i,q,k,"Day "+n+" practice",n);touch(x);
       if(Object.keys(x.ans).length>=pq.F.length){x.st.p=1;}save();upd();}});
   /* 4 redo mistakes */
@@ -412,7 +490,7 @@ function viewReview(n,I,isToday){
 function redo(el,ids,onAll){
   if(!ids.length){el.innerHTML="";return;}
   const tried={};
-  el.innerHTML=ids.map((id,i)=>'<div class="wbox" data-id="'+esc(id)+'"><div class="small src">'+esc(S.wrong[id].src)+" · wrong "+S.wrong[id].n+'×</div><div class="wq"></div></div>').join("");
+  el.innerHTML=ids.map((id,i)=>'<div class="wbox" data-id="'+esc(id)+'"><div class="small src">'+esc(S.wrong[id].src)+" · wrong "+S.wrong[id].n+'×</div><div class="wq"></div>'+wrongNav(id)+'</div>').join("");
   $$(".wbox",el).forEach(box=>{
     const id=box.dataset.id,w=S.wrong[id];
     Quiz($(".wq",box),[wrongItem(w)],{seed:id.length,pick:()=>tried[id],shown:()=>tried[id]!=null,
@@ -525,7 +603,7 @@ function viewWrong(){
     const L=(f==="fixed"?fixed:open.filter(([,w])=>f==="all"||String(w.q.p)===f)).sort((a,b)=>f==="fixed"?b[1].fixed-a[1].fixed:(b[1].n-a[1].n)||(a[1].at<b[1].at?-1:1));
     const el=$("#wl");
     if(!L.length){el.innerHTML='<section class="card"><p class="small">Nothing here.</p></section>';return;}
-    el.innerHTML='<section class="card">'+L.slice(0,40).map(([id,w])=>'<div class="wbox" data-id="'+esc(id)+'"><div class="small src">'+esc(w.src)+" · "+esc(w.at)+" · wrong "+w.n+"×"+(w.fixed?" · fixed":"")+(w.pick>=0&&w.pick!=null?" · last pick "+LET[w.pick]:"")+'</div><div class="wq"></div></div>').join("")+(L.length>40?'<p class="small">Showing the first 40; more appear as you fix these.</p>':"")+"</section>";
+    el.innerHTML='<section class="card">'+L.slice(0,40).map(([id,w])=>'<div class="wbox" data-id="'+esc(id)+'"><div class="small src">'+esc(w.src)+" · "+esc(w.at)+" · wrong "+w.n+"×"+(w.fixed?" · fixed":"")+(w.pick>=0&&w.pick!=null?" · last pick "+LET[w.pick]:"")+'</div><div class="wq"></div>'+wrongNav(id)+'</div>').join("")+(L.length>40?'<p class="small">Showing the first 40; more appear as you fix these.</p>':"")+"</section>";
     $$(".wbox",el).forEach(box=>{
       const id=box.dataset.id,w=S.wrong[id];let tried=f==="fixed"?w.q.a:undefined;
       Quiz($(".wq",box),[wrongItem(w)],{seed:id.length,pick:()=>tried,shown:()=>tried!=null,

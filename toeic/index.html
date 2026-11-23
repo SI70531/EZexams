@@ -11,13 +11,14 @@
 <link rel="apple-touch-icon" href="../assets/icon-180.png">
 <link rel="manifest" href="../manifest.webmanifest">
 <script src="../assets/ezcore.js?v=b2612a70"></script>
+<script src="../assets/ezfx.js?v=9d2a1881" defer></script>
 <script src="../assets/ezai.js?v=e0174e3d"></script>
 <link rel="stylesheet" href="../assets/fonts/fonts.css?v=73cd630b">
 <link rel="stylesheet" href="../assets/ezhome.css?v=39177b41">
 <link rel="stylesheet" href="../assets/ui/ui.css?v=7df89fcc">
 <link rel="stylesheet" href="../assets/ui/ui-theme.css?v=c98ae19c">
 <link rel="stylesheet" href="../assets/ezglass.css?v=6a8c48c4">
-<link rel="stylesheet" href="toeic.css?v=25982576">
+<link rel="stylesheet" href="toeic.css?v=f4e2bdf1">
 </head>
 <body>
 <header class="wrap">
@@ -30,18 +31,20 @@
     <h1>TOEIC: road to 990</h1>
   </div>
   <nav class="tabs" aria-label="TOEIC">
-    <a href="#today" data-tab="today">Today</a><a href="#course" data-tab="course">Course</a><a href="#vocab" data-tab="vocab">Words</a><a href="#mocks" data-tab="mocks">Mock tests</a><a href="#wrong" data-tab="wrong">Mistakes</a>
+    <a href="#home" data-tab="home">Home</a><a href="#today" data-tab="today">Today</a><a href="#course" data-tab="course">Course</a><a href="#vocab" data-tab="vocab">Words</a><a href="#mocks" data-tab="mocks">Mock tests</a><a href="#wrong" data-tab="wrong">Mistakes</a>
   </nav>
 </header>
-<main class="wrap" id="app"></main>
+<main class="wrap view" id="app"></main>
+<button class="totop" id="toTop" type="button" aria-label="Back to top">↑</button>
 <footer class="wrap tfoot">
   <div class="rate"><label for="rate">Listening speed</label><input type="range" id="rate" min="0.75" max="1.1" step="0.05"><span id="rateV"></span><button class="btn" type="button" id="rateTest">Test</button><span class="small" id="rateNote">Listening items are read aloud by the browser; Edge and Chrome on a computer sound the most natural.</span></div>
   <p class="small">All questions are original TOEIC-style practice (hand-written or AI-made), not official ETS material. Mock scores are estimates based on accuracy.</p>
 </footer>
-<script src="data/course.js?v=bb529318"></script>
+<script src="data/course.js?v=82a7ef96"></script>
 <script src="data/mocks.js?v=1ca4bb9c"></script>
 <script src="../assets/ezsync.js?v=aa9f0659"></script>
 <script src="../assets/ezgate.js?v=d6286859"></script>
-<script src="app.js?v=e0201baa"></script>
+<script defer src="../assets/ezjump.js?v=42ac94f1"></script>
+<script src="app.js?v=9be5c241"></script>
 </body>
 </html>

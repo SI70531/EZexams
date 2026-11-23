@@ -3,7 +3,7 @@
    每回：L = 聽力題（Part 2 / 3 / 4，用瀏覽器語音朗讀），R = 閱讀題（Part 5 / 6 / 7）。格式見 toeic/README.md。
    全部為原創的多益風格練習題，非 ETS 官方試題。 */
 window.TOEIC_MOCKS=[
-{id:"b1",title:"Mini mock 1",mins:35,
+{id:"b1",title:"Mini mock 1",mins:30,
  L:[
   {p:2,say:"Where's the nearest copy machine?",o:["Down the hall on your left.","Make ten copies, please.","It's nearly finished."],a:0,e:"Where → 地點。(B) copies 重複字陷阱。"},
   {p:2,say:"Would you like to join us for lunch?",o:["I already ate, thanks.","The lunch menu is long.","Join the club."],a:0,e:"邀請 → 婉拒並說明原因。(B)(C) 都是重複字陷阱。"},

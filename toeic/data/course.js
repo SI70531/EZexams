@@ -1,15 +1,15 @@
-/* TOEIC 金色證書課程：課程表與手寫內容。
-   - TOEIC_COURSE.weeks：20 週，每週 6 堂課 + 第 7 天週複習（每天 1 堂，約 50–60 分鐘）。
-     每堂課 [主題, 主要題型 Part, 字彙主題]。
-   - TOEIC_DAYS[n]：第 n 天的手寫內容（講義、12 個單字、練習題）。沒有手寫內容的天數，頁面會用 AI 依主題產生，
-     產生後存進帳號同步。要加手寫內容：照下面的格式新增 TOEIC_DAYS[n] 即可（n = (週-1)*7 + 第幾天）。
+/* TOEIC 990 課程：課程表與手寫內容。
+   - TOEIC_COURSE.weeks：20 組主題週，每組 6 個主題 [主題, 主要題型 Part, 字彙主題]。每天約 30 分鐘，
+     每個主題分兩天上（第一天：講義＋前半的單字與題目；第二天：後半），所以實際課程是 40 週，每週第 7 天週複習。
+   - TOEIC_DAYS[n]：主題 n 的手寫內容（講義、12 個單字、練習題），n = (主題週-1)*7 + 第幾個主題（1–6）。
+     沒有手寫內容的主題，頁面會用 AI 依主題產生，產生後存進帳號同步。
    題目格式見 toeic/README.md。所有題目為原創的多益風格練習題，非 ETS 官方試題。 */
 window.TOEIC_COURSE={
-  target:860,
+  target:990,
   phases:[
-    {name:"Phase 1: Foundations",weeks:[1,6],goal:650,desc:"Core grammar, high-frequency words, Part 2 and Part 5 routines"},
-    {name:"Phase 2: Part strategies",weeks:[7,13],goal:750,desc:"Part 3, 4, 6 and 7 strategies, paraphrase, timing"},
-    {name:"Phase 3: Gold sprint",weeks:[14,20],goal:860,desc:"Hard items, weak spots, a mock test every week"}
+    {name:"Phase 1: Foundations",weeks:[1,12],goal:700,desc:"Core grammar, high-frequency words, Part 2 and Part 5 routines"},
+    {name:"Phase 2: Part strategies",weeks:[13,26],goal:850,desc:"Part 3, 4, 6 and 7 strategies, paraphrase, timing"},
+    {name:"Phase 3: 990 sprint",weeks:[27,40],goal:990,desc:"The hardest items, zero-mistake habits, a mock test every week"}
   ],
   weeks:[
     {theme:"考試全貌與詞性",days:[["多益架構＋詞性與句子位置",5,"辦公室日常"],["動詞時態與時間線索",5,"人事招募"],["主動 vs 被動語態",5,"行銷業務"],["Part 2 WH 問句（Who / When / Where / Why / How）",2,"會議與出差"],["主詞動詞一致",5,"財務預算"],["介系詞 vs 連接詞 vs 連接副詞",5,"生產與物流"]]},
@@ -43,8 +43,8 @@ window.TOEIC_DAYS={
 <table><tr><th>部分</th><th>題型</th><th>題數</th></tr>
 <tr><td>聽力 45 分鐘</td><td>Part 1 照片描述 / Part 2 應答問題 / Part 3 簡短對話 / Part 4 簡短獨白</td><td>6 / 25 / 39 / 30</td></tr>
 <tr><td>閱讀 75 分鐘</td><td>Part 5 句子填空 / Part 6 段落填空 / Part 7 閱讀理解</td><td>30 / 16 / 54</td></tr></table>
-<p>聽力、閱讀各 5–495 分，總分 990。<b>金色證書是 860 分以上</b>。從 550 到 860，大約要聽力 450、閱讀 410，等於兩邊都要答對約 85%。</p>
-<div class="tip">課程節奏：每天一堂，單字 15 分、講義 15 分、練習 20 分、錯題 10 分。每週第 7 天是週複習。進度鎖在「一天一堂」，寧可穩，不要衝。</div>
+<p>聽力、閱讀各 5–495 分，總分 990（金色證書是 860 分以上）。<b>你的目標是 990</b>：聽力、閱讀兩邊都要接近全對，大約每邊最多錯 2–3 題。所以這個課程不只求「會」，還要練到不粗心、不猶豫。</p>
+<div class="tip">課程節奏：每天約 30 分鐘：單字 8 分、講義 10 分、練習 8 分、錯題 4 分。每個主題分兩天上，第一天讀講義、做前半，第二天做後半。每週第 7 天是週複習。進度鎖在「一天一堂」，寧可穩，不要衝。</div>
 <h3>今天的重點：詞性題（Part 5 最大宗，約 1/3）</h3>
 <p>四個選項長得很像、只差字尾（prompt / promptly / promptness / prompted）時，<b>不用看懂整句</b>，只要看空格前後。</p>
 <table><tr><th>空格位置</th><th>填什麼</th><th>例子</th></tr>

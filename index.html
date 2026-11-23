@@ -58,12 +58,12 @@
       <a class="ticket" href="toeic/">
         <div class="main">
           <span class="kind">Course</span>
-          <h3>TOEIC: road to gold</h3>
-          <p id="toeicNext">550 → 860+, one lesson a day, about an hour</p>
+          <h3>TOEIC: road to 990</h3>
+          <p id="toeicNext">550 → 990, about 30 minutes a day</p>
           <dl><dt>Daily</dt><dd>Handout, 12 words with spaced review, practice with spoken listening items</dd><dt>Mocks</dt><dd>Mini mock tests; the number keeps growing (built in + AI-made on demand)</dd><dt>Review</dt><dd>Mistake notebook sorted by Part, redo until fixed</dd></dl>
           <span class="go">Start →</span>
         </div>
-        <div class="stub"><span class="k">DAY</span><span class="v" id="toeicDay">1</span><span class="s" id="toeicOf">/ 140</span></div>
+        <div class="stub"><span class="k">DAY</span><span class="v" id="toeicDay">1</span><span class="s" id="toeicOf">/ 280</span></div>
       </a>
     </div>
   </section>
@@ -247,7 +247,7 @@
   done.forEach(t=>terms.appendChild(t));
 })();
 </script>
-<script src="toeic/data/course.js?v=b19a1d66"></script>
+<script src="toeic/data/course.js?v=bb529318"></script>
 <script>
 /* ---------- home menu: university exams / self-study courses such as TOEIC (the choice is remembered) ---------- */
 (function(){
@@ -261,13 +261,13 @@
   /* today's TOEIC lesson on the ticket */
   const C=window.TOEIC_COURSE;if(!C)return;
   let S={};try{S=JSON.parse(localStorage.getItem("toeic-v1")||"{}")||{};}catch(e){}
-  const days=S.days||{},total=C.weeks.length*7;let n=1;while(n<=total&&days[n]&&days[n].done)n++;
+  const days=S.plan===2?(S.days||{}):{},total=C.weeks.length*14;   /* 2 days per topic; older progress is moved over by the course page */let n=1;while(n<=total&&days[n]&&days[n].done)n++;
   const d=new Date(),today=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
   const doneToday=Object.values(days).some(x=>x.done&&x.at===today);
   document.getElementById("toeicDay").textContent=Math.min(n,total);
   document.getElementById("toeicOf").textContent="/ "+total;
   if(n>total){document.getElementById("toeicNext").textContent="Course complete. Keep taking mock tests.";return;}
-  const w=Math.ceil(n/7),k=(n-1)%7,t=k===6?"Week "+w+" review":C.weeks[w-1].days[k][0];
+  const w=Math.ceil(n/7),k=(n-1)%7,t=k===6?"Week "+w+" review":C.weeks[Math.ceil(w/2)-1].days[((w-1)%2)*3+Math.floor(k/2)][0]+(k%2?" (2/2)":" (1/2)");
   document.getElementById("toeicNext").textContent=(doneToday?"Today is done ✓ Tomorrow: ":"Today: ")+t;
 })();
 </script>

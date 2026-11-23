@@ -24,7 +24,7 @@ EZexams is a study site with notes, practice questions, and mock exams for each 
 
 ## TOEIC Course
 
-`toeic/` is a separate daily course (550 → 860+ gold certificate), reached from the **Self-study** menu on the home page: one lesson a day (handout, 12 words with spaced review, practice with spoken listening items), a weekly review, mini mock tests whose number keeps growing (built in, plus AI-made on demand) and a mistake notebook. See `toeic/README.md` for adding days and mocks. To add another self-study subject, put a new `<section class="exam-subj">` ticket inside `#selfStudy` in the root `index.html`.
+`toeic/` is a separate daily course (550 → 990, about 30 minutes a day, each topic over two days), reached from the **Self-study** menu on the home page: one lesson a day (handout, 12 words with spaced review, practice with spoken listening items), a weekly review, mini mock tests whose number keeps growing (built in, plus AI-made on demand) and a mistake notebook. See `toeic/README.md` for adding days and mocks. To add another self-study subject, put a new `<section class="exam-subj">` ticket inside `#selfStudy` in the root `index.html`.
 
 ## How the Project Is Organized
 

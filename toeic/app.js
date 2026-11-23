@@ -6,7 +6,7 @@
 "use strict";
 const KEY="toeic-v1",AIKEY="toeic-ai-v1";
 const C=window.TOEIC_COURSE,DAYS=window.TOEIC_DAYS||{},MOCKS=window.TOEIC_MOCKS||[];
-const TOTAL=C.weeks.length*7;
+const WEEKS=C.weeks.length*2,TOTAL=WEEKS*7;   /* each topic takes two days of about 30 minutes */
 const INT=[1,2,4,7,15,30];   /* 單字間隔（天），依熟練度 0–5 */
 const PN={0:"Mixed",1:"Part 1",2:"Part 2",3:"Part 3",4:"Part 4",5:"Part 5",6:"Part 6",7:"Part 7"};
 const LET="ABCD";
@@ -20,14 +20,29 @@ const today=()=>ymd();
 /* ---------------- state ---------------- */
 const load=k=>{try{return JSON.parse(localStorage.getItem(k)||"null")||{};}catch(e){return {};}};
 let S=load(KEY),A=load(AIKEY);
-function norm(){["days","vocab","wrong","mocks"].forEach(f=>{S[f]=S[f]||{};});S.set=S.set||{t:0,rate:0.95};A.lessons=A.lessons||{};A.mocks=A.mocks||{};}
+/* plan 2 (30 min a day): every topic of TOEIC_COURSE is split over two days, so the course has twice as many days.
+   Progress from plan 1 (one topic a day) moves over: a finished topic finishes both of its days. */
+function newDay(ow,ti){return ((ow-1)*2+(ti>3?1:0))*7+((ti-1)%3)*2+1;}
+function migrate(o){
+  if(!o||o.plan===2)return o;
+  const days={};
+  Object.entries(o.days||{}).forEach(([k,r])=>{
+    k=+k;if(!r||!r.done)return;const ow=Math.ceil(k/7),d=(k-1)%7+1;
+    const mk=()=>({t:r.t||now(),st:{v:1,l:1,p:1,r:1},ans:{},done:1,at:r.at||"",sc:r.sc});
+    if(d===7){days[(2*ow-1)*7]=mk();days[2*ow*7]=mk();}
+    else{const b=newDay(ow,d);days[b]=mk();days[b+1]=mk();}
+  });
+  return Object.assign({},o,{days,plan:2});
+}
+S=migrate(S);if(S.days&&S.plan===2)try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}
+function norm(){S.plan=2;["days","vocab","wrong","mocks"].forEach(f=>{S[f]=S[f]||{};});S.set=S.set||{t:0,rate:0.95};A.lessons=A.lessons||{};A.mocks=A.mocks||{};}
 norm();
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}if(window.EZSync&&EZSync.changed)EZSync.changed(KEY);}
 function saveA(){try{localStorage.setItem(AIKEY,JSON.stringify(A));}catch(e){}if(window.EZSync&&EZSync.changed)EZSync.changed(AIKEY);}
 const tOf=x=>(x&&x.t)||0;
 function mergeMap(l,r){const o=Object.assign({},r||{});Object.keys(l||{}).forEach(k=>{if(!o[k]||tOf(l[k])>tOf(o[k]))o[k]=l[k];});return o;}
 function merge(local,remote){
-  local=local||{};remote=remote||{};const out=Object.assign({},remote,local);
+  local=local||{};remote=remote||{};if(local.days||remote.days){local=migrate(local);remote=migrate(remote);}const out=Object.assign({},remote,local);
   Object.keys(Object.assign({},local,remote)).forEach(f=>{
     const l=local[f],r=remote[f];
     if(f==="set"){out.set=tOf(l)>=tOf(r)?(l||r):r;return;}
@@ -37,15 +52,28 @@ function merge(local,remote){
 }
 
 /* ---------------- course ---------------- */
+/* day n -> course week w (1..40); each pair of course weeks covers one TOEIC_COURSE week (6 topics): topics 1-3 in the
+   first, 4-6 in the second, each topic on two days (part 0 / part 1); day 7 is the weekly review.
+   tn = the topic's key in TOEIC_DAYS / AI lessons ((old week-1)*7 + topic number). */
 function info(n){
-  const w=Math.ceil(n/7),d=(n-1)%7+1,wk=C.weeks[w-1]||C.weeks[C.weeks.length-1];
+  const w=Math.ceil(n/7),d=(n-1)%7+1,ow=Math.min(Math.ceil(w/2),C.weeks.length),half=(w-1)%2,wk0=C.weeks[ow-1];
+  const wk={theme:wk0.theme+(half?" II":" I")};
   const ph=C.phases.find(p=>w>=p.weeks[0]&&w<=p.weeks[1])||C.phases[0];
   if(d===7)return {n,w,d,review:true,t:"Week "+w+" review: "+wk.theme,p:0,v:"This week's words",ph,wk};
-  const x=wk.days[d-1];return {n,w,d,t:x[0],p:x[1],v:x[2],ph,wk};
+  const ti=half*3+Math.ceil(d/2),part=(d-1)%2,x=wk0.days[ti-1];
+  return {n,w,d,t:x[0]+(part?" (2/2)":" (1/2)"),title:x[0],p:x[1],v:x[2],ph,wk,tn:(ow-1)*7+ti,part};
 }
+function topic(tn){
+  if(DAYS[tn])return Object.assign({src:"hand",cid:"h"},DAYS[tn]);
+  const a=A.lessons[tn];return a&&a.data?Object.assign({src:"ai",cid:a.cid},a.data):null;
+}
+const qn=x=>x.qs?x.qs.length:1;
+/* half of a topic: day 1 gets the first half of the words and questions, day 2 the rest (a question set stays whole) */
 function content(n){
-  if(DAYS[n])return Object.assign({src:"hand",cid:"h"},DAYS[n]);
-  const a=A.lessons[n];return a&&a.data?Object.assign({src:"ai",cid:a.cid},a.data):null;
+  const I=info(n);if(I.review)return null;const t=topic(I.tn);if(!t)return null;
+  const hw=Math.ceil(t.words.length/2),tot=t.qs.reduce((a,x)=>a+qn(x),0);let i=0,acc=0;
+  while(i<t.qs.length&&acc<Math.ceil(tot/2)){acc+=qn(t.qs[i]);i++;}
+  return Object.assign({},t,{words:I.part?t.words.slice(hw):t.words.slice(0,hw),qs:I.part?t.qs.slice(i):t.qs.slice(0,i),second:!!I.part});
 }
 const rec=n=>S.days[n];
 function mkRec(n){if(!S.days[n])S.days[n]={t:now(),st:{},ans:{},done:0,at:""};return S.days[n];}
@@ -210,7 +238,7 @@ function headStats(){
     '<div><span class="k">Streak</span><b>'+streak()+'</b></div>'+
     '<div><span class="k">Words</span><b>'+Object.keys(S.vocab).length+'</b>'+(due?'<a href="#vocab" class="small">'+due+" due</a>":"")+"</div>"+
     '<div><span class="k">Open mistakes</span><b>'+wr+"</b>"+(wr?'<a href="#wrong" class="small">Redo</a>':"")+"</div>"+
-    '<div><span class="k">Latest mock</span><b>'+(lm?lm.tot:"—")+'</b><span class="small">Goal '+C.target+"+</span></div></div>";
+    '<div><span class="k">Latest mock</span><b>'+(lm?lm.tot:"—")+'</b><span class="small">Goal '+C.target+"</span></div></div>";
 }
 
 function viewToday(){
@@ -226,7 +254,7 @@ function viewToday(){
 }
 
 function lessonHead(I,isToday){
-  return '<section class="lhead"><span class="kicker">'+esc(I.ph.name)+" · Week "+I.w+" · Day "+I.n+(isToday?" · Today":"")+'</span><h2>'+esc(I.t)+'</h2><p class="small">'+(I.review?"Word quiz 15 min · Redo mistakes 20 min · Mock test suggested":PN[I.p]+" · Word theme: "+esc(I.v)+" · About 50–60 min")+"</p></section>";
+  return '<section class="lhead"><span class="kicker">'+esc(I.ph.name)+" · Week "+I.w+" · Day "+I.n+(isToday?" · Today":"")+'</span><h2>'+esc(I.t)+'</h2><p class="small">'+(I.review?"Word quiz 10 min · Redo mistakes 10 min · Or a 30-minute mock instead":PN[I.p]+" · Word theme: "+esc(I.v)+" · About 30 min")+"</p></section>";
 }
 
 function viewLesson(n,isToday){
@@ -236,7 +264,7 @@ function viewLesson(n,isToday){
   if(I.review)return viewReview(n,I,isToday);
   const ct=content(n);
   if(!ct){
-    app.innerHTML=(isToday?headStats():"")+lessonHead(I,isToday)+'<section class="card"><h3>Generate this lesson</h3><p>This day has no hand-written handout yet. AI writes the handout, picks 12 words and sets 12 practice questions on the topic (30–60 seconds, sign-in needed). It is saved to your account and shows on every device.</p><button class="btn primary" id="gen">Generate Day '+n+'</button><p class="msg" id="genMsg" role="status"></p></section>';
+    app.innerHTML=(isToday?headStats():"")+lessonHead(I,isToday)+'<section class="card"><h3>Generate this lesson</h3><p>This day has no hand-written handout yet. AI writes the handout, picks 12 words and sets 12 practice questions on the topic, split over this day and the next (30–60 seconds, sign-in needed). It is saved to your account and shows on every device.</p><button class="btn primary" id="gen">Generate Day '+n+'</button><p class="msg" id="genMsg" role="status"></p></section>';
     $("#gen").onclick=async()=>{
       const b=$("#gen"),m=$("#genMsg");b.disabled=true;m.className="msg";m.textContent="AI is writing… (30–60 seconds)";
       try{await genLesson(n,I);route();}
@@ -248,12 +276,13 @@ function viewLesson(n,isToday){
   if(r.cid&&r.cid!==ct.cid){r.ans={};r.st={};r.cid=ct.cid;}   /* content was regenerated elsewhere: old answers do not belong to it */
   const st=r.st||{};
   const nNew=ct.words.filter(w=>!S.vocab[w[0]]).length;
-  const steps=[["v","Words",nNew?nNew+" new":"Done"],["l","Handout","15 min"],["p","Practice",ct.qs.reduce((a,x)=>a+(x.qs?x.qs.length:1),0)+" questions"],["r","Redo mistakes","Up to 5"]];
+  const steps=[["v","Words",nNew?nNew+" new":"Done"],["l","Handout",ct.second?"Optional review":"10 min"],["p","Practice",ct.qs.reduce((a,x)=>a+(x.qs?x.qs.length:1),0)+" questions"],["r","Redo mistakes","Up to 3"]];
   let h=(isToday?headStats():'<p><a href="#course" class="small">← Course map</a></p>')+lessonHead(I,isToday);
   if(ct.src==="ai")h+='<p class="small aiflag">This day was written by AI. If something looks wrong, <button class="linkbtn" id="regen">regenerate it</button>.</p>';
   h+='<ol class="steps">'+steps.map(([k,t,s],i)=>'<li class="'+(st[k]?"ok":"")+'"><a href="#s-'+k+'"><span class="n">'+(i+1)+"</span>"+t+'<span class="small">'+s+"</span></a></li>").join("")+"</ol>";
   h+='<section class="card" id="s-v"><h3><span class="n">1</span>Words</h3><div class="words">'+ct.words.map(w=>wordRow(w)).join("")+'</div><div id="fc"></div></section>';
-  h+='<section class="card" id="s-l"><h3><span class="n">2</span>Handout</h3><div class="lesson">'+ct.lesson+'</div><button class="btn'+(st.l?"":" primary")+'" id="readOk">'+(st.l?"✓ Read":"I've read it")+"</button></section>";
+  h+=ct.second?'<section class="card" id="s-l"><h3><span class="n">2</span>Handout</h3><details><summary class="small">Yesterday\'s handout (optional review)</summary><div class="lesson">'+ct.lesson+'</div></details></section>'
+    :'<section class="card" id="s-l"><h3><span class="n">2</span>Handout</h3><div class="lesson">'+ct.lesson+'</div><button class="btn'+(st.l?"":" primary")+'" id="readOk">'+(st.l?"✓ Read":"I've read it")+"</button></section>";
   h+='<section class="card" id="s-p"><h3><span class="n">3</span>Practice</h3><p class="small" id="pScore"></p><div id="pq"></div></section>';
   h+='<section class="card" id="s-r"><h3><span class="n">4</span>Redo mistakes</h3><div id="rq"></div></section>';
   if(isToday||!r.done)h+='<div class="finish"><button class="btn primary" id="finish">Finish Day '+n+'</button><span class="small" id="finMsg"></span></div>';
@@ -266,7 +295,7 @@ function viewLesson(n,isToday){
   flash($("#fc"),fcWords,fcDue,()=>{const x=R();x.st.v=1;touch(x);save();upd();});
   if(!fcWords.length&&!st.v&&!r.done){const x=R();x.st.v=1;touch(x);save();}
   /* 2 lesson */
-  $("#readOk").onclick=()=>{const x=R();x.st.l=1;touch(x);save();$("#readOk").textContent="✓ Read";$("#readOk").classList.remove("primary");upd();};
+  if(!ct.second)$("#readOk").onclick=()=>{const x=R();x.st.l=1;touch(x);save();$("#readOk").textContent="✓ Read";$("#readOk").classList.remove("primary");upd();};
   if(ct.src==="ai")$("#regen").onclick=async()=>{if(!confirm("Regenerating replaces this day's handout, words and questions, and clears its answers. Continue?"))return;$("#regen").disabled=true;try{await genLesson(n,I);const x=rec(n);if(x){x.ans={};x.st={};x.cid="";touch(x);save();}route();}catch(e){alert(aiErr(e));$("#regen").disabled=false;}};
   /* 3 practice */
   const ans=()=>(rec(n)&&rec(n).cid===ct.cid&&rec(n).ans)||{};
@@ -274,7 +303,7 @@ function viewLesson(n,isToday){
     set:(i,k,q)=>{const x=R();x.ans[i]=k;if(k!==q.a)addWrong("d"+n+":"+i,q,k,"Day "+n+" practice",n);touch(x);
       if(Object.keys(x.ans).length>=pq.F.length){x.st.p=1;}save();upd();}});
   /* 4 redo mistakes */
-  const pool=Object.entries(S.wrong).filter(([id,w])=>!w.fixed&&w.day!==n&&w.at!==today()).sort((a,b)=>(a[1].at>b[1].at?1:-1)).slice(0,5);
+  const pool=Object.entries(S.wrong).filter(([id,w])=>!w.fixed&&w.day!==n&&w.at!==today()).sort((a,b)=>(a[1].at>b[1].at?1:-1)).slice(0,3);
   const keep=(r.st&&r.st.rids)||pool.map(p=>p[0]);
   redo($("#rq"),keep.filter(id=>S.wrong[id]),()=>{const x=R();x.st.r=1;x.st.rids=keep;touch(x);save();upd();});
   if(!keep.filter(id=>S.wrong[id]).length&&!(r.st&&r.st.r)&&!r.done){$("#rq").innerHTML='<p class="small">No earlier mistakes to redo.</p>';}
@@ -282,9 +311,9 @@ function viewLesson(n,isToday){
     const x=rec(n)||{st:{},ans:{}},s=x.st||{};
     const pk=x.cid===ct.cid?x.ans:{};const tot=pq.F.length,got=pq.F.filter((q,i)=>pk[i]===q.a).length,cnt=Object.keys(pk).length;
     $("#pScore").textContent=cnt?("Answered "+cnt+" / "+tot+", correct "+got+(cnt===tot?" ("+Math.round(got/tot*100)+"%)":"")):"Each answer shows its explanation right away; wrong answers go to the mistake notebook.";
-    $$(".steps li").forEach((li,i)=>{const k="vlpr"[i];li.classList.toggle("ok",!!s[k]||(k==="r"&&!keep.filter(id=>S.wrong[id]).length));});
+    $$(".steps li").forEach((li,i)=>{const k="vlpr"[i];li.classList.toggle("ok",!!s[k]||(k==="l"&&ct.second)||(k==="r"&&!keep.filter(id=>S.wrong[id]).length));});
     const f=$("#finish");if(!f)return;
-    const miss=[!s.v&&"words",!s.l&&"handout",!s.p&&"practice"].filter(Boolean);
+    const miss=[!s.v&&"words",!s.l&&!ct.second&&"handout",!s.p&&"practice"].filter(Boolean);
     f.disabled=!!miss.length||!!x.done;$("#finMsg").textContent=x.done?"Done":miss.length?"Still to do: "+miss.join(", "):"Ready to finish";
   }
   upd();
@@ -358,7 +387,7 @@ function viewReview(n,I,isToday){
   let h=(isToday?headStats():'<p><a href="#course" class="small">← Course map</a></p>')+lessonHead(I,isToday);
   h+='<section class="card"><h3><span class="n">1</span>Word quiz for the week ('+words.length+')</h3><p class="small" id="vqs">Pick the Chinese meaning. Missed words drop back to weak and come up again tomorrow.</p><div id="vq"></div></section>';
   h+='<section class="card"><h3><span class="n">2</span>Redo mistakes from the week</h3><div id="rq"></div></section>';
-  h+='<section class="card"><h3><span class="n">3</span>Suggested: a mock test</h3><p>Review days have more time. Take a mini mock (about 35 minutes) to see where the week left you.</p><a class="btn" href="#mocks">Go to mock tests</a></section>';
+  h+='<section class="card"><h3><span class="n">3</span>Suggested: a mock test</h3><p>On a review day you can take a mini mock (30 minutes) instead, to see where the week left you.</p><a class="btn" href="#mocks">Go to mock tests</a></section>';
   if(isToday||!r.done)h+='<div class="finish"><button class="btn primary" id="finish">Finish week '+I.w+'</button><span class="small" id="finMsg"></span></div>';
   app.innerHTML=h;
   /* vocabulary quiz: options = 3 other meanings from the week */
@@ -395,16 +424,16 @@ function redo(el,ids,onAll){
 /* ---------------- course map ---------------- */
 function viewCourse(){
   const c=cur();
-  let h='<section class="card"><h2>Course map</h2><p>From 550 to gold '+C.target+'+: 20 weeks, one lesson a day, about 50–60 minutes. Day 7 of each week is a review. One lesson opens per day; finished lessons stay open for review.</p><div class="phases">'+
+  let h='<section class="card"><h2>Course map</h2><p>From 550 to '+C.target+': 40 weeks, about 30 minutes a day. Each topic takes two days: the handout and the first half of its words and questions, then the second half. Day 7 of each week is a review. One lesson opens per day; finished lessons stay open for review.</p><div class="phases">'+
     C.phases.map(p=>'<div><b>'+esc(p.name)+'</b><span class="small">Weeks '+p.weeks[0]+"–"+p.weeks[1]+" · Goal "+p.goal+"</span><span class=\"small\">"+esc(p.desc)+"</span></div>").join("")+"</div></section>";
-  C.weeks.forEach((wk,wi)=>{
-    const w=wi+1,start=wi*7+1,open=c>=start&&c<start+7;
+  for(let wi=0;wi<WEEKS;wi++){
+    const w=wi+1,start=wi*7+1,open=c>=start&&c<start+7,wk=info(start).wk;
     h+='<details class="week"'+(open?" open":"")+'><summary><span class="wn">W'+w+"</span>"+esc(wk.theme)+'<span class="small">'+[...Array(7)].filter((_,d)=>S.days[start+d]&&S.days[start+d].done).length+" / 7</span></summary><ol>";
     for(let d=0;d<7;d++){const n=start+d,I=info(n),r=S.days[n],st=r&&r.done?"ok":n===c?"cur":n<c?"ok":"lock";
-      const lab='<span class="dn">Day '+n+"</span>"+esc(I.t)+'<span class="small">'+(I.review?"Review":PN[I.p])+(DAYS[n]?"":A.lessons[n]?" · AI":"")+(r&&r.sc?" · "+r.sc[0]+"/"+r.sc[1]:"")+"</span>";
+      const lab='<span class="dn">Day '+n+"</span>"+esc(I.t)+'<span class="small">'+(I.review?"Review":PN[I.p])+(I.review||DAYS[I.tn]?"":A.lessons[I.tn]?" · AI":"")+(r&&r.sc?" · "+r.sc[0]+"/"+r.sc[1]:"")+"</span>";
       h+='<li class="'+st+'">'+(st==="lock"?lab:'<a href="'+(n===c?"#today":"#day/"+n)+'">'+lab+"</a>")+"</li>";}
     h+="</ol></details>";
-  });
+  }
   app.innerHTML=h;
 }
 
@@ -417,8 +446,8 @@ const mockById=id=>allMocks().find(m=>m.id===id);
 const countQ=items=>items.reduce((a,x)=>a+(x.qs?x.qs.length:1),0);
 function viewMocks(){
   const L=allMocks();
-  let h='<section class="card"><h2>Mock tests</h2><p>Mini mocks: about 18 listening and 21 reading questions in about 35 minutes (1/5 of the real test). Your accuracy is converted to an <b>estimated score</b>, and wrong answers go to the mistake notebook.</p>'+
-    '<p class="small">The number of mocks keeps growing: built-in ones are added over time, and AI can write a new one whenever you want (1–2 minutes, sign-in needed). Aim for one a week, and two a week in Phase 3.</p>'+
+  let h='<section class="card"><h2>Mock tests</h2><p>Mini mocks: about 18 listening and 21 reading questions in 30 minutes (1/5 of the real test). Your accuracy is converted to an <b>estimated score</b>, and wrong answers go to the mistake notebook.</p>'+
+    '<p class="small">The number of mocks keeps growing: built-in ones are added over time, and AI can write a new one whenever you want (1–2 minutes, sign-in needed). A mock fits in one 30-minute day: take one in place of a weekly review, and every week in Phase 3.</p>'+
     '<button class="btn primary" id="newMock">+ New AI mock</button><p class="msg" id="nmMsg" role="status"></p></section>';
   const hist=[];
   h+='<section class="card"><h3>All mocks ('+L.length+')</h3><div class="mlist">';
@@ -429,7 +458,7 @@ function viewMocks(){
   });
   h+="</div></section>";
   if(hist.length){hist.sort((a,b)=>a.at<b.at?-1:1);
-    const max=990;h+='<section class="card"><h3>Score history</h3><div class="trend">'+hist.slice(-12).map(x=>'<div class="tb" title="'+esc(x.title)+'"><i style="height:'+(x.tot/max*100).toFixed(0)+'%"></i><b>'+x.tot+'</b><span class="small">'+esc(x.at.slice(5))+"</span></div>").join("")+'</div><p class="small">Gold starts at 860. These are estimates: a mini mock is short, so allow about ±50.</p></section>';}
+    const max=990;h+='<section class="card"><h3>Score history</h3><div class="trend">'+hist.slice(-12).map(x=>'<div class="tb" title="'+esc(x.title)+'"><i style="height:'+(x.tot/max*100).toFixed(0)+'%"></i><b>'+x.tot+'</b><span class="small">'+esc(x.at.slice(5))+"</span></div>").join("")+'</div><p class="small">The goal is 990 (gold starts at 860). These are estimates: a mini mock is short, so allow about ±50.</p></section>';}
   app.innerHTML=h;
   $("#newMock").onclick=async()=>{const b=$("#newMock"),m=$("#nmMsg");b.disabled=true;m.className="msg";
     try{const id=await genMock(t=>{m.textContent=t;});location.hash="#mock/"+id;}
@@ -478,7 +507,7 @@ function resultHTML(m,res){
   const rows=Object.keys(res.parts).sort().map(p=>{const[c,n]=res.parts[p];return '<tr><td>'+PN[p]+"</td><td>"+c+" / "+n+'</td><td><span class="bar"><i style="width:'+(c/n*100).toFixed(0)+'%"></i></span></td></tr>';}).join("");
   const gap=C.target-res.tot;
   return '<section class="card result"><div class="score"><div><span class="k">Estimated total</span><b>'+res.tot+'</b></div><div><span class="k">Listening</span><b>'+res.L+'</b><span class="small">'+res.lc+" / "+res.ln+'</span></div><div><span class="k">Reading</span><b>'+res.R+'</b><span class="small">'+res.rc+" / "+res.rn+"</span></div></div>"+
-    '<p>'+(gap>0?"About "+gap+" points short of gold.":"At gold level. Keep it up!")+' Wrong answers are in the <a href="#wrong">mistake notebook</a>.</p><table class="ptable"><tr><th>Part</th><th>Correct</th><th></th></tr>'+rows+"</table></section>";
+    '<p>'+(gap>0?"About "+gap+" points short of "+C.target+".":"Perfect score. Keep it up!")+' Wrong answers are in the <a href="#wrong">mistake notebook</a>.</p><table class="ptable"><tr><th>Part</th><th>Correct</th><th></th></tr>'+rows+"</table></section>";
 }
 
 /* ---------------- wrong-answer notebook ---------------- */
@@ -545,12 +574,12 @@ function clean(html){
   return root.innerHTML;
 }
 function sampler(){if(!window.EZAI)throw Object.assign(new Error("no ai"),{code:"network"});return EZAI.sampler({low:true});}
-function level(w){return w<=6?"moderate (TOEIC 600–750 level), clear distractors":w<=13?"realistic TOEIC difficulty (750–850 level)":"hard (850–950 level): subtle distractors, near-synonyms, paraphrased answers";}
+function level(w){return w<=12?"realistic TOEIC difficulty (650–800 level), clear distractors":w<=26?"upper TOEIC difficulty (800–900 level)":"the hardest real TOEIC items (900–990 level): subtle distractors, near-synonyms, paraphrased answers";}
 async function genLesson(n,I){
   const known=Object.keys(S.vocab).slice(-400).join(", ");
   const focus=I.p===0?"a review mix of Parts 2, 3, 5, 6 and 7 covering earlier topics":PN[I.p];
-  const prompt=`You are an expert TOEIC Listening & Reading teacher writing one daily lesson for a Taiwanese university student (current score about 550, goal: gold certificate 860+). Write ORIGINAL TOEIC-style material; never copy official ETS questions.
-Course day ${n} of ${TOTAL}. ${I.ph.name}. Week theme: ${I.wk.theme}. Today's topic: ${I.t}. Main focus: ${focus}. Vocabulary theme: ${I.v}. Difficulty: ${level(I.w)}.
+  const prompt=`You are an expert TOEIC Listening & Reading teacher writing one daily lesson for a Taiwanese university student (current score about 550, goal: a perfect 990). Write ORIGINAL TOEIC-style material; never copy official ETS questions.
+Course day ${n} of ${TOTAL}. ${I.ph.name}. Week theme: ${I.wk.theme}. Today's topic: ${I.title}. Main focus: ${focus}. Vocabulary theme: ${I.v}. Difficulty: ${level(I.w)}.
 Return ONLY a JSON object:
 {"words":[[word, part of speech such as "n." "v." "adj." "adv." "phr.", Traditional Chinese meaning, short natural English example sentence]] — exactly 12 high-frequency TOEIC words or phrases for the vocabulary theme; do NOT use any of these already-learned words: ${known||"(none)"},
  "lesson": an HTML handout in Traditional Chinese (Taiwan) with English examples, 450–800 Chinese characters: clear rules, a table where useful, common traps, and a step-by-step solving routine. Allowed tags only: h3, p, ul, ol, li, b, i, table, tr, th, td, br, and <div class="tip">,
@@ -561,12 +590,12 @@ ${FORMATS}`;
   const qs=(out&&Array.isArray(out.qs)?out.qs:[]).map(fixItem).filter(Boolean);
   const lesson=clean(out&&out.lesson);
   if(words.length<8||qs.length<8||lesson.length<200)throw Object.assign(new Error("bad"),{code:"bad_out"});
-  A.lessons[n]={t:now(),cid:"ai"+now().toString(36),data:{words,lesson,qs}};saveA();
+  A.lessons[I.tn]={t:now(),cid:"ai"+now().toString(36),data:{words,lesson,qs}};saveA();
 }
 async function genMock(progress){
   const k=Object.keys(A.mocks).length+1,w=info(Math.min(cur(),TOTAL)).w;
   const prev=Object.values(A.mocks).slice(-4).map(m=>(m.topics||"")).join("; ");
-  const base=`Create part of an ORIGINAL TOEIC-style mini mock test (#${k}) for a Taiwanese learner aiming at 860+. Never copy official ETS questions. Difficulty: ${level(Math.max(w,7))}. Use varied business and daily-life settings (offices, shops, travel, factories, hospitals, events), with American, British and Australian names. ${prev?"Avoid repeating these earlier settings: "+prev+".":""}
+  const base=`Create part of an ORIGINAL TOEIC-style mini mock test (#${k}) for a Taiwanese learner aiming at a perfect 990. Never copy official ETS questions. Difficulty: ${level(Math.max(w,13))}. Use varied business and daily-life settings (offices, shops, travel, factories, hospitals, events), with American, British and Australian names. ${prev?"Avoid repeating these earlier settings: "+prev+".":""}
 Return ONLY JSON: {"topics":"5-10 word summary of the settings you used","items":[...]}
 ${FORMATS}`;
   progress("AI is writing the listening part… (1/2)");
@@ -577,7 +606,7 @@ ${FORMATS}`;
   const L=pick(l,[2,3,4]),R=pick(r,[5,6,7]);
   if(countQ(L)<12||countQ(R)<15)throw Object.assign(new Error("bad"),{code:"bad_out"});
   const id="ai"+now().toString(36);
-  A.mocks[id]={t:now(),n:k,topics:[l&&l.topics,r&&r.topics].filter(Boolean).join("; ").slice(0,200),data:{mins:35,L,R}};saveA();
+  A.mocks[id]={t:now(),n:k,topics:[l&&l.topics,r&&r.topics].filter(Boolean).join("; ").slice(0,200),data:{mins:30,L,R}};saveA();
   return id;
 }
 

@@ -346,7 +346,7 @@ function viewHome(){
   const dateLine='<p class="vmeta examdate"><label>Test date <input type="date" id="examDate" value="'+esc(exam)+'"></label>'+
     (left==null?' <span class="small">Set it to get a countdown.</span>':left<0?' <span class="small">The test date has passed. Set the next one.</span>':' <b>'+(left===0?"Today!":left+" day"+(left===1?"":"s")+" left")+'</b>'+
       (reach!=null&&reach<TOTAL?' <span class="small">At one lesson a day you will reach Day '+reach+' of '+TOTAL+' by then. Mock tests and mistakes matter most in the last weeks.</span>':''))+'</p>';
-  let h='<div class="vhead">'+pcb("home")+'<p class="vmeta">TOEIC Listening &amp; Reading</p><h1>TOEIC</h1><p>From about 550 to '+C.target+' in 40 weeks, about 30 minutes a day. Each day: a few new words with spaced review, a short handout, practice questions with explanations, and a few old mistakes to redo. Mini mock tests track your estimated score.</p></div>';
+  let h='<div class="vhead">'+pcb("home")+'<p class="vmeta">TOEIC Listening &amp; Reading</p><h1>TOEIC</h1><p>40 weeks, about 30 minutes a day. Each day: a few new words with spaced review, a short handout, practice questions with explanations, and a few old mistakes to redo. Mini mock tests track your estimated score.</p></div>';
   h=h.replace('</p></div>','</p>'+dateLine+'</div>');
   h+='<div class="next">'+next+'</div>';
   h+='<section class="card"><h3>Course plan</h3><div class="phases">'+C.phases.map(p=>{const a=(p.weeks[0]-1)*7+1,b=p.weeks[1]*7;let d=0;for(let k=a;k<=b;k++)if(S.days[k]&&S.days[k].done)d++;const t=b-a+1;
@@ -566,7 +566,7 @@ function redo(el,ids,onAll){
 /* ---------------- course map ---------------- */
 function viewCourse(){
   const c=cur();
-  let h='<section class="card"><h2>Course map</h2><p>From 550 to '+C.target+': 40 weeks, about 30 minutes a day. Each topic takes two days: the handout and the first half of its words and questions, then the second half. Day 7 of each week is a review. One lesson opens per day; finished lessons stay open for review.</p><div class="phases">'+
+  let h='<section class="card"><h2>Course map</h2><p>40 weeks, about 30 minutes a day. Each topic takes two days: the handout and the first half of its words and questions, then the second half. Day 7 of each week is a review. One lesson opens per day; finished lessons stay open for review.</p><div class="phases">'+
     C.phases.map(p=>'<div><b>'+esc(p.name)+'</b><span class="small">Weeks '+p.weeks[0]+"–"+p.weeks[1]+" · Goal "+p.goal+"</span><span class=\"small\">"+esc(p.desc)+"</span></div>").join("")+"</div></section>";
   for(let wi=0;wi<WEEKS;wi++){
     const w=wi+1,start=wi*7+1,open=c>=start&&c<start+7,wk=info(start).wk;

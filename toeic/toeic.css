@@ -37,7 +37,7 @@
 .card h3 .n,.steps .n{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--ink);color:var(--bg);font-family:var(--f-mono);font-size:13px;flex:0 0 auto}
 .card.done{border-color:var(--ok-line);background:linear-gradient(var(--ok-soft),var(--ok-soft)),var(--glass-bg,var(--paper))}
 .small{font-size:13.5px;color:var(--muted)}
-.row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.row:not(#tabs){display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 .okc{color:var(--ok);font-weight:600}.badc{color:var(--seal);font-weight:600}
 .msg{margin:10px 0 0;font-size:14px}.msg.err{color:var(--seal)}
 .linkbtn{font:inherit;background:none;border:0;color:var(--indigo);text-decoration:underline;cursor:pointer;padding:0 4px}
@@ -48,8 +48,8 @@
 .stats>div{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--paper)}
 .stats .k,.score .k{font-family:var(--f-mono);font-size:11.5px;font-weight:600;color:var(--muted)}
 .stats b{font-family:var(--f-mono);font-size:22px;line-height:1.3}
-.bar{display:block;height:6px;border-radius:3px;background:var(--line);overflow:hidden;min-width:60px}
-.bar i{display:block;height:100%;background:var(--ok)}
+.bar:not(.top .bar){display:block;height:6px;border-radius:3px;background:var(--line);overflow:hidden;min-width:60px}
+.bar:not(.top .bar) i{display:block;height:100%;background:var(--ok)}
 
 /* the four steps of a day */
 .steps{list-style:none;padding:0;margin:0 0 16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}

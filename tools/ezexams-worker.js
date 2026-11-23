@@ -260,7 +260,45 @@ async function twRt(url, json) {
     jobs.push(twCached("fut", 8000, twFut).then(v => { out.fut = v; }));
   }
   await Promise.all(jobs.map(p => p.catch(e => { out.err = twClip(e && e.message, 80); })));
+  /* TWSE's MIS often refuses or answers empty to cloud servers outside Taiwan (this Worker runs in the US):
+     every code still without a price is filled from Yahoo Finance (delayed a little, but the right day's price) */
+  const have = new Set(out.q.filter(x => x.z > 0).map(x => x.c)), miss = codes.filter(c => !have.has(c));
+  if (miss.length) {
+    try { const y = await twCached("yq:" + miss.join(","), 15000, () => twYahoo(miss)); out.q = out.q.filter(x => x.z > 0).concat(y); if (y.length) out.src = "yahoo"; }
+    catch (e) { out.err = (out.err ? out.err + "; " : "") + twClip(e && e.message, 60); }
+  }
+  if (url.searchParams.get("idx") === "1" && !out.idx.some(x => x.c === "t00" && x.z > 0)) {
+    try { const y = await twCached("yidx", 15000, () => twYahoo(["^TWII"])); y.forEach(x => { x.c = "t00"; }); out.idx = out.idx.filter(x => x.c !== "t00").concat(y); } catch (e) { /* keep the close */ }
+  }
   return json(out, 200, { "Cache-Control": "no-store" });
+}
+/* Yahoo Finance quotes, 20 symbols per request; a code not found as listed (.TW) is tried as OTC (.TWO) */
+async function twYahoo(codes) {
+  const sym = c => (c.startsWith("^") ? c : c + ".TW"), out = [], tried = new Set();
+  async function batch(list) {
+    for (let i = 0; i < list.length; i += 20) {
+      const part = list.slice(i, i + 20);
+      const r = await fetch("https://query1.finance.yahoo.com/v7/finance/spark?range=1d&interval=5m&symbols=" + encodeURIComponent(part.join(",")), { headers: { "User-Agent": TW_UA, Accept: "application/json" } });
+      if (!r.ok) throw new Error("Yahoo " + r.status);
+      const j = await r.json();
+      const rows = j && j.spark && Array.isArray(j.spark.result) ? j.spark.result.map(x => ({ s: x.symbol, d: (x.response || [])[0] || {} })) : Object.entries(j || {}).map(([s, d]) => ({ s, d: d || {} }));
+      rows.forEach(({ s, d }) => {
+        const m = d.meta || d, q = (d.indicators && d.indicators.quote && d.indicators.quote[0]) || {}, cl = (q.close || d.close || []).filter(v => v > 0);
+        const z = twNum(m.regularMarketPrice) || cl[cl.length - 1] || null, y = twNum(m.previousClose) || twNum(m.chartPreviousClose);
+        if (!(z > 0) || !(y > 0)) return;
+        const hi = (q.high || []).filter(v => v > 0), lo = (q.low || []).filter(v => v > 0), op = (q.open || []).find(v => v > 0);
+        const vs = (q.volume || []).filter(v => v > 0), t = m.regularMarketTime ? new Date((m.regularMarketTime + 8 * 3600) * 1000) : null;
+        out.push({ c: String(s).replace(/^\^TWII$/, "^TWII").replace(/\.TWO?$/, ""), n: "", z, y,
+          o: twNum(m.regularMarketOpen) || op || null, h: twNum(m.regularMarketDayHigh) || (hi.length ? Math.max(...hi) : null), l: twNum(m.regularMarketDayLow) || (lo.length ? Math.min(...lo) : null),
+          v: twNum(m.regularMarketVolume) != null ? Math.round(m.regularMarketVolume / 1000) : vs.length ? Math.round(vs.reduce((a, b) => a + b, 0) / 1000) : null,
+          tm: t ? t.toISOString().slice(11, 19) : "", d: t ? t.toISOString().slice(0, 10).replace(/-/g, "") : "" });
+      });
+    }
+  }
+  await batch(codes.map(sym)); codes.forEach(c => tried.add(c));
+  const got = new Set(out.map(x => x.c)), otc = codes.filter(c => !c.startsWith("^") && !got.has(c));
+  if (otc.length) { try { await batch(otc.map(c => c + ".TWO")); } catch (e) { /* listed codes already answered */ } }
+  return out;
 }
 /* headlines from Google News (RSS search); q may carry "when:14d" to keep them recent */
 async function twHeadlines(q, n) {

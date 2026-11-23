@@ -346,7 +346,7 @@ function viewHome(){
   const dateLine='<p class="vmeta examdate"><label>Test date <input type="date" id="examDate" value="'+esc(exam)+'"></label>'+
     (left==null?' <span class="small">Set it to get a countdown.</span>':left<0?' <span class="small">The test date has passed. Set the next one.</span>':' <b>'+(left===0?"Today!":left+" day"+(left===1?"":"s")+" left")+'</b>'+
       (reach!=null&&reach<TOTAL?' <span class="small">At one lesson a day you will reach Day '+reach+' of '+TOTAL+' by then. Mock tests and mistakes matter most in the last weeks.</span>':''))+'</p>';
-  let h='<div class="vhead">'+pcb("home")+'<p class="vmeta">TOEIC Listening &amp; Reading · Goal '+C.target+'</p><h1>TOEIC: road to '+C.target+'</h1><p>From about 550 to '+C.target+' in 40 weeks, about 30 minutes a day. Each day: a few new words with spaced review, a short handout, practice questions with explanations, and a few old mistakes to redo. Mini mock tests track your estimated score.</p></div>';
+  let h='<div class="vhead">'+pcb("home")+'<p class="vmeta">TOEIC Listening &amp; Reading</p><h1>TOEIC</h1><p>From about 550 to '+C.target+' in 40 weeks, about 30 minutes a day. Each day: a few new words with spaced review, a short handout, practice questions with explanations, and a few old mistakes to redo. Mini mock tests track your estimated score.</p></div>';
   h=h.replace('</p></div>','</p>'+dateLine+'</div>');
   h+='<div class="next">'+next+'</div>';
   h+='<section class="card"><h3>Course plan</h3><div class="phases">'+C.phases.map(p=>{const a=(p.weeks[0]-1)*7+1,b=p.weeks[1]*7;let d=0;for(let k=a;k<=b;k++)if(S.days[k]&&S.days[k].done)d++;const t=b-a+1;

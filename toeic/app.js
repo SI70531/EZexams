@@ -321,7 +321,6 @@ function flash(el,fresh,due,onDone){
     el.innerHTML='<div class="fcard"><div class="fmeta"><span>'+(f?"New":"Review")+"</span><span>"+(i+1)+" / "+q.length+'</span></div><div class="fw">'+esc(x[0])+' <button class="say" type="button" data-say="'+esc(x[0])+'">🔊</button></div><div class="fp">'+esc(x[1])+"</div>"+
       (flipped?'<div class="fz">'+esc(x[2])+'</div><div class="fe">'+esc(x[3])+' <button class="say" type="button" data-say="'+esc(x[3])+'">🔊</button></div><div class="row"><button class="btn" data-r="0">Not yet</button><button class="btn primary" data-r="1">Got it</button></div>'
        :'<div class="row"><button class="btn primary" data-flip="1">Flip (recall the meaning first)</button></div>')+"</div>";
-    if(!flipped)sayWord(x[0]);
   }
   el.onclick=e=>{
     const b=e.target.closest("button");if(!b||b.dataset.say)return;

@@ -24,8 +24,11 @@ function show(id,scroll){
   S.last=id;save();
   if(id==="home")renderHome();
   refreshPCB();
-  try{history.replaceState(null,"","#"+id);}catch(e){}
+  /* browser back / forward: every tab opened is a history entry; the first one and those reached through back/forward only replace it */
+  try{const h="#"+id,st=history.state;if(EZ_NAV||!st||!st.ez)history.replaceState({ez:1},"",h);else if(location.hash!==h)history.pushState({ez:1},"",h);}catch(e){}
 }
+let EZ_NAV=false;
+window.addEventListener("popstate",()=>{const id=location.hash.slice(1);if(!id||id==="wrong")return;EZ_NAV=true;try{show(id);}finally{EZ_NAV=false;}});
 
 function normAns(s){
   return s.toLowerCase()

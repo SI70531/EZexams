@@ -117,14 +117,10 @@
 .stem .tr{font-style:italic}
 .opts{display:grid;gap:6px}
 .opt{display:flex;align-items:baseline;gap:10px;text-align:left;font:inherit;font-family:var(--f-en);font-size:15.5px;padding:8px 12px;border:1.5px solid var(--line-strong);border-radius:8px;background:var(--paper);color:var(--ink);cursor:pointer}
-.opt b{font-family:var(--f-mono);font-size:13px;color:var(--muted)}
 .opt:hover:not([disabled]){border-color:var(--ink)}
 .opt.sel{border-color:var(--ink);background:var(--indigo-soft)}
-.opt.sel b{color:var(--ink)}
 .opt.ok{border-color:var(--ok);background:var(--ok-soft)}
-.opt.ok b{color:var(--ok)}
 .opt.bad{border-color:var(--seal);background:var(--seal-soft)}
-.opt.bad b{color:var(--seal)}
 .opt[disabled]{cursor:default}
 .exp{margin-top:8px;padding:8px 12px;border-radius:8px;background:var(--paper2);font-size:14.5px}
 
@@ -214,3 +210,12 @@
 .next>span{flex:1 1 220px}
 .view>.card:first-child,.view>.lhead:first-child,.view>p:first-child,.view>.stats:first-child{margin-top:24px}
 .tfoot{max-width:860px;margin:0 auto;padding:16px max(16px,env(safe-area-inset-left,0px)) 40px}
+
+/* shared mechanisms */
+.qbtns{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.qbtns .qclear{color:var(--muted);margin-left:auto}
+.mins input,.examdate input{font:inherit;width:6em;padding:2px 6px;border:1.5px solid var(--line-strong);border-radius:6px;background:var(--paper);color:var(--ink)}
+.examdate input{width:auto}
+.examdate{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
+.trapday h3 .dn{margin-right:10px}
+.trapday .btn{margin-top:4px}

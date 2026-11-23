@@ -26,6 +26,19 @@ EZexams is a study site with notes, practice questions, and mock exams for each 
 
 `toeic/` is a separate daily course (550 → 990, about 30 minutes a day, each topic over two days), reached from the **Self-study** menu on the home page: one lesson a day (handout, 12 words with spaced review, practice with spoken listening items), a weekly review, mini mock tests whose number keeps growing (built in, plus AI-made on demand) and a mistake notebook. See `toeic/README.md` for adding days and mocks. To add another self-study subject, put a new `<section class="exam-subj">` ticket inside `#selfStudy` in the root `index.html`.
 
+## Shared Features on Any Page (exam or not)
+
+Every shared script works on any page that uses the subject skeleton: `header.top` with `.bar` (brand `.mk`, `nav.tabs #tabs` with `[data-go]` buttons, the theme menu), one `section.view` per tab, and the globals `VIEWS` and `show(id)`. That alone gives tab glide, page turn, particles and answer effects, figure motion, the jump pill, back-to-top with the progress ring, theme switching, keyboard (A–D answers, arrow keys on tabs) and sign-in.
+
+Question tools need the shared question markup: `.quiz[data-quiz="<key>"]` containing `.qitem[data-i]`, options `.opt[data-oi]` with an `.ab` letter (and `.oe` text), and an `.expl` box once answered. Pages without `QUIZ` add small hooks:
+
+- `window.EZQ={question:(key,i,item)=>({q,o,a,e,ctx})}`: AI explanation of every answer (`ezexplain.js`); `ctx` is an optional passage or transcript.
+- `section.view[data-ezexam]` while a test runs: "Next unanswered" (`eznext.js`); a picked option carries `.pick`.
+- `window.EZSEARCH={dom:false,entries:()=>[{view,group,sec,text,go:({terms,reveal})=>…}]}`: search for content kept as data (`ezsearch.js`).
+- `window.EZTOUR={key,steps:()=>[{el,t,d}]}`: the page's own first-visit tour (`ezfx.js`), set before the deferred scripts run.
+
+`toeic/app.js` is the worked example for a page that is not an exam.
+
 ## How the Project Is Organized
 
 ```

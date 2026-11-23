@@ -1,6 +1,10 @@
 /* EZexams search: a 🔍 button in the top bar (or press "/" or Ctrl+K) searches this subject's notes,
    chapter questions and exam questions. Several words = all must appear. Clicking a result opens that tab,
-   scrolls to the spot and highlights the words. Load after the page's main script (uses show and VIEWS). */
+   scrolls to the spot and highlights the words. Load after the page's main script (uses show and VIEWS).
+   A page whose content is not all in the DOM (it renders one tab at a time, e.g. toeic/) can add its own entries:
+     window.EZSEARCH={dom:false,               // optional: skip indexing the DOM
+       entries:()=>[{view:"course",group:"Lessons",sec:"Day 3 · Handout",text:"…",go:({terms,reveal})=>{…}}]}
+   go() opens the right place itself, then may call reveal(el) to highlight, scroll to and flash an element. */
 (function(){
   if(typeof show!=="function"||typeof VIEWS==="undefined")return;
   const bar=document.querySelector(".top .bar");if(!bar)return;
@@ -45,9 +49,10 @@
   const NAME={};VIEWS.forEach(v=>{if(v[1])NAME[v[0]]=v[1];});
   let INDEX=null;
   function hiddenInside(el,view){for(let a=el;a&&a!==view;a=a.parentElement)if(a.hidden||a.classList.contains("expl"))return true;return false;}
+  const EXT=()=>window.EZSEARCH||{};
   function build(){
     INDEX=[];
-    document.querySelectorAll(".view").forEach(view=>{
+    if(EXT().dom!==false)document.querySelectorAll(".view").forEach(view=>{
       if(view.id==="home"||view.id==="wrong"||!NAME[view.id])return;
       let sec="";
       view.querySelectorAll(SEL).forEach(el=>{
@@ -58,6 +63,8 @@
         INDEX.push({el,view:view.id,sec,text,low:text.toLowerCase()});
       });
     });
+    try{(EXT().entries?EXT().entries():[]).forEach(e=>{const text=String(e.text||"").replace(/\s+/g," ").trim();if(text.length<2)return;
+      INDEX.push({el:null,view:e.view||"",group:e.group,sec:e.sec||"",text,low:text.toLowerCase(),go:e.go});});}catch(e){}
   }
 
   /* ---------- search ---------- */
@@ -83,7 +90,8 @@
     info.textContent=hits.length?"Found "+hits.length+" result(s)"+(hits.length>80?", showing the first 80":""):"No results for “"+q+"”. Try other wording (abbreviations or Chinese terms both work).";
     let lastGroup=null;
     hits.slice(0,80).forEach((h,i)=>{
-      if(h.view!==lastGroup){lastGroup=h.view;const g=document.createElement("div");g.className="ezs-g";g.textContent=NAME[h.view]||h.view;list.appendChild(g);}
+      const gk=h.group||h.view;
+      if(gk!==lastGroup){lastGroup=gk;const g=document.createElement("div");g.className="ezs-g";g.textContent=h.group||NAME[h.view]||h.view;list.appendChild(g);}
       const r=document.createElement("button");r.type="button";r.className="ezs-r";r.setAttribute("role","option");r.dataset.i=i;
       r.innerHTML=(h.sec&&h.sec!==h.text?'<span class="sec">'+esc(h.sec)+'</span>':"")+'<span class="snip">'+snippet(h.text,terms)+'</span>';
       r.addEventListener("click",()=>go(i));
@@ -112,9 +120,16 @@
     /* older browsers: wrap the words in <mark> (last range first so offsets stay valid) */
     ranges.reverse().forEach(r=>{try{const m=document.createElement("mark");m.className="ezs-hit";r.surroundContents(m);marks.push(m);}catch(e){}});
   }
+  function reveal(el){
+    if(!el)return;
+    for(let a=el.parentElement;a;a=a.parentElement)if(a.tagName==="DETAILS")a.open=true;
+    highlight(el);
+    setTimeout(()=>{el.scrollIntoView({block:"center"});el.classList.remove("ezs-flash");void el.offsetWidth;el.classList.add("ezs-flash");},40);
+  }
   function go(i){
     const h=hits[i];if(!h)return;
     close();
+    if(h.go){h.go({terms:terms.slice(),reveal});return;}
     show(h.view);
     for(let a=h.el.parentElement;a;a=a.parentElement)if(a.tagName==="DETAILS")a.open=true;
     highlight(h.el);

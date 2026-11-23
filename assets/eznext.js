@@ -9,7 +9,8 @@
   const btn=document.createElement("button");btn.type="button";btn.className="ez-next";btn.textContent=LABEL;
   document.body.appendChild(btn);
 
-  const view=()=>document.querySelector("section.view.exam:not([hidden])");
+  /* an exam tab; any other page can mark a tab as one while a test is running with data-ezexam (e.g. toeic/ mock tests) */
+  const view=()=>document.querySelector("section.view.exam:not([hidden]),section.view[data-ezexam]:not([hidden])");
   /* the "All answered" flash always returns to LABEL (never to whatever text was showing), and switching exams clears it */
   let flashT=null,curView=null;
   const sync=()=>{

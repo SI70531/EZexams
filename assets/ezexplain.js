@@ -6,9 +6,12 @@
    - Results are kept in this browser (localStorage "ezexp2:<page>"), so each question is only asked once.
    - Without a key (or if Gemini fails), the original short explanation stays as it is.
    Option letters are taken from the page, so they match the order you see.
-   Load after the page's main script and ezai.js. */
+   Load after the page's main script and ezai.js.
+   Pages without QUIZ (e.g. toeic/) use the same markup (.quiz[data-quiz] … .qitem[data-i], .opt[data-oi] with an .ab
+   letter, an .expl box) and hand over each question with window.EZQ={question:(key,i,item)=>({q,o,a,e,ctx})};
+   ctx is optional context (a passage or a transcript) that goes into the prompt. */
 (function(){
-  if(typeof QUIZ==="undefined")return;
+  if(typeof QUIZ==="undefined"&&!(window.EZQ&&EZQ.question))return;
   const css=`.aiexp{margin-top:10px;padding:10px 12px;border:1px solid var(--line,#ccc);border-radius:8px;background:var(--paper,#fff);font-size:.95em;line-height:1.6}
 .aiexp .aih{font-family:var(--f-mono,monospace);font-size:calc(11.5px*var(--ts,1));font-weight:700;letter-spacing:.08em;color:var(--indigo,#3949ab);margin-bottom:4px}
 .aiexp .aimis{margin:0 0 8px;color:var(--bad,#c62828)}
@@ -44,7 +47,7 @@
     try{localStorage.setItem(LS,JSON.stringify(CACHE));}catch(e){}
     EZSync.register(LS,{merge:mergeExp,sig:o=>JSON.stringify(Object.keys(o||{}).sort()),noReload:true,
       after:()=>{try{CACHE=JSON.parse(localStorage.getItem(LS)||"{}")||{};}catch(e){}
-        document.querySelectorAll(".quiz[data-quiz] > .qitem").forEach(el=>{const y=info(el);if(y&&CACHE[y.id])draw(el,y);});}});
+        document.querySelectorAll(".quiz[data-quiz] .qitem").forEach(el=>{const y=info(el);if(y&&CACHE[y.id])draw(el,y);});}});
     synced=true;
   },400));
   /* an explanation that argues with the answer key is thrown away (and asked again) */
@@ -59,7 +62,7 @@
     const box=it.closest(".quiz[data-quiz]");if(!box)return null;
     const key=box.dataset.quiz,i=it.dataset.i!=null?+it.dataset.i:[...box.querySelectorAll(":scope > .qitem")].indexOf(it);
     const vw=(box.closest(".view")||{}).id;
-    const q=(QUIZ[key]&&QUIZ[key][i])||(typeof MOCK!=="undefined"&&MOCK[vw]&&MOCK[vw][i]);if(!q)return null;
+    const q=(window.EZQ&&EZQ.question?EZQ.question(key,i,it):null)||(typeof QUIZ!=="undefined"&&QUIZ[key]&&QUIZ[key][i])||(typeof MOCK!=="undefined"&&MOCK[vw]&&MOCK[vw][i]);if(!q)return null;
     const right=it.querySelector(".opt.right");if(!right)return null;
     const wrong=it.querySelector(".opt.wrong");const pick=(wrong||right).dataset.oi;
     return {key,i,q,pick,ok:!wrong,id:key+"|"+i+"|"+pick+(q.gid?"|"+q.gid:"")};
@@ -71,7 +74,8 @@
     const os=[...it.querySelectorAll(".opt[data-oi]")];
     const lines=os.map(o=>"("+o.querySelector(".ab").textContent.trim()+") "+optText(o));
     return [
-"You are a patient tutor explaining one multiple-choice question from a university course ("+document.title+").",
+"You are a patient tutor explaining one multiple-choice question ("+document.title+").",
+x.q.ctx?"CONTEXT (passage or transcript the question is about): "+x.q.ctx:"",
 "LANGUAGE RULE (mandatory): every explanation string (mistake, why, point) MUST be written in Traditional Chinese (Taiwan). Do NOT write those fields in English, even though the question and options are in English. Only technical terms stay in English inside the Chinese sentence, e.g. 中斷（interrupt）.",
 "QUESTION:",x.q.q,
 "OPTIONS:",...lines,
@@ -135,8 +139,8 @@ x.q.e?"TEACHER'S SHORT NOTE (use it as the ground truth): "+x.q.e:"",
     }finally{running=false;}
   }
   let WAITMSG="";
-  function findItem(id){return [...document.querySelectorAll(".quiz[data-quiz] > .qitem")].find(el=>{const y=info(el);return y&&y.id===id;});}
-  function redraw(id){document.querySelectorAll(".quiz[data-quiz] > .qitem").forEach(el=>{const y=info(el);if(y&&y.id===id)draw(el,y);});}
+  function findItem(id){return [...document.querySelectorAll(".quiz[data-quiz] .qitem")].find(el=>{const y=info(el);return y&&y.id===id;});}
+  function redraw(id){document.querySelectorAll(".quiz[data-quiz] .qitem").forEach(el=>{const y=info(el);if(y&&y.id===id)draw(el,y);});}
 
   /* the page's own explanation text moves into .oexp, so it can step aside when the AI one is there */
   function wrapOrig(ex){
@@ -196,7 +200,7 @@ x.q.e?"TEACHER'S SHORT NOTE (use it as the ground truth): "+x.q.e:"",
   let busy=false;
   function all(){
     if(busy)return;busy=true;
-    try{document.querySelectorAll("section.view:not([hidden]) .quiz[data-quiz] > .qitem, .quiz[data-quiz]:not(section.view .quiz) > .qitem").forEach(it=>{const x=info(it);if(!x)return;
+    try{document.querySelectorAll("section.view:not([hidden]) .quiz[data-quiz] .qitem, .quiz[data-quiz]:not(section.view .quiz) .qitem").forEach(it=>{const x=info(it);if(!x)return;
       /* every answered question in the tab you are looking at is analysed by itself, the one just answered first */
       const v=it.closest(".view");const shown=!v||!v.hidden;
       if(FRESH.has(it)){FRESH.delete(it);enqueue(it,x,true);}else if(shown)enqueue(it,x,false);

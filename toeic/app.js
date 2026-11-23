@@ -160,15 +160,17 @@ function Quiz(el,items,opts){
     const hideText=(q.p===2||q.p===1)&&!sh;
     let stem=q.p===2?"Listen to the question and three responses, then pick the best response.":q.p===1?"Scene: "+esc(q.scene)+" Listen to four statements and pick the one that fits.":esc(q.q).replace(/_{3,}/g,'<span class="blank">____</span>');
     if((q.p===2)&&sh)stem='<span class="tr">'+esc(q.say)+"</span>";
-    let h='<div class="qq qitem'+(sh?(k===q.a?" right":" wrong"):"")+'" data-i="'+i+'"><div class="qh"><span class="num">'+num+'</span><span class="ptag">'+PN[q.p]+"</span>";
+    let h='<div class="qq qitem'+(sh?(k===q.a?" right":" wrong"):"")+'" data-i="'+i+'" data-sig="'+(k==null?"":k)+(sh?"s":"")+'"><div class="qh"><span class="num">'+num+'</span><span class="ptag">'+PN[q.p]+"</span>";
     h+=(opts.mock&&!sh&&k!=null?'<span class="picked">Answered</span>':"")+'</div><div class="stem">'+stem+'</div><div class="opts">';
     q.o.forEach((o,j)=>{
-      let c="opt";if(k===j)c+=" sel";if(sh){if(j===q.a)c+=" ok right";else if(j===k)c+=" bad wrong";}
-      h+='<button type="button" class="'+c+'" data-i="'+i+'" data-k="'+j+'"'+(sh&&!opts.retry?" disabled":"")+'><b>'+LET[j]+"</b>"+(hideText?"":"<span>"+esc(o)+"</span>")+"</button>";
+      let c="opt";if(k===j)c+=sh?" sel":" sel pick";if(sh){if(j===q.a)c+=" ok right";else if(j===k)c+=" bad wrong";}
+      h+='<button type="button" class="'+c+'" data-i="'+i+'" data-k="'+j+'" data-oi="'+j+'"'+(sh&&!opts.retry?" disabled":"")+'><span class="ab">'+LET[j]+"</span>"+(hideText?"":'<span class="oe">'+esc(o)+"</span>")+"</button>";
     });
     h+="</div>";
-    if(sh&&q.e)h+='<div class="exp">'+(k===q.a?'<b class="okc">Correct</b> ':k==null?"":'<b class="badc">Wrong</b> You chose '+LET[k]+"; the answer is "+LET[q.a]+". ")+esc(q.e)+"</div>";
-    if(sh&&opts.notes&&k!=null&&k!==q.a)h+='<button type="button" class="btn sm tonotes" data-notes="'+i+'">↑ Review this in the handout</button>';
+    if(sh&&q.e)h+='<div class="exp expl">'+(k===q.a?'<b class="okc">Correct</b> ':k==null?"":'<b class="badc">Wrong</b> You chose '+LET[k]+"; the answer is "+LET[q.a]+". ")+esc(q.e)+"</div>";
+    const tools=(sh&&opts.notes&&k!=null&&k!==q.a?'<button type="button" class="btn sm tonotes" data-notes="'+i+'">↑ Review this in the handout</button>':"")+
+      (sh&&opts.clear&&k!=null?'<button type="button" class="btn sm qclear" data-clear="'+i+'">Clear answer</button>':"");
+    if(tools)h+='<div class="qbtns">'+tools+"</div>";
     return h+"</div>";
   }
   function gHTML(g){
@@ -184,14 +186,19 @@ function Quiz(el,items,opts){
     if(it.text)h+='<div class="passage">'+passage(it.text)+"</div>";
     return h+idx.map(qHTML).join("")+"</div>";
   }
+  /* the shared question markup: .quiz[data-quiz] … .qitem[data-i]; the questions themselves are handed to ezexplain through window.EZQ */
+  el.classList.add("quiz");if(opts.key)el.dataset.quiz=opts.key;el._ezq=F;
   function draw(){el.innerHTML=G.map((_,g)=>gHTML(g)).join("");}
   /* update a group in place: question blocks keep their element (the shared answer effects in ezfx.js follow it) */
   function redraw(g){const n=el.querySelector('.grp[data-g="'+g+'"]');if(!n)return draw();const t=document.createElement("div");t.innerHTML=gHTML(g);
     [...t.firstChild.children].forEach((c,k)=>{const o=n.children[k];
-      if(!o)n.appendChild(c);else if(o.classList.contains("qq")&&c.classList.contains("qq")){o.className=c.className;o.innerHTML=c.innerHTML;}else if(!o.isEqualNode(c))o.replaceWith(c);});}
+      if(!o)n.appendChild(c);
+      else if(o.classList.contains("qq")&&c.classList.contains("qq")){if(o.dataset.sig!==c.dataset.sig){o.className=c.className;o.dataset.sig=c.dataset.sig;o.innerHTML=c.innerHTML;}}   /* unchanged questions keep their AI explanation box */
+      else if(!o.isEqualNode(c))o.replaceWith(c);});}
   el.onclick=e=>{
     const b=e.target.closest("button");if(!b||!el.contains(b))return;
     if(b.dataset.notes!=null){opts.notes(+b.dataset.notes);return;}
+    if(b.dataset.clear!=null){const i=+b.dataset.clear;opts.clear(i);redraw(F[i].g);return;}
     if(b.dataset.play!=null){
       const g=+b.dataset.play,it=F[G[g][0]].ctx||F[G[g][0]];
       b.textContent="■ Playing…";b.classList.add("on");
@@ -205,6 +212,14 @@ function Quiz(el,items,opts){
 }
 
 /* ---------------- wrong-answer notebook ---------------- */
+/* questions for the shared AI explanation (ezexplain.js): the passage or transcript goes along as context */
+window.EZQ={question(key,i,it){
+  const box=it&&it.closest(".quiz"),q=box&&box._ezq&&box._ezq[i];if(!q||!q.p)return null;
+  const c=q.ctx,ctx=c?(c.text||(c.talk||[]).map(([s,t])=>s+": "+t).join("\n")):"";
+  const stem=q.p===2?"(TOEIC Part 2, spoken) Choose the best response to: "+q.say:q.p===1?"(TOEIC Part 1) The photo shows: "+q.scene+" Which statement describes it best?":"(TOEIC "+PN[q.p]+") "+(q.q||"");
+  return {q:stem,o:q.o,a:q.a,e:q.e,ctx};
+}};
+
 function snap(q){
   const s={p:q.p,q:q.q,o:q.o,a:q.a,e:q.e};
   if(q.say)s.say=q.say;if(q.scene)s.scene=q.scene;
@@ -224,12 +239,27 @@ function wrongItem(w){
 /* ---------------- views ---------------- */
 /* the page has the same skeleton as every subject page (top bar with #tabs, one section.view per tab), so the shared
    scripts (tab glide, page turn, theme, effects, jump, keyboard) work here too. VIEWS / show are the same globals they use. */
-const TABS=[["home","Home"],["today","Today"],["course","Course"],["vocab","Words"],["mocks","Mock tests"],["wrong","Mistakes"]];
+const TABS=[["home","Home"],["today","Today"],["course","Course"],["vocab","Words"],["mocks","Mock tests"],["wrong","Mistakes"],["traps","Summary & traps"]];
 window.VIEWS=TABS;
 let app=$("#home");
 const tabOf=h=>{const v=h.split("/")[0];return v==="day"?"course":v==="mock"?"mocks":TABS.some(t=>t[0]===v)?v:"home";};
 function renderTabs(cur){
-  $("#tabs").innerHTML=TABS.map(([id,l])=>'<button type="button" role="tab" data-go="'+id+'" aria-controls="'+id+'" aria-selected="'+(id===cur)+'"'+(id===cur?' aria-current="true"':"")+">"+l+"</button>").join("");
+  $("#tabs").innerHTML=TABS.map(([id,l])=>{const st=tabState(id);return '<button type="button" role="tab" data-go="'+id+'" data-state="'+st.state+'" title="'+l+": "+st.state+'" aria-controls="'+id+'" aria-selected="'+(id===cur)+'"'+(id===cur?' aria-current="true"':"")+">"+l+"</button>";}).join("");
+}
+/* a tab's state, as on the subject pages: new / running / terminated (the tab strip and the progress card show it) */
+function tabState(id){
+  const c=cur(),done=Math.min(c-1,TOTAL);
+  if(id==="home"||id==="course")return {state:done===0?"new":done>=TOTAL?"terminated":"running",done,n:TOTAL,lab:"lessons"};
+  if(id==="today"){const r=rec(c);return {state:lockedToday(c)||c>TOTAL?"terminated":r&&Object.keys(r.st||{}).length?"running":"new",done:r?Object.keys(r.st||{}).filter(k=>"vlpr".includes(k)).length:0,n:4,lab:"steps"};}
+  if(id==="vocab"){const n=Object.keys(S.vocab).length,d=dueWords().length;return {state:!n?"new":d?"running":"terminated",done:n-d,n,lab:"words"};}
+  if(id==="mocks"){const L=allMocks(),t=L.filter(m=>S.mocks[m.id]&&(S.mocks[m.id].res||(S.mocks[m.id].hist||[]).length)).length;return {state:!t?"new":t<L.length?"running":"terminated",done:t,n:L.length,lab:"taken"};}
+  if(id==="wrong"){const a=Object.values(S.wrong),f=a.filter(w=>w.fixed).length;return {state:!a.length?"new":f<a.length?"running":"terminated",done:f,n:a.length,lab:"fixed"};}
+  return {state:"ready",done:0,n:0,lab:""};
+}
+function pcb(id){
+  const p=tabState(id),pct=p.n?Math.round(p.done/p.n*100):0,no=TABS.findIndex(t=>t[0]===id);
+  return '<div class="pcb" data-pcb="'+id+'" role="img" aria-label="Progress: '+p.state+(p.n?", "+p.done+"/"+p.n:"")+'"><div class="ph"><span>TOEIC</span><span>no. '+String(Math.max(no,0)).padStart(2,"0")+'</span></div>'+
+    '<div class="pr"><span>state</span><b class="st '+p.state+'">'+p.state+'</b></div><div class="pr"><span>'+p.lab+'</span><b>'+(p.n?p.done+" / "+p.n:"—")+'</b></div><div class="bar"><i style="width:'+pct+'%"></i></div></div>';
 }
 function go(id){if(location.hash==="#"+id)route();else location.hash="#"+id;}
 window.show=id=>go(String(id||"home"));
@@ -270,7 +300,7 @@ function route(){
   /* only the open tab holds content (the views reuse element ids); hiding and showing it tells the shared scripts
      new content arrived (they slide the view in and arm the scroll reveal and figure motion) */
   app=$("#"+tab);
-  TABS.forEach(([id])=>{if(id!==tab){const s=$("#"+id);s.hidden=true;s.innerHTML="";}});
+  TABS.forEach(([id])=>{const s=$("#"+id);s.removeAttribute("data-ezexam");if(id!==tab){s.hidden=true;s.innerHTML="";}});
   app.hidden=true;routeView(h);app.hidden=false;renderTabs(tab);
   if(afterRoute){const f=afterRoute;afterRoute=null;setTimeout(f,120);}
   dispatchEvent(new Event("scroll"));
@@ -280,7 +310,7 @@ function routeView(h){
   const[v,arg]=h.split("/");
   if(v==="day")return viewLesson(+arg,false);
   if(v==="mock")return viewMock(arg);
-  const map={home:viewHome,today:viewToday,course:viewCourse,vocab:viewVocab,mocks:viewMocks,wrong:viewWrong};
+  const map={home:viewHome,today:viewToday,course:viewCourse,vocab:viewVocab,mocks:viewMocks,wrong:viewWrong,traps:viewTraps};
   (map[v]||viewHome)();
   window.scrollTo(0,0);
 }
@@ -311,7 +341,13 @@ function viewHome(){
   else{const I=info(n),lock=lockedToday(n);
     next=lock?'<b>Done for today ✓</b><span>Tomorrow: Day '+n+' '+esc(I.t)+'</span>'+extra
       :'<b>Day '+n+'</b><span>'+esc(I.t)+' <span class="small">'+(I.review?"Weekly review":PN[I.p])+' · about 30 min</span></span>'+extra+'<a class="btn primary" href="#today">Start today\'s lesson</a>';}
-  let h='<div class="vhead"><p class="vmeta">TOEIC Listening &amp; Reading · Goal '+C.target+'</p><h1>TOEIC: road to '+C.target+'</h1><p>From about 550 to '+C.target+' in 40 weeks, about 30 minutes a day. Each day: a few new words with spaced review, a short handout, practice questions with explanations, and a few old mistakes to redo. Mini mock tests track your estimated score.</p></div>';
+  const exam=S.set.exam||"",left=exam?Math.round((new Date(exam+"T00:00:00")-new Date(today()+"T00:00:00"))/864e5):null;
+  const reach=left!=null&&left>=0&&n<=TOTAL?Math.min(TOTAL,n-1+left):null;
+  const dateLine='<p class="vmeta examdate"><label>Test date <input type="date" id="examDate" value="'+esc(exam)+'"></label>'+
+    (left==null?' <span class="small">Set it to get a countdown.</span>':left<0?' <span class="small">The test date has passed. Set the next one.</span>':' <b>'+(left===0?"Today!":left+" day"+(left===1?"":"s")+" left")+'</b>'+
+      (reach!=null&&reach<TOTAL?' <span class="small">At one lesson a day you will reach Day '+reach+' of '+TOTAL+' by then. Mock tests and mistakes matter most in the last weeks.</span>':''))+'</p>';
+  let h='<div class="vhead">'+pcb("home")+'<p class="vmeta">TOEIC Listening &amp; Reading · Goal '+C.target+'</p><h1>TOEIC: road to '+C.target+'</h1><p>From about 550 to '+C.target+' in 40 weeks, about 30 minutes a day. Each day: a few new words with spaced review, a short handout, practice questions with explanations, and a few old mistakes to redo. Mini mock tests track your estimated score.</p></div>';
+  h=h.replace('</p></div>','</p>'+dateLine+'</div>');
   h+='<div class="next">'+next+'</div>';
   h+='<section class="card"><h3>Course plan</h3><div class="phases">'+C.phases.map(p=>{const a=(p.weeks[0]-1)*7+1,b=p.weeks[1]*7;let d=0;for(let k=a;k<=b;k++)if(S.days[k]&&S.days[k].done)d++;const t=b-a+1;
     return '<div><b>'+esc(p.name)+'</b><span class="small">Weeks '+p.weeks[0]+"–"+p.weeks[1]+" · Goal "+p.goal+'</span><span class="small">'+esc(p.desc)+'</span><span class="bar"><i style="width:'+(d/t*100).toFixed(1)+'%"></i></span><span class="small">'+d+" / "+t+" days</span></div>";}).join("")+'</div><div class="row"><a class="btn" href="#course">Full course map</a></div></section>';
@@ -329,8 +365,20 @@ function viewHome(){
     '<li><b>Listening:</b> press ▶ Play and answer by ear first; open the transcript only after answering. Set the speed at the bottom of the page.</li>'+
     '<li><b>Mistakes</b> collect every wrong answer, sorted by Part. Use “Go to the question” or “Go to the handout” to see where it came from; the ↩ button brings you back.</li>'+
     '<li><b>Mock tests</b> fit in one 30-minute day. Take one in place of a weekly review; AI can write new ones whenever you want.</li>'+
+    '<li><b>Search</b> (🔍 or /) finds any word, handout line or question you have opened.</li>'+
     '<li><b>Sign in</b> (top right) to keep progress on every device.</li></ol></section>';
   app.innerHTML=h;
+  const ed=$("#examDate");if(ed)ed.onchange=()=>{S.set=Object.assign({},S.set,{t:now(),exam:ed.value||""});save();route();};
+}
+
+/* ---------------- summary & traps: every lesson's solving routine and traps in one place (like eztraps.js on the subject pages) ---------------- */
+function viewTraps(){
+  const c=Math.min(cur(),TOTAL),seen=new Set(),parts=[];
+  for(let n=1;n<=c;n++){const I=info(n);if(I.review||seen.has(I.tn))continue;const t=topic(I.tn);if(!t)continue;seen.add(I.tn);
+    const d=new DOMParser().parseFromString("<div>"+t.lesson+"</div>","text/html");const tips=[...d.querySelectorAll(".tip")].map(x=>x.innerHTML);
+    if(tips.length)parts.push('<section class="card trapday"><h3><span class="dn">Day '+(I.part?n-1:n)+'</span>'+esc(I.title)+'</h3><div class="lesson">'+tips.map(x=>'<div class="tip">'+x+"</div>").join("")+'</div><a class="btn sm" href="#day/'+(I.part?n-1:n)+'">Open the handout</a></section>');}
+  app.innerHTML='<section class="card"><h2>Summary &amp; traps</h2><p>The solving routine and the traps from every lesson you have opened, in course order. Read this before a mock test or the real one.</p></section>'+
+    (parts.length?parts.join(""):'<section class="card"><p class="small">Nothing yet: open your first lesson in Today.</p></section>');
 }
 
 function viewToday(){
@@ -391,7 +439,8 @@ function viewLesson(n,isToday){
   if(ct.src==="ai")$("#regen").onclick=async()=>{if(!confirm("Regenerating replaces this day's handout, words and questions, and clears its answers. Continue?"))return;$("#regen").disabled=true;try{await genLesson(n,I);const x=rec(n);if(x){x.ans={};x.st={};x.cid="";touch(x);save();}route();}catch(e){alert(aiErr(e));$("#regen").disabled=false;}};
   /* 3 practice */
   const ans=()=>(rec(n)&&rec(n).cid===ct.cid&&rec(n).ans)||{};
-  const pq=Quiz($("#pq"),ct.qs,{seed:n*7,pick:i=>ans()[i],shown:i=>ans()[i]!=null,
+  const pq=Quiz($("#pq"),ct.qs,{key:"d"+n+"."+ct.cid,seed:n*7,pick:i=>ans()[i],shown:i=>ans()[i]!=null,
+    clear:i=>{const x=R();delete x.ans[i];x.st.p=0;touch(x);save();upd();},
     notes:i=>{toHandout();offerBack("↩ Back to question "+(i+1),()=>{const el=$('#pq .qq[data-i="'+i+'"]');if(el){scrollToEl(el,true);glow(el);}});},
     set:(i,k,q)=>{const x=R();x.ans[i]=k;if(k!==q.a)addWrong("d"+n+":"+i,q,k,"Day "+n+" practice",n);touch(x);
       if(Object.keys(x.ans).length>=pq.F.length){x.st.p=1;}save();upd();}});
@@ -490,7 +539,7 @@ function viewReview(n,I,isToday){
     const pos=(i*5+n)%4,o=pick.slice();o.splice(Math.min(pos,o.length),0,w[2]);return {p:0,q:w[0]+"  ("+w[1]+")",o,a:o.indexOf(w[2]),e:w[3],w};});
   const R=()=>mkRec(n);
   if(!qs.length){$("#vq").innerHTML='<p class="small">No words to test this week.</p>';if(!(rec(n)&&rec(n).st.v)){const x=R();x.st.v=1;touch(x);save();}}
-  Quiz($("#vq"),qs,{pick:i=>(rec(n)||{ans:{}}).ans[i],shown:i=>(rec(n)||{ans:{}}).ans[i]!=null,
+  Quiz($("#vq"),qs,{key:"rv"+n,pick:i=>(rec(n)||{ans:{}}).ans[i],shown:i=>(rec(n)||{ans:{}}).ans[i]!=null,
     set:(i,k,q)=>{const x=R();x.ans[i]=k;rate(q.w,k===q.a);touch(x);if(Object.keys(x.ans).length>=qs.length)x.st.v=1;save();upd();}});
   const ids=Object.keys(S.wrong).filter(id=>{const w=S.wrong[id];return !w.fixed&&w.day>=n-6&&w.day<n;});
   if(ids.length)redo($("#rq"),ids,()=>{});else $("#rq").innerHTML='<p class="small">No open mistakes from this week.</p>';
@@ -508,7 +557,7 @@ function redo(el,ids,onAll){
   el.innerHTML=ids.map((id,i)=>'<div class="wbox" data-id="'+esc(id)+'"><div class="small src">'+esc(S.wrong[id].src)+" · wrong "+S.wrong[id].n+'×</div><div class="wq"></div>'+wrongNav(id)+'</div>').join("");
   $$(".wbox",el).forEach(box=>{
     const id=box.dataset.id,w=S.wrong[id];
-    Quiz($(".wq",box),[wrongItem(w)],{seed:id.length,pick:()=>tried[id],shown:()=>tried[id]!=null,
+    Quiz($(".wq",box),[wrongItem(w)],{key:"w."+id,seed:id.length,pick:()=>tried[id],shown:()=>tried[id]!=null,
       set:(i,k)=>{tried[id]=k;const x=S.wrong[id];if(k===x.q.a){x.fixed=now();}else{x.n++;}x.t=now();save();
         if(ids.every(j=>tried[j]!=null))onAll&&onAll();}});
   });
@@ -564,18 +613,19 @@ function viewMock(id){
   const LN=countQ(m.L),RN=countQ(m.R);
   let h='<p><a href="#mocks" class="small">← Mock tests</a></p><section class="lhead"><span class="kicker">'+(m.ai?"AI-made":"Built in")+'</span><h2>'+esc(m.title)+'</h2><p class="small">Listening '+LN+" · Reading "+RN+" · Time limit "+m.mins+" min</p></section>";
   if(!r.start&&!r.res){
-    app.innerHTML=h+'<section class="card"><h3>Before you start</h3><ul><li>Listening first (press ▶ Play; the browser reads it aloud, headphones help), then reading.</li><li>No right or wrong marks while you work; the score and explanations come after you submit.</li><li>Time up submits automatically. The clock keeps running if you leave.</li></ul><button class="btn primary" id="go">Start the clock</button></section>';
-    $("#go").onclick=()=>{S.mocks[id]={t:now(),ans:{},hist:r.hist||[],start:now()};save();viewMock(id);};
+    app.innerHTML=h+'<section class="card"><h3>Before you start</h3><p class="mins"><label>Time limit <input type="number" id="mins" min="5" max="120" step="5" value="'+m.mins+'"> min</label> <span class="small">'+m.mins+' min is the standard for this mock.</span></p><ul><li>Listening first (press ▶ Play; the browser reads it aloud, headphones help), then reading.</li><li>No right or wrong marks while you work; the score and explanations come after you submit.</li><li>Time up submits automatically. The clock keeps running if you leave.</li></ul><button class="btn primary" id="go">Start the clock</button></section>';
+    $("#go").onclick=()=>{const mins=Math.max(5,Math.min(120,+$("#mins").value||m.mins));S.mocks[id]={t:now(),ans:{},hist:r.hist||[],start:now(),mins};save();viewMock(id);};
     return;
   }
   const done=!!r.res;
+  if(done)app.removeAttribute("data-ezexam");else app.dataset.ezexam="1";   /* eznext.js: "Next unanswered" while the test runs */
   h+=done?resultHTML(m,r.res):'<div class="timer" id="tm"><b id="tt"></b><span id="tc"></span><button class="btn primary" id="sub">Submit</button></div>';
   h+='<section class="card"><h3>Listening</h3><div id="ml"></div></section><section class="card"><h3>Reading</h3><div id="mr"></div></section>';
   if(done)h+='<div class="finish"><button class="btn" id="again">Retake</button><span class="small">Your score stays in the history.</span></div>';
   else h+='<div class="finish"><button class="btn primary" id="sub2">Submit</button></div>';
   app.innerHTML=h;
   const ans=()=>(S.mocks[id]||{ans:{}}).ans;
-  const mk=(el,items,sec,off)=>Quiz(el,items,{mock:!done,num:off,seed:id.length*13+off,
+  const mk=(el,items,sec,off)=>Quiz(el,items,{key:"m."+id+"."+sec,mock:!done,num:off,seed:id.length*13+off,
     pick:i=>ans()[sec+i],shown:()=>done,set:(i,k)=>{const x=S.mocks[id];x.ans[sec+i]=k;x.t=now();save();cnt();}});
   const qL=mk($("#ml"),m.L,"L",0),qR=mk($("#mr"),m.R,"R",LN);
   function cnt(){const c=$("#tc");if(c)c.textContent="Answered "+Object.keys(ans()).length+" / "+(LN+RN);}
@@ -588,7 +638,7 @@ function viewMock(id){
   }
   if(!done){
     cnt();$("#sub").onclick=$("#sub2").onclick=()=>{const left=LN+RN-Object.keys(ans()).length;if(left&&!confirm(left+" questions are unanswered. Submit anyway?"))return;submit();};
-    const end=r.start+m.mins*60000;
+    const end=r.start+(r.mins||m.mins)*60000;
     const tick=()=>{const s=Math.max(0,Math.round((end-now())/1000));$("#tt").textContent=String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");
       if(s<=300)$("#tm").classList.add("low");if(s<=0){submit();}};
     tick();timerId=setInterval(tick,1000);
@@ -621,7 +671,7 @@ function viewWrong(){
     el.innerHTML='<section class="card">'+L.slice(0,40).map(([id,w])=>'<div class="wbox" data-id="'+esc(id)+'"><div class="small src">'+esc(w.src)+" · "+esc(w.at)+" · wrong "+w.n+"×"+(w.fixed?" · fixed":"")+(w.pick>=0&&w.pick!=null?" · last pick "+LET[w.pick]:"")+'</div><div class="wq"></div>'+wrongNav(id)+'</div>').join("")+(L.length>40?'<p class="small">Showing the first 40; more appear as you fix these.</p>':"")+"</section>";
     $$(".wbox",el).forEach(box=>{
       const id=box.dataset.id,w=S.wrong[id];let tried=f==="fixed"?w.q.a:undefined;
-      Quiz($(".wq",box),[wrongItem(w)],{seed:id.length,pick:()=>tried,shown:()=>tried!=null,
+      Quiz($(".wq",box),[wrongItem(w)],{key:"w."+id,seed:id.length,pick:()=>tried,shown:()=>tried!=null,
         set:(i,k)=>{tried=k;const x=S.wrong[id];if(f!=="fixed"){if(k===x.q.a)x.fixed=now();else x.n++;x.t=now();save();}}});
     });
   };
@@ -706,7 +756,7 @@ ${FORMATS}`;
 /* ---------------- settings: speech rate ---------------- */
 function settings(){
   const el=$("#rate");if(!el)return;el.value=S.set.rate||0.95;$("#rateV").textContent=(+el.value).toFixed(2)+"×";
-  el.oninput=()=>{S.set={t:now(),rate:+el.value};$("#rateV").textContent=(+el.value).toFixed(2)+"×";save();};
+  el.oninput=()=>{S.set=Object.assign({},S.set,{t:now(),rate:+el.value});$("#rateV").textContent=(+el.value).toFixed(2)+"×";save();};
   $("#rateTest").onclick=()=>speak([["W","Where will the annual conference be held this year?"],["M","At the Grand Hotel downtown."]],1);
   if(!TTS.ok)$("#rateNote").textContent="This browser can't read text aloud. Use Chrome, Edge or Safari for listening.";
 }
@@ -723,5 +773,32 @@ if(window.EZSync){
   EZSync.register(KEY,{merge,sig:o=>JSON.stringify(o),noReload:true,after:re});
   EZSync.register(AIKEY,{merge,sig:o=>JSON.stringify(o),noReload:true,after:re});
 }
+/* ---------------- search (ezsearch.js): lessons are data, so the page hands its own entries over ---------------- */
+function findText(root,terms){
+  let best=null;
+  root.querySelectorAll("h2,h3,h4,p,li,td,th,.stem,.oe,.passage,.vrow,summary,b,.tip").forEach(e=>{const t=e.textContent.toLowerCase();if(terms.every(x=>t.includes(x))&&(!best||best.contains(e)))best=e;});
+  return best;
+}
+const goFind=hash=>({terms,reveal})=>nav(hash,()=>reveal(findText(app,terms)));
+const plain=html=>{const d=new DOMParser().parseFromString("<div>"+html+"</div>","text/html");return [...d.querySelectorAll("h3,p,li,tr,.tip")].filter(e=>!e.querySelector("p,li,tr")).map(e=>e.textContent);};
+window.EZSEARCH={dom:false,entries(){
+  const out=[],c=Math.min(cur(),TOTAL),seen=new Set();
+  for(let n=1;n<=c;n++){const I=info(n);if(I.review)continue;const ct=content(n);if(!ct)continue;
+    const first=I.part?n-1:n;
+    if(!seen.has(I.tn)){seen.add(I.tn);plain(ct.lesson).forEach(t=>out.push({view:"course",group:"Handouts",sec:"Day "+first+" · "+I.title,text:t,go:goFind("#day/"+first)}));}
+    ct.words.forEach(w=>out.push({view:"course",group:"Words",sec:"Day "+n,text:w[0]+" · "+w[1]+" · "+w[2]+" · "+w[3],go:goFind("#day/"+n)}));
+    flat(ct.qs).forEach(q=>out.push({view:"course",group:"Practice questions",sec:"Day "+n+" · "+PN[q.p],text:[q.q||q.say||q.scene||"",(q.ctx&&q.ctx.text)||""].join(" "),go:goFind("#day/"+n)}));
+  }
+  for(let n=1;n<=TOTAL;n++){const I=info(n);out.push({view:"course",group:"Course map",sec:"Week "+I.w,text:"Day "+n+" "+I.t,go:goFind("#course")});}
+  allMocks().forEach(m=>{const r=S.mocks[m.id];out.push({view:"mocks",group:"Mock tests",sec:"",text:m.title,go:goFind("#mocks")});
+    if(r&&r.res)flat(m.L.concat(m.R)).forEach(q=>out.push({view:"mocks",group:m.title,sec:PN[q.p],text:[q.q||q.say||q.scene||"",(q.ctx&&q.ctx.text)||""].join(" "),go:goFind("#mock/"+m.id)}));});
+  return out;
+}};
+/* ---------------- first-visit tour (ezfx.js), with this course's own steps ---------------- */
+window.EZTOUR={key:"eztour-toeic-v1",steps:()=>{const t=id=>document.querySelector('#tabs [data-go="'+id+'"]');return [
+  {el:document.querySelector("nav.tabs"),t:"Tabs",d:"Home shows your next step and progress. Today is the daily lesson: about 30 minutes, one lesson a day."},
+  t("vocab")&&{el:t("vocab"),t:"Words",d:"Every word you learn comes back on a spaced schedule (1, 2, 4, 7, 15, 30 days). Review the ones that are due."},
+  t("wrong")&&{el:t("wrong"),t:"Mistakes",d:"Every wrong answer lands here, sorted by Part. Redo it until it is fixed; jump to its question or handout and back."},
+  {el:document.querySelector(".ezs-btn")||document.querySelector(".theme"),t:"Search and settings",d:"Search everything you have opened (shortcut /). The top right also has sync, sign-in and the light/dark switch."}].filter(Boolean);}};
 syncChip();settings();route();
 })();

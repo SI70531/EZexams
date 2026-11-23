@@ -247,7 +247,9 @@
 
 /* ---------- first visit: a short tour of the subject page (once per browser) ---------- */
 (function(){
-  const KEY="eztour-v1";
+  /* a page can bring its own tour: window.EZTOUR={key:"…",steps:()=>[{el,t,d}]} (set before this script runs) */
+  const OWN=window.EZTOUR&&window.EZTOUR.steps?window.EZTOUR:null;
+  const KEY=OWN&&OWN.key?OWN.key:"eztour-v1";
   let done=false;try{done=!!localStorage.getItem(KEY);}catch(e){done=true;}
   if(done)return;
   const css=`#eztour{position:fixed;inset:0;z-index:950;pointer-events:none}
@@ -260,6 +262,7 @@
 #eztour .skip{border:0;background:none;color:var(--muted)}
 #eztour .next{border:1.5px solid var(--ink);background:var(--ink);color:var(--bg)}`;
   function steps(){
+    if(OWN)return (OWN.steps()||[]).filter(x=>x&&x.el&&x.el.getBoundingClientRect().width>0);
     const tabsEl=document.querySelector("nav.tabs")||document.getElementById("tabs");
     const rv=document.querySelector('#tabs [data-go="review"],#tabs [data-go="sheet"]');
     const prog=document.querySelector("#progTable");

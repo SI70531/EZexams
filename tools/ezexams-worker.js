@@ -61,6 +61,8 @@ const AI_HOUR = 600, AI_DAY = 3000;
 const GLOBAL_FAIL_MAX = 200, GLOBAL_FAIL_WIN = 60 * 60 * 1000;
 
 export default {
+  /* TWstock's daily pre-market note (cron in wrangler-twstock.toml, 05:30 Taipei on trading-day mornings) */
+  async scheduled(event, env, ctx) { if (env.DAILY) ctx.waitUntil(premarket(env, true)); },
   async fetch(req, env) {
     const origin = req.headers.get("Origin") || "";
     const ok = ALLOWED.includes(origin);
@@ -91,6 +93,7 @@ export default {
     /* ---------- TWstock: public market data (quotes and headlines; no secrets involved) ---------- */
     if (url.pathname === "/tw/rt" && req.method === "GET") return twRt(url, json);
     if (url.pathname === "/tw/news" && req.method === "GET") return twNewsRoute(url, json, fail);
+    if (url.pathname === "/tw/premarket" && req.method === "GET") return json(await pmStore(env, "get"), 200, { "Cache-Control": "no-store" });
 
     /* IPv6 visitors are counted per /64 (one home or phone gets a whole /64, so rotating addresses inside it is free) */
     const rawIp = req.headers.get("CF-Connecting-IP") || "anon";
@@ -163,6 +166,12 @@ export default {
 
     /* ---------- TWstock: the AI analyst team ---------- */
     if (url.pathname === "/tw/analyze" && req.method === "POST") return twAnalyze(env, who, bodyText, json, fail);
+    if (url.pathname === "/tw/premarket/run" && req.method === "POST") {
+      const q = await guard(env, "pin:" + who, "ai");
+      if (q.blocked) return fail(429, "RESOURCE_EXHAUSTED", "Limit reached for this sign-in; try again later", { "Retry-After": String(q.aiWait || 60) });
+      const r = await premarket(env, false);
+      return r.error ? fail(502, "AI_FAILED", r.error) : json(r);
+    }
 
     /* ---------- AI practice: one question at a time, answers kept here ---------- */
     if (url.pathname === "/gen/next" && req.method === "POST") return genNext(env, acct, who, bodyText, json, fail);
@@ -363,6 +372,8 @@ function twPrompt(code, name, facts, news, ann, world) {
 '"entry":{"now":"適合進場|等待訊號|不建議進場","conditions":["..."],"zone":"price zone","stop":"stop level and why","avoid":"when not to buy"},',
 '"risks":["..."],"watch":["upcoming events or dates to watch"]}}',
 "",
+"DATA.research (when present) holds the page's own research tools for this stock: technical scenarios with support and resistance, a 10,000-run bootstrap 'time machine' (how often the target or the stop was hit first), backtests of four simple strategies with Taiwan costs and an out-of-sample split, and the user's own position, trades, events and valuation. Every analyst must use the parts that concern them (the 技術面 analyst the scenarios and time machine, 風險控管 the time machine, backtests and the user's position) and say when a backtest has too few trades to mean anything.",
+"",
 "DATA (computed by the page from TWSE figures; prices in NT$, volume in lots of 1,000 shares):",
 facts,
 "",
@@ -382,7 +393,7 @@ async function twAnalyze(env, who, bodyText, json, fail) {
   const code = String((b && b.code) || "").trim(), name = twClip(b && b.name, 20) || code;
   if (!/^[0-9A-Z]{4,6}$/.test(code)) return fail(400, "BAD_CODE", "Bad stock code");
   let facts; try { facts = JSON.stringify(b.facts || {}); } catch (e) { facts = "{}"; }
-  if (facts.length > 8000) return fail(413, "TOO_BIG", "Too much data");
+  if (facts.length > 16000) return fail(413, "TOO_BIG", "Too much data");
   const q = await guard(env, "pin:" + who, "ai");
   if (q.blocked) return fail(429, "RESOURCE_EXHAUSTED", "Limit reached for this sign-in; try again later", { "Retry-After": String(q.aiWait || 60) });
   const [news, ann, world] = await Promise.all([
@@ -885,4 +896,138 @@ async function health(env) {
     out.gemini.ok = r.ok; out.gemini.status = r.status;
   } catch (e) { out.gemini.error = String(e.message || e); }
   return out;
+}
+
+/* ---------- TWstock daily pre-market note ---------- */
+/* the stored note and the Telegram chat it goes to live in one Durable Object ("daily") */
+async function pmStore(env, op, body) {
+  if (!env.DAILY) return { note: null };
+  const r = await env.DAILY.get(env.DAILY.idFromName("daily")).fetch("https://daily/" + op, { method: "POST", body: JSON.stringify(body || {}) });
+  return r.json();
+}
+export class Daily {
+  constructor(state) { this.state = state; }
+  async fetch(req) {
+    const op = new URL(req.url).pathname.slice(1), st = this.state.storage, b = await req.json().catch(() => ({}));
+    if (op === "put") { const h = (await st.get("hist")) || []; h.unshift(b.note); h.length = Math.min(h.length, 14); await st.put("hist", h); return Response.json({ ok: true }); }
+    if (op === "chat") { if (b.set) await st.put("chat", b.set); return Response.json({ chat: (await st.get("chat")) || null, offset: (await st.get("off")) || 0 }); }
+    if (op === "off") { await st.put("off", b.off || 0); return Response.json({ ok: true }); }
+    const h = (await st.get("hist")) || [];
+    return Response.json({ note: h[0] || null, history: h.slice(1, 7).map(x => ({ at: x.at, day: x.day, call: x.analysis && x.analysis.call })) });
+  }
+}
+/* night-session TAIEX futures (MarketType "1"), or the futures exchange's after-hours daily report */
+async function pmNight() {
+  try {
+    const r = await fetch("https://mis.taifex.com.tw/futures/api/getQuoteList", {
+      method: "POST", headers: { "Content-Type": "application/json", "User-Agent": TW_UA, Referer: "https://mis.taifex.com.tw/futures/" },
+      body: JSON.stringify({ MarketType: "1", SymbolType: "F", KindID: "1", CID: "TXF", ExpireMonth: "", RowSize: "全部", PageNo: "", SortColumn: "", AscDesc: "A" }),
+    });
+    const j = await r.json(), list = (j && j.RtData && j.RtData.QuoteList) || [];
+    const q = list.find(x => /-[FM]$/.test(String(x.SymbolID || "")) && !String(x.SymbolID).includes("/") && twNum(x.CLastPrice) > 0);
+    if (q) return { src: "taifex-live", name: twClip(q.DispCName, 20), last: twNum(q.CLastPrice), ref: twNum(q.CRefPrice), high: twNum(q.CHighPrice), low: twNum(q.CLowPrice), volume: twNum(q.CTotalVolume), time: String(q.CTime || "") };
+  } catch (e) {}
+  try {
+    const a = await (await fetch("https://openapi.taifex.com.tw/v1/DailyMarketReportFut", { headers: { "User-Agent": TW_UA, Accept: "application/json" } })).json();
+    const month = x => String(x["ContractMonth(Week)"] || "").trim();
+    const tx = a.filter(r => String(r.Contract).trim() === "TX" && /^\d{6}$/.test(month(r)) && twNum(r.Last) > 0);
+    const night = tx.find(r => /盤後|After/i.test(String(r.TradingSession || ""))), day = tx.find(r => !/盤後|After/i.test(String(r.TradingSession || "")));
+    const pick = x => x && { date: String(x.Date || ""), month: month(x), last: twNum(x.Last), change: twNum(x.Change), high: twNum(x.High), low: twNum(x.Low), volume: twNum(x.Volume) };
+    if (night || day) return { src: "taifex-report", night: pick(night), day: pick(day) };
+  } catch (e) {}
+  return null;
+}
+const PM_SYMS = [["^GSPC", "S&P 500"], ["^IXIC", "Nasdaq"], ["^DJI", "道瓊"], ["^SOX", "費城半導體"], ["TSM", "台積電 ADR"], ["^VIX", "VIX"], ["^TNX", "美 10 年債殖利率"], ["TWD=X", "美元兌新台幣"], ["DX-Y.NYB", "美元指數"], ["CL=F", "原油"], ["NVDA", "輝達"], ["^TWII", "加權指數"], ["^N225", "日經"]];
+async function pmWorld() {
+  const r = await fetch("https://query1.finance.yahoo.com/v7/finance/spark?range=5d&interval=1d&symbols=" + encodeURIComponent(PM_SYMS.map(x => x[0]).join(",")), { headers: { "User-Agent": TW_UA, Accept: "application/json" } });
+  if (!r.ok) return [];
+  const j = await r.json();
+  const rows = j && j.spark && Array.isArray(j.spark.result) ? j.spark.result.map(x => ({ s: x.symbol, d: (x.response || [])[0] || {} })) : Object.entries(j || {}).map(([s, d]) => ({ s, d: d || {} }));
+  return rows.map(({ s, d }) => {
+    const m = d.meta || d, q = (d.indicators && d.indicators.quote && d.indicators.quote[0]) || {}, cl = (q.close || d.close || []).filter(v => v > 0);
+    const last = twNum(m.regularMarketPrice) || cl[cl.length - 1], prev = cl.length > 1 ? cl[cl.length - 2] : twNum(m.chartPreviousClose);
+    const nm = (PM_SYMS.find(x => x[0] === s) || [s, s])[1], t = m.regularMarketTime ? new Date((m.regularMarketTime + 8 * 3600) * 1000).toISOString().slice(0, 16).replace("T", " ") : "";
+    return last > 0 ? { name: nm, symbol: s, last: Math.round(last * 100) / 100, changePct: prev > 0 ? Math.round((last / prev - 1) * 10000) / 100 : null, asOfTaipei: t } : null;
+  }).filter(Boolean);
+}
+async function pmInst() {
+  /* yesterday's institutional net buying in the cash market (NT$ 100 million), from TWSE; may refuse servers abroad */
+  try {
+    const d = new Date(Date.now() + 8 * 3600e3);
+    for (let back = 1; back < 6; back++) {
+      const x = new Date(d.getTime() - back * 864e5); if (x.getUTCDay() % 6 === 0) continue;
+      const ds = x.toISOString().slice(0, 10).replace(/-/g, "");
+      const j = await (await fetch(`https://www.twse.com.tw/rwd/zh/fund/BFI82U?type=day&dayDate=${ds}&response=json`, { headers: { "User-Agent": TW_UA } })).json();
+      if (j.stat === "OK" && Array.isArray(j.data)) return { date: ds, rows: j.data.map(r => [String(r[0]), Math.round(twNum(r[3]) / 1e6) / 100]) };
+    }
+  } catch (e) {}
+  return null;
+}
+function pmPrompt(day, night, world, inst, news) {
+  const list = (a, f) => (a && a.length ? a.map(f).join("\n") : "(none found)");
+  return [
+"You are the pre-market desk of a Taiwan equity research team, writing at about 05:30 Taipei time for one private investor, before the Taiwan stock market opens at 09:00 on " + day + ".",
+"Write everything in Traditional Chinese as used in Taiwan. Be concrete; no filler.",
+"",
+"Weigh every factor that can move the Taiwan market at today's open: the TAIEX futures night session (it trades 15:00 to 05:00 and is the most direct signal of the open), the US close (S&P 500, Nasdaq, Philadelphia Semiconductor, TSMC ADR versus its Taiwan price, Nvidia), the VIX, US yields and the dollar, the NT dollar, oil, yesterday's institutional flows in Taiwan, and the news: Fed and US data, tariffs and export controls, geopolitics, big earnings, Taiwan policy.",
+"",
+"Rules:",
+"- Use ONLY the numbers in DATA and the headlines given. Never invent a price, a figure or an event; if something important is missing say so.",
+"- TSMC ADR: one ADR is 5 shares; if you compare it with the Taiwan price, say that you need the exchange rate and use the one in DATA.",
+"- Nobody can know the open for sure. Give the more likely direction for today's open, a rough gap range in TAIEX points, and chances that add up to about 100%. Say what would prove the call wrong in the first 30 minutes.",
+"",
+"Return ONE JSON object and nothing else, in exactly this shape:",
+'{"call":"開高|平盤附近|開低","confidence":"低|中|高","gap":"例如 +80 到 +150 點","chances":{"開高":"約 55%","平盤":"約 25%","開低":"約 20%"},"headline":"one sentence for a phone notification",',
+'"night":"what the night session did and what it implies","us":"the US close and what matters for Taiwan","factors":[{"name":"factor","effect":"利多|利空|中性","note":"one or two sentences"}],',
+'"sectors":["sectors or big names likely to lead or lag, with the reason"],"levels":"TAIEX levels to watch, only from DATA","risks":["..."],"watch":["what to check between 09:00 and 09:30, and events later today"]}',
+"",
+"DATA.night (TAIEX futures, TAIFEX): " + JSON.stringify(night),
+"DATA.world (Yahoo Finance, last price and % change from the previous close, time in Taipei): " + JSON.stringify(world),
+"DATA.institutions (TWSE, NT$ 100 million, previous trading day): " + JSON.stringify(inst),
+"",
+"HEADLINES (last 24 hours, newest first):",
+list(news, x => "- " + (x.at ? new Date(x.at + 8 * 3600e3).toISOString().slice(5, 16).replace("T", " ") : "") + " " + x.t + (x.src ? "（" + x.src + "）" : "")),
+  ].join("\n");
+}
+async function premarket(env, notify) {
+  if (!env.GEMINI_KEY) return { error: "no GEMINI_KEY" };
+  const day = new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10);
+  const [night, world, inst, n1, n2, n3] = await Promise.all([
+    pmNight().catch(() => null), pmWorld().catch(() => []), pmInst().catch(() => null),
+    twHeadlines("台股 OR 台指期 OR 夜盤 when:1d", 10).catch(() => []),
+    twHeadlines("美股 OR 聯準會 OR 費半 OR 台積電ADR when:1d", 10).catch(() => []),
+    twHeadlines("關稅 OR 出口管制 OR 地緣政治 OR 匯率 OR 輝達 when:1d", 8).catch(() => []),
+  ]);
+  const seen = new Set(), news = [...n1, ...n2, ...n3].filter(x => !seen.has(x.t) && seen.add(x.t)).sort((a, b) => b.at - a.at).slice(0, 24);
+  const g = await geminiJson(env, pmPrompt(day, night, world, inst, news), 0.3, 0);
+  if (g.error) return { error: "Gemini " + g.error.status };
+  let a = null; try { a = JSON.parse(g.text); } catch (e) { const m = g.text.match(/\{[\s\S]*\}/); try { a = m ? JSON.parse(m[0]) : null; } catch (e2) { a = null; } }
+  if (!a || !a.call) return { error: "unexpected AI reply" };
+  const note = { at: Date.now(), day, analysis: a, data: { night, world, inst }, news: news.slice(0, 12).map(x => ({ t: x.t, src: x.src, u: x.u, at: x.at })) };
+  await pmStore(env, "put", { note });
+  if (notify) note.sent = await pmTelegram(env, a, day);
+  return note;
+}
+/* Telegram: the bot token is the TG_TOKEN secret; the chat is whoever first sent the bot a message (kept after that) */
+async function pmTelegram(env, a, day) {
+  if (!env.TG_TOKEN) return "no TG_TOKEN";
+  const api = m => "https://api.telegram.org/bot" + env.TG_TOKEN + "/" + m;
+  let { chat } = await pmStore(env, "chat");
+  if (!chat) {
+    try { const u = await (await fetch(api("getUpdates"))).json(); const m = (u.result || []).map(x => x.message || x.channel_post).find(x => x && x.chat); if (m) { chat = m.chat.id; await pmStore(env, "chat", { set: chat }); } } catch (e) {}
+  }
+  if (!chat) return "no chat yet: send the bot any message first";
+  const esc = v => String(v == null ? "" : v).replace(/[<>&]/g, c => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" })[c]);
+  const ch = a.chances || {}, f = (Array.isArray(a.factors) ? a.factors : []).slice(0, 6);
+  const text = [
+    `<b>台股盤前 ${esc(day)}：${esc(a.call)}</b>（信心 ${esc(a.confidence || "—")}，${esc(a.gap || "")}）`,
+    esc(a.headline || ""), "",
+    `開高 ${esc(ch["開高"] || "—")}｜平盤 ${esc(ch["平盤"] || "—")}｜開低 ${esc(ch["開低"] || "—")}`, "",
+    `<b>夜盤</b> ${esc(a.night || "—")}`, `<b>美股</b> ${esc(a.us || "—")}`, "",
+    ...f.map(x => `${x.effect === "利多" ? "🔺" : x.effect === "利空" ? "🔻" : "▪️"} ${esc(x.name)}：${esc(x.note)}`), "",
+    `<b>開盤後盯</b> ${esc((a.watch || []).slice(0, 3).join("；"))}`,
+    `<a href="https://si70531.github.io/TWstock/">完整分析</a>｜AI 研究參考，不保證漲跌`,
+  ].join("\n").slice(0, 4000);
+  try { const r = await fetch(api("sendMessage"), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ chat_id: chat, text, parse_mode: "HTML", disable_web_page_preview: true }) }); return r.ok ? "sent" : "telegram " + r.status; }
+  catch (e) { return "telegram failed"; }
 }

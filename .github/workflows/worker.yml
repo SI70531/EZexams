@@ -16,6 +16,7 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       BANK_KEY: ${{ secrets.BANK_KEY }}
+      TG_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -35,6 +36,7 @@ jobs:
         run: |
           printf '%s' "$BANK_KEY" | npx --yes wrangler@4 secret put BANK_KEY
           printf '%s' "$BANK_KEY" | npx --yes wrangler@4 secret put BANK_KEY --config wrangler-twstock.toml
+          if [ -n "$TG_TOKEN" ]; then printf '%s' "$TG_TOKEN" | npx --yes wrangler@4 secret put TG_TOKEN --config wrangler-twstock.toml; fi
       - name: Deploy with Wrangler
         if: env.HAS_TOKEN == 'true'
         working-directory: tools

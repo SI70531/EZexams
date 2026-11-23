@@ -31,3 +31,15 @@ class_name = "ErrLog"
 [[migrations]]
 tag = "v2"
 new_sqlite_classes = ["Guard", "ErrLog"]
+
+# The daily pre-market note (05:30 Taipei, Monday to Friday mornings = 21:30 UTC Sunday to Thursday) and where it is kept.
+[triggers]
+crons = ["30 21 * * 0-4"]
+
+[[durable_objects.bindings]]
+name = "DAILY"
+class_name = "Daily"
+
+[[migrations]]
+tag = "v3"
+new_sqlite_classes = ["Daily"]

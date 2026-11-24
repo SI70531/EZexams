@@ -137,12 +137,12 @@
   }
 
   /* ---------- open / close ---------- */
-  function open(){
+  let open=function(){
     INDEX=null;            /* rebuild: answers and quizzes may have changed */
     {const tm=document.getElementById("themeMenu"),tb=document.getElementById("themeBtn");if(tm&&!tm.hidden){tm.hidden=true;if(tb)tb.setAttribute("aria-expanded","false");}}   /* never both open */
     panel.hidden=false;btn.setAttribute("aria-expanded","true");
     input.focus();input.select();run();
-  }
+  };
   function close(){panel.hidden=true;btn.setAttribute("aria-expanded","false");}
   window.EZsearchClose=close;
   btn.addEventListener("click",e=>{e.stopPropagation();panel.hidden?open():close();});
@@ -153,7 +153,12 @@
     else if(e.key==="Enter"){e.preventDefault();go(sel>=0?sel:0);}
     else if(e.key==="Escape"){close();btn.focus();}
   });
-  document.addEventListener("click",e=>{if(!panel.hidden&&!e.target.closest(".ezs-panel,.ezs-btn"))close();});
+  /* tapping anywhere else (pointerdown: iPhone sends no click for plain text), scrolling the page or switching tab closes it */
+  document.addEventListener("pointerdown",e=>{if(!panel.hidden&&!e.target.closest(".ezs-panel,.ezs-btn"))close();},true);
+  let openY=0;const o0=open;open=function(){o0();openY=scrollY;};
+  addEventListener("scroll",()=>{if(!panel.hidden&&Math.abs(scrollY-openY)>40&&document.activeElement!==input)close();},{passive:true});
+  addEventListener("scroll",()=>{if(!panel.hidden&&Math.abs(scrollY-openY)>120)close();},{passive:true});
+  addEventListener("hashchange",()=>{if(!panel.hidden)close();});
   document.addEventListener("keydown",e=>{
     const typing=/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)||e.target.isContentEditable;
     if((e.key==="k"||e.key==="K")&&(e.ctrlKey||e.metaKey)){e.preventDefault();panel.hidden?open():close();}

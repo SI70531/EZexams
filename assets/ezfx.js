@@ -207,7 +207,7 @@
   onScroll();
 })();
 
-/* ---------- phone top bar: search, sync, sign out and the theme button fold into one ⋯ menu ---------- */
+/* ---------- phone top bar: sync, sign out and the theme button fold into one ⋯ menu; search stays a button left of it ---------- */
 (function(){
   const css=`.ezmore{display:contents}.ezmore-btn{display:none}.ezmore-panel{display:contents}
 @media (max-width:640px){
@@ -228,18 +228,19 @@
 }`;
   function build(){
     const bar=document.querySelector(".top .bar");if(!bar||document.querySelector(".ezmore"))return;
-    const items=[".ezs-btn","#syncChip","#ezOut",".theme"].map(s=>bar.querySelector(":scope > "+s)).filter(Boolean);
+    const items=["#syncChip","#ezOut",".theme"].map(s=>bar.querySelector(":scope > "+s)).filter(Boolean);
     if(items.length<2)return;
     const st=document.createElement("style");st.textContent=css;document.head.appendChild(st);
     const box=document.createElement("div");box.className="ezmore";
     box.innerHTML='<button type="button" class="ezmore-btn" aria-label="More" aria-expanded="false">⋯</button><div class="ezmore-panel" role="menu"></div>';
     bar.insertBefore(box,items[0]);
+    const sb=bar.querySelector(":scope > .ezs-btn");if(sb)bar.insertBefore(sb,box);
     const panel=box.lastElementChild,btn=box.firstElementChild;
     items.forEach(x=>panel.appendChild(x));
     const setOpen=o=>{box.classList.toggle("open",o);btn.setAttribute("aria-expanded",o);};
     btn.addEventListener("click",e=>{e.stopPropagation();setOpen(!box.classList.contains("open"));});
     document.addEventListener("click",e=>{if(!box.classList.contains("open"))return;
-      if(!box.contains(e.target)||(e.target.closest(".ezs-btn,#syncChip,#ezOut")))setOpen(false);});
+      if(!box.contains(e.target)||(e.target.closest("#syncChip,#ezOut")))setOpen(false);});
     document.addEventListener("keydown",e=>{if(e.key==="Escape")setOpen(false);});
   }
   addEventListener("load",()=>setTimeout(build,160));

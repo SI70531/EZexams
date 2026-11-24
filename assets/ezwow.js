@@ -250,7 +250,7 @@ html.wow-busy .wow-bg i,html.wow-busy .wow-stars{animation-play-state:paused}
   /* ---------- opening the site: logo intro, cards fly in ---------- */
   (function(){
     if(robot()||calm())return;
-    const first=root.classList.contains("ezlock");   /* every time the login screen is about to show (a new tab, a signed-out reload) */   /* every time the login screen is about to show (a new tab, a signed-out reload) */
+    let first=false;try{first=!sessionStorage.getItem("ezwow-intro");sessionStorage.setItem("ezwow-intro","1");}catch(e){}   /* once per tab, when the site is opened */
     const cardsFly=()=>{
       document.querySelectorAll(".exam-subj").forEach((c,i)=>{
         if(!c.animate)return;const dir=i%2?1:-1;

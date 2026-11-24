@@ -42,7 +42,7 @@
   /* the proxy needs this tab's sign-in token (signing in to an account), so the Worker URL alone cannot use the quota */
   async function proxyToken(force){
     const S=window.EZSync;const t=S&&S.session?await S.session(force):null;
-    if(!t)throw fail("login","Sign in first to use grading");
+    if(!t)throw fail("network","Can't connect to the grading server right now");
     return t;
   }
   /* grading (stable) asks for the most deterministic answer Google offers: temperature 0, the single most likely
@@ -57,7 +57,7 @@
           generationConfig:Object.assign(stable?{temperature:0,topK:1,topP:1,seed:7+(attempt||0)}:{temperature:0.2},json?{responseMimeType:"application/json"}:{})})},120000);
     let body=null;try{body=await r.json();}catch(e){}
     if(px&&r.status===401&&!force)return call(key,model,prompt,json,stable,true,attempt);   /* token expired: renew once */
-    if(px&&r.status===401)throw fail("login","Your sign-in has expired. Please sign in again.");
+    if(px&&r.status===401)throw fail("network","Can't connect to the grading server right now");
     if(!r.ok)throw httpErr(r,body);
     const c=body&&body.candidates&&body.candidates[0];
     const text=c&&c.content&&Array.isArray(c.content.parts)?c.content.parts.filter(p=>!p.thought).map(p=>p.text||"").join(""):"";

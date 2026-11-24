@@ -765,8 +765,8 @@ function settings(){
 function syncChip(){
   const chip=$("#syncChip");if(!chip||!window.EZSync)return;
   const lab={off:"Not synced",ok:"Synced",sync:"Syncing…",dirty:"Waiting to upload",err:"Sync failed"};
-  EZSync.onStatus(s=>{chip.dataset.state=s.state;chip.querySelector("span").textContent=EZSync.mode()==="off"?"Sign in to sync":(lab[s.state]||"Synced");chip.title=s.msg||"";});
-  chip.onclick=e=>{e.preventDefault();if(EZSync.mode()==="off"&&window.EZGate)EZGate.open({});};
+  EZSync.onStatus(s=>{chip.dataset.state=s.state;chip.querySelector("span").textContent=EZSync.mode()==="off"?"Not synced":(lab[s.state]||"Synced");chip.title=s.msg||"";});
+  chip.onclick=e=>{e.preventDefault();if(EZSync.mode()==="off")EZSync.autoLogin();else EZSync.syncNow();};
 }
 if(window.EZSync){
   const re=()=>{S=load(KEY);A=load(AIKEY);norm();route();};

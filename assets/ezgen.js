@@ -359,7 +359,7 @@
       bar.innerHTML="";
       const t=document.createElement("div");t.className="gtxt";bar.appendChild(t);
       if(HY.state==="loading"){t.textContent="Loading the questions you answered before…";return;}
-      if(HY.state==="login"&&Object.keys(missing()).length){t.innerHTML="Sign in to see the questions you answered before.";addBtn("Sign in",()=>{if(window.EZGate&&EZGate.open)EZGate.open();});return;}
+      if(HY.state==="login"&&Object.keys(missing()).length){t.textContent="Can't load the questions you answered before right now.";addBtn("Try again",()=>{HY.state="idle";hydrate();});return;}
       if(HY.state==="error"&&Object.keys(missing()).length){t.textContent=HY.msg||"Failed to load.";addBtn("Try again",()=>{HY.state="idle";hydrate();});return;}
       if(isBatch(k)){
         const made=Object.values(st().gen&&st().gen[k]||{}).filter(g=>!g.p).length+Object.keys(st().quiz&&st().quiz[k]||{}).filter(i=>!genOf(k,+i)&&+i<N).length;

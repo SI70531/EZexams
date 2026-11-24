@@ -4,15 +4,8 @@
    - Theme (system / light / dark): the saved choice is applied immediately so the page never flashes the wrong theme;
      the menu (#themeBtn / #themeMenu) is wired once the DOM is ready.
    - Offline: registers sw.js at the site root so pages you have opened keep working without a network. */
-/* entry gate (ezgate.js): without a sync code the page stays hidden until the gate is up, so nothing flashes */
 (function(){
   if(location.hash==="#wrong")window.EZ_WANT_WRONG=1;   /* the 錯題區 now lives in 總複習; ezwrong.js opens it */
-  try{if(!sessionStorage.getItem("ezsync-s2")&&!sessionStorage.getItem("ezgate-skip"))document.documentElement.classList.add("ezlock");}catch(e){}
-  const st=document.createElement("style");
-  st.textContent="html.ezlock body{visibility:hidden}html.ezlock #ezgate{visibility:visible}html.ezgate-on body{overflow:hidden}";
-  document.head.appendChild(st);
-  /* never leave the page hidden if the gate could not load */
-  addEventListener("load",()=>setTimeout(()=>{if(document.documentElement.classList.contains("ezlock")&&!document.getElementById("ezgate"))document.documentElement.classList.remove("ezlock");},3000));
 })();
 (function(){
   const TK="ezexams-theme",root=document.documentElement,host=root.getAttribute("data-theme");

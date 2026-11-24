@@ -98,6 +98,23 @@ export default {
       return json({ ok: true });
     }
 
+    /* ---------- automatic sign-in (no sign-in screen): a one-time Supabase link for the site's owner account ----------
+       The account is the Worker variable OWNER_USER (a username; set it in Cloudflare → Settings → Variables). Every
+       visitor shares this account's progress. */
+    if (url.pathname === "/auto" && req.method === "POST") {
+      const user = String(env.OWNER_USER || "").trim().toLowerCase();
+      if (!/^[a-z0-9_]{1,20}$/.test(user)) return fail(500, "NO_OWNER", "The Worker has no OWNER_USER variable yet");
+      if (!env.SUPABASE_SECRET_KEY) return fail(500, "NO_SECRET", "The Worker has no SUPABASE_SECRET_KEY secret yet");
+      try {
+        const hk = { "Content-Type": "application/json", apikey: env.SUPABASE_SECRET_KEY };
+        if (/^eyJ/.test(env.SUPABASE_SECRET_KEY)) hk.Authorization = "Bearer " + env.SUPABASE_SECRET_KEY;
+        const lr = await fetch(SUPABASE_URL + "/auth/v1/admin/generate_link", { method: "POST", headers: hk, body: JSON.stringify({ type: "magiclink", email: user + "@ezexams.example.com" }) });
+        const lj = await lr.json().catch(() => ({}));
+        if (!lr.ok || !lj.hashed_token) return fail(502, "SUPABASE", "Supabase refused (" + lr.status + "): " + String(lj.msg || lj.message || lj.error_description || "").slice(0, 120));
+        return json({ ok: true, token_hash: lj.hashed_token, username: user });
+      } catch (e) { return fail(502, "SUPABASE", String(e.message || e)); }
+    }
+
     /* ---------- device PIN sign-in: right PIN → a one-time Supabase link the site turns into a session ---------- */
     if (url.pathname === "/pin/login" && req.method === "POST") {
       let b; try { b = JSON.parse(await req.text()); } catch (e) { return fail(400, "BAD_JSON", "Body is not JSON"); }

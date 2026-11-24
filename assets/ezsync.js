@@ -15,9 +15,9 @@
   const SB="https://jyfmolrqxypufwjqexan.supabase.co",SBK="sb_publishable_YJbE5DyYa6UKsAbfsxjnWg_4VW4HVnr";
   /* Supabase wants an email; a username becomes <username>@this domain (nothing is ever sent there) */
   const MAIL="@ezexams.example.com";
-  /* the sign-in is kept for this browser tab only (sessionStorage): closing the site signs this device out. Progress itself
-     stays in localStorage. */
-  const store=k=>k===LS.s2?sessionStorage:localStorage;
+  /* no sign-in screen: the site signs itself in to the owner's account through the Worker (/auto) and keeps the session in
+     localStorage */
+  const store=k=>localStorage;
   /* leftovers of the retired sign-in modes (GitHub token, old PIN codes): forget them */
   try{["ezsync-token","ezsync-gist","ezsync-user","ezsync-code"].forEach(k=>localStorage.removeItem(k));["ezsync-code","ezsync-sess"].forEach(k=>sessionStorage.removeItem(k));}catch(e){}
   const get=k=>{try{return store(k).getItem(k);}catch(e){return null;}};
@@ -94,11 +94,11 @@
   }
   let refreshing=null;
   async function token(force){
-    const s=sess2();if(!s)return null;
+    const s=sess2();if(!s){const a=await autoLogin();return a?a.at:null;}
     if(!force&&s.exp>Date.now()/1000+60)return s.at;
     if(!refreshing)refreshing=(async()=>{
       try{return adopt(await sb("POST","/auth/v1/token?grant_type=refresh_token",{body:{refresh_token:s.rt}}),s.username).at;}
-      catch(e){if(e.code==="badcreds"||e.code==="login"||e.status===400||e.status===401||e.status===403){set(LS.s2,null);throw Object.assign(new Error("expired"),{code:"login",status:401});}throw e;}
+      catch(e){if(e.code==="badcreds"||e.code==="login"||e.status===400||e.status===401||e.status===403){set(LS.s2,null);const a=await autoLogin();if(a)return a.at;throw Object.assign(new Error("expired"),{code:"login",status:401});}throw e;}
       finally{refreshing=null;}
     })();
     return refreshing;
@@ -141,7 +141,7 @@
     if(c==="emailinvalid")return "Sign-up is unavailable right now (username format rejected). Please tell the administrator.";
     if(c==="confirm")return "Sign-up is still being set up (email confirmation is still on). Sign-up is unavailable for now.";
     if(c==="locked"){const m=Math.max(1,Math.ceil((e.wait||0)/60000));return "Too many wrong PIN tries. Try again in "+m+" minute(s).";}
-    if(c==="login")return sess2()?"Your sign-in has expired. Please sign in again.":"Please sign in first.";
+    if(c==="login")return "Sync is unavailable for now. Your answers are saved on this device.";
     if(c==="server")return "Sync server configuration problem ("+(e.why||"")+"). Your answers are saved on this device for now.";
     if(c==="rate")return "Server is busy for now. Your answers are saved on this device and will upload automatically later.";
     if(c==="big")return "Progress data is too large; the sync server rejected it.";
@@ -197,6 +197,21 @@
     const d=devRec();if(!d)return;
     if(sess2())await withToken(tk=>px("POST","/pin/clear",JSON.stringify({t:tk,deviceId:d.dev}))).catch(()=>{});
     setDev(Object.assign(d,{pin:false}));
+  }
+  /* automatic sign-in: the Worker hands out a one-time link for the owner's account */
+  let autoP=null;
+  function autoLogin(){
+    if(sess2())return Promise.resolve(sess2());
+    if(!autoP)autoP=(async()=>{
+      try{
+        const t=JSON.parse(await px("POST","/auto","{}"));
+        const j=await sb("POST","/auth/v1/verify",{body:{type:"magiclink",token_hash:t.token_hash}});
+        if(!j||!j.access_token)throw Object.assign(new Error("no session"),{code:"server",why:"Supabase gave no session"});
+        const s=adopt(j,t.username);set("ezsync-who",acctWho(s.uid));emit("ok","Synced");return s;
+      }catch(e){emit("off",errMsg(e));return null;}
+      finally{autoP=null;}
+    })();
+    return autoP;
   }
   const subjects={};// key -> {merge, timer}
   /* after a failure (offline, the server busy or rate-limited) try again by itself: 30 s, 1, 2, 4 … up to 15 minutes */
@@ -303,9 +318,11 @@
   }
 
   window.EZSync={
+    autoLogin,
     register(key,opts={}){
       subjects[key]={merge:opts.merge||null,sig:opts.sig||(o=>JSON.stringify(o)),timer:null,noReload:!!opts.noReload,after:opts.after||null};
-      if(on()){
+      if(!on()){autoLogin().then(s=>{if(s)window.EZSync.register(key,opts);});return;}
+      {
         pull(key,{reloadOnChange:!opts.noReload});
         /* leaving or hiding the page: send what is waiting right away (keepalive lets it finish after the tab closes) */
         const leave=()=>{const sub=subjects[key];if(!(dirty[key]||sub.timer)||!on())return;clearTimeout(sub.timer);sub.timer=null;pushNow(key,true);};
@@ -469,22 +486,22 @@
     theme.parentNode.insertBefore(a,theme);
     a.addEventListener("click",e=>{
       const s=window.EZSync.status();
-      if(window.EZGate&&!window.EZSync.connected()){e.preventDefault();window.EZGate.open();return;}   /* sign in right here */
       e.preventDefault();
       if(s.state==="sync")return;
+      if(!window.EZSync.connected()){autoLogin();return;}
       window.EZSync.syncNow();
     });
     window.EZSync.onStatus(s=>{
       const on=window.EZSync.connected();
       a.dataset.state=on?s.state:"off";
       a.querySelector(".synclab").textContent=!on?"Not synced":s.state==="sync"?"Syncing":s.state==="dirty"?"Pending":s.state==="err"?"Offline for now":"Synced";
-      a.title=!on?"Stored on this device only. Click here to sign in.":(s.msg&&s.state==="err"?s.msg+"(click to retry now)":s.msg&&s.state==="dirty"?s.msg+"(click to upload now)":"Synced (account "+window.EZSync.account().username+"). Click to sync now.");
+      a.title=!on?"Stored on this device only for now. Click to try syncing again.":(s.msg&&s.state==="err"?s.msg+"(click to retry now)":s.msg&&s.state==="dirty"?s.msg+"(click to upload now)":"Synced (account "+window.EZSync.account().username+"). Click to sync now.");
     });
   }
   function updateNote(){
     let n=document.getElementById("storeNote");
     if(!n)n=[...document.querySelectorAll("p.small")].find(p=>/Stored on this device only/.test(p.textContent));
-    if(n){const c=window.EZSync.connected();n.hidden=c;if(!c)n.textContent="Stored on this device only for now. Use the sync button at the top right to sign in and sync all devices.";}
+    if(n){const c=window.EZSync.connected();n.hidden=c;if(!c)n.textContent="Stored on this device only for now (sync is unavailable).";}
   }
   window.addEventListener("load",()=>setTimeout(()=>{
     let cur=null;try{cur=localStorage.getItem(autoKey);}catch(e){}

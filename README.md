@@ -46,8 +46,7 @@ index.html          Home page (exam list, sync sign-in, AI grading setup)
 assets/             Shared code and styles used by every page
   ezbase.css        Shared styles
   ezglass.css       Glassmorphism layer: background glow blobs, frosted cards and tables
-  ezsync.js         Accounts and saving progress across devices (Supabase)
-  ezgate.js         Sign-in screen shown before the site opens
+  ezsync.js         Saving progress across devices (Supabase; signs in automatically, no sign-in screen)
   ezai.js           AI grading for short answers
   ezexplain.js      AI explanations for wrong multiple-choice answers
   ezchw.js          AI grading for written questions
@@ -123,7 +122,8 @@ Answers that don't match clearly go into an "unmatched" group. To see where ever
 1. Supabase → **SQL Editor**: run `tools/supabase.sql` (creates the `progress` table with Row Level Security).
 2. Supabase → Authentication → Sign In / Providers → Email: turn **Confirm email** off, minimum password length 6. (Authentication → Sessions → *JWT expiry* of 86400 s keeps a study session signed in all day.)
 3. Cloudflare → Workers → `ezexams-ai` → Settings → Variables and Secrets: add the secret **`SUPABASE_SECRET_KEY`** (Supabase → Project Settings → API Keys → *Secret keys*). It is only used to log a device in after a right PIN.
-4. The project URL and the publishable key are in `assets/ezsync.js` and `tools/ezexams-worker.js` (they are public by design). A username becomes `<username>@…` using `MAIL` in `ezsync.js`; nothing is ever sent to it.
+4. Set the Worker variable `OWNER_USER` (Cloudflare → Workers → ezexams-ai → Settings → Variables) to the username whose progress the site uses. The site has no sign-in screen: it asks the Worker (`POST /auto`) for a one-time sign-in to that account, and every device shares its progress.
+5. The project URL and the publishable key are in `assets/ezsync.js` and `tools/ezexams-worker.js` (they are public by design). A username becomes `<username>@…` using `MAIL` in `ezsync.js`; nothing is ever sent to it.
 
 To give a new subject page the figure animations and the layout fit, add these two lines next to the other `assets/` scripts (then run `python3 tools/stamp.py`):
 

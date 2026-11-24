@@ -341,13 +341,8 @@ function viewHome(){
   else{const I=info(n),lock=lockedToday(n);
     next=lock?'<b>Done for today ✓</b><span>Tomorrow: Day '+n+' '+esc(I.t)+'</span>'+extra
       :'<b>Day '+n+'</b><span>'+esc(I.t)+' <span class="small">'+(I.review?"Weekly review":PN[I.p])+' · about 30 min</span></span>'+extra+'<a class="btn primary" href="#today">Start today\'s lesson</a>';}
-  const exam=S.set.exam||"",left=exam?Math.round((new Date(exam+"T00:00:00")-new Date(today()+"T00:00:00"))/864e5):null;
-  const reach=left!=null&&left>=0&&n<=TOTAL?Math.min(TOTAL,n-1+left):null;
-  const dateLine='<p class="vmeta examdate"><label>Test date <input type="date" id="examDate" value="'+esc(exam)+'"></label>'+
-    (left==null?' <span class="small">Set it to get a countdown.</span>':left<0?' <span class="small">The test date has passed. Set the next one.</span>':' <b>'+(left===0?"Today!":left+" day"+(left===1?"":"s")+" left")+'</b>'+
-      (reach!=null&&reach<TOTAL?' <span class="small">At one lesson a day you will reach Day '+reach+' of '+TOTAL+' by then. Mock tests and mistakes matter most in the last weeks.</span>':''))+'</p>';
+
   let h='<div class="vhead">'+pcb("home")+'<p class="vmeta">TOEIC Listening &amp; Reading</p><h1>TOEIC</h1><p>40 weeks, about 30 minutes a day. Each day: a few new words with spaced review, a short handout, practice questions with explanations, and a few old mistakes to redo. Mini mock tests track your estimated score.</p></div>';
-  h=h.replace('</p></div>','</p>'+dateLine+'</div>');
   h+='<div class="next">'+next+'</div>';
   h+='<section class="card"><h3>Course plan</h3><div class="phases">'+C.phases.map(p=>{const a=(p.weeks[0]-1)*7+1,b=p.weeks[1]*7;let d=0;for(let k=a;k<=b;k++)if(S.days[k]&&S.days[k].done)d++;const t=b-a+1;
     return '<div><b>'+esc(p.name)+'</b><span class="small">Weeks '+p.weeks[0]+"–"+p.weeks[1]+" · Goal "+p.goal+'</span><span class="small">'+esc(p.desc)+'</span><span class="bar"><i style="width:'+(d/t*100).toFixed(1)+'%"></i></span><span class="small">'+d+" / "+t+" days</span></div>";}).join("")+'</div><div class="row"><a class="btn" href="#course">Full course map</a></div></section>';
@@ -365,10 +360,8 @@ function viewHome(){
     '<li><b>Listening:</b> press ▶ Play and answer by ear first; open the transcript only after answering. Set the speed at the bottom of the page.</li>'+
     '<li><b>Mistakes</b> collect every wrong answer, sorted by Part. Use “Go to the question” or “Go to the handout” to see where it came from; the ↩ button brings you back.</li>'+
     '<li><b>Mock tests</b> fit in one 30-minute day. Take one in place of a weekly review; AI can write new ones whenever you want.</li>'+
-    '<li><b>Search</b> (🔍 or /) finds any word, handout line or question you have opened.</li>'+
-    '<li><b>Sign in</b> (top right) to keep progress on every device.</li></ol></section>';
+    '<li><b>Search</b> (🔍 or /) finds any word, handout line or question you have opened.</li>'+'</ol></section>';
   app.innerHTML=h;
-  const ed=$("#examDate");if(ed)ed.onchange=()=>{S.set=Object.assign({},S.set,{t:now(),exam:ed.value||""});save();route();};
 }
 
 /* ---------------- summary & traps: every lesson's solving routine and traps in one place (like eztraps.js on the subject pages) ---------------- */

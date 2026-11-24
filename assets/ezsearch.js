@@ -17,7 +17,7 @@
 .ezs-top{position:relative}.ezs-ico{position:absolute;left:24px;top:50%;width:18px;height:18px;transform:translateY(-50%);color:var(--muted,#888);pointer-events:none}
 .ezs-top input{flex:1;min-width:0;font:inherit;font-size:16px;padding:9px 12px 9px 38px;border:1.5px solid var(--line-strong,var(--line));border-radius:8px;background:var(--paper2,var(--bg));color:var(--ink)}
 .ezs-top input:focus{outline:none;border-color:var(--indigo,var(--ink));box-shadow:0 0 0 3px var(--indigo-soft,transparent)}
-.ezs-info{padding:8px 14px;font-size:13px;color:var(--muted)}
+.ezs-info:empty{display:none}.ezs-info{padding:8px 14px;font-size:13px;color:var(--muted)}
 .ezs-list{overflow-y:auto;padding:0 8px 10px}
 .ezs-g{font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--brass);padding:12px 8px 4px}
 .ezs-r{display:block;width:100%;text-align:left;font:inherit;border:0;background:transparent;color:var(--ink);border-radius:8px;padding:8px 10px;cursor:pointer}
@@ -139,10 +139,12 @@
   /* ---------- open / close ---------- */
   function open(){
     INDEX=null;            /* rebuild: answers and quizzes may have changed */
+    {const tm=document.getElementById("themeMenu"),tb=document.getElementById("themeBtn");if(tm&&!tm.hidden){tm.hidden=true;if(tb)tb.setAttribute("aria-expanded","false");}}   /* never both open */
     panel.hidden=false;btn.setAttribute("aria-expanded","true");
     input.focus();input.select();run();
   }
   function close(){panel.hidden=true;btn.setAttribute("aria-expanded","false");}
+  window.EZsearchClose=close;
   btn.addEventListener("click",e=>{e.stopPropagation();panel.hidden?open():close();});
   let tm=null;input.addEventListener("input",()=>{clearTimeout(tm);tm=setTimeout(run,120);});
   input.addEventListener("keydown",e=>{

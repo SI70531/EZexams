@@ -27,7 +27,7 @@
     }
     apply(mode);
     function close(){menu.hidden=true;btn.setAttribute("aria-expanded","false");}
-    btn.addEventListener("click",e=>{e.stopPropagation();menu.hidden=!menu.hidden;btn.setAttribute("aria-expanded",String(!menu.hidden));});
+    btn.addEventListener("click",e=>{e.stopPropagation();const sp=document.querySelector(".ezs-panel");if(sp&&!sp.hidden&&window.EZsearchClose)window.EZsearchClose();menu.hidden=!menu.hidden;btn.setAttribute("aria-expanded",String(!menu.hidden));});
     menu.addEventListener("click",e=>{const b=e.target.closest("[data-t]");if(!b)return;mode=b.dataset.t;apply(mode);try{mode==="system"?localStorage.removeItem(TK):localStorage.setItem(TK,mode);}catch(err){}close();btn.focus();});
     document.addEventListener("click",e=>{if(!menu.hidden&&!e.target.closest(".theme"))close();});
     document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!menu.hidden){close();btn.focus();}});

@@ -1,3 +1,4 @@
+[hidden]{display:none!important}
 /* dark mode tokens (ezbase.css has the light ones; every subject page adds these itself) */
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#11212d; --paper:#1c2e3b; --paper2:#172835;

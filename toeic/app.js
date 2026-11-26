@@ -413,7 +413,7 @@ function viewLesson(n,isToday){
   let h=(isToday?headStats():'<p><a href="#course" class="small">← Course map</a></p>')+lessonHead(I,isToday);
   if(ct.src==="ai")h+='<p class="small aiflag">This day was written by AI. If something looks wrong, <button class="linkbtn" id="regen">regenerate it</button>.</p>';
   h+='<ol class="steps">'+steps.map(([k,t,s],i)=>'<li class="'+(st[k]?"ok":"")+'"><a href="#s-'+k+'"><span class="n">'+(i+1)+"</span>"+t+'<span class="small">'+s+"</span></a></li>").join("")+"</ol>";
-  h+='<section class="card" id="s-v"><h3><span class="n">1</span>Words</h3><div class="words">'+ct.words.map(w=>wordRow(w)).join("")+'</div><div id="fc"></div></section>';
+  h+='<section class="card" id="s-v"><h3><span class="n">1</span>Words</h3><div class="words">'+ct.words.map(w=>wordRow(w)).join("")+'</div><div id="fc"></div><details class="ptoday"><summary>Play with today\'s words: spelling, match, dictation</summary><div id="pracT"></div></details></section>';
   h+=ct.second?'<section class="card" id="s-l"><h3><span class="n">2</span>Handout</h3><details><summary class="small">Yesterday\'s handout (optional review)</summary><div class="lesson">'+ct.lesson+'</div></details></section>'
     :'<section class="card" id="s-l"><h3><span class="n">2</span>Handout</h3><div class="lesson">'+ct.lesson+'</div><button class="btn'+(st.l?"":" primary")+'" id="readOk">'+(st.l?"✓ Read":"I've read it")+"</button></section>";
   h+='<section class="card" id="s-p"><h3><span class="n">3</span>Practice</h3><p class="small" id="pScore"></p><div id="pq"></div></section>';
@@ -425,6 +425,7 @@ function viewLesson(n,isToday){
   /* 1 vocab */
   const fcWords=ct.words.filter(w=>!S.vocab[w[0]]);
   const fcDue=dueWords().filter(x=>!ct.words.some(w=>w[0]===x[0])).slice(0,30);
+  if(window.TPRACTICE&&$("#pracT"))TPRACTICE.mount($("#pracT"),ct.words,"Practice today's words");
   flash($("#fc"),fcWords,fcDue,()=>{const x=R();x.st.v=1;touch(x);save();upd();});
   if(!fcWords.length&&!st.v&&!r.done){const x=R();x.st.v=1;touch(x);save();}
   /* 2 lesson */
@@ -462,7 +463,7 @@ function viewLesson(n,isToday){
 
 function wordRow(w){
   const v=S.vocab[w[0]];
-  return '<div class="vrow"><button class="say" type="button" data-say="'+esc(w[0])+'" aria-label="Pronounce">🔊</button><b>'+esc(w[0])+'</b><span class="pos">'+esc(w[1])+"</span><span>"+esc(w[2])+'</span><span class="lv" title="Level">'+(v?"●".repeat(v.b)+"○".repeat(5-v.b):"")+'</span><span class="ex">'+esc(w[3])+"</span></div>";
+  return '<div class="vrow"><button class="say" type="button" data-say="'+esc(w[0])+'" aria-label="Pronounce">🔊</button><b>'+esc(w[0])+'</b><span class="pos">'+esc(w[1])+"</span><span>"+esc(w[2])+'</span><span class="lv" title="Level">'+(v?"●".repeat(v.b)+"○".repeat(5-v.b):"")+'</span><span class="ex">'+esc(w[3])+' <button class="say sm" type="button" data-say="'+esc(w[3])+'" aria-label="Read the example sentence">🔊</button></span></div>';
 }
 document.addEventListener("click",e=>{const b=e.target.closest("[data-say]");if(b)sayWord(b.dataset.say);});
 
@@ -502,6 +503,7 @@ function viewVocab(){
   let h='<section class="card"><h2>Words</h2><p class="small">Spaced review: a word you know comes back after 1 → 2 → 4 → 7 → 15 → 30 days; a word you miss comes back tomorrow. New words come from the daily lessons.</p>'+
     '<div class="boxes">'+box.map((c,b)=>'<div><b>'+c+'</b><span class="small">'+(b?"Level "+b:"Weak")+"</span></div>").join("")+"</div>"+
     (due.length?'<button class="btn primary" id="rv">Start review ('+due.length+" due)</button>":'<p class="okc">No words due today.</p>')+'<div id="fc"></div></section>';
+  h+='<section class="card"><h2>Practice</h2><p class="small">Games with every word you have met so far. They do not change the review schedule, except that a word you cannot spell comes back tomorrow.</p><div id="prac"></div></section>';
   h+='<section class="card"><h3>Word list ('+all.length+')</h3><input class="search" id="vs" placeholder="Search English or Chinese" aria-label="Search words"><div class="filters"><button class="chip on" data-f="all">All</button><button class="chip" data-f="weak">Often missed</button></div><div class="words" id="vl"></div></section>';
   app.innerHTML=h;
   if(due.length)$("#rv").onclick=()=>{$("#rv").hidden=true;flash($("#fc"),[],due.slice(0,60),()=>viewVocab());};
@@ -510,6 +512,7 @@ function viewVocab(){
     let L=all.filter(v=>!s||v.x[0].toLowerCase().includes(s)||v.x[2].includes(s));
     if(f==="weak")L=L.filter(v=>(v.w||0)>=2||v.b===0).sort((a,b)=>(b.w||0)-(a.w||0));else L.sort((a,b)=>a.x[0].localeCompare(b.x[0]));
     $("#vl").innerHTML=L.length?L.map(v=>wordRow(v.x)).join(""):'<p class="small">No matching words.</p>';};
+  if(window.TPRACTICE)TPRACTICE.mount($("#prac"),null,"Practice all words");
   $("#vs").oninput=list;
   $$(".filters .chip").forEach(b=>b.onclick=()=>{f=b.dataset.f;$$(".filters .chip").forEach(x=>x.classList.toggle("on",x===b));list();});
   list();
@@ -793,5 +796,6 @@ window.EZTOUR={key:"eztour-toeic-v1",steps:()=>{const t=id=>document.querySelect
   t("vocab")&&{el:t("vocab"),t:"Words",d:"Every word you learn comes back on a spaced schedule (1, 2, 4, 7, 15, 30 days). Review the ones that are due."},
   t("wrong")&&{el:t("wrong"),t:"Mistakes",d:"Every wrong answer lands here, sorted by Part. Redo it until it is fixed; jump to its question or handout and back."},
   {el:document.querySelector(".ezs-btn")||document.querySelector(".theme"),t:"Search and settings",d:"Search everything you have opened (shortcut /). The top right also has sync, sign-in and the light/dark switch."}].filter(Boolean);}};
+window.TOEIC_ENV={get S(){return S;},save,rate,esc,voice,stopSpeak,TTS,content,cur,TOTAL};
 syncChip();settings();route();
 })();

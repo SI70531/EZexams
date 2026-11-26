@@ -276,13 +276,14 @@ function glow(el){el.classList.remove("wflash");void el.offsetWidth;el.classList
 const backPill=document.createElement("button");backPill.type="button";backPill.className="ezback";backPill.hidden=true;document.body.appendChild(backPill);
 function offerBack(label,fn){backPill.textContent=label;backPill.onclick=()=>{backPill.hidden=true;fn();};backPill.hidden=false;}
 document.addEventListener("click",e=>{if(e.target.closest("#tabs [data-go]"))backPill.hidden=true;},true);
-function toHandout(){const s=$("#s-l");if(!s)return;const d=s.querySelector("details");if(d)d.open=true;scrollToEl(s,false);glow(s);}
+let stepApi=null;   /* set by the open lesson: lets other code switch to a step before scrolling to something inside it */
+function toHandout(){const s=$("#s-l");if(!s)return;if(stepApi)stepApi.show("l");const d=s.querySelector("details");if(d)d.open=true;scrollToEl(s,false);glow(s);}
 /* a mistake card -> its question (or the handout of its lesson), with a pill that comes back to the same card */
 function goWrong(id,what){
   const back=location.hash||"#today",m=id.match(/^d(\d+):(\d+)$/),mm=id.match(/^m:(.+):([LR])(\d+)$/);
   const ret=()=>nav(back,()=>{const c=[...document.querySelectorAll(".wbox")].find(x=>x.dataset.id===id);if(c){scrollToEl(c,true);glow(c);}});
   const showQ=sel=>{const el=$(sel);if(el){scrollToEl(el,true);glow(el);}};
-  if(m)nav("#day/"+m[1],()=>{if(what==="notes")toHandout();else showQ('#pq .qq[data-i="'+m[2]+'"]');offerBack("↩ Back to the mistake",ret);});
+  if(m)nav("#day/"+m[1],()=>{if(what==="notes")toHandout();else{if(stepApi)stepApi.show("p");showQ('#pq .qq[data-i="'+m[2]+'"]');}offerBack("↩ Back to the mistake",ret);});
   else if(mm)nav("#mock/"+mm[1],()=>{showQ((mm[2]==="L"?"#ml":"#mr")+' .qq[data-i="'+mm[3]+'"]');offerBack("↩ Back to the mistake",ret);});
 }
 function wrongNav(id){
@@ -316,6 +317,10 @@ function routeView(h){
 }
 addEventListener("hashchange",route);
 
+function miniStats(){
+  const n=cur(),done=Math.min(n-1,TOTAL),due=dueWords().length,wr=Object.values(S.wrong).filter(w=>!w.fixed).length;
+  return '<p class="mini"><span>Day '+Math.min(n,TOTAL)+' of '+TOTAL+'</span><span>🔥 '+streak()+'</span>'+(due?'<a href="#vocab">'+due+' words due</a>':'')+(wr?'<a href="#wrong">'+wr+' open mistakes</a>':'')+'<span class="bar"><i style="width:'+(done/TOTAL*100).toFixed(1)+'%"></i></span></p>';
+}
 function headStats(){
   const n=cur(),lm=lastMock(),due=dueWords().length,wr=Object.values(S.wrong).filter(w=>!w.fixed).length;
   const done=Math.min(n-1,TOTAL);
@@ -410,16 +415,19 @@ function viewLesson(n,isToday){
   const st=r.st||{};
   const nNew=ct.words.filter(w=>!S.vocab[w[0]]).length;
   const steps=[["v","Words",nNew?nNew+" new":"Done"],["l","Handout",ct.second?"Optional review":"10 min"],["p","Practice",ct.qs.reduce((a,x)=>a+(x.qs?x.qs.length:1),0)+" questions"],["r","Redo mistakes","Up to 3"]];
-  let h=(isToday?headStats():'<p><a href="#course" class="small">← Course map</a></p>')+lessonHead(I,isToday);
+  const NAMES=["Words","Handout","Practice","Redo mistakes"],KEYS="vlpr";
+  const vDone=!!st.v||nNew===0,lDone=!!st.l||ct.second,pDone=!!st.p;
+  let step=r.done?0:[!vDone,!lDone,!pDone].findIndex(Boolean);if(step<0)step=r.done?0:3;
+  let h=(isToday?miniStats():'<p><a href="#course" class="small">← Course map</a></p>')+lessonHead(I,isToday);
   if(ct.src==="ai")h+='<p class="small aiflag">This day was written by AI. If something looks wrong, <button class="linkbtn" id="regen">regenerate it</button>.</p>';
-  h+='<ol class="steps">'+steps.map(([k,t,s],i)=>'<li class="'+(st[k]?"ok":"")+'"><a href="#s-'+k+'"><span class="n">'+(i+1)+"</span>"+t+'<span class="small">'+s+"</span></a></li>").join("")+"</ol>";
-  h+='<section class="card" id="s-v"><h3><span class="n">1</span>Words</h3><div class="words">'+ct.words.map(w=>wordRow(w)).join("")+'</div><div id="fc"></div><details class="ptoday"><summary>Play with today\'s words: spelling, match, dictation</summary><div id="pracT"></div></details></section>';
-  h+=ct.second?'<section class="card" id="s-l"><h3><span class="n">2</span>Handout</h3><details><summary class="small">Yesterday\'s handout (optional review)</summary><div class="lesson">'+ct.lesson+'</div></details></section>'
-    :'<section class="card" id="s-l"><h3><span class="n">2</span>Handout</h3><div class="lesson">'+ct.lesson+'</div><button class="btn'+(st.l?"":" primary")+'" id="readOk">'+(st.l?"✓ Read":"I've read it")+"</button></section>";
-  h+='<section class="card" id="s-p"><h3><span class="n">3</span>Practice</h3><p class="small" id="pScore"></p><div id="pq"></div></section>';
-  h+='<section class="card" id="s-r"><h3><span class="n">4</span>Redo mistakes</h3><div id="rq"></div></section>';
-  if(isToday||!r.done)h+='<div class="finish"><button class="btn primary" id="finish">Finish Day '+n+'</button><span class="small" id="finMsg"></span></div>';
-  else h+='<p class="small">Finished on '+esc(r.done&&r.at)+".</p>";
+  h+='<ol class="steps" role="tablist" aria-label="Lesson steps">'+steps.map(([k,t,s],i)=>'<li class="'+(st[k]?"ok":"")+'"><button type="button" role="tab" data-step="'+k+'"><span class="n">'+(i+1)+'</span><span class="t">'+t+'</span><span class="small">'+s+"</span></button></li>").join("")+"</ol>";
+  h+='<section class="card stepsec" id="s-v"><h3><span class="n">1</span>Words</h3><div class="words">'+ct.words.map(w=>wordRow(w)).join("")+'</div><div id="fc"></div><details class="ptoday"><summary>Play with today\'s words: spelling, match, dictation</summary><div id="pracT"></div></details></section>';
+  h+=ct.second?'<section class="card stepsec" id="s-l"><h3><span class="n">2</span>Handout</h3><details><summary class="small">Yesterday\'s handout (optional review)</summary><div class="lesson">'+ct.lesson+'</div></details></section>'
+    :'<section class="card stepsec" id="s-l"><h3><span class="n">2</span>Handout</h3><div class="lesson">'+ct.lesson+'</div><button class="btn'+(st.l?"":" primary")+'" id="readOk">'+(st.l?"✓ Read":"I've read it")+"</button></section>";
+  h+='<section class="card stepsec" id="s-p"><h3><span class="n">3</span>Practice</h3><p class="small" id="pScore"></p><div id="pq"></div></section>';
+  h+='<section class="card stepsec" id="s-r"><h3><span class="n">4</span>Redo mistakes</h3><div id="rq"></div></section>';
+  h+='<div class="finish stepnav"><button class="btn" type="button" id="stepBack">← Back</button><span class="small" id="finMsg" role="status" aria-live="polite"></span><button class="btn primary" type="button" id="stepNext">Next →</button>'+(isToday||!r.done?'<button class="btn primary" type="button" id="finish" hidden>Finish Day '+n+'</button>':'')+'</div>';
+  if(!(isToday||!r.done))h+='<p class="small">Finished on '+esc(r.done&&r.at)+".</p>";
   app.innerHTML=h;
   const R=()=>{const x=mkRec(n);if(!x.cid)x.cid=ct.cid;return x;};
   /* 1 vocab */
@@ -435,7 +443,7 @@ function viewLesson(n,isToday){
   const ans=()=>(rec(n)&&rec(n).cid===ct.cid&&rec(n).ans)||{};
   const pq=Quiz($("#pq"),ct.qs,{key:"d"+n+"."+ct.cid,seed:n*7,pick:i=>ans()[i],shown:i=>ans()[i]!=null,
     clear:i=>{const x=R();delete x.ans[i];x.st.p=0;touch(x);save();upd();},
-    notes:i=>{toHandout();offerBack("↩ Back to question "+(i+1),()=>{const el=$('#pq .qq[data-i="'+i+'"]');if(el){scrollToEl(el,true);glow(el);}});},
+    notes:i=>{toHandout();offerBack("↩ Back to question "+(i+1),()=>{if(stepApi)stepApi.show("p");const el=$('#pq .qq[data-i="'+i+'"]');if(el){scrollToEl(el,true);glow(el);}});},
     set:(i,k,q)=>{const x=R();x.ans[i]=k;if(k!==q.a)addWrong("d"+n+":"+i,q,k,"Day "+n+" practice",n);touch(x);
       if(Object.keys(x.ans).length>=pq.F.length){x.st.p=1;}save();upd();}});
   /* 4 redo mistakes */
@@ -447,12 +455,34 @@ function viewLesson(n,isToday){
     const x=rec(n)||{st:{},ans:{}},s=x.st||{};
     const pk=x.cid===ct.cid?x.ans:{};const tot=pq.F.length,got=pq.F.filter((q,i)=>pk[i]===q.a).length,cnt=Object.keys(pk).length;
     $("#pScore").textContent=cnt?("Answered "+cnt+" / "+tot+", correct "+got+(cnt===tot?" ("+Math.round(got/tot*100)+"%)":"")):"Each answer shows its explanation right away; wrong answers go to the mistake notebook.";
-    $$(".steps li").forEach((li,i)=>{const k="vlpr"[i];li.classList.toggle("ok",!!s[k]||(k==="l"&&ct.second)||(k==="r"&&!keep.filter(id=>S.wrong[id]).length));});
-    const f=$("#finish");if(!f)return;
-    const miss=[!s.v&&"words",!s.l&&!ct.second&&"handout",!s.p&&"practice"].filter(Boolean);
-    f.disabled=!!miss.length||!!x.done;$("#finMsg").textContent=x.done?"Done":miss.length?"Still to do: "+miss.join(", "):"Ready to finish";
+    const noRedo=!keep.filter(id=>S.wrong[id]).length;
+    const dn=[!!s.v||nNew===0,!!s.l||ct.second,!!s.p,!!s.r||noRedo];
+    const skipR=noRedo&&!s.r;
+    $$(".steps li").forEach((li,i)=>{li.classList.toggle("ok",dn[i]&&!(i===3&&skipR));li.classList.toggle("skip",i===3&&skipR);});
+    const sub=$(".steps li:nth-child(4) .small");if(sub)sub.textContent=skipR?"Nothing to redo":"Up to 3";
+    const nb=$("#stepNext"),f=$("#finish"),req=[dn[0],dn[1],dn[2]];
+    const hint=["Go through the cards below, then continue.","Read the handout, then press “I've read it”.","Answer every question. Each answer shows its explanation.","Optional: redo up to 3 old mistakes, then finish."];
+    if(nb){nb.classList.toggle("pulse",dn[step]&&step<3);}
+    const miss=[!req[0]&&"words",!req[1]&&"handout",!req[2]&&"practice"].filter(Boolean);
+    if(f){f.disabled=!!miss.length||!!x.done;}
+    $("#finMsg").textContent=step===3?(x.done?"Done":miss.length?"Still to do: "+miss.join(", "):"Ready to finish"):(dn[step]?"✓ "+NAMES[step]+" done":hint[step]);
   }
-  upd();
+  /* one step at a time: the strip on top and the Back / Next bar move between the four sections */
+  function setStep(i,scroll){
+    step=Math.max(0,Math.min(3,i));
+    KEYS.split("").forEach((k,j)=>{const sec=$("#s-"+k);sec.classList.toggle("on",j===step);});
+    $$(".steps button").forEach((b,j)=>{b.setAttribute("aria-selected",String(j===step));b.parentElement.classList.toggle("cur",j===step);});
+    const f=$("#finish"),nb=$("#stepNext"),bb=$("#stepBack");
+    bb.disabled=step===0;nb.hidden=step===3;if(f)f.hidden=step!==3;
+    if(step<3)nb.textContent="Next: "+NAMES[step+1]+" →";
+    upd();
+    if(scroll)scrollToEl($(".steps"),false);
+  }
+  stepApi={show:k=>{const j=KEYS.indexOf(k);if(j>=0&&j!==step)setStep(j,false);}};
+  $$(".steps button").forEach((b,j)=>b.onclick=()=>setStep(j,true));
+  $("#stepNext").onclick=()=>setStep(step+1,true);
+  $("#stepBack").onclick=()=>setStep(step-1,true);
+  setStep(step,false);
   const f=$("#finish");if(f)f.onclick=()=>{
     const x=R();if(x.done)return;x.done=1;x.at=today();const tot=pq.F.length;x.sc=[pq.F.filter((q,i)=>x.ans[i]===q.a).length,tot];touch(x);save();
     const nx=n<TOTAL?info(n+1):null;
@@ -775,7 +805,7 @@ function findText(root,terms){
   root.querySelectorAll("h2,h3,h4,p,li,td,th,.stem,.oe,.passage,.vrow,summary,b,.tip").forEach(e=>{const t=e.textContent.toLowerCase();if(terms.every(x=>t.includes(x))&&(!best||best.contains(e)))best=e;});
   return best;
 }
-const goFind=hash=>({terms,reveal})=>nav(hash,()=>reveal(findText(app,terms)));
+const goFind=hash=>({terms,reveal})=>nav(hash,()=>{const el=findText(app,terms),sec=el&&el.closest&&el.closest(".stepsec");if(sec&&stepApi)stepApi.show(sec.id.slice(2));reveal(el);});
 const plain=html=>{const d=new DOMParser().parseFromString("<div>"+html+"</div>","text/html");return [...d.querySelectorAll("h3,p,li,tr,.tip")].filter(e=>!e.querySelector("p,li,tr")).map(e=>e.textContent);};
 window.EZSEARCH={dom:false,entries(){
   const out=[],c=Math.min(cur(),TOTAL),seen=new Set();
@@ -791,8 +821,9 @@ window.EZSEARCH={dom:false,entries(){
   return out;
 }};
 /* ---------------- first-visit tour (ezfx.js), with this course's own steps ---------------- */
-window.EZTOUR={key:"eztour-toeic-v1",steps:()=>{const t=id=>document.querySelector('#tabs [data-go="'+id+'"]');return [
-  {el:document.querySelector("nav.tabs"),t:"Tabs",d:"Home shows your next step and progress. Today is the daily lesson: about 30 minutes, one lesson a day."},
+window.EZTOUR={key:"eztour-toeic-v2",steps:()=>{const t=id=>document.querySelector('#tabs [data-go="'+id+'"]');return [
+  {el:document.querySelector("nav.tabs"),t:"Tabs",d:"Home shows your next step and progress. Course is the full map."},
+  t("today")&&{el:t("today"),t:"Today",d:"The daily lesson, about 30 minutes, one lesson a day. It has four steps, shown one at a time: Words, Handout, Practice, Redo mistakes. Use Next at the bottom to move on."},
   t("vocab")&&{el:t("vocab"),t:"Words",d:"Every word you learn comes back on a spaced schedule (1, 2, 4, 7, 15, 30 days). Review the ones that are due."},
   t("wrong")&&{el:t("wrong"),t:"Mistakes",d:"Every wrong answer lands here, sorted by Part. Redo it until it is fixed; jump to its question or handout and back."},
   {el:document.querySelector(".ezs-btn")||document.querySelector(".theme"),t:"Search and settings",d:"Search everything you have opened (shortcut /). The top right also has sync, sign-in and the light/dark switch."}].filter(Boolean);}};

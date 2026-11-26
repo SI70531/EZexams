@@ -53,14 +53,33 @@
 .bar:not(.top .bar) i{display:block;height:100%;background:var(--ok)}
 
 /* the four steps of a day */
-.steps{list-style:none;padding:0;margin:0 0 16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
-.steps a{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 12px;border:1px solid var(--line);border-radius:10px;text-decoration:none;color:inherit;background:var(--paper);font-weight:600}
-.steps .small{flex-basis:100%;font-weight:400;padding-left:34px;margin-top:-4px}
-.steps li.ok a{border-color:var(--ok-line);background:var(--ok-soft)}
-.steps li.ok .n{background:var(--ok)}
-.steps li.ok .n::after{content:"✓";position:absolute}
-.steps li.ok .n{color:transparent;position:relative}
-.steps li.ok .n::after{color:var(--bg)}
+.steps{list-style:none;padding:0;margin:0 0 16px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.steps button{width:100%;height:100%;display:flex;align-items:center;gap:4px 8px;flex-wrap:wrap;text-align:left;font:inherit;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;color:inherit;background:var(--paper);font-weight:600;cursor:pointer;transition:transform .15s,border-color .15s,background .15s}
+.steps button:hover{transform:translateY(-1px);border-color:var(--ink)}
+.steps li.cur button{border-color:var(--ink);background:var(--indigo);color:var(--accent-ink);box-shadow:var(--shadow)}
+.steps li.cur .small{color:inherit;opacity:.85}
+.steps li.cur .n{background:var(--bg);color:var(--ink)}
+.steps .small{flex-basis:100%;font-weight:400;padding-left:34px;margin-top:-2px}
+.steps li.ok:not(.cur) button{border-color:var(--ok-line);background:var(--ok-soft)}
+.steps li.ok .n{background:var(--ok);color:transparent;position:relative}
+.steps li.ok .n::after{content:"✓";position:absolute;color:var(--bg)}
+@media (max-width:640px){
+  .steps{gap:6px}
+  .steps button{flex-direction:column;align-items:center;text-align:center;padding:8px 4px;gap:4px}
+  .steps .small{display:none}
+  .steps .t{font-size:12.5px;line-height:1.2}
+}
+.steps li.skip button{border-style:dashed;opacity:.7}
+.stepsec:not(.on){display:none}
+.stepsec.on{animation:pIn .3s ease both}
+.mini{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin:20px 0 4px;font-family:var(--f-mono);font-size:12.5px;color:var(--muted)}
+.mini a{color:var(--seal)}
+.mini .bar{flex:1 1 120px;max-width:260px;margin:0}
+.stepnav .small{flex:1 1 140px;min-width:0}
+.stepnav .btn:disabled{opacity:.4}
+@keyframes pPulse{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--seal) 45%,transparent)}50%{box-shadow:0 0 0 7px transparent}}
+.btn.pulse{animation:pPulse 1.6s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.btn.pulse,.stepsec.on{animation:none}}
 
 /* words */
 .words{display:flex;flex-direction:column;border-top:1px solid var(--line)}

@@ -279,6 +279,7 @@
     if(document.getElementById("eztour"))return;
     const g=document.getElementById("ezgate");if(g&&!g.hidden&&!g.classList.contains("out"))return setTimeout(start,1500);
     const S=steps();if(S.length<2)return;
+    try{localStorage.setItem(KEY,"1");}catch(e){}   /* counts as seen as soon as it opens: closing the tab or reloading mid-tour must not bring it back */
     const st=document.createElement("style");st.textContent=css;document.head.appendChild(st);
     const root=document.createElement("div");root.id="eztour";root.setAttribute("role","dialog");root.setAttribute("aria-label","Site tour");
     root.innerHTML='<div class="hole"></div><div class="tip"><div class="body"></div><div class="row"><span class="cnt"></span><span><button type="button" class="skip">Skip</button> <button type="button" class="next">Next</button></span></div></div>';

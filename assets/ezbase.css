@@ -62,7 +62,7 @@ nav.tabs .sep{flex:0 0 10px;align-self:center;height:1.5px;background:var(--ink)
 .thmenu button[aria-checked="true"]::before{content:"✓";position:absolute;left:11px}
 .totop{position:fixed;right:calc(20px + env(safe-area-inset-right,0px));bottom:calc(22px + env(safe-area-inset-bottom,0px));width:auto;height:38px;padding:0 12px;border-radius:8px;border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);box-shadow:3px 3px 0 var(--hard);cursor:pointer;font-family:var(--f-mono);font-size:calc(12.5px*var(--ts,1));display:grid;place-items:center;opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s,transform .2s,background .2s;z-index:7}
 .totop.show{opacity:1;visibility:visible}
-.totop:hover{transform:translate(1px,1px);box-shadow:2px 2px 0 var(--hard)}
+.totop:hover { box-shadow:2px 2px 0 var(--hard); } @media (hover: hover) { .totop:hover { transform:translate(1px,1px); } }
 button:focus-visible,summary:focus-visible,input:focus-visible,.opt:focus-visible,a:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
 main{max-width:860px;margin:0 auto;padding-block:8px 96px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .view{display:block;scroll-margin-top:72px}

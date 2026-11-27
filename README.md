@@ -65,6 +65,7 @@ assets/             Shared code and styles used by every page
   ezinteract.js     Light interactivity: click a table row to highlight it, hover a term in a diagram (Key, Address, Hash …) to see its note
   eztraps.js       Builds the "Summary & traps" tab from each chapter's summary and trap blocks
   ezwow.js          Big effects: intro, page turn, shatter, trail, particles, read marks
+  ezanim.js         Motion layer: popup entrances, press feedback, instant keyboard actions, off-screen loops paused
 subject/exam/       One folder per exam
   index.html        Notes and exam content for that page
   app.js            Code for that page

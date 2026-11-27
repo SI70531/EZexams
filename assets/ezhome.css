@@ -74,7 +74,7 @@ main{padding-block:36px 72px}
 .subj .en{font-family:var(--f-mono);font-size:12.5px;color:var(--muted)}
 .tickets{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,420px),1fr));gap:20px}
 .ticket{position:relative;display:grid;grid-template-columns:1fr 104px;text-decoration:none;color:inherit;background:var(--paper);border:1.5px solid var(--ink);border-radius:10px;box-shadow:5px 5px 0 var(--hard);transition:transform .15s,box-shadow .15s}
-.ticket:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--hard)}
+.ticket:hover { box-shadow:7px 7px 0 var(--hard); } @media (hover: hover) { .ticket:hover { transform:translate(-2px,-2px); } }
 .ticket:focus-visible{outline:2px solid var(--indigo);outline-offset:4px}
 .ticket .main{padding:18px 20px 16px;min-width:0}
 .ticket .stub{position:relative;border-left:2px dashed var(--line-strong);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:14px 8px;background:var(--indigo-soft);border-radius:0 9px 9px 0;font-family:var(--f-mono);text-align:center}

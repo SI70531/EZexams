@@ -29,13 +29,13 @@
 @keyframes fxcaret{50%{opacity:0}}
 .fx-host{position:relative}
 .fx-rip{position:absolute;inset:0;border-radius:inherit;overflow:hidden;pointer-events:none;z-index:0}
-.fx-rip i{position:absolute;border-radius:50%;transform:scale(0);opacity:.34;background:currentColor;animation:fxrip .85s cubic-bezier(.1,.7,.3,1) forwards}
+.fx-rip i{position:absolute;border-radius:50%;transform:scale(.15);opacity:.34;background:currentColor;animation:fxrip .85s cubic-bezier(.1,.7,.3,1) forwards}
 @keyframes fxrip{to{transform:scale(1);opacity:0}}
 .btn,.opt,.ezout,.syncchip,.themebtn,#tabs [data-go]{transition:transform .12s ease,box-shadow .2s ease,border-color .15s,background .15s,color .15s}
 .btn:active:not([disabled]),.opt:active:not([disabled]),.ezout:active,.syncchip:active,.themebtn:active{transform:translateY(2px) scale(.95)}
-.btn:hover:not([disabled]),.ezout:hover,.themebtn:hover{transform:translateY(-2px) scale(1.04)}
+@media (hover:hover){.btn:hover:not([disabled]),.ezout:hover,.themebtn:hover{transform:translateY(-2px) scale(1.04)}}
 .btn:hover:not([disabled]){box-shadow:0 3px 10px -4px color-mix(in srgb,var(--ink) 35%,transparent)}
-.opt:hover:not([disabled]){transform:translateX(9px);box-shadow:-5px 0 0 var(--brass)}
+@media (hover:hover){.opt:hover:not([disabled]){transform:translateX(9px);box-shadow:-5px 0 0 var(--brass)}}
 .opt:hover:not([disabled]) .ab{border-color:var(--brass);color:var(--seal)}
 .opt .ab{transition:background .2s,border-color .2s,color .2s,transform .25s cubic-bezier(.3,1.6,.5,1)}
 #tabs [data-go]:hover{transform:translateY(-3px) scale(1.06)}
@@ -254,7 +254,7 @@
   let done=false;try{done=!!localStorage.getItem(KEY);}catch(e){done=true;}
   if(done)return;
   const css=`#eztour{position:fixed;inset:0;z-index:950;pointer-events:none}
-#eztour .hole{position:fixed;border-radius:10px;box-shadow:0 0 0 9999px rgba(6,20,27,.62);outline:2px solid var(--brass);transition:all .35s cubic-bezier(.2,.8,.2,1)}
+#eztour .hole{position:fixed;border-radius:10px;box-shadow:0 0 0 9999px rgba(6,20,27,.62);outline:2px solid var(--brass);transition:top .28s cubic-bezier(.23,1,.32,1),left .28s cubic-bezier(.23,1,.32,1),width .28s cubic-bezier(.23,1,.32,1),height .28s cubic-bezier(.23,1,.32,1)}
 #eztour .tip{position:fixed;pointer-events:auto;width:min(320px,calc(100vw - 32px));background:var(--paper);color:var(--ink);border:1.5px solid var(--ink);border-radius:12px;
   box-shadow:5px 5px 0 var(--hard);padding:16px 18px 14px;font:15px/1.7 var(--f-body);transition:top .35s cubic-bezier(.2,.8,.2,1),left .35s cubic-bezier(.2,.8,.2,1)}
 #eztour .tip b{display:block;font-size:16px;margin-bottom:4px}

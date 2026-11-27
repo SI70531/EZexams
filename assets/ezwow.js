@@ -264,7 +264,7 @@ html.wow-busy .wow-bg i,html.wow-busy .wow-stars{animation-play-state:paused}
     el.innerHTML='<div class="h l"></div><div class="h r"></div><div class="rg"></div><div class="c"><div class="mk">EZ</div><div class="t">'+[..."EZexams"].map(ch=>"<span>"+ch+"</span>").join("")+'</div><div class="s">Exam prep</div></div><div class="sk">Click to skip</div>';
     document.body.appendChild(el);
     const C=el.querySelector(".c"),mk=el.querySelector(".mk"),letters=[...el.querySelectorAll(".t span")],sub=el.querySelector(".s"),rg=el.querySelector(".rg");
-    mk.animate([{transform:"scale(0) rotate(-220deg)"},{transform:"scale(1.35) rotate(10deg)",offset:.65},{transform:"scale(1)"}],{duration:800,easing:"cubic-bezier(.3,1.3,.5,1)",fill:"backwards"});
+    mk.animate([{transform:"scale(.5) rotate(-220deg)",opacity:0},{transform:"scale(1.35) rotate(10deg)",offset:.65},{transform:"scale(1)"}],{duration:800,easing:"cubic-bezier(.3,1.3,.5,1)",fill:"backwards"});
     [0,300,600].forEach(d=>{const r=rg.cloneNode();rg.parentNode.insertBefore(r,rg);r.animate([{transform:"scale(.4)",opacity:.9},{transform:"scale(9)",opacity:0}],{duration:1300,delay:d+300,easing:"cubic-bezier(.1,.7,.3,1)",fill:"both"});});
     letters.forEach((l,i)=>l.animate([{transform:"translateY(-90px) rotate("+(i%2?25:-25)+"deg) scale(.4)",opacity:0},{transform:"translateY(10px) rotate(0) scale(1.15)",opacity:1,offset:.65},{transform:"none"}],{duration:700,delay:520+i*70,easing:"cubic-bezier(.3,1.2,.5,1)",fill:"backwards"}));
     sub.animate([{opacity:0,letterSpacing:"1.2em"},{opacity:1,letterSpacing:".4em"}],{duration:800,delay:1150,easing:"ease-out",fill:"backwards"});
@@ -272,7 +272,7 @@ html.wow-busy .wow-bg i,html.wow-busy .wow-stars{animation-play-state:paused}
     function open(){
       if(closed)return;closed=true;
       const[l,r]=el.querySelectorAll(".h");
-      C.animate([{transform:"none",opacity:1},{transform:"scale(1.6)",opacity:0}],{duration:500,easing:"ease-in",fill:"forwards"});
+      C.animate([{transform:"none",opacity:1},{transform:"scale(1.6)",opacity:0}],{duration:500,easing:"cubic-bezier(.23,1,.32,1)",fill:"forwards"});
       el.querySelector(".sk").remove();
       l.animate([{transform:"none"},{transform:"translateX(-101%)"}],{duration:750,delay:150,easing:"cubic-bezier(.7,0,.2,1)",fill:"forwards"});
       r.animate([{transform:"none"},{transform:"translateX(101%)"}],{duration:750,delay:150,easing:"cubic-bezier(.7,0,.2,1)",fill:"forwards"}).onfinish=()=>{el.remove();cardsFly();};

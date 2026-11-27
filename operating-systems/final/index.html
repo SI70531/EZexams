@@ -40,8 +40,8 @@
 .algmenu[hidden],.algp[hidden]{display:none}
 .algcard{position:relative;overflow:hidden;display:grid;grid-template-columns:1fr auto;grid-template-areas:"an sl" "t t" "z z";align-items:center;gap:8px 10px;text-align:left;padding:14px 16px 16px;border:1px solid var(--lit-rgba-255-255-255-65);border-radius:16px;background:linear-gradient(145deg,var(--lit-rgba-255-255-255-62),var(--lit-rgba-255-255-255-28));-webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4);color:var(--ink);font:inherit;cursor:pointer;box-shadow:0 6px 22px var(--lit-rgba-40-50-90-12),inset 0 1px 0 var(--lit-rgba-255-255-255-7);transition:transform .18s,border-color .18s}
 .algcard::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:4px;border-radius:0 4px 4px 0;background:var(--indigo)}
-.algcard::after{content:"→";position:absolute;right:14px;bottom:10px;font-size:calc(18px*var(--ts,1));color:var(--indigo);opacity:0;transform:translateX(-6px);transition:.18s}
-.algcard:hover,.algcard:focus-visible{transform:translateY(-3px);box-shadow:0 12px 30px var(--lit-rgba-60-70-140-22),inset 0 1px 0 var(--lit-rgba-255-255-255-8);border-color:var(--indigo);outline:none}
+.algcard::after{content:"→";position:absolute;right:14px;bottom:10px;font-size:calc(18px*var(--ts,1));color:var(--indigo);opacity:0;transform:translateX(-6px);transition:opacity .18s,transform .18s}
+.algcard:hover, .algcard:focus-visible { box-shadow:0 12px 30px var(--lit-rgba-60-70-140-22),inset 0 1px 0 var(--lit-rgba-255-255-255-8); border-color:var(--indigo); outline:none; } .algcard:focus-visible { transform:translateY(-3px); } @media (hover: hover) { .algcard:hover { transform:translateY(-3px); } }
 .algcard:hover::after,.algcard:focus-visible::after{opacity:1;transform:none}
 .algcard:active{transform:translateY(0)}
 .algcard .an{grid-area:an;justify-self:start;font-family:var(--f-mono);font-size:calc(12px*var(--ts,1));font-weight:700;letter-spacing:.3px;color:var(--indigo);background:var(--lit-rgba-90-100-200-12);padding:3px 10px;border-radius:999px}
@@ -1218,5 +1218,6 @@ mean time to data loss = MTTF² / (2 × MTTR)
 <script defer src="../../assets/ezjump.js?v=42ac94f1"></script>
 <script src="../../assets/eztimer.js?v=3beb5773" defer></script>
 <script src="../../assets/eznext.js?v=9c02ebb5" defer></script>
+<script src="../../assets/ezanim.js" defer></script>
 </body>
 </html>

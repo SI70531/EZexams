@@ -88,7 +88,7 @@ html,body{overflow-x:clip}
 :root .opt:not(.right):not(.wrong){background:var(--glass-bg-nested);border-color:var(--glass-bd)}
 
 /* home page ticket: soft lift instead of the hard offset shadow; the tear-off notches become glass arcs */
-:root .ticket:hover{transform:translateY(-3px);box-shadow:var(--glass-sh-hover)}
+:root .ticket:hover { box-shadow:var(--glass-sh-hover); } @media (hover: hover) { :root .ticket:hover { transform:translateY(-3px); } }
 :root .ticket .stub{border-radius:0 10px 10px 0;border-left-color:var(--glass-line);background:var(--glass-th)}
 :root .ticket .stub::before,:root .ticket .stub::after{background:transparent;border:1px solid var(--glass-bd)}
 :root .pcb .ph{border-radius:10px 10px 0 0}

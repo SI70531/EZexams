@@ -46,13 +46,13 @@ html, body { overflow-x: clip; }
 .ui-check, .ui-radio, .ui-switch { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; font-size: 15px; }
 .ui-check input, .ui-radio input, .ui-switch input { position: absolute; opacity: 0; pointer-events: none; }
 .ui-check .box { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--ui-line); display: grid; place-items: center; transition: background-color .2s, border-color .2s; background: var(--ui-card); }
-.ui-check .box::after { content: ""; width: 6px; height: 11px; border: solid var(--ui-brand-ink); border-width: 0 2.5px 2.5px 0; transform: translateY(-1px) rotate(45deg) scale(0); transition: transform .25s var(--ui-ease); }
+.ui-check .box::after { content: ""; width: 6px; height: 11px; border: solid var(--ui-brand-ink); border-width: 0 2.5px 2.5px 0; transform: translateY(-1px) rotate(45deg) scale(.5); opacity: 0; transition: transform .18s var(--ui-ease), opacity .18s var(--ui-ease); }
 .ui-check input:checked + .box { background: var(--ui-brand); border-color: var(--ui-brand); }
-.ui-check input:checked + .box::after { transform: translateY(-1px) rotate(45deg) scale(1); }
+.ui-check input:checked + .box::after { transform: translateY(-1px) rotate(45deg) scale(1); opacity: 1; }
 .ui-radio .dot { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--ui-line); position: relative; transition: border-color .2s; }
-.ui-radio .dot::after { content: ""; position: absolute; inset: 4px; border-radius: 50%; background: var(--ui-brand); transform: scale(0); transition: transform .25s var(--ui-ease); }
+.ui-radio .dot::after { content: ""; position: absolute; inset: 4px; border-radius: 50%; background: var(--ui-brand); transform: scale(.5); opacity: 0; transition: transform .18s var(--ui-ease), opacity .18s var(--ui-ease); }
 .ui-radio input:checked + .dot { border-color: var(--ui-brand); }
-.ui-radio input:checked + .dot::after { transform: scale(1); }
+.ui-radio input:checked + .dot::after { transform: scale(1); opacity: 1; }
 .ui-switch .track { width: 48px; height: 28px; border-radius: 99px; background: var(--ui-line); position: relative; transition: background .25s; }
 .ui-switch .track::after { content: ""; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: var(--ui-thumb); box-shadow: 0 2px 6px var(--ui-sh-sm); transition: transform .3s var(--ui-ease); }
 .ui-switch input:checked + .track { background: var(--ui-brand); }
@@ -79,7 +79,7 @@ html, body { overflow-x: clip; }
 .ui-stars { display: inline-flex; gap: 4px; }
 .ui-stars button { background: none; border: 0; padding: 2px; font-size: 26px; line-height: 1; color: var(--ui-line); cursor: pointer; transition: transform .2s, color .2s; }
 .ui-stars button.on { color: var(--ui-warn); }
-.ui-stars button:hover { transform: scale(1.2); }
+@media (hover: hover) { .ui-stars button:hover { transform: scale(1.2); } }
 .ui-stars button:active { transform: scale(.94); }
 
 /* 上傳區 */
@@ -112,7 +112,7 @@ html, body { overflow-x: clip; }
 /* 分頁 */
 .ui-pager { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 .ui-pager button { min-width: 36px; height: 36px; padding: 0 8px; border-radius: 9px; border: 1px solid var(--ui-line); background: var(--ui-card); color: var(--ui-ink); cursor: pointer; font: 14px var(--ui-font); transition: transform .15s; }
-.ui-pager button:hover { transform: translateY(-2px); }
+@media (hover: hover) { .ui-pager button:hover { transform: translateY(-2px); } }
 .ui-pager button[aria-current="page"] { background: var(--ui-brand); color: var(--ui-brand-ink); border-color: var(--ui-brand); }
 .ui-pager button:active { transform: translateY(0); }
 .ui-pager button[disabled] { background: var(--ui-line); color: var(--ui-mute); cursor: not-allowed; transform: none; }
@@ -130,7 +130,7 @@ html, body { overflow-x: clip; }
 .ui-modal .act { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
 .ui-tip { position: relative; display: inline-block; }
 .ui-tip::after { content: attr(data-tip); position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translate(-50%, 4px); white-space: nowrap; background: var(--ui-ink); color: var(--ui-bg); font-size: 12px; padding: 6px 10px; border-radius: 8px; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; }
-.ui-tip:hover::after, .ui-tip:focus-visible::after { opacity: 1; transform: translate(-50%, 0); }
+.ui-tip:hover::after, .ui-tip:focus-visible::after { opacity: 1; } .ui-tip:focus-visible::after { transform: translate(-50%, 0); } @media (hover: hover) { .ui-tip:hover::after { transform: translate(-50%, 0); } }
 .ui-bar { height: 8px; border-radius: 99px; background: var(--ui-line); overflow: hidden; }
 .ui-bar i { display: block; height: 100%; width: var(--v, 0%); background: var(--ui-brand);  }
 

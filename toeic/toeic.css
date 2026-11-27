@@ -55,7 +55,7 @@
 /* the four steps of a day */
 .steps{list-style:none;padding:0;margin:0 0 16px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 .steps button{width:100%;height:100%;display:flex;align-items:center;gap:4px 8px;flex-wrap:wrap;text-align:left;font:inherit;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;color:inherit;background:var(--paper);font-weight:600;cursor:pointer;transition:transform .15s,border-color .15s,background .15s}
-.steps button:hover{transform:translateY(-1px);border-color:var(--ink)}
+.steps button:hover { border-color:var(--ink); } @media (hover: hover) { .steps button:hover { transform:translateY(-1px); } }
 .steps li.cur button{border-color:var(--ink);background:var(--indigo);color:var(--accent-ink);box-shadow:var(--shadow)}
 .steps li.cur .small{color:inherit;opacity:.85}
 .steps li.cur .n{background:var(--bg);color:var(--ink)}
@@ -205,7 +205,7 @@
 /* scrolling, as on the other subject pages: back-to-top (ezfx.js draws the progress ring), the "go back" pill, the flash on arrival */
 .totop{position:fixed;right:calc(20px + env(safe-area-inset-right,0px));bottom:calc(22px + env(safe-area-inset-bottom,0px));height:38px;padding:0 12px;border-radius:8px;border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);box-shadow:3px 3px 0 var(--hard);cursor:pointer;font-family:var(--f-mono);font-size:12.5px;display:grid;place-items:center;opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s,transform .2s,background .2s;z-index:7}
 .totop.show{opacity:1;visibility:visible}
-.totop:hover{transform:translate(1px,1px);box-shadow:2px 2px 0 var(--hard)}
+.totop:hover { box-shadow:2px 2px 0 var(--hard); } @media (hover: hover) { .totop:hover { transform:translate(1px,1px); } }
 .ezback{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 18px);z-index:40;font:inherit;font-weight:700;font-size:15px;padding:11px 20px;border-radius:999px;border:1.5px solid var(--bad);background:var(--paper);color:var(--bad);box-shadow:0 6px 18px rgba(0,0,0,.18);cursor:pointer;max-width:calc(100vw - 32px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ezback:hover{background:var(--bad);color:var(--paper)}
 @keyframes wflash{0%,60%{box-shadow:0 0 0 4px var(--seal)}100%{box-shadow:0 0 0 0 transparent}}
@@ -246,7 +246,7 @@
 .pmodes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px}
 @media (max-width:720px){.pmodes{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .pmode{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;font:inherit;padding:12px 14px;border:1.5px solid var(--ink);border-radius:10px;background:var(--paper);color:var(--ink);cursor:pointer;transition:transform .15s,box-shadow .15s,background .15s}
-.pmode:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.pmode:hover { box-shadow:var(--shadow); } @media (hover: hover) { .pmode:hover { transform:translateY(-2px); } }
 .pmode.on{background:var(--indigo);color:var(--accent-ink)}.pmode.on .small{color:inherit;opacity:.85}
 .pmode .pi{font-size:22px;line-height:1.2}
 .pstage{margin-top:16px;padding:18px;border:1.5px dashed var(--line);border-radius:12px;animation:pIn .35s ease both}
@@ -280,7 +280,7 @@
 @media (max-width:640px){.mgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .mt{font:inherit;min-height:56px;padding:8px;border:1.5px solid var(--ink);border-radius:10px;background:var(--paper);color:var(--ink);cursor:pointer;transition:transform .15s,opacity .35s,background .15s}
 .mt.en{font-family:var(--f-en);font-weight:600}
-.mt:hover{transform:translateY(-2px)}
+@media (hover: hover) { .mt:hover { transform:translateY(-2px); } }
 .mt.sel{background:var(--indigo);color:var(--accent-ink)}
 .mt.shake{border-color:var(--seal)}
 .mt.gone{opacity:0;transform:scale(.85);pointer-events:none}
